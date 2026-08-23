@@ -921,9 +921,11 @@
 
 
     <!-- TOAST NOTIFICATION -->
-    <div id="toast-notification" class="fixed top-6 right-6 z-50 glass-card bg-text-primary text-bg-base text-xs font-bold px-5 py-3 rounded-full shadow-2xl flex items-center gap-2.5 transition-all duration-300 opacity-0 -translate-y-4 pointer-events-none border border-glass-border">
-      <svg class="w-4 h-4 text-emerald-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7"></path></svg>
-      <span id="toast-message">Đã sao chép vào bộ nhớ tạm!</span>
+    <div id="toast-notification" class="fixed top-6 right-6 z-[9999] max-w-md px-5 py-4 rounded-2xl shadow-[0_20px_50px_rgba(0,0,0,0.5)] flex items-center gap-3.5 transform -translate-y-4 opacity-0 transition-all duration-300 pointer-events-none border-2" role="alert">
+      <div id="toast-icon" class="w-8 h-8 rounded-full flex items-center justify-center flex-shrink-0 text-sm font-extrabold shadow-md">
+        ✓
+      </div>
+      <p id="toast-message" class="text-sm font-bold text-white leading-snug">Đã sao chép vào bộ nhớ tạm!</p>
     </div>
 
     <!-- ====================================================================

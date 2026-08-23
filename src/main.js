@@ -31,18 +31,37 @@ const toastNotification = document.getElementById('toast-notification')
 const toastMessage = document.getElementById('toast-message')
 let toastTimer = null
 
-export function showToast(msg) {
+export function showToast(msg, type = 'success') {
   if (!toastNotification || !toastMessage) return
   if (toastTimer) clearTimeout(toastTimer)
   
+  const toastIcon = document.getElementById('toast-icon')
   toastMessage.textContent = msg
-  toastNotification.classList.remove('opacity-0', '-translate-y-4', 'pointer-events-none')
-  toastNotification.classList.add('opacity-100', 'translate-y-0', 'pointer-events-auto')
+
+  if (type === 'error') {
+    toastNotification.className = "fixed top-6 right-6 z-[9999] max-w-md bg-gradient-to-r from-red-600 to-rose-700 text-white px-5 py-4 rounded-2xl border-2 border-rose-300 shadow-[0_15px_40px_rgba(225,29,72,0.5)] flex items-center gap-3.5 transform translate-y-0 opacity-100 transition-all duration-300 pointer-events-auto"
+    if (toastIcon) {
+      toastIcon.className = "w-8 h-8 rounded-full bg-white/20 text-white flex items-center justify-center flex-shrink-0 text-base font-black shadow-inner"
+      toastIcon.textContent = '✕'
+    }
+  } else if (type === 'info') {
+    toastNotification.className = "fixed top-6 right-6 z-[9999] max-w-md bg-gradient-to-r from-amber-600 to-yellow-600 text-white px-5 py-4 rounded-2xl border-2 border-amber-300 shadow-[0_15px_40px_rgba(245,158,11,0.5)] flex items-center gap-3.5 transform translate-y-0 opacity-100 transition-all duration-300 pointer-events-auto"
+    if (toastIcon) {
+      toastIcon.className = "w-8 h-8 rounded-full bg-white/20 text-white flex items-center justify-center flex-shrink-0 text-base font-black animate-spin"
+      toastIcon.textContent = '⟳'
+    }
+  } else {
+    toastNotification.className = "fixed top-6 right-6 z-[9999] max-w-md bg-gradient-to-r from-emerald-600 to-teal-700 text-white px-5 py-4 rounded-2xl border-2 border-emerald-300 shadow-[0_15px_40px_rgba(16,185,129,0.5)] flex items-center gap-3.5 transform translate-y-0 opacity-100 transition-all duration-300 pointer-events-auto"
+    if (toastIcon) {
+      toastIcon.className = "w-8 h-8 rounded-full bg-white/20 text-white flex items-center justify-center flex-shrink-0 text-base font-black shadow-inner"
+      toastIcon.textContent = '✓'
+    }
+  }
   
   toastTimer = setTimeout(() => {
     toastNotification.classList.add('opacity-0', '-translate-y-4', 'pointer-events-none')
     toastNotification.classList.remove('opacity-100', 'translate-y-0', 'pointer-events-auto')
-  }, 3200)
+  }, 4000)
 }
 
 window.showToast = showToast
