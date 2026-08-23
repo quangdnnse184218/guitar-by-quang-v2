@@ -122,95 +122,7 @@ export function showToast(msg, type = 'success') {
 
 window.showToast = showToast
 
-// ==========================================================================
-// MODAL CONTROLS
-// ==========================================================================
-function toggleModal(modalId, show = true) {
-  const modal = document.getElementById(modalId)
-  if (!modal) return
-  const dialog = modal.querySelector('.modal-dialog')
 
-  if (show) {
-    modal.classList.remove('opacity-0', 'pointer-events-none')
-    modal.classList.add('opacity-100', 'pointer-events-auto')
-    if (dialog) {
-      dialog.classList.remove('scale-95')
-      dialog.classList.add('scale-100')
-    }
-  } else {
-    modal.classList.add('opacity-0', 'pointer-events-none')
-    modal.classList.remove('opacity-100', 'pointer-events-auto')
-    if (dialog) {
-      dialog.classList.add('scale-95')
-      dialog.classList.remove('scale-100')
-    }
-    // Pause video if closing video modal
-    const video = modal.querySelector('video')
-    if (video) video.pause()
-  }
-}
-
-function openDemoVideoModal(song) {
-  const modalTitle = document.getElementById('modal-video-title')
-  const videoPlayer = document.getElementById('demo-video-player')
-
-  if (modalTitle) modalTitle.textContent = `Demo: ${song.title} - ${song.singer || 'Various Artists'}`
-  
-  let videoUrl = song.video_demo_url || song.video_demo || `/assets/${song.id}demo.mp4`
-  if (videoUrl && !videoUrl.startsWith('/') && !videoUrl.startsWith('http')) {
-    videoUrl = '/' + videoUrl;
-  }
-  
-  if (videoPlayer) {
-    videoPlayer.src = videoUrl
-    videoPlayer.load()
-    // Automatically play the video when modal opens
-    const playPromise = videoPlayer.play()
-    if (playPromise !== undefined) {
-      playPromise.catch(error => console.log('Auto-play prevented:', error))
-    }
-  }
-
-  toggleModal('video-demo-modal', true)
-}
-
-function openMaterialModal(song) {
-  const title = document.getElementById('material-modal-title')
-  const meta = document.getElementById('material-modal-meta')
-  const link = document.getElementById('material-download-link')
-
-  if (title) title.textContent = song.title
-  if (meta) meta.textContent = `${song.singer || 'Various Artists'} • ${song.category || 'Fingerstyle'} • ${song.level || 'Cơ bản'}`
-  if (link) {
-    link.href = song.drive_url || '#'
-    if (!song.drive_url) {
-      link.onclick = (e) => {
-        e.preventDefault()
-        showToast('Tài liệu đang được cập nhật thêm, vui lòng liên hệ Zalo 0326.768.885!', 'info')
-      }
-    } else {
-      link.onclick = null
-    }
-  }
-
-  toggleModal('material-modal', true)
-}
-
-// Bind modal close buttons
-document.getElementById('close-video-modal')?.addEventListener('click', () => toggleModal('video-demo-modal', false))
-document.getElementById('close-video-modal-btn')?.addEventListener('click', () => toggleModal('video-demo-modal', false))
-document.getElementById('close-material-modal')?.addEventListener('click', () => toggleModal('material-modal', false))
-document.getElementById('close-material-btn')?.addEventListener('click', () => toggleModal('material-modal', false))
-
-// Close modals on backdrop click
-;['video-demo-modal', 'material-modal'].forEach(id => {
-  const modal = document.getElementById(id)
-  if (modal) {
-    modal.addEventListener('click', (e) => {
-      if (e.target === modal) toggleModal(id, false)
-    })
-  }
-})
 
 // ==========================================================================
 // TAB SWITCHING LOGIC
@@ -578,8 +490,10 @@ async function renderOverviewGears() {
 }
 
 // ==========================================================================
-// MODAL CONTROLS & GLOBAL ACTION HANDLERS
+// MODAL CONTROLS & GLOBAL ACTION HANDLERS (EXACTLY MATCHING GUEST LANDING PAGE)
 // ==========================================================================
+
+let activeCheckoutSyntax = ''
 
 function escapeHtml(str) {
   if (!str) return ''
@@ -591,63 +505,235 @@ function escapeHtml(str) {
     .replace(/'/g, '&#039;')
 }
 
-window.openCheckoutModal = function(songId) {
-  const song = allSongs.find(s => String(s.id) === String(songId))
-  if (!song) return
+export function toggleModal(modalId, show) {
+  const modal = document.getElementById(modalId)
+  if (!modal) return
+  const dialog = modal.querySelector('.modal-dialog')
 
-  // If user already bought this song or it's free, open material modal directly
-  if (purchasedSongIds.has(String(song.id)) || song.is_free) {
-    openMaterialModal(song)
-    return
+  if (show) {
+    modal.classList.remove('hidden')
+    requestAnimationFrame(() => {
+      modal.classList.remove('opacity-0', 'pointer-events-none')
+      modal.classList.add('opacity-100', 'pointer-events-auto')
+      if (dialog) {
+        dialog.classList.remove('scale-95')
+        dialog.classList.add('scale-100')
+      }
+      document.body.classList.add('modal-open')
+    })
+  } else {
+    modal.querySelectorAll('video').forEach(v => v.pause())
+    const iframe = modal.querySelector('iframe')
+    if (iframe) iframe.src = ''
+
+    modal.classList.add('opacity-0', 'pointer-events-none')
+    modal.classList.remove('opacity-100', 'pointer-events-auto')
+    if (dialog) {
+      dialog.classList.add('scale-95')
+      dialog.classList.remove('scale-100')
+    }
+    setTimeout(() => {
+      modal.classList.add('hidden')
+      document.body.classList.remove('modal-open')
+    }, 300)
   }
+}
 
-  const modal = document.getElementById('checkout-modal')
-  const titleEl = document.getElementById('checkout-tab-title')
-  const metaEl = document.getElementById('checkout-tab-meta')
-  const priceEl = document.getElementById('checkout-tab-price')
-  const videoEl = document.getElementById('checkout-modal-video')
+window.openMaterialModal = function openMaterialModal(song) {
+  if (!song) return
+  const modal = document.getElementById('material-modal')
+  const titleEl = document.getElementById('material-modal-title')
+  const metaEl = document.getElementById('material-modal-meta')
+  const linkEl = document.getElementById('material-download-link')
 
   if (titleEl) titleEl.textContent = song.title
   if (metaEl) metaEl.textContent = `${song.singer || 'Various Artists'} • ${song.category || 'Fingerstyle'} • ${song.level || 'Cơ bản'}`
-  if (priceEl) priceEl.textContent = song.price_formatted || song.price || '239.000 VNĐ'
+  if (linkEl) {
+    linkEl.href = song.drive_url || song.target_url || song.targetUrl || '#'
+  }
 
+  toggleModal('material-modal', true)
+}
+
+window.openCheckoutModal = function openCheckoutModal(tabId) {
+  const tab = allSongs.find(t => String(t.id) === String(tabId))
+  if (!tab) return
+
+  // If user already bought this song, open material modal directly
+  if (purchasedSongIds.has(String(tab.id))) {
+    window.openMaterialModal(tab)
+    return
+  }
+
+  const titleEl = document.getElementById('modal-tab-title')
+  const metaEl = document.getElementById('modal-tab-meta')
+  const priceEl = document.getElementById('modal-tab-price')
+  const syntaxEl = document.getElementById('modal-transfer-syntax')
+  const discountTag = document.getElementById('modal-discount-tag')
+  const levelEl = document.getElementById('modal-tab-level')
+  const tuningEl = document.getElementById('modal-tab-tuning')
+  const capoEl = document.getElementById('modal-tab-capo')
+  const tempoEl = document.getElementById('modal-tab-tempo')
+  const durationEl = document.getElementById('modal-tab-duration')
+  const videoEl = document.getElementById('checkout-modal-video')
+  const videoSrcEl = document.getElementById('checkout-modal-video-source')
+  const videoContainer = document.getElementById('checkout-modal-video-container')
+
+  if (titleEl) titleEl.textContent = tab.title
+  if (metaEl) metaEl.textContent = `Tuning: ${tab.tuning || 'Standard'} • Bản Video Tab chạy nốt đồng bộ với âm thanh đàn mộc thật và nhịp gõ`
+  if (priceEl) priceEl.textContent = tab.price_formatted || tab.price || '239.000 VNĐ'
+
+  if (levelEl) levelEl.textContent = tab.level || `${tab.level_num ?? tab.levelNum ?? 5}/10`
+  if (tuningEl) tuningEl.textContent = tab.tuning || 'Standard'
+  if (capoEl) capoEl.textContent = tab.capo || 'Không kẹp'
+  if (tempoEl) tempoEl.textContent = tab.tempo || '~95 BPM'
+  if (durationEl) durationEl.textContent = tab.duration || '03:30'
+
+  const discountNote = tab.discount_note || tab.discountNote || ''
+  if (discountTag) {
+    if (discountNote) {
+      discountTag.textContent = `(${discountNote})`
+      discountTag.classList.remove('hidden')
+    } else {
+      discountTag.classList.add('hidden')
+    }
+  }
+
+  const cleanSongCode = tab.title.replace(/[^a-zA-Z0-9]/g, '').toUpperCase().slice(0, 10)
+  activeCheckoutSyntax = `VIDEOTAB ${cleanSongCode}`
+  if (syntaxEl) syntaxEl.textContent = activeCheckoutSyntax
+
+  const videoDemo = tab.video_demo_url || tab.video_demo || tab.videoDemo || ''
+  if (videoEl && videoSrcEl && videoContainer) {
+    if (videoDemo) {
+      const cleanVideo = videoDemo.startsWith('/') ? videoDemo : '/' + videoDemo
+      videoSrcEl.src = cleanVideo
+      videoEl.load()
+      videoContainer.classList.remove('hidden')
+    } else {
+      videoContainer.classList.add('hidden')
+    }
+  }
+
+  toggleModal('checkout-modal', true)
+}
+
+window.openFreeTabModal = function openFreeTabModal(tabId) {
+  const tab = allSongs.find(t => String(t.id) === String(tabId))
+  if (!tab) return
+
+  const titleEl = document.getElementById('free-tab-modal-title')
+  const levelEl = document.getElementById('free-tab-modal-level')
+  const tuningEl = document.getElementById('free-tab-modal-tuning')
+  const durationEl = document.getElementById('free-tab-modal-duration')
+  const capoEl = document.getElementById('free-tab-modal-capo')
+  const tempoEl = document.getElementById('free-tab-modal-tempo')
+  const techContainer = document.getElementById('free-tab-modal-techniques')
+  const iframeEl = document.getElementById('free-tab-iframe')
+  const localVideoEl = document.getElementById('free-tab-local-video')
+  const backupLinkEl = document.getElementById('free-tab-backup-link')
+  const pdfBtn = document.getElementById('free-tab-pdf-btn')
+
+  if (titleEl) titleEl.textContent = tab.title
+  if (levelEl) levelEl.textContent = tab.level || `${tab.level_num ?? tab.levelNum ?? 5}/10`
+  if (tuningEl) tuningEl.textContent = tab.tuning || 'Standard'
+  if (durationEl) durationEl.textContent = tab.duration || '03:15'
+  if (capoEl) capoEl.textContent = tab.capo || 'Không kẹp'
+  if (tempoEl) tempoEl.textContent = tab.tempo || '~95 BPM'
+
+  if (techContainer) {
+    let techs = ['Tỉa ngón', 'Slap', 'Nail Attack']
+    if (tab.description) {
+      const descLower = tab.description.toLowerCase()
+      const detected = []
+      if (descLower.includes('slap')) detected.push('Slap')
+      if (descLower.includes('nail attack')) detected.push('Nail Attack')
+      if (descLower.includes('hammer') || descLower.includes('pull')) detected.push('Hammer-on / Pull-off')
+      if (descLower.includes('slide') || descLower.includes('vuốt')) detected.push('Slide (Vuốt dây)')
+      if (descLower.includes('rải') || descLower.includes('tỉa')) detected.push('Tỉa ngón / Rải')
+      if (descLower.includes('bass')) detected.push('Đi Bass')
+      if (detected.length > 0) techs = detected
+    }
+    techContainer.innerHTML = techs.map(t => `<span class="px-2.5 py-1 rounded-lg modal-inner-card text-text-primary text-[11px] font-semibold shadow-xs">${t}</span>`).join('')
+  }
+
+  const videoUrl = tab.target_url || tab.targetUrl || tab.video_demo_url || tab.video_demo || tab.videoDemo || ''
+  let isYouTube = false
+  let embedUrl = videoUrl
+
+  if (videoUrl.includes('youtube.com/watch?v=')) {
+    const videoId = videoUrl.split('watch?v=')[1]?.split('&')[0]
+    embedUrl = `https://www.youtube.com/embed/${videoId}?autoplay=1`
+    isYouTube = true
+  } else if (videoUrl.includes('youtu.be/')) {
+    const videoId = videoUrl.split('youtu.be/')[1]?.split('?')[0]
+    embedUrl = `https://www.youtube.com/embed/${videoId}?autoplay=1`
+    isYouTube = true
+  }
+
+  if (isYouTube && iframeEl) {
+    iframeEl.src = embedUrl
+    iframeEl.classList.remove('hidden')
+    if (localVideoEl) localVideoEl.classList.add('hidden')
+  } else if (tab.video_demo && localVideoEl) {
+    const cleanVideo = tab.video_demo.startsWith('/') ? tab.video_demo : '/' + tab.video_demo
+    localVideoEl.src = cleanVideo
+    localVideoEl.classList.remove('hidden')
+    if (iframeEl) iframeEl.classList.add('hidden')
+  } else if (iframeEl) {
+    iframeEl.src = ''
+    iframeEl.classList.add('hidden')
+    if (localVideoEl) localVideoEl.classList.add('hidden')
+  }
+
+  if (backupLinkEl) backupLinkEl.href = videoUrl || '#'
+
+  if (pdfBtn) {
+    const pdfUrl = tab.pdf_url || tab.pdfUrl || tab.drive_url
+    if (pdfUrl) {
+      pdfBtn.removeAttribute('disabled')
+      pdfBtn.href = pdfUrl
+      pdfBtn.target = '_blank'
+      pdfBtn.className = 'w-full py-3 rounded-2xl bg-warm-gradient hover:brightness-105 text-white font-extrabold text-xs transition-all shadow-md flex items-center justify-center gap-2 text-center cursor-pointer active:scale-95'
+      pdfBtn.innerHTML = `
+        <svg class="w-4 h-4 fill-none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>
+        <span>Tải file PDF Tab</span>
+      `
+    } else {
+      pdfBtn.setAttribute('disabled', 'true')
+      pdfBtn.removeAttribute('href')
+      pdfBtn.className = 'w-full py-3 rounded-2xl bg-glass-bg/40 border border-glass-border/50 text-text-faint font-semibold text-xs transition-all shadow-xs flex items-center justify-center gap-2 text-center cursor-not-allowed opacity-60 pointer-events-none'
+      pdfBtn.innerHTML = `
+        <svg class="w-4 h-4 text-text-muted" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+        <span>Tải file PDF (Đang cập nhật)</span>
+      `
+    }
+  }
+
+  toggleModal('free-tab-modal', true)
+}
+
+window.openVideoDemoModal = function openVideoDemoModal(title, videoSrc) {
+  if (!title || !videoSrc) return
+  const titleEl = document.getElementById('video-demo-title')
+  const videoEl = document.getElementById('demo-modal-video')
+  if (titleEl) titleEl.textContent = title
   if (videoEl) {
-    let vUrl = song.video_demo_url || song.video_demo || `/assets/${song.id}demo.mp4`
-    if (vUrl && !vUrl.startsWith('/') && !vUrl.startsWith('http')) vUrl = '/' + vUrl
-    videoEl.src = vUrl
+    videoEl.src = videoSrc
     videoEl.load()
+    videoEl.play().catch(() => {})
   }
-
-  if (modal) {
-    modal.classList.remove('hidden', 'opacity-0', 'pointer-events-none')
-    modal.classList.add('opacity-100', 'pointer-events-auto')
-  }
+  toggleModal('video-demo-modal', true)
 }
 
-window.openFreeTabModal = function(songId) {
-  const song = allSongs.find(s => String(s.id) === String(songId))
-  if (song) openDemoVideoModal(song)
-}
-
-window.openVideoDemoModal = function(title, videoUrl) {
-  const song = { title, video_demo_url: videoUrl }
-  openDemoVideoModal(song)
-}
-
-window.openImageModal = function(src, title, desc) {
-  const modal = document.getElementById('image-preview-modal')
-  const img = document.getElementById('image-modal-img')
+window.openImageModal = function openImageModal(src, title, caption) {
+  const imgEl = document.getElementById('image-modal-img')
   const titleEl = document.getElementById('image-modal-title')
-  const descEl = document.getElementById('image-modal-desc')
-
-  if (img) img.src = src
-  if (titleEl) titleEl.textContent = title || 'Ảnh chi tiết'
-  if (descEl) descEl.textContent = desc || ''
-
-  if (modal) {
-    modal.classList.remove('hidden', 'opacity-0', 'pointer-events-none')
-    modal.classList.add('opacity-100', 'pointer-events-auto')
-  }
+  const captionEl = document.getElementById('image-modal-caption')
+  if (imgEl && src) imgEl.src = src
+  if (titleEl && title) titleEl.textContent = title
+  if (captionEl && caption) captionEl.textContent = caption
+  toggleModal('image-preview-modal', true)
 }
 
 window.toggleFavoriteSong = async function(event, songId) {
@@ -683,20 +769,61 @@ window.toggleFavoriteSong = async function(event, songId) {
   }
 }
 
-// Close Modals Listeners
-document.getElementById('close-checkout-modal')?.addEventListener('click', () => {
-  const modal = document.getElementById('checkout-modal')
-  if (modal) {
-    modal.classList.add('hidden', 'opacity-0', 'pointer-events-none')
-    modal.classList.remove('opacity-100', 'pointer-events-auto')
+// Modal Event Listeners
+document.getElementById('close-checkout-modal')?.addEventListener('click', () => toggleModal('checkout-modal', false))
+document.getElementById('close-free-tab-modal')?.addEventListener('click', () => toggleModal('free-tab-modal', false))
+document.getElementById('close-video-demo-modal')?.addEventListener('click', () => toggleModal('video-demo-modal', false))
+document.getElementById('close-image-modal')?.addEventListener('click', () => toggleModal('image-preview-modal', false))
+document.getElementById('close-material-modal')?.addEventListener('click', () => toggleModal('material-modal', false))
+document.getElementById('close-material-btn')?.addEventListener('click', () => toggleModal('material-modal', false))
+
+// Copy STK
+document.getElementById('copy-stk-btn')?.addEventListener('click', async () => {
+  try {
+    await navigator.clipboard.writeText('03970202801')
+    showToast('Đã sao chép số tài khoản TpBank: 03970202801 📋')
+  } catch (e) {
+    showToast('Không thể sao chép tự động.')
   }
 })
 
-document.getElementById('close-image-modal')?.addEventListener('click', () => {
-  const modal = document.getElementById('image-preview-modal')
+// Copy Syntax
+document.getElementById('copy-syntax-btn')?.addEventListener('click', async () => {
+  try {
+    await navigator.clipboard.writeText(activeCheckoutSyntax || 'VIDEOTAB TAB')
+    showToast(`Đã sao chép cú pháp: ${activeCheckoutSyntax} 📋`)
+  } catch (e) {
+    showToast('Không thể sao chép tự động.')
+  }
+})
+
+// Social Share
+document.getElementById('share-zalo-btn')?.addEventListener('click', () => {
+  const url = encodeURIComponent(window.location.href)
+  window.open(`https://sp.zalo.me/share_inline?link=${url}`, '_blank')
+})
+
+document.getElementById('share-fb-btn')?.addEventListener('click', () => {
+  const url = encodeURIComponent(window.location.href)
+  window.open(`https://www.facebook.com/sharer/sharer.php?u=${url}`, '_blank')
+})
+
+// Modal backdrop clicks
+;['checkout-modal', 'free-tab-modal', 'video-demo-modal', 'image-preview-modal', 'material-modal'].forEach(id => {
+  const modal = document.getElementById(id)
   if (modal) {
-    modal.classList.add('hidden', 'opacity-0', 'pointer-events-none')
-    modal.classList.remove('opacity-100', 'pointer-events-auto')
+    modal.addEventListener('click', (e) => {
+      if (e.target === modal) toggleModal(id, false)
+    })
+  }
+})
+
+// Escape key to close all modals
+window.addEventListener('keydown', (e) => {
+  if (e.key === 'Escape') {
+    ;['checkout-modal', 'free-tab-modal', 'video-demo-modal', 'image-preview-modal', 'material-modal'].forEach(id => {
+      toggleModal(id, false)
+    })
   }
 })
 
@@ -872,7 +999,9 @@ function attachSongCardEvents(container) {
     btn.addEventListener('click', () => {
       const id = btn.dataset.id
       const song = allSongs.find(s => String(s.id) === String(id))
-      if (song) openDemoVideoModal(song)
+      if (song) {
+        window.openVideoDemoModal(song.title, song.video_demo_url || song.video_demo || (`/assets/${song.id}demo.mp4`))
+      }
     })
   })
 
