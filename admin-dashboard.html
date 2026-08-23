@@ -1,21 +1,372 @@
 <!DOCTYPE html>
-<html lang="vi">
+<html lang="vi" data-theme="light">
   <head>
     <meta charset="UTF-8" />
-    <link rel="icon" type="image/svg+xml" href="/vite.svg" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Bảng Điều Khiển Quản Trị — Guitar By Quang</title>
-    <meta name="description" content="Quản lý danh sách bài hát, đơn hàng, gear và nội dung website Guitar By Quang." />
+    <title>Bảng Quản Trị Hệ Thống — Guitar By Quang</title>
+    <meta name="robots" content="noindex, nofollow" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+    
     <link rel="stylesheet" href="/src/style.css" />
   </head>
-  <body class="bg-bg-base text-text-primary min-h-screen flex flex-col items-center justify-center p-6">
-    <div id="app" class="w-full max-w-4xl text-center">
-      <main class="glass-card p-10 flex flex-col items-center gap-4">
-        <span class="text-xs uppercase tracking-widest px-3 py-1 rounded-full bg-accent-primary/20 text-accent-primary border border-accent-primary/30 font-bold">Bảng Điều Khiển</span>
-        <h1 class="text-3xl sm:text-4xl font-bold tracking-tight text-text-primary">Admin Dashboard</h1>
-        <p class="text-text-muted text-sm sm:text-base">Admin Dashboard — Đang xây dựng</p>
-      </main>
+  <body class="bg-bg-base text-text-primary min-h-screen relative overflow-x-hidden flex flex-col justify-between">
+    <div class="grain-overlay" aria-hidden="true"></div>
+
+    <!-- Top Admin Header -->
+    <header class="sticky top-0 z-40 bg-bg-base/95 backdrop-blur-md border-b border-glass-border px-4 sm:px-8 py-3.5 flex items-center justify-between shadow-xs">
+      <div class="flex items-center gap-3">
+        <div class="w-9 h-9 rounded-xl bg-warm-gradient text-white flex items-center justify-center font-black text-base shadow-sm">
+          🎸
+        </div>
+        <div>
+          <div class="flex items-center gap-2">
+            <span class="font-extrabold text-text-primary text-base tracking-tight">Guitar By Quang</span>
+            <span class="px-2 py-0.5 rounded-md bg-accent-primary/15 text-accent-primary text-[10px] font-black uppercase tracking-wider border border-accent-primary/30">ADMIN</span>
+          </div>
+          <span id="admin-user-email" class="text-xs text-text-muted font-mono font-semibold hidden sm:inline-block">Đang tải phiên...</span>
+        </div>
+      </div>
+
+      <div class="flex items-center gap-2 sm:gap-3">
+        <!-- Theme Toggle Button -->
+        <button id="theme-toggle-btn" aria-label="Chuyển đổi giao diện Sáng / Tối" title="Chuyển đổi giao diện" class="p-2 rounded-xl bg-glass-bg hover:bg-glass-bg-hover text-text-primary border border-glass-border flex items-center justify-center transition-colors cursor-pointer">
+          <svg class="sun-icon w-4 h-4 text-accent-primary" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="12" cy="12" r="4"></circle>
+            <path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M6.34 17.66l-1.41 1.41M19.07 4.93l-1.41 1.41"></path>
+          </svg>
+          <svg class="moon-icon w-4 h-4 text-accent-primary" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z"></path>
+          </svg>
+        </button>
+
+        <a href="/" target="_blank" rel="noopener noreferrer" class="px-3.5 py-1.5 rounded-full bg-glass-bg hover:bg-glass-bg-hover text-text-primary border border-glass-border text-xs font-bold transition-colors flex items-center gap-1.5 shadow-xs">
+          <span>Xem Website</span>
+          <svg class="w-3.5 h-3.5 text-text-muted" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"/></svg>
+        </a>
+        <button id="logout-btn" class="px-3.5 py-1.5 rounded-full bg-rose-500/10 hover:bg-rose-500/20 text-rose-600 dark:text-rose-400 border border-rose-500/30 text-xs font-bold transition-colors flex items-center gap-1.5 cursor-pointer shadow-xs">
+          <span>Đăng xuất</span>
+          <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"/></svg>
+        </button>
+      </div>
+    </header>
+
+    <!-- Main Content Area -->
+    <main class="flex-grow max-w-7xl w-full mx-auto px-4 sm:px-8 py-8 space-y-6">
+
+      <!-- Top Switcher & Actions -->
+      <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 pb-4 border-b border-glass-border">
+        <div>
+          <h1 class="text-2xl sm:text-3xl font-extrabold text-text-primary tracking-tight">Bảng Điều Khiển Admin</h1>
+          <p class="text-xs sm:text-sm text-text-muted font-medium mt-0.5">Quản lý kho bài hát, video tab và bộ đồ nghề hiển thị trên website</p>
+        </div>
+
+        <!-- Navigation Tabs Switcher -->
+        <div class="inline-flex p-1 rounded-2xl glass-card border border-glass-border shadow-xs">
+          <button type="button" id="tab-nav-songs" class="px-4 py-2 rounded-xl text-xs font-bold transition-all cursor-pointer bg-warm-gradient text-white shadow-xs">
+            🎵 Kho Video Tab
+          </button>
+          <button type="button" id="tab-nav-gears" class="px-4 py-2 rounded-xl text-xs font-bold transition-all cursor-pointer text-text-muted hover:text-text-primary">
+            🛠️ Bộ Đồ Nghề
+          </button>
+        </div>
+      </div>
+
+      <!-- ============================================================ -->
+      <!-- VIEW 1: QUẢN LÝ KHO VIDEO TAB                                -->
+      <!-- ============================================================ -->
+      <div id="section-songs" class="space-y-6">
+        <!-- Action Bar -->
+        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+          <div>
+            <h2 class="text-lg font-bold text-text-primary">Danh Sách Video Tab</h2>
+            <p class="text-xs text-text-muted font-medium">Đồng bộ trực tiếp với cơ sở dữ liệu Supabase table <code class="bg-black/5 dark:bg-white/10 px-1.5 py-0.5 rounded font-mono text-[11px]">songs</code></p>
+          </div>
+
+          <button id="add-song-btn" class="px-5 py-2.5 rounded-full bg-warm-gradient hover:brightness-105 text-white font-bold text-xs sm:text-sm transition-all shadow-glow active:scale-95 flex items-center justify-center gap-2 cursor-pointer">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M12 4v16m8-8H4"/></svg>
+            <span>Thêm Bài Hát Mới</span>
+          </button>
+        </div>
+
+        <!-- Quick Stats Cards -->
+        <div class="grid grid-cols-2 sm:grid-cols-4 gap-4">
+          <div class="glass-card border border-glass-border shadow-sm rounded-2xl p-4 flex items-center justify-between">
+            <div>
+              <span class="text-[10px] font-bold text-text-muted uppercase tracking-wider block">Tổng bài hát</span>
+              <span id="stat-total-songs" class="text-2xl font-extrabold text-text-primary mt-0.5 block font-mono">0</span>
+            </div>
+            <div class="w-10 h-10 rounded-xl bg-accent-primary/15 text-accent-primary flex items-center justify-center text-xl">🎵</div>
+          </div>
+          <div class="glass-card border border-glass-border shadow-sm rounded-2xl p-4 flex items-center justify-between">
+            <div>
+              <span class="text-[10px] font-bold text-text-muted uppercase tracking-wider block">Tab Miễn Phí</span>
+              <span id="stat-free-songs" class="text-2xl font-extrabold text-emerald-600 dark:text-emerald-400 mt-0.5 block font-mono">0</span>
+            </div>
+            <div class="w-10 h-10 rounded-xl bg-emerald-500/15 text-emerald-600 dark:text-emerald-400 flex items-center justify-center text-xl">🎁</div>
+          </div>
+          <div class="glass-card border border-glass-border shadow-sm rounded-2xl p-4 flex items-center justify-between">
+            <div>
+              <span class="text-[10px] font-bold text-text-muted uppercase tracking-wider block">Tab Có Phí</span>
+              <span id="stat-paid-songs" class="text-2xl font-extrabold text-accent-primary mt-0.5 block font-mono">0</span>
+            </div>
+            <div class="w-10 h-10 rounded-xl bg-accent-primary/15 text-accent-primary flex items-center justify-center text-xl">💎</div>
+          </div>
+          <div class="glass-card border border-glass-border shadow-sm rounded-2xl p-4 flex items-center justify-between">
+            <div>
+              <span class="text-[10px] font-bold text-text-muted uppercase tracking-wider block">Nổi Bật (Featured)</span>
+              <span id="stat-featured-songs" class="text-2xl font-extrabold text-amber-500 mt-0.5 block font-mono">0</span>
+            </div>
+            <div class="w-10 h-10 rounded-xl bg-amber-500/15 text-amber-500 flex items-center justify-center text-xl">⭐</div>
+          </div>
+        </div>
+
+        <!-- Filter & Search Bar -->
+        <div class="glass-card p-4 rounded-2xl border border-glass-border flex flex-col sm:flex-row items-center justify-between gap-3">
+          <div class="relative w-full sm:w-72">
+            <input id="admin-search-songs" type="text" placeholder="Tìm tên bài, ca sĩ, thể loại..." class="w-full pl-9 pr-4 py-2 rounded-xl bg-black/5 dark:bg-white/5 border border-glass-border text-xs text-text-primary placeholder:text-text-muted focus:outline-none focus:border-accent-primary" />
+            <svg class="w-4 h-4 text-text-muted absolute left-3 top-1/2 -translate-y-1/2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg>
+          </div>
+          <div class="flex items-center gap-2 w-full sm:w-auto">
+            <select id="admin-filter-category" class="px-3 py-2 rounded-xl bg-glass-bg border border-glass-border text-xs font-semibold text-text-primary cursor-pointer focus:outline-none">
+              <option value="all">Tất cả thể loại</option>
+              <option value="Fingerstyle">Fingerstyle</option>
+              <option value="Nhạc Trẻ">Nhạc Trẻ</option>
+              <option value="Acoustic">Acoustic</option>
+              <option value="Cover">Cover</option>
+            </select>
+            <select id="admin-filter-type" class="px-3 py-2 rounded-xl bg-glass-bg border border-glass-border text-xs font-semibold text-text-primary cursor-pointer focus:outline-none">
+              <option value="all">Tất cả loại</option>
+              <option value="free">Miễn phí (Free)</option>
+              <option value="paid">Có phí</option>
+            </select>
+          </div>
+        </div>
+
+        <!-- Songs Data Table / Grid -->
+        <div class="glass-card rounded-3xl border border-glass-border overflow-hidden shadow-sm">
+          <div class="overflow-x-auto">
+            <table class="w-full text-left text-xs text-text-primary">
+              <thead class="bg-black/5 dark:bg-white/5 text-[11px] font-mono uppercase tracking-wider text-text-muted border-b border-glass-border">
+                <tr>
+                  <th class="py-3.5 px-4">Bài Hát</th>
+                  <th class="py-3.5 px-3">Thể Loại</th>
+                  <th class="py-3.5 px-3">Độ Khó</th>
+                  <th class="py-3.5 px-3">Tuning / Capo</th>
+                  <th class="py-3.5 px-3">Loại / Giá</th>
+                  <th class="py-3.5 px-3">Nổi Bật</th>
+                  <th class="py-3.5 px-4 text-right">Thao Tác</th>
+                </tr>
+              </thead>
+              <tbody id="admin-songs-tbody" class="divide-y divide-glass-border">
+                <!-- Populated dynamically via admin-dashboard.js -->
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      <!-- ============================================================ -->
+      <!-- VIEW 2: QUẢN LÝ BỘ ĐỒ NGHỀ (GEARS)                          -->
+      <!-- ============================================================ -->
+      <div id="section-gears" class="space-y-6 hidden">
+        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+          <div>
+            <h2 class="text-lg font-bold text-text-primary">Danh Sách Đồ Nghề & Phụ Kiện</h2>
+            <p class="text-xs text-text-muted font-medium">Đồng bộ trực tiếp với cơ sở dữ liệu Supabase table <code class="bg-black/5 dark:bg-white/10 px-1.5 py-0.5 rounded font-mono text-[11px]">gears</code></p>
+          </div>
+
+          <button id="add-gear-btn" class="px-5 py-2.5 rounded-full bg-warm-gradient hover:brightness-105 text-white font-bold text-xs sm:text-sm transition-all shadow-glow active:scale-95 flex items-center justify-center gap-2 cursor-pointer">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M12 4v16m8-8H4"/></svg>
+            <span>Thêm Gear Mới</span>
+          </button>
+        </div>
+
+        <!-- Gears Data Table -->
+        <div class="glass-card rounded-3xl border border-glass-border overflow-hidden shadow-sm">
+          <div class="overflow-x-auto">
+            <table class="w-full text-left text-xs text-text-primary">
+              <thead class="bg-black/5 dark:bg-white/5 text-[11px] font-mono uppercase tracking-wider text-text-muted border-b border-glass-border">
+                <tr>
+                  <th class="py-3.5 px-4">Ảnh & Tên Thiết Bị</th>
+                  <th class="py-3.5 px-3">Phân Loại</th>
+                  <th class="py-3.5 px-3">Mô Tả Ngắn</th>
+                  <th class="py-3.5 px-3">Giá Hiển Thị</th>
+                  <th class="py-3.5 px-4 text-right">Thao Tác</th>
+                </tr>
+              </thead>
+              <tbody id="admin-gears-tbody" class="divide-y divide-glass-border">
+                <!-- Populated dynamically via admin-dashboard.js -->
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+    </main>
+
+    <!-- ============================================================ -->
+    <!-- MODAL: THÊM / SỬA BÀI HÁT                                    -->
+    <!-- ============================================================ -->
+    <div id="song-modal" class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/75 backdrop-blur-sm opacity-0 pointer-events-none transition-opacity duration-300">
+      <div class="modal-dialog relative w-full max-w-2xl glass-card rounded-3xl p-6 sm:p-8 shadow-2xl border border-glass-border max-h-[90vh] overflow-y-auto scale-95 transition-transform duration-300">
+        <button id="close-song-modal" class="absolute top-5 right-5 p-2 rounded-full text-text-muted hover:text-text-primary hover:bg-glass-bg-hover transition-colors cursor-pointer">
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+        </button>
+        <h3 id="song-modal-title" class="text-xl font-extrabold text-text-primary mb-4">Thêm Bài Hát Mới</h3>
+        
+        <form id="song-form" class="space-y-4">
+          <input type="hidden" id="song-id" />
+          
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <div class="space-y-1">
+              <label class="text-xs font-bold text-text-primary">Tên Bài Hát *</label>
+              <input type="text" id="song-title" required placeholder="VD: Nàng Thơ" class="w-full px-3.5 py-2.5 rounded-xl bg-black/5 dark:bg-white/5 border border-glass-border text-xs text-text-primary focus:outline-none focus:border-accent-primary" />
+            </div>
+            <div class="space-y-1">
+              <label class="text-xs font-bold text-text-primary">Ca Sĩ / Tác Giả</label>
+              <input type="text" id="song-singer" placeholder="VD: Hoàng Dũng" class="w-full px-3.5 py-2.5 rounded-xl bg-black/5 dark:bg-white/5 border border-glass-border text-xs text-text-primary focus:outline-none focus:border-accent-primary" />
+            </div>
+          </div>
+
+          <div class="grid grid-cols-2 sm:grid-cols-4 gap-3">
+            <div class="space-y-1">
+              <label class="text-xs font-bold text-text-primary">Thể Loại</label>
+              <input type="text" id="song-category" placeholder="Fingerstyle" class="w-full px-3 py-2 rounded-xl bg-black/5 dark:bg-white/5 border border-glass-border text-xs text-text-primary focus:outline-none focus:border-accent-primary" />
+            </div>
+            <div class="space-y-1">
+              <label class="text-xs font-bold text-text-primary">Độ Khó (1-10)</label>
+              <input type="number" id="song-level" min="1" max="10" value="5" class="w-full px-3 py-2 rounded-xl bg-black/5 dark:bg-white/5 border border-glass-border text-xs text-text-primary focus:outline-none focus:border-accent-primary" />
+            </div>
+            <div class="space-y-1">
+              <label class="text-xs font-bold text-text-primary">Tuning</label>
+              <input type="text" id="song-tuning" placeholder="Standard" class="w-full px-3 py-2 rounded-xl bg-black/5 dark:bg-white/5 border border-glass-border text-xs text-text-primary focus:outline-none focus:border-accent-primary" />
+            </div>
+            <div class="space-y-1">
+              <label class="text-xs font-bold text-text-primary">Capo (Ngăn)</label>
+              <input type="number" id="song-capo" min="0" max="12" value="0" class="w-full px-3 py-2 rounded-xl bg-black/5 dark:bg-white/5 border border-glass-border text-xs text-text-primary focus:outline-none focus:border-accent-primary" />
+            </div>
+          </div>
+
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <div class="space-y-1">
+              <label class="text-xs font-bold text-text-primary">YouTube ID hoặc Link</label>
+              <input type="text" id="song-youtube-id" placeholder="VD: dQw4w9WgXcQ" class="w-full px-3.5 py-2.5 rounded-xl bg-black/5 dark:bg-white/5 border border-glass-border text-xs text-text-primary focus:outline-none focus:border-accent-primary" />
+            </div>
+            <div class="space-y-1">
+              <label class="text-xs font-bold text-text-primary">Demo Video URL</label>
+              <input type="text" id="song-demo-url" placeholder="/assets/demo.mp4" class="w-full px-3.5 py-2.5 rounded-xl bg-black/5 dark:bg-white/5 border border-glass-border text-xs text-text-primary focus:outline-none focus:border-accent-primary" />
+            </div>
+          </div>
+
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <div class="space-y-1">
+              <label class="text-xs font-bold text-text-primary">Giá Bán (VND)</label>
+              <input type="number" id="song-price" placeholder="239000" class="w-full px-3.5 py-2.5 rounded-xl bg-black/5 dark:bg-white/5 border border-glass-border text-xs text-text-primary focus:outline-none focus:border-accent-primary" />
+            </div>
+            <div class="space-y-1">
+              <label class="text-xs font-bold text-text-primary">Link Tải Tab / PDF</label>
+              <input type="text" id="song-tab-url" placeholder="https://..." class="w-full px-3.5 py-2.5 rounded-xl bg-black/5 dark:bg-white/5 border border-glass-border text-xs text-text-primary focus:outline-none focus:border-accent-primary" />
+            </div>
+          </div>
+
+          <div class="flex items-center gap-6 pt-2">
+            <label class="flex items-center gap-2 cursor-pointer text-xs font-bold text-text-primary">
+              <input type="checkbox" id="song-is-free" class="w-4 h-4 rounded text-accent-primary accent-accent-primary" />
+              <span>Bài hát Miễn Phí (Free Tab)</span>
+            </label>
+            <label class="flex items-center gap-2 cursor-pointer text-xs font-bold text-text-primary">
+              <input type="checkbox" id="song-is-featured" class="w-4 h-4 rounded text-amber-500 accent-amber-500" />
+              <span>Ghim Trang Chủ (Featured)</span>
+            </label>
+          </div>
+
+          <div class="pt-4 border-t border-glass-border flex justify-end gap-3">
+            <button type="button" id="cancel-song-modal-btn" class="px-5 py-2.5 rounded-full bg-glass-bg hover:bg-glass-bg-hover text-text-muted hover:text-text-primary text-xs font-bold transition-colors cursor-pointer border border-glass-border">
+              Hủy
+            </button>
+            <button type="submit" id="save-song-btn" class="px-6 py-2.5 rounded-full bg-warm-gradient hover:brightness-105 text-white font-bold text-xs transition-all shadow-sm cursor-pointer">
+              Lưu Bài Hát
+            </button>
+          </div>
+        </form>
+      </div>
     </div>
+
+    <!-- ============================================================ -->
+    <!-- MODAL: THÊM / SỬA GEAR                                       -->
+    <!-- ============================================================ -->
+    <div id="gear-modal" class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/75 backdrop-blur-sm opacity-0 pointer-events-none transition-opacity duration-300">
+      <div class="modal-dialog relative w-full max-w-lg glass-card rounded-3xl p-6 sm:p-8 shadow-2xl border border-glass-border max-h-[90vh] overflow-y-auto scale-95 transition-transform duration-300">
+        <button id="close-gear-modal" class="absolute top-5 right-5 p-2 rounded-full text-text-muted hover:text-text-primary hover:bg-glass-bg-hover transition-colors cursor-pointer">
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
+        </button>
+        <h3 id="gear-modal-title" class="text-xl font-extrabold text-text-primary mb-4">Thêm Gear Mới</h3>
+        
+        <form id="gear-form" class="space-y-4">
+          <input type="hidden" id="gear-id" />
+          
+          <div class="space-y-1">
+            <label class="text-xs font-bold text-text-primary">Tên Thiết Bị / Phụ Kiện *</label>
+            <input type="text" id="gear-name" required placeholder="VD: Capo Guitar G7th" class="w-full px-3.5 py-2.5 rounded-xl bg-black/5 dark:bg-white/5 border border-glass-border text-xs text-text-primary focus:outline-none focus:border-accent-primary" />
+          </div>
+
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <div class="space-y-1">
+              <label class="text-xs font-bold text-text-primary">Phân Loại</label>
+              <input type="text" id="gear-category" placeholder="Phụ kiện" class="w-full px-3.5 py-2.5 rounded-xl bg-black/5 dark:bg-white/5 border border-glass-border text-xs text-text-primary focus:outline-none focus:border-accent-primary" />
+            </div>
+            <div class="space-y-1">
+              <label class="text-xs font-bold text-text-primary">Giá Hiển Thị</label>
+              <input type="text" id="gear-price" placeholder="850.000đ" class="w-full px-3.5 py-2.5 rounded-xl bg-black/5 dark:bg-white/5 border border-glass-border text-xs text-text-primary focus:outline-none focus:border-accent-primary" />
+            </div>
+          </div>
+
+          <div class="space-y-1">
+            <label class="text-xs font-bold text-text-primary">Mô Tả Ngắn</label>
+            <textarea id="gear-description" rows="3" placeholder="Mô tả chất lượng, tính năng nổi bật..." class="w-full px-3.5 py-2.5 rounded-xl bg-black/5 dark:bg-white/5 border border-glass-border text-xs text-text-primary focus:outline-none focus:border-accent-primary resize-none"></textarea>
+          </div>
+
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <div class="space-y-1">
+              <label class="text-xs font-bold text-text-primary">Link Mua / Tư Vấn</label>
+              <input type="text" id="gear-link" placeholder="https://zalo.me/..." class="w-full px-3.5 py-2.5 rounded-xl bg-black/5 dark:bg-white/5 border border-glass-border text-xs text-text-primary focus:outline-none focus:border-accent-primary" />
+            </div>
+            <div class="space-y-1">
+              <label class="text-xs font-bold text-text-primary">Đường Dẫn Ảnh</label>
+              <input type="text" id="gear-image" placeholder="/assets/capo.jpg" class="w-full px-3.5 py-2.5 rounded-xl bg-black/5 dark:bg-white/5 border border-glass-border text-xs text-text-primary focus:outline-none focus:border-accent-primary" />
+            </div>
+          </div>
+
+          <div class="pt-4 border-t border-glass-border flex justify-end gap-3">
+            <button type="button" id="cancel-gear-modal-btn" class="px-5 py-2.5 rounded-full bg-glass-bg hover:bg-glass-bg-hover text-text-muted hover:text-text-primary text-xs font-bold transition-colors cursor-pointer border border-glass-border">
+              Hủy
+            </button>
+            <button type="submit" id="save-gear-btn" class="px-6 py-2.5 rounded-full bg-warm-gradient hover:brightness-105 text-white font-bold text-xs transition-all shadow-sm cursor-pointer">
+              Lưu Gear
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+
+    <!-- OVERLAYS & TOAST -->
+    <div id="toast-notification" class="fixed top-6 right-6 z-50 max-w-sm glass-card px-5 py-3.5 rounded-2xl border border-accent-primary/40 shadow-2xl flex items-center gap-3 transform -translate-y-4 opacity-0 transition-all duration-300 pointer-events-none" role="alert">
+      <div id="toast-icon" class="w-6 h-6 rounded-full bg-accent-primary/20 text-accent-primary flex items-center justify-center flex-shrink-0 text-xs font-bold">
+        ✓
+      </div>
+      <p id="toast-message" class="text-sm font-medium text-text-primary"></p>
+    </div>
+
+    <!-- Footer -->
+    <footer class="py-5 text-center text-xs text-text-muted border-t border-glass-border">
+      © 2026 Guitar By Quang • Bảng quản trị CMS Supabase
+    </footer>
+
     <script type="module" src="/src/admin-dashboard.js"></script>
   </body>
 </html>

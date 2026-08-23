@@ -5,13 +5,13 @@ export default defineConfig({
   build: {
     rollupOptions: {
       input: {
-        main: resolve(__dirname, 'index.html'),
-        khoTab: resolve(__dirname, 'kho-tab.html'),
-        congCu: resolve(__dirname, 'cong-cu.html'),
-        metronome: resolve(__dirname, 'metronome.html'),
-        cuaToi: resolve(__dirname, 'cua-toi.html'),
-        adminLogin: resolve(__dirname, 'admin-login.html'),
-        adminDashboard: resolve(__dirname, 'admin-dashboard.html'),
+        main: resolve(import.meta.dirname, 'index.html'),
+        khoTab: resolve(import.meta.dirname, 'kho-tab.html'),
+        congCu: resolve(import.meta.dirname, 'cong-cu.html'),
+        metronome: resolve(import.meta.dirname, 'metronome.html'),
+        cuaToi: resolve(import.meta.dirname, 'cua-toi.html'),
+        adminLogin: resolve(import.meta.dirname, 'admin-login.html'),
+        adminDashboard: resolve(import.meta.dirname, 'admin-dashboard.html'),
       }
     }
   }

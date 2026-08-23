@@ -94,3 +94,9 @@ export function toggleCompleted(songId) {
   saveArrayToStorage(COMPLETED_KEY, list);
   return nextState;
 }
+
+// Aliases for compatibility
+export const getFavoriteIds = getFavorites;
+export const getCompletedIds = getCompleted;
+
+

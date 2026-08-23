@@ -1,21 +1,102 @@
 <!DOCTYPE html>
-<html lang="vi">
+<html lang="vi" data-theme="light">
   <head>
     <meta charset="UTF-8" />
-    <link rel="icon" type="image/svg+xml" href="/vite.svg" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Đăng Nhập Quản Trị — Guitar By Quang</title>
-    <meta name="description" content="Đăng nhập bảng điều khiển quản trị hệ thống Guitar By Quang." />
+    <meta name="robots" content="noindex, nofollow" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+    
     <link rel="stylesheet" href="/src/style.css" />
   </head>
-  <body class="bg-bg-base text-text-primary min-h-screen flex flex-col items-center justify-center p-6">
-    <div id="app" class="w-full max-w-md text-center">
-      <main class="glass-card p-10 flex flex-col items-center gap-4">
-        <span class="text-xs uppercase tracking-widest px-3 py-1 rounded-full bg-danger/20 text-danger border border-danger/30 font-medium">Bảo Mật</span>
-        <h1 class="text-3xl sm:text-4xl font-bold tracking-tight text-text-primary">Admin Đăng Nhập</h1>
-        <p class="text-text-muted text-sm sm:text-base">Admin Login — Đang xây dựng</p>
-      </main>
-    </div>
+  <body class="bg-bg-base text-text-primary min-h-screen relative flex flex-col justify-between overflow-x-hidden">
+    <div class="grain-overlay" aria-hidden="true"></div>
+
+    <!-- Header -->
+    <header class="py-5 px-6 sm:px-12 flex items-center justify-between border-b border-glass-border">
+      <a href="/" class="flex items-center gap-3 group">
+        <div class="w-9 h-9 rounded-xl bg-warm-gradient text-white flex items-center justify-center font-black text-base shadow-sm group-hover:scale-105 transition-transform">
+          🎸
+        </div>
+        <div>
+          <span class="text-base font-extrabold text-text-primary tracking-tight block leading-tight">Guitar By Quang</span>
+          <span class="text-[11px] font-semibold text-text-muted">Hệ Thống Quản Trị Nội Bộ</span>
+        </div>
+      </a>
+      <a href="/" class="text-xs font-bold text-text-muted hover:text-accent-primary transition-colors flex items-center gap-1">
+        <span>← Về trang chủ</span>
+      </a>
+    </header>
+
+    <!-- Main Login Card -->
+    <main class="flex-grow flex items-center justify-center p-4 sm:p-6 my-auto">
+      <div class="w-full max-w-md glass-card rounded-3xl p-6 sm:p-8 border border-glass-border shadow-2xl space-y-6">
+        
+        <div class="text-center space-y-2">
+          <div class="w-14 h-14 mx-auto rounded-2xl bg-accent-primary/15 text-accent-primary border border-accent-primary/30 flex items-center justify-center text-2xl shadow-inner">
+            🔐
+          </div>
+          <h1 class="text-2xl font-extrabold text-text-primary">Đăng Nhập Quản Trị</h1>
+          <p class="text-xs text-text-muted font-medium">Khu vực dành riêng cho Quản trị viên Guitar By Quang</p>
+        </div>
+
+        <!-- Error Alert Box -->
+        <div id="login-error" class="hidden p-3.5 rounded-2xl bg-rose-500/15 border border-rose-500/30 text-rose-600 dark:text-rose-400 text-xs font-semibold leading-relaxed flex items-center gap-2.5">
+          <svg class="w-4 h-4 flex-shrink-0 text-rose-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+          <span id="login-error-text">Lỗi đăng nhập</span>
+        </div>
+
+        <!-- Login Form -->
+        <form id="admin-login-form" class="space-y-4" novalidate>
+          <div class="space-y-1.5">
+            <label for="admin-email" class="text-xs font-bold text-text-primary block">Email Quản Trị</label>
+            <input
+              type="email"
+              id="admin-email"
+              required
+              placeholder="admin@guitarbyquang.com"
+              class="w-full px-4 py-3 rounded-2xl bg-black/5 dark:bg-white/5 border border-glass-border text-sm text-text-primary placeholder:text-text-muted focus:outline-none focus:border-accent-primary transition-colors"
+            />
+          </div>
+
+          <div class="space-y-1.5">
+            <label for="admin-password" class="text-xs font-bold text-text-primary block">Mật Khẩu</label>
+            <input
+              type="password"
+              id="admin-password"
+              required
+              placeholder="••••••••"
+              class="w-full px-4 py-3 rounded-2xl bg-black/5 dark:bg-white/5 border border-glass-border text-sm text-text-primary placeholder:text-text-muted focus:outline-none focus:border-accent-primary transition-colors"
+            />
+          </div>
+
+          <button
+            type="submit"
+            id="login-submit-btn"
+            class="w-full py-3.5 rounded-full bg-warm-gradient hover:brightness-105 text-white font-bold text-sm transition-all shadow-glow active:scale-[0.98] flex items-center justify-center gap-2 cursor-pointer mt-2"
+          >
+            <span id="btn-text">Đăng Nhập Vào Dashboard →</span>
+            <div id="btn-spinner" class="hidden w-4 h-4 border-2 border-white/40 border-t-white rounded-full animate-spin"></div>
+          </button>
+        </form>
+
+        <div class="p-3.5 rounded-2xl bg-black/5 dark:bg-white/5 border border-glass-border text-[11px] text-text-muted leading-relaxed font-medium text-center">
+          🔒 Dữ liệu được bảo vệ an toàn bởi Supabase Authentication.
+        </div>
+
+      </div>
+    </main>
+
+    <!-- Footer -->
+    <footer class="py-5 text-center text-xs text-text-muted border-t border-glass-border">
+      © 2026 Guitar By Quang • Khu vực quản trị nội bộ
+    </footer>
+
     <script type="module" src="/src/admin-login.js"></script>
   </body>
 </html>
