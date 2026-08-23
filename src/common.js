@@ -495,8 +495,101 @@ export function initNavActiveSpy() {
   }
 }
 
+/**
+ * Triggers video fullscreen and requests screen orientation lock to landscape on mobile.
+ */
+export function openLandscapeFullscreen(videoTarget) {
+  const video = typeof videoTarget === 'string' ? document.getElementById(videoTarget) : videoTarget
+  if (!video) return
+
+  const tryLockLandscape = () => {
+    try {
+      if (window.screen && window.screen.orientation && typeof window.screen.orientation.lock === 'function') {
+        window.screen.orientation.lock('landscape').catch(() => {
+          // Orientation lock might require user gesture or not supported on some browsers
+        })
+      }
+    } catch (e) {}
+  }
+
+  // Request fullscreen across browsers
+  if (video.requestFullscreen) {
+    video.requestFullscreen().then(tryLockLandscape).catch(() => {})
+  } else if (video.webkitRequestFullscreen) {
+    video.webkitRequestFullscreen()
+    tryLockLandscape()
+  } else if (video.webkitEnterFullscreen) {
+    // iOS Safari
+    video.webkitEnterFullscreen()
+    tryLockLandscape()
+  } else if (video.mozRequestFullScreen) {
+    video.mozRequestFullScreen()
+    tryLockLandscape()
+  } else if (video.msRequestFullscreen) {
+    video.msRequestFullscreen()
+    tryLockLandscape()
+  }
+}
+
+window.openLandscapeFullscreen = openLandscapeFullscreen
+
+/**
+ * Automatically locks orientation to landscape when any video enters fullscreen.
+ */
+export function initVideoOrientationHandlers() {
+  const handleFullscreenChange = () => {
+    const isFullscreen = document.fullscreenElement || document.webkitFullscreenElement || document.mozFullScreenElement || document.msFullscreenElement
+    if (isFullscreen && isFullscreen.tagName === 'VIDEO') {
+      try {
+        if (window.screen && window.screen.orientation && typeof window.screen.orientation.lock === 'function') {
+          window.screen.orientation.lock('landscape').catch(() => {})
+        }
+      } catch (e) {}
+    } else {
+      try {
+        if (window.screen && window.screen.orientation && typeof window.screen.orientation.unlock === 'function') {
+          window.screen.orientation.unlock()
+        }
+      } catch (e) {}
+    }
+  }
+
+  document.addEventListener('fullscreenchange', handleFullscreenChange)
+  document.addEventListener('webkitfullscreenchange', handleFullscreenChange)
+  document.addEventListener('mozfullscreenchange', handleFullscreenChange)
+  document.addEventListener('MSFullscreenChange', handleFullscreenChange)
+
+  const attachVideoEvents = () => {
+    document.querySelectorAll('video').forEach(video => {
+      if (!video._orientationAttached) {
+        video._orientationAttached = true
+        video.addEventListener('webkitbeginfullscreen', () => {
+          try {
+            if (window.screen && window.screen.orientation && typeof window.screen.orientation.lock === 'function') {
+              window.screen.orientation.lock('landscape').catch(() => {})
+            }
+          } catch (e) {}
+        })
+        video.addEventListener('webkitendfullscreen', () => {
+          try {
+            if (window.screen && window.screen.orientation && typeof window.screen.orientation.unlock === 'function') {
+              window.screen.orientation.unlock()
+            }
+          } catch (e) {}
+        })
+      }
+    })
+  }
+
+  attachVideoEvents()
+  // Ensure dynamically created or modal videos get attached
+  setInterval(attachVideoEvents, 1500)
+}
+
 document.addEventListener("DOMContentLoaded", () => {
   initAuthHeader()
   initNavActiveSpy()
+  initVideoOrientationHandlers()
 })
 initNavActiveSpy()
+initVideoOrientationHandlers()

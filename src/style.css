@@ -1043,5 +1043,18 @@ input[type="range"].metro-slider::-webkit-slider-thumb:hover {
   margin: 0 !important;
 }
 
+/* Fullscreen Landscape Video Optimization */
+video:fullscreen,
+video:-webkit-full-screen,
+video:-moz-full-screen,
+video:-ms-fullscreen {
+  width: 100vw !important;
+  height: 100vh !important;
+  max-width: 100vw !important;
+  max-height: 100vh !important;
+  object-fit: contain !important;
+  background: #000000 !important;
+}
+
 
 
