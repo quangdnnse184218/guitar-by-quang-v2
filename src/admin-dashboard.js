@@ -8,7 +8,6 @@ import { supabase } from './lib/supabase.js'
 import { initThemeToggle } from './theme-toggle.js'
 import { fetchAllSongs, saveSong, removeSong, reorderAllSongs } from './lib/songs-service.js'
 import { fetchAllGears, DEFAULT_GEARS, saveGear, removeGear, reorderAllGears } from './lib/gears-service.js'
-import { generateReadableCode, createRedemptionCode, listCodesForSong } from './lib/redemption-service.js'
 
 initThemeToggle()
 
