@@ -280,9 +280,6 @@ export function renderGears(gears) {
 export function initFaq() {
   const faqItems = Array.from(document.querySelectorAll('#faq .faq-item'))
   const filterBtns = document.querySelectorAll('[data-faq-filter]')
-  const toggleAllBtn = document.getElementById('faq-toggle-all-btn')
-  const toggleIcon = document.getElementById('faq-toggle-icon')
-  const toggleText = document.getElementById('faq-toggle-text')
   const showMoreWrap = document.getElementById('faq-show-more-wrap')
   const showMoreBtn = document.getElementById('faq-show-more-btn')
   const showMoreText = document.getElementById('faq-show-more-text')
@@ -292,8 +289,7 @@ export function initFaq() {
 
   let currentCategory = 'all'
   let isShowMore = false
-  let isAllExpanded = false
-  const INITIAL_LIMIT = 4
+  const INITIAL_LIMIT = 2
 
   function updateFaqDisplay() {
     const matchingItems = faqItems.filter(item => {
@@ -346,46 +342,6 @@ export function initFaq() {
     showMoreBtn.addEventListener('click', () => {
       isShowMore = !isShowMore
       updateFaqDisplay()
-    })
-  }
-
-  // 3. Nút Mở rộng tất cả / Thu gọn tất cả
-  if (toggleAllBtn && toggleText) {
-    toggleAllBtn.addEventListener('click', () => {
-      const visibleFaqItems = faqItems.filter(item => !item.classList.contains('hidden'))
-      
-      isAllExpanded = !isAllExpanded
-
-      visibleFaqItems.forEach(item => {
-        item.open = isAllExpanded
-      })
-
-      if (isAllExpanded) {
-        toggleText.textContent = 'Thu gọn tất cả'
-        if (toggleIcon) toggleIcon.classList.add('rotate-180')
-      } else {
-        toggleText.textContent = 'Mở rộng tất cả'
-        if (toggleIcon) toggleIcon.classList.remove('rotate-180')
-      }
-    })
-
-    // Lắng nghe từng item để đồng bộ text nút Mở rộng tất cả
-    faqItems.forEach(item => {
-      item.addEventListener('toggle', () => {
-        const visibleItems = faqItems.filter(i => !i.classList.contains('hidden'))
-        const allOpen = visibleItems.length > 0 && visibleItems.every(i => i.open)
-        const allClosed = visibleItems.every(i => !i.open)
-
-        if (allOpen) {
-          isAllExpanded = true
-          toggleText.textContent = 'Thu gọn tất cả'
-          if (toggleIcon) toggleIcon.classList.add('rotate-180')
-        } else if (allClosed) {
-          isAllExpanded = false
-          toggleText.textContent = 'Mở rộng tất cả'
-          if (toggleIcon) toggleIcon.classList.remove('rotate-180')
-        }
-      })
     })
   }
 

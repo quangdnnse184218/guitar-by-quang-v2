@@ -598,9 +598,6 @@ async function renderOverviewGears() {
 export function initFaq() {
   const faqItems = Array.from(document.querySelectorAll('#faq .faq-item'))
   const filterBtns = document.querySelectorAll('[data-faq-filter]')
-  const toggleAllBtn = document.getElementById('faq-toggle-all-btn')
-  const toggleIcon = document.getElementById('faq-toggle-icon')
-  const toggleText = document.getElementById('faq-toggle-text')
   const showMoreWrap = document.getElementById('faq-show-more-wrap')
   const showMoreBtn = document.getElementById('faq-show-more-btn')
   const showMoreText = document.getElementById('faq-show-more-text')
@@ -610,8 +607,7 @@ export function initFaq() {
 
   let currentCategory = 'all'
   let isShowMore = false
-  let isAllExpanded = false
-  const INITIAL_LIMIT = 4
+  const INITIAL_LIMIT = 2
 
   function updateFaqDisplay() {
     const matchingItems = faqItems.filter(item => {
@@ -658,20 +654,6 @@ export function initFaq() {
       updateFaqDisplay()
     })
   })
-
-  // Mở rộng / Thu gọn tất cả
-  if (toggleAllBtn) {
-    toggleAllBtn.addEventListener('click', () => {
-      isAllExpanded = !isAllExpanded
-      faqItems.forEach(item => {
-        if (!item.classList.contains('hidden')) {
-          item.open = isAllExpanded
-        }
-      })
-      if (toggleText) toggleText.textContent = isAllExpanded ? 'Thu gọn tất cả' : 'Mở rộng tất cả'
-      if (toggleIcon) toggleIcon.classList.toggle('rotate-180', isAllExpanded)
-    })
-  }
 
   // Nút xem thêm
   if (showMoreBtn) {
