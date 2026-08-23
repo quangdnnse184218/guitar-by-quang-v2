@@ -6,8 +6,8 @@
 
 import { supabase } from './lib/supabase.js'
 import { initThemeToggle } from './theme-toggle.js'
-import { fetchAllSongs } from './lib/songs-service.js'
-import { fetchAllGears, DEFAULT_GEARS } from './lib/gears-service.js'
+import { fetchAllSongs, saveSong, removeSong, reorderAllSongs } from './lib/songs-service.js'
+import { fetchAllGears, DEFAULT_GEARS, saveGear, removeGear, reorderAllGears } from './lib/gears-service.js'
 
 initThemeToggle()
 
@@ -122,7 +122,7 @@ async function checkAuth() {
     }
     return true
   } catch (err) {
-    console.error('[admin-dashboard] Auth check error:', err)
+    console.error('Auth verification error:', err)
     window.location.replace('/admin-login.html')
     return false
   }
@@ -134,15 +134,22 @@ async function checkAuth() {
 
 async function loadSongs() {
   songsList = await fetchAllSongs()
-  updateSongStats()
+  updateStats()
   renderSongsTable()
 }
 
-function updateSongStats() {
-  if (statTotalSongs) statTotalSongs.textContent = songsList.length
-  if (statFreeSongs) statFreeSongs.textContent = songsList.filter(s => (s.is_free ?? s.isFree ?? false)).length
-  if (statPaidSongs) statPaidSongs.textContent = songsList.filter(s => !(s.is_free ?? s.isFree ?? false)).length
-  if (statFeaturedSongs) statFeaturedSongs.textContent = songsList.filter(s => (s.is_featured ?? s.isFeatured ?? false)).length
+function updateStats() {
+  if (!songsList) return
+
+  const total = songsList.length
+  const free = songsList.filter(s => s.is_free ?? s.isFree).length
+  const paid = total - free
+  const featured = songsList.filter(s => s.is_featured ?? s.isFeatured).length
+
+  if (statTotalSongs) statTotalSongs.textContent = total
+  if (statFreeSongs) statFreeSongs.textContent = free
+  if (statPaidSongs) statPaidSongs.textContent = paid
+  if (statFeaturedSongs) statFeaturedSongs.textContent = featured
 }
 
 function renderSongsTable() {
@@ -150,19 +157,7 @@ function renderSongsTable() {
 
   let filtered = [...songsList]
 
-  // Filter Category
-  if (songCategoryFilter !== 'all') {
-    filtered = filtered.filter(s => (s.category || '').toLowerCase() === songCategoryFilter.toLowerCase())
-  }
-
-  // Filter Type
-  if (songTypeFilter === 'free') {
-    filtered = filtered.filter(s => (s.is_free ?? s.isFree ?? false))
-  } else if (songTypeFilter === 'paid') {
-    filtered = filtered.filter(s => !(s.is_free ?? s.isFree ?? false))
-  }
-
-  // Search
+  // Filter Search
   if (songSearchQuery.trim()) {
     const q = songSearchQuery.toLowerCase().trim()
     filtered = filtered.filter(s => 
@@ -170,6 +165,18 @@ function renderSongsTable() {
       (s.singer && s.singer.toLowerCase().includes(q)) ||
       (s.category && s.category.toLowerCase().includes(q))
     )
+  }
+
+  // Filter Category
+  if (songCategoryFilter !== 'all') {
+    filtered = filtered.filter(s => (s.category || 'Fingerstyle').toLowerCase() === songCategoryFilter.toLowerCase())
+  }
+
+  // Filter Type (Free / Paid)
+  if (songTypeFilter === 'free') {
+    filtered = filtered.filter(s => s.is_free ?? s.isFree)
+  } else if (songTypeFilter === 'paid') {
+    filtered = filtered.filter(s => !(s.is_free ?? s.isFree))
   }
 
   if (filtered.length === 0) {
@@ -189,7 +196,7 @@ function renderSongsTable() {
     const level = song.level_num ?? song.levelNum ?? 5
     const priceText = isFree 
       ? '<span class="px-2.5 py-1 rounded-full badge-semantic-success font-bold font-mono text-xs">FREE</span>' 
-      : (song.price ? `<span class="font-mono tabular-nums font-bold text-rose-600 dark:text-rose-400 text-xs">${song.price.toLocaleString('vi-VN')}đ</span>` : '<span class="text-xs text-rose-600 dark:text-rose-400 font-bold">Có phí</span>')
+      : (song.price ? `<span class="font-mono tabular-nums font-bold text-rose-600 dark:text-rose-400 text-xs">${Number(song.price).toLocaleString('vi-VN')}đ</span>` : '<span class="text-xs text-rose-600 dark:text-rose-400 font-bold">Có phí</span>')
     const currentOrder = song.order || (idx + 1)
     const isFirst = idx === 0
     const isLast = idx === filtered.length - 1
@@ -292,7 +299,6 @@ window.handleSaveSongPosition = async function(songId) {
   const orderedIds = list.map(s => s.id)
   showToast('Đang cập nhật vị trí...')
   
-  const { reorderAllSongs } = await import('./lib/songs-service.js')
   const res = await reorderAllSongs(orderedIds)
 
   if (res.success) {
@@ -315,7 +321,6 @@ window.handleMoveSong = async function(songId, direction) {
   list.splice(targetIdx, 0, movedSong)
 
   const orderedIds = list.map(s => s.id)
-  const { reorderAllSongs } = await import('./lib/songs-service.js')
   const res = await reorderAllSongs(orderedIds)
 
   if (res.success) {
@@ -346,9 +351,9 @@ window.editSong = function(id) {
   document.getElementById('song-tuning').value = song.tuning || 'Standard'
   document.getElementById('song-capo').value = song.capo ?? 0
   document.getElementById('song-youtube-id').value = song.youtube_id || song.youtubeId || ''
-  document.getElementById('song-demo-url').value = song.demo_video_url || song.demoVideoUrl || ''
-  document.getElementById('song-price').value = song.price || ''
-  document.getElementById('song-tab-url').value = song.tab_url || song.tabUrl || ''
+  document.getElementById('song-demo-url').value = song.demo_video_url || song.video_demo || song.videoDemo || song.demoVideoUrl || ''
+  document.getElementById('song-price').value = song.price ?? ''
+  document.getElementById('song-tab-url').value = song.tab_url || song.target_url || song.targetUrl || song.tabUrl || ''
   document.getElementById('song-is-free').checked = Boolean(song.is_free ?? song.isFree)
   document.getElementById('song-is-featured').checked = Boolean(song.is_featured ?? song.isFeatured)
 
@@ -362,14 +367,9 @@ window.deleteSong = async function(id, title) {
   }
 
   try {
-    const { error } = await supabase.from('songs').delete().eq('id', id)
-    if (error) {
-      showToast(`Lỗi khi xóa bài hát: ${error.message}`)
-      return
-    }
-
+    await removeSong(id)
     showToast(`✓ Đã xóa thành công bài hát "${title}"!`)
-    loadSongs()
+    await loadSongs()
   } catch (err) {
     showToast('Lỗi khi xóa bài hát.')
   }
@@ -381,38 +381,52 @@ if (songForm) {
 
     const songId = document.getElementById('song-id').value
     const isEdit = Boolean(songId)
+    const levelVal = Number(document.getElementById('song-level').value) || 5
+    const isFree = document.getElementById('song-is-free').checked
+    const isFeatured = document.getElementById('song-is-featured').checked
+    const priceVal = isFree ? 0 : (Number(document.getElementById('song-price').value) || 0)
+    const demoVideoVal = document.getElementById('song-demo-url').value.trim()
+    const tabUrlVal = document.getElementById('song-tab-url').value.trim()
+    const youtubeVal = document.getElementById('song-youtube-id').value.trim()
 
     const payload = {
       title: document.getElementById('song-title').value.trim(),
-      singer: document.getElementById('song-singer').value.trim(),
+      singer: document.getElementById('song-singer').value.trim() || 'Guitar By Quang',
       category: document.getElementById('song-category').value.trim() || 'Fingerstyle',
-      level_num: Number(document.getElementById('song-level').value) || 5,
+      level_num: levelVal,
+      levelNum: levelVal,
+      level: `${levelVal}/10`,
       tuning: document.getElementById('song-tuning').value.trim() || 'Standard',
       capo: Number(document.getElementById('song-capo').value) || 0,
-      youtube_id: document.getElementById('song-youtube-id').value.trim(),
-      demo_video_url: document.getElementById('song-demo-url').value.trim(),
-      price: Number(document.getElementById('song-price').value) || null,
-      tab_url: document.getElementById('song-tab-url').value.trim(),
-      is_free: document.getElementById('song-is-free').checked,
-      is_featured: document.getElementById('song-is-featured').checked,
+      youtube_id: youtubeVal,
+      demo_video_url: demoVideoVal,
+      video_demo: demoVideoVal,
+      has_demo: Boolean(demoVideoVal),
+      hasDemo: Boolean(demoVideoVal),
+      price: priceVal,
+      price_formatted: isFree ? 'Miễn phí' : `${priceVal.toLocaleString('vi-VN')}đ`,
+      priceFormatted: isFree ? 'Miễn phí' : `${priceVal.toLocaleString('vi-VN')}đ`,
+      tab_url: tabUrlVal,
+      target_url: tabUrlVal,
+      targetUrl: tabUrlVal,
+      is_free: isFree,
+      isFree: isFree,
+      is_featured: isFeatured,
+      isFeatured: isFeatured,
       updated_at: new Date().toISOString()
     }
 
     try {
-      if (isEdit) {
-        const { error } = await supabase.from('songs').update(payload).eq('id', songId)
-        if (error) throw error
-        showToast('✓ Đã cập nhật bài hát thành công!')
+      showToast('Đang lưu bài hát...')
+      const res = await saveSong(payload, isEdit, songId)
+      
+      if (res.success) {
+        showToast(isEdit ? '✓ Đã cập nhật bài hát thành công!' : '✓ Đã thêm bài hát mới thành công!')
+        toggleModal(songModal, false)
+        await loadSongs()
       } else {
-        payload.created_at = new Date().toISOString()
-        payload.order = songsList.length + 1
-        const { error } = await supabase.from('songs').insert([payload])
-        if (error) throw error
-        showToast('✓ Đã thêm bài hát mới thành công!')
+        showToast(`Lỗi khi lưu: ${res.warning || 'Không thể lưu'}`)
       }
-
-      toggleModal(songModal, false)
-      loadSongs()
     } catch (err) {
       showToast(`Lỗi khi lưu bài hát: ${err.message}`)
     }
@@ -448,9 +462,9 @@ function renderGearsTable() {
     const isLast = idx === gearsList.length - 1
     const name = gear.name || gear.title || 'Món đồ nghề'
     const image = gear.image_url || gear.image || '/assets/avatar.jpg'
-    const category = gear.category || 'Thiết bị'
-    const description = gear.description || ''
-    const price = gear.price || gear.footerText || 'Liên hệ'
+    const category = gear.category || 'Phụ kiện'
+    const price = gear.price || 'Liên hệ'
+    const description = gear.description || 'Chưa có mô tả'
 
     return `
       <tr class="hover:bg-black/5 dark:hover:bg-white/5 transition-colors" data-id="${gear.id}">
@@ -544,7 +558,6 @@ window.handleSaveGearPosition = async function(gearId) {
   const orderedIds = list.map(g => g.id)
   showToast('Đang cập nhật vị trí...')
   
-  const { reorderAllGears } = await import('./lib/gears-service.js')
   const res = await reorderAllGears(orderedIds)
 
   if (res.success) {
@@ -568,7 +581,6 @@ window.handleMoveGear = async function(gearId, direction) {
   list.splice(targetIdx, 0, movedGear)
 
   const orderedIds = list.map(g => g.id)
-  const { reorderAllGears } = await import('./lib/gears-service.js')
   const res = await reorderAllGears(orderedIds)
 
   if (res.success) {
@@ -610,14 +622,9 @@ window.deleteGear = async function(id, name) {
   }
 
   try {
-    const { error } = await supabase.from('gears').delete().eq('id', id)
-    if (error) {
-      showToast(`Lỗi khi xóa: ${error.message}`)
-      return
-    }
-
+    await removeGear(id)
     showToast(`✓ Đã xóa gear "${name}" thành công!`)
-    loadGears()
+    await loadGears()
   } catch (err) {
     showToast('Lỗi khi xóa gear.')
   }
@@ -632,27 +639,28 @@ if (gearForm) {
 
     const payload = {
       name: document.getElementById('gear-name').value.trim(),
+      title: document.getElementById('gear-name').value.trim(),
       category: document.getElementById('gear-category').value.trim() || 'Phụ kiện',
       price: document.getElementById('gear-price').value.trim(),
       description: document.getElementById('gear-description').value.trim(),
       link: document.getElementById('gear-link').value.trim(),
-      image_url: document.getElementById('gear-image').value.trim()
+      buy_url: document.getElementById('gear-link').value.trim(),
+      buyUrl: document.getElementById('gear-link').value.trim(),
+      image_url: document.getElementById('gear-image').value.trim() || '/assets/avatar.jpg',
+      image: document.getElementById('gear-image').value.trim() || '/assets/avatar.jpg'
     }
 
     try {
-      if (isEdit) {
-        const { error } = await supabase.from('gears').update(payload).eq('id', gearId)
-        if (error) throw error
-        showToast('✓ Đã cập nhật gear thành công!')
-      } else {
-        payload.order = gearsList.length + 1
-        const { error } = await supabase.from('gears').insert([payload])
-        if (error) throw error
-        showToast('✓ Đã thêm gear mới thành công!')
-      }
+      showToast('Đang lưu gear...')
+      const res = await saveGear(payload, isEdit, gearId)
 
-      toggleModal(gearModal, false)
-      loadGears()
+      if (res.success) {
+        showToast(isEdit ? '✓ Đã cập nhật gear thành công!' : '✓ Đã thêm gear mới thành công!')
+        toggleModal(gearModal, false)
+        await loadGears()
+      } else {
+        showToast(`Lỗi khi lưu: ${res.warning || 'Không thể lưu'}`)
+      }
     } catch (err) {
       showToast(`Lỗi khi lưu gear: ${err.message}`)
     }

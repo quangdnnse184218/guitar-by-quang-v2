@@ -80,7 +80,7 @@ export async function fetchAllGears() {
       if (local) {
         try {
           const parsed = JSON.parse(local)
-          if (Array.isArray(parsed) && parsed.length > 0) return parsed
+          if (Array.isArray(parsed) && parsed.length > 0) return parsed.sort((a, b) => (a.order || 99) - (b.order || 99))
         } catch (e) {
           console.warn('[gears-service] Error parsing local gears:', e)
         }
@@ -97,11 +97,92 @@ export async function fetchAllGears() {
     if (local) {
       try {
         const parsed = JSON.parse(local)
-        if (Array.isArray(parsed) && parsed.length > 0) return parsed
+        if (Array.isArray(parsed) && parsed.length > 0) return parsed.sort((a, b) => (a.order || 99) - (b.order || 99))
       } catch (e) {}
     }
     return DEFAULT_GEARS
   }
+}
+
+/**
+ * Save (Insert or Update) a gear item with full Supabase & LocalStorage sync
+ */
+export async function saveGear(payload, isEdit = false, gearId = null) {
+  let all = []
+  const local = localStorage.getItem('gbq_gears')
+  if (local) {
+    try { all = JSON.parse(local) } catch (e) {}
+  }
+  if (!all || all.length === 0) all = [...DEFAULT_GEARS]
+
+  let savedRecord = null
+  let supabaseError = null
+
+  // 1. Try Supabase write
+  try {
+    if (isEdit && gearId) {
+      const { data, error } = await supabase
+        .from('gears')
+        .update(payload)
+        .eq('id', gearId)
+        .select()
+        
+      if (error) {
+        supabaseError = error
+      } else if (data && data.length > 0) {
+        savedRecord = data[0]
+      }
+    } else {
+      const { data, error } = await supabase
+        .from('gears')
+        .insert([payload])
+        .select()
+        
+      if (error) {
+        supabaseError = error
+      } else if (data && data.length > 0) {
+        savedRecord = data[0]
+      }
+    }
+  } catch (e) {
+    supabaseError = e
+  }
+
+  // 2. Sync to LocalStorage
+  if (isEdit && gearId) {
+    const idx = all.findIndex(g => String(g.id) === String(gearId))
+    if (idx !== -1) {
+      all[idx] = { ...all[idx], ...payload, id: gearId }
+    }
+  } else {
+    const newId = savedRecord?.id || `gear-${Date.now()}`
+    all.push({ ...payload, id: newId, order: payload.order || (all.length + 1) })
+  }
+
+  localStorage.setItem('gbq_gears', JSON.stringify(all))
+  return { success: true, record: savedRecord, warning: supabaseError?.message }
+}
+
+/**
+ * Delete a gear from Supabase and LocalStorage
+ */
+export async function removeGear(gearId) {
+  try {
+    await supabase.from('gears').delete().eq('id', gearId)
+  } catch (e) {
+    console.warn('[gears-service] Supabase delete warning:', e)
+  }
+
+  let all = []
+  const local = localStorage.getItem('gbq_gears')
+  if (local) {
+    try { all = JSON.parse(local) } catch (e) {}
+  }
+  if (!all || all.length === 0) all = [...DEFAULT_GEARS]
+
+  all = all.filter(g => String(g.id) !== String(gearId))
+  localStorage.setItem('gbq_gears', JSON.stringify(all))
+  return { success: true }
 }
 
 /**
@@ -113,11 +194,43 @@ export async function reorderAllGears(orderedGearIds) {
       return { success: false, error: 'Danh sách gear không hợp lệ.' }
     }
 
-    const updates = orderedGearIds.map((id, index) => 
-      supabase.from('gears').update({ order: index + 1 }).eq('id', id)
-    )
+    // 1. Update Supabase
+    try {
+      const updates = orderedGearIds.map((id, index) => 
+        supabase.from('gears').update({ order: index + 1 }).eq('id', id)
+      )
+      await Promise.all(updates)
+    } catch (e) {
+      console.warn('[gears-service] Supabase reorder warning:', e)
+    }
 
-    await Promise.all(updates)
+    // 2. Update LocalStorage
+    let all = []
+    const local = localStorage.getItem('gbq_gears')
+    if (local) {
+      try { all = JSON.parse(local) } catch (e) {}
+    }
+    if (!all || all.length === 0) all = [...DEFAULT_GEARS]
+
+    const gearMap = new Map(all.map(g => [String(g.id), g]))
+    const newOrderedList = []
+
+    orderedGearIds.forEach((id, idx) => {
+      const g = gearMap.get(String(id))
+      if (g) {
+        g.order = idx + 1
+        newOrderedList.push(g)
+      }
+    })
+
+    all.forEach(g => {
+      if (!orderedGearIds.includes(g.id)) {
+        g.order = newOrderedList.length + 1
+        newOrderedList.push(g)
+      }
+    })
+
+    localStorage.setItem('gbq_gears', JSON.stringify(newOrderedList))
     return { success: true }
   } catch (error) {
     console.error('[gears-service] Lỗi khi cập nhật thứ tự gear:', error)
