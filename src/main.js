@@ -136,7 +136,7 @@ export function renderSongCard(tab, index, extraClass = '') {
 
   // 2. PAID CARD
   const priceFormatted = tab.price_formatted || tab.priceFormatted || '239.000đ'
-  const discountNote = tab.discount_note || tab.discountNote || ''
+  const discountNote = tab.discount_note || tab.discountNote || 'HSSV ƯU ĐÃI CÒN 179K'
   const hasDemo = tab.has_demo ?? tab.hasDemo ?? false
   const videoDemo = tab.video_demo || tab.videoDemo || ''
   const thumbnailBg = tab.thumbnail_bg || tab.thumbnailBg || 'from-[#C1602F] to-[#6E3B1F]'
@@ -144,7 +144,7 @@ export function renderSongCard(tab, index, extraClass = '') {
   const badgeHtml = `
     <div class="flex flex-col items-end gap-0.5 sm:gap-1">
       <span class="px-1.5 sm:px-2 py-0.5 rounded-full text-[8px] sm:text-[10px] font-black bg-rose-600 text-white shadow-sm uppercase tracking-wide font-mono tabular-nums">BÁN • ${priceFormatted}</span>
-      ${discountNote ? `<span class="text-[7px] sm:text-[9px] text-white bg-accent-primary px-1.5 py-0.5 rounded-full font-extrabold shadow-xs hidden sm:inline-block">${discountNote}</span>` : ''}
+      ${discountNote ? `<span class="text-[7px] sm:text-[9px] text-white bg-accent-primary px-1.5 py-0.5 rounded-full font-extrabold shadow-xs inline-block leading-none whitespace-nowrap">${discountNote}</span>` : ''}
     </div>
   `
 

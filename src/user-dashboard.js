@@ -416,7 +416,7 @@ function renderOverviewFeatured() {
                 <span class="bg-black/50 backdrop-blur px-1.5 sm:px-2 py-0.5 rounded-full text-white/95 text-[8px] sm:text-[10px] font-mono">${song.category || 'NHẠC VIỆT'}</span>
                 <div class="flex items-center gap-1 justify-end">
                   ${userActionGroup}
-                  <span class="px-1.5 sm:px-2 py-0.5 rounded-full text-[8px] sm:text-[10px] font-black bg-amber-500 text-white shadow-sm uppercase tracking-wide flex items-center gap-0.5">
+                  <span class="px-1.5 sm:px-2 py-0.5 rounded-full text-[8px] sm:text-[10px] font-black bg-emerald-600 text-white shadow-sm uppercase tracking-wide flex items-center gap-0.5">
                     <span>✓</span>
                     <span>ĐÃ SỞ HỮU</span>
                   </span>
@@ -477,9 +477,12 @@ function renderOverviewFeatured() {
           <div class="relative overflow-hidden rounded-xl sm:rounded-2xl aspect-[4/3] sm:aspect-[16/10] bg-gradient-to-br from-[#9a4b24] via-[#7d3b19] to-[#54240d] p-2 sm:p-3.5 flex flex-col justify-between text-white shadow-inner group-hover:scale-[1.02] transition-transform duration-500 ease-out">
             <div class="flex justify-between items-start text-xs uppercase font-bold tracking-wider">
               <span class="bg-black/50 backdrop-blur px-1.5 sm:px-2 py-0.5 rounded-full text-white/95 text-[8px] sm:text-[10px] font-mono">${song.category || 'NHẠC VIỆT'}</span>
-              <div class="flex items-center gap-1 justify-end">
+              <div class="flex items-start gap-1 justify-end">
                 ${userActionGroup}
-                <span class="px-1.5 sm:px-2 py-0.5 rounded-full text-[8px] sm:text-[10px] font-black bg-rose-600 text-white shadow-sm uppercase tracking-wide font-mono">BÁN • ${priceFormatted}</span>
+                <div class="flex flex-col items-end gap-0.5 sm:gap-1">
+                  <span class="px-1.5 sm:px-2 py-0.5 rounded-full text-[8px] sm:text-[10px] font-black bg-rose-600 text-white shadow-sm uppercase tracking-wide font-mono tabular-nums">BÁN • ${priceFormatted}</span>
+                  ${discountNote ? `<span class="text-[7px] sm:text-[9px] text-white bg-accent-primary px-1.5 py-0.5 rounded-full font-extrabold shadow-xs inline-block leading-none whitespace-nowrap">${discountNote}</span>` : ''}
+                </div>
               </div>
             </div>
 
@@ -1195,9 +1198,9 @@ function renderPurchases() {
       <div class="glass-card rounded-2xl sm:rounded-3xl p-3 sm:p-5 border border-amber-500/40 hover:border-amber-400 hover:shadow-xl transition-all flex flex-col justify-between group relative overflow-hidden bg-gradient-to-b from-amber-500/5 to-transparent" data-song-id="${song.id}">
         <div>
           <div class="flex items-center justify-between gap-1 sm:gap-2 mb-2 sm:mb-3">
-            <span class="px-2 sm:px-2.5 py-0.5 rounded-full text-[9px] sm:text-[10px] font-bold bg-amber-500/20 text-amber-600 dark:text-amber-300 border border-amber-500/40 flex items-center gap-1">
-              <span>💎</span>
-              <span>Đã Sở Hữu</span>
+            <span class="px-2 sm:px-2.5 py-0.5 rounded-full text-[9px] sm:text-[10px] font-black bg-emerald-600 text-white shadow-sm flex items-center gap-1 uppercase tracking-wide">
+              <span>✓</span>
+              <span>ĐÃ SỞ HỮU</span>
             </span>
             <span class="text-[9px] sm:text-[11px] font-mono font-bold text-text-muted">${song?.category || 'Fingerstyle'}</span>
           </div>
