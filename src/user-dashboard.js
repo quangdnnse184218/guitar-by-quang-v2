@@ -307,7 +307,7 @@ function updateCounters() {
 // ==========================================================================
 function renderOverviewFeatured() {
   if (!overviewFeaturedTabs) return
-  const featured = allSongs.slice(0, 3)
+  const featured = allSongs.slice(0, 4)
 
   if (featured.length === 0) {
     overviewFeaturedTabs.innerHTML = '<div class="p-8 text-center text-text-muted text-xs col-span-full">Chưa có bài hát nào trong kho.</div>'
@@ -324,15 +324,15 @@ function renderOverviewFeatured() {
 
     // Top action group: Favorite Heart Button + Check/View status
     const userActionGroup = `
-      <div class="flex items-center gap-1.5" onclick="event.stopPropagation();">
-        <button onclick="window.toggleFavoriteSong(event, '${song.id}')" class="btn-fav-song p-1.5 rounded-full bg-black/40 hover:bg-black/60 text-white transition-all cursor-pointer shadow-xs ${isFav ? 'text-rose-500 bg-black/70' : ''}" title="${isFav ? 'Bỏ yêu thích' : 'Thêm vào yêu thích'}">
-          <svg class="w-3.5 h-3.5 ${isFav ? 'fill-rose-500 stroke-rose-500' : 'fill-none stroke-current'}" viewBox="0 0 24 24" stroke-width="2">
+      <div class="flex items-center gap-1" onclick="event.stopPropagation();">
+        <button onclick="window.toggleFavoriteSong(event, '${song.id}')" class="btn-fav-song p-1 sm:p-1.5 rounded-full bg-black/40 hover:bg-black/60 text-white transition-all cursor-pointer shadow-xs ${isFav ? 'text-rose-500 bg-black/70' : ''}" title="${isFav ? 'Bỏ yêu thích' : 'Thêm vào yêu thích'}">
+          <svg class="w-3 h-3 sm:w-3.5 sm:h-3.5 ${isFav ? 'fill-rose-500 stroke-rose-500' : 'fill-none stroke-current'}" viewBox="0 0 24 24" stroke-width="2">
             <path stroke-linecap="round" stroke-linejoin="round" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"/>
           </svg>
         </button>
         ${isBought ? `
-          <span class="p-1.5 rounded-full bg-amber-500/80 text-white shadow-xs" title="Đã sở hữu bài hát này">
-            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/></svg>
+          <span class="p-1 sm:p-1.5 rounded-full bg-amber-500/80 text-white shadow-xs" title="Đã sở hữu bài hát này">
+            <svg class="w-3 h-3 sm:w-3.5 sm:h-3.5" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/></svg>
           </span>
         ` : ''}
       </div>
@@ -341,62 +341,59 @@ function renderOverviewFeatured() {
     // 1. FREE TAB CARD
     if (isFree) {
       return `
-        <div onclick="window.openFreeTabModal('${song.id}')" class="song-card glass-card card-interactive p-4 sm:p-5 rounded-2xl sm:rounded-3xl border border-glass-border flex flex-col justify-between space-y-3.5 sm:space-y-4 group cursor-pointer w-full" data-id="${song.id}">
-          <div class="space-y-3">
+        <div onclick="window.openFreeTabModal('${song.id}')" class="song-card glass-card card-interactive p-2.5 sm:p-4 rounded-2xl sm:rounded-3xl border border-glass-border flex flex-col justify-between space-y-2.5 sm:space-y-3.5 group cursor-pointer w-full" data-id="${song.id}">
+          <div class="space-y-2 sm:space-y-3">
             <!-- Thumbnail Visual (Emerald Green Gradient) -->
-            <div class="relative overflow-hidden rounded-xl sm:rounded-2xl aspect-[16/9] sm:aspect-[16/10] bg-gradient-to-br from-[#1E3A2F] via-[#2A4D3E] to-[#172A22] p-3 sm:p-4 flex flex-col justify-between text-white shadow-inner group-hover:scale-[1.02] transition-transform duration-500 ease-out">
+            <div class="relative overflow-hidden rounded-xl sm:rounded-2xl aspect-[16/10] bg-gradient-to-br from-[#1E3A2F] via-[#2A4D3E] to-[#172A22] p-2 sm:p-3.5 flex flex-col justify-between text-white shadow-inner group-hover:scale-[1.02] transition-transform duration-500 ease-out">
               <div class="flex justify-between items-start text-xs uppercase font-bold tracking-wider">
-                <span class="bg-black/50 backdrop-blur px-2.5 py-0.5 rounded-full text-white/95 text-[10px] font-mono">${song.category || 'Fingerstyle'}</span>
-                <div class="flex items-center gap-1.5 justify-end">
+                <span class="bg-black/50 backdrop-blur px-1.5 sm:px-2 py-0.5 rounded-full text-white/95 text-[8px] sm:text-[10px] font-mono">${song.category || 'Fingerstyle'}</span>
+                <div class="flex items-center gap-1 justify-end">
                   ${userActionGroup}
-                  <span class="px-2.5 py-0.5 rounded-full text-[10px] font-black bg-emerald-600 text-white shadow-sm uppercase tracking-wide">FREE</span>
+                  <span class="px-1.5 sm:px-2 py-0.5 rounded-full text-[8px] sm:text-[10px] font-black bg-emerald-600 text-white shadow-sm uppercase tracking-wide">FREE</span>
                 </div>
               </div>
 
               <!-- Center Play Demo Button -->
               <div class="my-auto text-center flex flex-col items-center justify-center">
-                <div class="w-10 h-10 sm:w-12 sm:h-12 rounded-full bg-white text-emerald-800 flex items-center justify-center shadow-lg transform group-hover:scale-110 transition-transform">
-                  <svg class="w-4 h-4 sm:w-5 sm:h-5 fill-current ml-0.5" viewBox="0 0 24 24">
+                <div class="w-8 h-8 sm:w-11 sm:h-11 rounded-full bg-white text-emerald-800 flex items-center justify-center shadow-lg transform group-hover:scale-110 transition-transform">
+                  <svg class="w-3.5 h-3.5 sm:w-5 sm:h-5 fill-current ml-0.5" viewBox="0 0 24 24">
                     <path d="M8 5v14l11-7z"/>
                   </svg>
                 </div>
-                <span class="text-[11px] font-bold mt-1.5 text-white/95 tracking-wide bg-black/45 px-2.5 py-0.5 rounded-full backdrop-blur-sm">Xem Tab Miễn Phí</span>
+                <span class="text-[9px] sm:text-[11px] font-bold mt-1 text-white/95 tracking-wide bg-black/45 px-2 py-0.5 rounded-full backdrop-blur-sm">Xem Tab Miễn Phí</span>
               </div>
 
               <div class="flex justify-between items-end text-xs text-white/95 font-semibold">
-                <span class="font-mono tabular-nums text-[11px]">${song.duration || '04:15'}</span>
-                <span class="text-white/80 text-[11px]">Tuning: ${song.tuning || 'Standard'}</span>
+                <span class="font-mono tabular-nums text-[9px] sm:text-[11px]">${song.duration || '04:15'}</span>
+                <span class="text-white/80 text-[8px] sm:text-[11px]">Tuning: ${song.tuning || 'Standard'}</span>
               </div>
             </div>
 
             <!-- Details -->
-            <div class="space-y-1.5">
-              <h3 class="text-base sm:text-xl font-bold text-text-primary group-hover:text-emerald-500 transition-colors leading-snug line-clamp-1">
+            <div class="space-y-1">
+              <h3 class="text-xs sm:text-base font-bold text-text-primary group-hover:text-emerald-500 transition-colors leading-tight line-clamp-1">
                 ${song.title}
               </h3>
 
-              <div class="space-y-1 pt-0.5">
-                <div class="flex items-center justify-between text-xs font-bold text-text-muted">
+              <div class="space-y-0.5 sm:space-y-1 pt-0.5">
+                <div class="flex items-center justify-between text-[10px] sm:text-xs font-bold text-text-muted">
                   <span>Độ khó: <strong class="text-emerald-500 font-mono tabular-nums">${song.level || (levelNum + '/10')}</strong></span>
-                  <span class="text-xs font-semibold text-text-muted">Tuning: ${song.tuning || 'Standard'}</span>
+                  <span class="text-[9px] sm:text-xs font-semibold text-text-muted hidden sm:inline">Tuning: ${song.tuning || 'Standard'}</span>
                 </div>
-                <div class="w-full bg-glass-bg rounded-full h-1.5 overflow-hidden border border-glass-border">
-                  <div class="bg-emerald-500 h-1.5 rounded-full transition-all duration-500" style="width: ${percent}%"></div>
+                <div class="w-full bg-glass-bg rounded-full h-1 sm:h-1.5 overflow-hidden border border-glass-border">
+                  <div class="bg-emerald-500 h-1 sm:h-1.5 rounded-full transition-all duration-500" style="width: ${percent}%"></div>
                 </div>
               </div>
 
-              <p class="text-xs text-text-muted font-medium leading-relaxed pt-0.5 line-clamp-2">
+              <p class="text-[10px] sm:text-xs text-text-muted font-medium leading-snug pt-0.5 line-clamp-2">
                 ${song.description || 'Bản tab guitar fingerstyle miễn phí kèm video hướng dẫn.'}
               </p>
             </div>
           </div>
 
-          <div class="pt-1.5 sm:pt-2">
-            <div class="w-full py-2 sm:py-2.5 rounded-full bg-emerald-500/15 border border-emerald-500/30 text-emerald-600 dark:text-emerald-400 font-bold text-xs transition-all shadow-xs flex items-center justify-center gap-1.5 active:scale-95 text-center cursor-pointer group-hover:bg-emerald-500/25">
-              <span>Xem Video Tab (Miễn phí)</span>
-              <svg class="w-3.5 h-3.5 transform group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M14 5l7 7m0 0l-7 7m7-7H3"></path>
-              </svg>
+          <div class="pt-1 sm:pt-2">
+            <div class="w-full py-1.5 sm:py-2.5 px-1.5 rounded-full bg-emerald-500/15 border border-emerald-500/30 text-emerald-600 dark:text-emerald-400 font-bold text-[10px] sm:text-xs transition-all shadow-xs flex items-center justify-center gap-1 active:scale-95 text-center cursor-pointer group-hover:bg-emerald-500/25">
+              <span class="truncate">Xem Video Tab (Free)</span>
             </div>
           </div>
         </div>
@@ -410,15 +407,15 @@ function renderOverviewFeatured() {
 
     if (isBought) {
       return `
-        <div onclick="window.navigateToPurchasesTab('${song.id}')" class="song-card glass-card card-interactive p-4 sm:p-5 flex flex-col justify-between space-y-3.5 sm:space-y-4 group cursor-pointer rounded-2xl sm:rounded-3xl border border-amber-500/40 hover:border-amber-400 hover:shadow-xl transition-all w-full" data-id="${song.id}">
-          <div class="space-y-3">
+        <div onclick="window.navigateToPurchasesTab('${song.id}')" class="song-card glass-card card-interactive p-2.5 sm:p-4 flex flex-col justify-between space-y-2.5 sm:space-y-3.5 group cursor-pointer rounded-2xl sm:rounded-3xl border border-amber-500/40 hover:border-amber-400 hover:shadow-xl transition-all w-full" data-id="${song.id}">
+          <div class="space-y-2 sm:space-y-3">
             <!-- Thumbnail Visual (Warm Brown/Orange Gradient) -->
-            <div class="relative overflow-hidden rounded-xl sm:rounded-2xl aspect-[16/9] sm:aspect-[16/10] bg-gradient-to-br from-[#9a4b24] via-[#7d3b19] to-[#54240d] p-3 sm:p-4 flex flex-col justify-between text-white shadow-inner group-hover:scale-[1.02] transition-transform duration-500 ease-out">
+            <div class="relative overflow-hidden rounded-xl sm:rounded-2xl aspect-[16/10] bg-gradient-to-br from-[#9a4b24] via-[#7d3b19] to-[#54240d] p-2 sm:p-3.5 flex flex-col justify-between text-white shadow-inner group-hover:scale-[1.02] transition-transform duration-500 ease-out">
               <div class="flex justify-between items-start text-xs uppercase font-bold tracking-wider">
-                <span class="bg-black/50 backdrop-blur px-2.5 py-0.5 rounded-full text-white/95 text-[10px] font-mono">${song.category || 'NHẠC VIỆT'}</span>
-                <div class="flex items-center gap-1.5 justify-end">
+                <span class="bg-black/50 backdrop-blur px-1.5 sm:px-2 py-0.5 rounded-full text-white/95 text-[8px] sm:text-[10px] font-mono">${song.category || 'NHẠC VIỆT'}</span>
+                <div class="flex items-center gap-1 justify-end">
                   ${userActionGroup}
-                  <span class="px-2.5 py-0.5 rounded-full text-[10px] font-black bg-amber-500 text-white shadow-sm uppercase tracking-wide flex items-center gap-1">
+                  <span class="px-1.5 sm:px-2 py-0.5 rounded-full text-[8px] sm:text-[10px] font-black bg-amber-500 text-white shadow-sm uppercase tracking-wide flex items-center gap-0.5">
                     <span>✓</span>
                     <span>ĐÃ SỞ HỮU</span>
                   </span>
@@ -427,48 +424,45 @@ function renderOverviewFeatured() {
 
               <!-- Center Play Demo Button -->
               <div class="my-auto text-center flex flex-col items-center justify-center" onclick="event.stopPropagation(); window.navigateToPurchasesTab('${song.id}')">
-                <div class="w-10 h-10 sm:w-11 sm:h-11 rounded-full bg-white text-[#9a4b24] flex items-center justify-center shadow-lg transform group-hover:scale-110 transition-transform">
-                  <svg class="w-4 h-4 sm:w-5 sm:h-5 fill-current ml-0.5 text-accent-primary" viewBox="0 0 24 24">
+                <div class="w-8 h-8 sm:w-10 sm:h-10 rounded-full bg-white text-[#9a4b24] flex items-center justify-center shadow-lg transform group-hover:scale-110 transition-transform">
+                  <svg class="w-3.5 h-3.5 sm:w-4.5 sm:h-4.5 fill-current ml-0.5 text-accent-primary" viewBox="0 0 24 24">
                     <path d="M8 5v14l11-7z"/>
                   </svg>
                 </div>
-                <span class="text-[11px] font-bold mt-1.5 text-white/95 tracking-wide bg-black/45 px-2.5 py-0.5 rounded-full backdrop-blur-sm">Xem Trong Tab Đã Mua</span>
+                <span class="text-[9px] sm:text-[11px] font-bold mt-1 text-white/95 tracking-wide bg-black/45 px-2 py-0.5 rounded-full backdrop-blur-sm">Xem Trong Tab Đã Mua</span>
               </div>
 
               <div class="flex justify-between items-end text-xs text-white/95 font-semibold">
-                <span class="font-mono tabular-nums text-[11px]">${song.duration || '03:40'}</span>
-                <span class="text-white/80 text-[11px]">Tuning: ${song.tuning || 'Standard'}</span>
+                <span class="font-mono tabular-nums text-[9px] sm:text-[11px]">${song.duration || '03:40'}</span>
+                <span class="text-white/80 text-[8px] sm:text-[11px]">Tuning: ${song.tuning || 'Standard'}</span>
               </div>
             </div>
 
             <!-- Details -->
-            <div class="space-y-1.5">
-              <h3 class="text-base sm:text-xl font-bold text-text-primary group-hover:text-accent-primary transition-colors leading-snug line-clamp-1">
+            <div class="space-y-1">
+              <h3 class="text-xs sm:text-base font-bold text-text-primary group-hover:text-accent-primary transition-colors leading-tight line-clamp-1">
                 ${song.title}
               </h3>
 
-              <div class="space-y-1 pt-0.5">
-                <div class="flex items-center justify-between text-xs font-bold text-text-muted">
+              <div class="space-y-0.5 sm:space-y-1 pt-0.5">
+                <div class="flex items-center justify-between text-[10px] sm:text-xs font-bold text-text-muted">
                   <span>Độ khó: <strong class="text-accent-primary font-mono tabular-nums">${song.level || (levelNum + '/10')}</strong></span>
-                  <span class="text-xs font-semibold text-text-muted">Tuning: ${song.tuning || 'Standard'}</span>
+                  <span class="text-[9px] sm:text-xs font-semibold text-text-muted hidden sm:inline">Tuning: ${song.tuning || 'Standard'}</span>
                 </div>
-                <div class="w-full bg-glass-bg rounded-full h-1.5 overflow-hidden border border-glass-border">
-                  <div class="bg-warm-gradient h-1.5 rounded-full transition-all duration-500" style="width: ${percent}%"></div>
+                <div class="w-full bg-glass-bg rounded-full h-1 sm:h-1.5 overflow-hidden border border-glass-border">
+                  <div class="bg-warm-gradient h-1 sm:h-1.5 rounded-full transition-all duration-500" style="width: ${percent}%"></div>
                 </div>
               </div>
 
-              <p class="text-xs text-text-muted font-medium leading-relaxed pt-0.5 line-clamp-2">
+              <p class="text-[10px] sm:text-xs text-text-muted font-medium leading-snug pt-0.5 line-clamp-2">
                 ${song.description || 'Fingerstyle nâng cao: nhiều đoạn hammer-on/pull-off tốc độ cao, thế tay dãn rộng và có slap kết hợp tỉa nốt.'}
               </p>
             </div>
           </div>
 
-          <div class="pt-1.5 sm:pt-2">
-            <div class="w-full py-2 sm:py-2.5 rounded-full bg-amber-500/15 border border-amber-500/30 hover:bg-amber-500/25 text-amber-600 dark:text-amber-300 font-extrabold text-xs transition-all shadow-xs flex items-center justify-center gap-1.5 active:scale-95 text-center cursor-pointer">
-              <span>📂 Mở Tab Trong Mục Đã Mua</span>
-              <svg class="w-3.5 h-3.5 transform group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M14 5l7 7m0 0l-7 7m7-7H3"></path>
-              </svg>
+          <div class="pt-1 sm:pt-2">
+            <div class="w-full py-1.5 sm:py-2.5 px-1.5 rounded-full bg-amber-500/15 border border-amber-500/30 hover:bg-amber-500/25 text-amber-600 dark:text-amber-300 font-extrabold text-[10px] sm:text-xs transition-all shadow-xs flex items-center justify-center gap-1 active:scale-95 text-center cursor-pointer">
+              <span class="truncate">Mở Tab Đã Mua</span>
             </div>
           </div>
         </div>
@@ -476,65 +470,59 @@ function renderOverviewFeatured() {
     }
 
     return `
-      <div onclick="window.openCheckoutModal('${song.id}')" class="song-card glass-card card-interactive p-4 sm:p-5 flex flex-col justify-between space-y-3.5 sm:space-y-4 group cursor-pointer rounded-2xl sm:rounded-3xl border border-glass-border hover:border-amber-400 hover:shadow-xl transition-all w-full" data-id="${song.id}">
-        <div class="space-y-3">
+      <div onclick="window.openCheckoutModal('${song.id}')" class="song-card glass-card card-interactive p-2.5 sm:p-4 flex flex-col justify-between space-y-2.5 sm:space-y-3.5 group cursor-pointer rounded-2xl sm:rounded-3xl border border-glass-border hover:border-amber-400 hover:shadow-xl transition-all w-full" data-id="${song.id}">
+        <div class="space-y-2 sm:space-y-3">
           <!-- Thumbnail Visual (Warm Brown/Orange Gradient) -->
-          <div class="relative overflow-hidden rounded-xl sm:rounded-2xl aspect-[16/9] sm:aspect-[16/10] bg-gradient-to-br from-[#9a4b24] via-[#7d3b19] to-[#54240d] p-3 sm:p-4 flex flex-col justify-between text-white shadow-inner group-hover:scale-[1.02] transition-transform duration-500 ease-out">
+          <div class="relative overflow-hidden rounded-xl sm:rounded-2xl aspect-[16/10] bg-gradient-to-br from-[#9a4b24] via-[#7d3b19] to-[#54240d] p-2 sm:p-3.5 flex flex-col justify-between text-white shadow-inner group-hover:scale-[1.02] transition-transform duration-500 ease-out">
             <div class="flex justify-between items-start text-xs uppercase font-bold tracking-wider">
-              <span class="bg-black/50 backdrop-blur px-2.5 py-0.5 rounded-full text-white/95 text-[10px] font-mono">${song.category || 'NHẠC VIỆT'}</span>
-              <div class="flex flex-col items-end gap-1">
-                <div class="flex items-center gap-1.5 justify-end">
-                  ${userActionGroup}
-                  <span class="px-2.5 py-0.5 rounded-full text-[10px] font-black bg-rose-600 text-white shadow-sm uppercase tracking-wide font-mono">BÁN • ${priceFormatted}</span>
-                </div>
-                ${discountNote ? `<span class="text-[9px] text-white bg-accent-primary px-2 py-0.5 rounded-full font-extrabold shadow-xs">${discountNote}</span>` : ''}
+              <span class="bg-black/50 backdrop-blur px-1.5 sm:px-2 py-0.5 rounded-full text-white/95 text-[8px] sm:text-[10px] font-mono">${song.category || 'NHẠC VIỆT'}</span>
+              <div class="flex items-center gap-1 justify-end">
+                ${userActionGroup}
+                <span class="px-1.5 sm:px-2 py-0.5 rounded-full text-[8px] sm:text-[10px] font-black bg-rose-600 text-white shadow-sm uppercase tracking-wide font-mono">BÁN • ${priceFormatted}</span>
               </div>
             </div>
 
             <!-- Center Play Demo Button -->
             <div class="my-auto text-center flex flex-col items-center justify-center" onclick="event.stopPropagation(); window.openVideoDemoModal('${escapeHtml(song.title)}', '${videoDemoUrl}')">
-              <div class="w-10 h-10 sm:w-11 sm:h-11 rounded-full bg-white text-[#9a4b24] flex items-center justify-center shadow-lg transform group-hover:scale-110 transition-transform">
-                <svg class="w-4 h-4 sm:w-5 sm:h-5 fill-current ml-0.5 text-accent-primary" viewBox="0 0 24 24">
+              <div class="w-8 h-8 sm:w-10 sm:h-10 rounded-full bg-white text-[#9a4b24] flex items-center justify-center shadow-lg transform group-hover:scale-110 transition-transform">
+                <svg class="w-3.5 h-3.5 sm:w-4.5 sm:h-4.5 fill-current ml-0.5 text-accent-primary" viewBox="0 0 24 24">
                   <path d="M8 5v14l11-7z"/>
                 </svg>
               </div>
-              <span class="text-[11px] font-bold mt-1.5 text-white/95 tracking-wide bg-black/45 px-2.5 py-0.5 rounded-full backdrop-blur-sm">Xem Video Demo</span>
+              <span class="text-[9px] sm:text-[11px] font-bold mt-1 text-white/95 tracking-wide bg-black/45 px-2 py-0.5 rounded-full backdrop-blur-sm">Xem Video Demo</span>
             </div>
 
             <div class="flex justify-between items-end text-xs text-white/95 font-semibold">
-              <span class="font-mono tabular-nums text-[11px]">${song.duration || '03:40'}</span>
-              <span class="text-white/80 text-[11px]">Tuning: ${song.tuning || 'Standard'}</span>
+              <span class="font-mono tabular-nums text-[9px] sm:text-[11px]">${song.duration || '03:40'}</span>
+              <span class="text-white/80 text-[8px] sm:text-[11px]">Tuning: ${song.tuning || 'Standard'}</span>
             </div>
           </div>
 
           <!-- Details -->
-          <div class="space-y-1.5">
-            <h3 class="text-base sm:text-xl font-bold text-text-primary group-hover:text-accent-primary transition-colors leading-snug line-clamp-1">
+          <div class="space-y-1">
+            <h3 class="text-xs sm:text-base font-bold text-text-primary group-hover:text-accent-primary transition-colors leading-tight line-clamp-1">
               ${song.title}
             </h3>
 
-            <div class="space-y-1 pt-0.5">
-              <div class="flex items-center justify-between text-xs font-bold text-text-muted">
+            <div class="space-y-0.5 sm:space-y-1 pt-0.5">
+              <div class="flex items-center justify-between text-[10px] sm:text-xs font-bold text-text-muted">
                 <span>Độ khó: <strong class="text-accent-primary font-mono tabular-nums">${song.level || (levelNum + '/10')}</strong></span>
-                <span class="text-xs font-semibold text-text-muted">Tuning: ${song.tuning || 'Standard'}</span>
+                <span class="text-[9px] sm:text-xs font-semibold text-text-muted hidden sm:inline">Tuning: ${song.tuning || 'Standard'}</span>
               </div>
-              <div class="w-full bg-glass-bg rounded-full h-1.5 overflow-hidden border border-glass-border">
-                <div class="bg-warm-gradient h-1.5 rounded-full transition-all duration-500" style="width: ${percent}%"></div>
+              <div class="w-full bg-glass-bg rounded-full h-1 sm:h-1.5 overflow-hidden border border-glass-border">
+                <div class="bg-warm-gradient h-1 sm:h-1.5 rounded-full transition-all duration-500" style="width: ${percent}%"></div>
               </div>
             </div>
 
-            <p class="text-xs text-text-muted font-medium leading-relaxed pt-0.5 line-clamp-2">
+            <p class="text-[10px] sm:text-xs text-text-muted font-medium leading-snug pt-0.5 line-clamp-2">
               ${song.description || 'Fingerstyle nâng cao: nhiều đoạn hammer-on/pull-off tốc độ cao, thế tay dãn rộng và có slap kết hợp tỉa nốt.'}
             </p>
           </div>
         </div>
 
-        <div class="pt-1.5 sm:pt-2">
-          <div class="w-full py-2 sm:py-2.5 rounded-full bg-warm-gradient hover:brightness-105 text-white font-bold text-xs transition-all shadow-md flex items-center justify-center gap-1.5 active:scale-95 text-center cursor-pointer">
-            <span>Nhận Trọn Bộ Tab & Video</span>
-            <svg class="w-3.5 h-3.5 transform group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M14 5l7 7m0 0l-7 7m7-7H3"></path>
-            </svg>
+        <div class="pt-1 sm:pt-2">
+          <div class="w-full py-1.5 sm:py-2.5 px-1.5 rounded-full bg-warm-gradient hover:brightness-105 text-white font-bold text-[10px] sm:text-xs transition-all shadow-md flex items-center justify-center gap-1 active:scale-95 text-center cursor-pointer">
+            <span class="truncate">Nhận Video Tab</span>
           </div>
         </div>
       </div>
