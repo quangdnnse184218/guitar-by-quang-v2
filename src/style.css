@@ -965,5 +965,83 @@ input[type="range"].metro-slider::-webkit-slider-thumb:hover {
   transform: scale(1.15);
 }
 
+/* ==============================================================================
+   TOAST NOTIFICATION SYSTEM (TOP-RIGHT FIXED, HIGH CONTRAST & VIBRANT)
+   ============================================================================== */
+#toast-notification {
+  position: fixed !important;
+  top: 24px !important;
+  right: 24px !important;
+  bottom: auto !important;
+  left: auto !important;
+  z-index: 999999 !important;
+  display: flex !important;
+  align-items: center !important;
+  gap: 14px !important;
+  padding: 14px 20px !important;
+  border-radius: 18px !important;
+  max-width: 440px !important;
+  min-width: 280px !important;
+  box-shadow: 0 20px 40px -5px rgba(0, 0, 0, 0.4), 0 0 0 2px rgba(255, 255, 255, 0.1) !important;
+  transition: transform 0.35s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.35s ease !important;
+  transform: translateY(-25px) scale(0.92) !important;
+  opacity: 0 !important;
+  pointer-events: none !important;
+  font-family: 'Inter', 'Be Vietnam Pro', sans-serif !important;
+}
+
+#toast-notification.toast-visible {
+  transform: translateY(0) scale(1) !important;
+  opacity: 1 !important;
+  pointer-events: auto !important;
+}
+
+/* SUCCESS TOAST — VIBRANT EMERALD */
+#toast-notification.toast-success {
+  background: linear-gradient(135deg, #059669 0%, #047857 100%) !important;
+  color: #FFFFFF !important;
+  border: 2px solid #34D399 !important;
+  box-shadow: 0 16px 36px rgba(16, 185, 129, 0.45), 0 0 0 1px #6EE7B7 !important;
+}
+
+/* ERROR TOAST — VIBRANT CRIMSON */
+#toast-notification.toast-error {
+  background: linear-gradient(135deg, #E11D48 0%, #BE123C 100%) !important;
+  color: #FFFFFF !important;
+  border: 2px solid #FB7185 !important;
+  box-shadow: 0 16px 36px rgba(225, 29, 72, 0.45), 0 0 0 1px #FDA4AF !important;
+}
+
+/* INFO / PENDING TOAST — VIBRANT AMBER */
+#toast-notification.toast-info {
+  background: linear-gradient(135deg, #D97706 0%, #B45309 100%) !important;
+  color: #FFFFFF !important;
+  border: 2px solid #FBBF24 !important;
+  box-shadow: 0 16px 36px rgba(217, 119, 6, 0.45), 0 0 0 1px #FDE68A !important;
+}
+
+#toast-notification #toast-icon {
+  width: 32px !important;
+  height: 32px !important;
+  border-radius: 50% !important;
+  background: rgba(255, 255, 255, 0.25) !important;
+  color: #FFFFFF !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  font-size: 16px !important;
+  font-weight: 900 !important;
+  flex-shrink: 0 !important;
+  box-shadow: inset 0 1px 2px rgba(255, 255, 255, 0.3) !important;
+}
+
+#toast-notification #toast-message {
+  font-size: 0.9rem !important;
+  font-weight: 700 !important;
+  line-height: 1.4 !important;
+  color: #FFFFFF !important;
+  margin: 0 !important;
+}
+
 
 

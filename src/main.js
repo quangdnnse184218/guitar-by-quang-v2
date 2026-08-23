@@ -36,31 +36,29 @@ export function showToast(msg, type = 'success') {
   if (toastTimer) clearTimeout(toastTimer)
   
   const toastIcon = document.getElementById('toast-icon')
-  toastMessage.textContent = msg
+  
+  // Clean message: strip leading checkmarks/crosses to avoid duplication
+  const cleanMsg = msg.replace(/^[✓✕❌⟳•\s]+/, '').trim()
+  toastMessage.textContent = cleanMsg || msg
 
-  if (type === 'error') {
-    toastNotification.className = "fixed top-6 right-6 z-[9999] max-w-md bg-gradient-to-r from-red-600 to-rose-700 text-white px-5 py-4 rounded-2xl border-2 border-rose-300 shadow-[0_15px_40px_rgba(225,29,72,0.5)] flex items-center gap-3.5 transform translate-y-0 opacity-100 transition-all duration-300 pointer-events-auto"
-    if (toastIcon) {
-      toastIcon.className = "w-8 h-8 rounded-full bg-white/20 text-white flex items-center justify-center flex-shrink-0 text-base font-black shadow-inner"
+  // Reset and apply dedicated toast class
+  toastNotification.className = `toast-${type} toast-visible`
+
+  if (toastIcon) {
+    if (type === 'error') {
       toastIcon.textContent = '✕'
-    }
-  } else if (type === 'info') {
-    toastNotification.className = "fixed top-6 right-6 z-[9999] max-w-md bg-gradient-to-r from-amber-600 to-yellow-600 text-white px-5 py-4 rounded-2xl border-2 border-amber-300 shadow-[0_15px_40px_rgba(245,158,11,0.5)] flex items-center gap-3.5 transform translate-y-0 opacity-100 transition-all duration-300 pointer-events-auto"
-    if (toastIcon) {
-      toastIcon.className = "w-8 h-8 rounded-full bg-white/20 text-white flex items-center justify-center flex-shrink-0 text-base font-black animate-spin"
+      toastIcon.className = ''
+    } else if (type === 'info') {
       toastIcon.textContent = '⟳'
-    }
-  } else {
-    toastNotification.className = "fixed top-6 right-6 z-[9999] max-w-md bg-gradient-to-r from-emerald-600 to-teal-700 text-white px-5 py-4 rounded-2xl border-2 border-emerald-300 shadow-[0_15px_40px_rgba(16,185,129,0.5)] flex items-center gap-3.5 transform translate-y-0 opacity-100 transition-all duration-300 pointer-events-auto"
-    if (toastIcon) {
-      toastIcon.className = "w-8 h-8 rounded-full bg-white/20 text-white flex items-center justify-center flex-shrink-0 text-base font-black shadow-inner"
+      toastIcon.className = 'animate-spin'
+    } else {
       toastIcon.textContent = '✓'
+      toastIcon.className = ''
     }
   }
   
   toastTimer = setTimeout(() => {
-    toastNotification.classList.add('opacity-0', '-translate-y-4', 'pointer-events-none')
-    toastNotification.classList.remove('opacity-100', 'translate-y-0', 'pointer-events-auto')
+    toastNotification.classList.remove('toast-visible')
   }, 4000)
 }
 
