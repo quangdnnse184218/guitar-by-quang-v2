@@ -800,13 +800,18 @@ window.openFreeTabModal = function openFreeTabModal(tabId) {
 
 window.openVideoDemoModal = function openVideoDemoModal(title, videoSrc) {
   if (!title || !videoSrc) return
+  let cleanSrc = videoSrc
+  if (cleanSrc && !cleanSrc.startsWith('/') && !cleanSrc.startsWith('http')) {
+    cleanSrc = '/' + cleanSrc
+  }
   const titleEl = document.getElementById('video-demo-title')
   const videoEl = document.getElementById('demo-modal-video')
   if (titleEl) titleEl.textContent = title
   if (videoEl) {
-    videoEl.src = videoSrc
+    videoEl.src = cleanSrc
+    videoEl.currentTime = 0
     videoEl.load()
-    videoEl.play().catch(() => {})
+    videoEl.play().catch(e => console.warn('Auto play demo video error:', e))
   }
   toggleModal('video-demo-modal', true)
 }
