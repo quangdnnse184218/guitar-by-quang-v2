@@ -73,31 +73,6 @@ export function renderSongCard(tab, index, extraClass = '') {
   const levelNum = tab.level_num ?? tab.levelNum ?? 5
   const percent = Math.min(100, Math.max(10, (levelNum / 10) * 100))
   const isFree = tab.is_free ?? tab.isFree ?? false
-  const favActive = isFavorite(tab.id)
-  const compActive = isCompleted(tab.id)
-
-  const favBtnHtml = `
-    <button onclick="window.handleToggleFavorite(event, '${tab.id}')" data-fav-btn="${tab.id}" class="w-7 h-7 rounded-full flex items-center justify-center transition-all cursor-pointer shadow-sm ${favActive ? 'bg-rose-500 text-white scale-105' : 'bg-black/40 text-white/80 hover:text-white hover:bg-black/60'}" title="${favActive ? 'Bỏ yêu thích' : 'Yêu thích'}" aria-label="Yêu thích">
-      <svg class="w-3.5 h-3.5 ${favActive ? 'fill-current' : 'fill-none'}" stroke="currentColor" stroke-width="${favActive ? '0' : '2'}" viewBox="0 0 24 24">
-        <path stroke-linecap="round" stroke-linejoin="round" d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/>
-      </svg>
-    </button>
-  `
-
-  const compBtnHtml = `
-    <button onclick="window.handleToggleCompleted(event, '${tab.id}')" data-comp-btn="${tab.id}" class="w-7 h-7 rounded-full flex items-center justify-center transition-all cursor-pointer shadow-sm ${compActive ? 'bg-emerald-500 text-white scale-105' : 'bg-black/40 text-white/80 hover:text-white hover:bg-black/60'}" title="${compActive ? 'Đánh dấu chưa học' : 'Đã học xong'}" aria-label="Đã học xong">
-      <svg class="w-3.5 h-3.5 fill-none" stroke="currentColor" stroke-width="${compActive ? '3' : '2.5'}" viewBox="0 0 24 24">
-        <path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/>
-      </svg>
-    </button>
-  `
-
-  const userActionGroup = `
-    <div class="flex items-center gap-1.5 z-10" onclick="event.stopPropagation()">
-      ${favBtnHtml}
-      ${compBtnHtml}
-    </div>
-  `
 
   // ========================================================================
   // 1. FREE CARD
@@ -110,7 +85,6 @@ export function renderSongCard(tab, index, extraClass = '') {
             <div class="flex justify-between items-start text-xs uppercase font-bold tracking-wider">
               <span class="bg-black/50 backdrop-blur px-2.5 py-1 rounded-full text-white/95">${tab.category || 'Fingerstyle'}</span>
               <div class="flex items-center gap-1.5 flex-wrap justify-end">
-                ${userActionGroup}
                 <span class="px-2.5 py-1 rounded-full text-xs font-black bg-emerald-600 text-white shadow-sm uppercase tracking-wide">FREE</span>
               </div>
             </div>
@@ -208,7 +182,6 @@ export function renderSongCard(tab, index, extraClass = '') {
           <div class="flex justify-between items-start text-xs uppercase font-bold tracking-wider">
             <span class="bg-black/50 backdrop-blur px-2.5 py-1 rounded-full text-white/95">${tab.category || 'Nhạc Việt'}</span>
             <div class="flex items-start gap-1.5 flex-wrap justify-end">
-              ${userActionGroup}
               ${badgeHtml}
             </div>
           </div>
@@ -537,10 +510,25 @@ window.openImageModal = function openImageModal(src, title, caption) {
   toggleModal('image-preview-modal', true)
 }
 
-window.openCheckoutModal = function openCheckoutModal(tabId) {
+window.openCheckoutModal = async function openCheckoutModal(tabId) {
   if (!featuredSongs || !featuredSongs.length) return
   const tab = featuredSongs.find(t => t.id === tabId)
   if (!tab) return
+
+  // Gate Check for paid cards: MUST BE LOGGED IN
+  try {
+    const { data: { session } } = await supabase.auth.getSession()
+    if (!session || !session.user) {
+      const loginBtn = document.getElementById('auth-required-login-btn')
+      if (loginBtn) {
+        loginBtn.href = `/login.html?redirect=${encodeURIComponent(window.location.pathname + window.location.search)}`
+      }
+      toggleModal('auth-required-modal', true)
+      return
+    }
+  } catch (e) {
+    console.warn('Auth check error in openCheckoutModal:', e)
+  }
 
   const titleEl = document.getElementById('modal-tab-title')
   const metaEl = document.getElementById('modal-tab-meta')

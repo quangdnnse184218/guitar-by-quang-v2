@@ -46,10 +46,10 @@ const statJoinDate = document.getElementById('stat-join-date')
 const tabFavCounter = document.getElementById('tab-fav-counter')
 const tabPurchasedCounter = document.getElementById('tab-purchased-counter')
 
+const dashboardTabBar = document.getElementById('dashboard-tab-bar')
 const navTabOverview = document.getElementById('nav-tab-overview')
 const navTabFavorites = document.getElementById('nav-tab-favorites')
 const navTabPurchases = document.getElementById('nav-tab-purchases')
-const navTabProfile = document.getElementById('nav-tab-profile')
 
 const sectionOverview = document.getElementById('section-overview')
 const sectionFavorites = document.getElementById('section-favorites')
@@ -133,20 +133,31 @@ function setActiveTab(tab) {
     { key: 'overview', btn: navTabOverview, sec: sectionOverview },
     { key: 'favorites', btn: navTabFavorites, sec: sectionFavorites },
     { key: 'purchases', btn: navTabPurchases, sec: sectionPurchases },
-    { key: 'profile', btn: navTabProfile, sec: sectionProfile }
+    { key: 'profile', btn: null, sec: sectionProfile }
   ]
 
   tabs.forEach(t => {
     if (t.key === tab) {
-      t.btn?.classList.remove('text-text-muted', 'hover:text-text-primary')
-      t.btn?.classList.add('bg-warm-gradient', 'text-white', 'shadow-md')
+      if (t.btn) {
+        t.btn.classList.remove('text-text-muted', 'hover:text-text-primary', 'hover:bg-black/5', 'dark:hover:bg-white/5')
+        t.btn.classList.add('bg-warm-gradient', 'text-white', 'shadow-md')
+      }
       t.sec?.classList.remove('hidden')
     } else {
-      t.btn?.classList.remove('bg-warm-gradient', 'text-white', 'shadow-md')
-      t.btn?.classList.add('text-text-muted', 'hover:text-text-primary')
+      if (t.btn) {
+        t.btn.classList.remove('bg-warm-gradient', 'text-white', 'shadow-md')
+        t.btn.classList.add('text-text-muted', 'hover:text-text-primary')
+      }
       t.sec?.classList.add('hidden')
     }
   })
+
+  // Toggle dashboard tab bar visibility (hidden on profile page)
+  if (tab === 'profile') {
+    dashboardTabBar?.classList.add('hidden')
+  } else {
+    dashboardTabBar?.classList.remove('hidden')
+  }
 
   // Render content accordingly
   if (tab === 'overview') {
@@ -157,10 +168,24 @@ function setActiveTab(tab) {
   if (tab === 'purchases') renderPurchases()
 }
 
+window.setActiveDashboardTab = setActiveTab
+
+// Listen for hash changes
+window.addEventListener('hashchange', () => {
+  const hash = window.location.hash.replace('#', '')
+  if (['overview', 'favorites', 'purchases', 'profile'].includes(hash)) {
+    setActiveTab(hash)
+    if (hash === 'profile') {
+      setTimeout(() => {
+        sectionProfile?.scrollIntoView({ behavior: 'smooth', block: 'start' })
+      }, 50)
+    }
+  }
+})
+
 navTabOverview?.addEventListener('click', () => { window.location.hash = 'overview'; setActiveTab('overview') })
 navTabFavorites?.addEventListener('click', () => { window.location.hash = 'favorites'; setActiveTab('favorites') })
 navTabPurchases?.addEventListener('click', () => { window.location.hash = 'purchases'; setActiveTab('purchases') })
-navTabProfile?.addEventListener('click', () => { window.location.hash = 'profile'; setActiveTab('profile') })
 
 // ==========================================================================
 // DATA FETCHING

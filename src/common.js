@@ -223,6 +223,26 @@ export async function initAuthHeader() {
       
       if (themeToggle) desktopContainer.appendChild(themeToggle)
       
+      // Wire up dropdown navigation links for single-page tab switching
+      desktopContainer.querySelectorAll('a[href*="user-dashboard.html"]').forEach(link => {
+        link.addEventListener('click', (e) => {
+          if (window.location.pathname.includes('user-dashboard')) {
+            const url = new URL(link.href, window.location.origin)
+            const targetHash = url.hash.replace('#', '') || 'overview'
+            if (typeof window.setActiveDashboardTab === 'function') {
+              e.preventDefault()
+              window.location.hash = targetHash
+              window.setActiveDashboardTab(targetHash)
+              if (targetHash === 'profile') {
+                setTimeout(() => {
+                  document.getElementById('section-profile')?.scrollIntoView({ behavior: 'smooth', block: 'start' })
+                }, 50)
+              }
+            }
+          }
+        })
+      })
+
       const logoutBtn = desktopContainer.querySelector('#auth-logout-btn')
       if (logoutBtn) {
         logoutBtn.addEventListener('click', async () => {
@@ -259,6 +279,188 @@ export async function initAuthHeader() {
         })
       }
     }
+
+    // Update Desktop Nav for logged-in user
+    const desktopNav = document.getElementById('desktop-nav')
+    if (desktopNav) {
+      const oldTab = desktopNav.querySelector('a[href*="cua-toi"]')
+      if (oldTab) {
+        oldTab.href = '/user-dashboard.html'
+        oldTab.innerHTML = '<span>Trang Của Tôi</span>'
+      } else {
+        const existingUserTab = desktopNav.querySelector('a[href="/user-dashboard.html"]')
+        if (!existingUserTab) {
+          const isUserDashPage = window.location.pathname.includes('user-dashboard')
+          const userTab = document.createElement('a')
+          userTab.href = '/user-dashboard.html'
+          userTab.className = isUserDashPage
+            ? 'nav-link active font-bold text-accent-primary py-1 transition-colors flex items-center gap-1'
+            : 'nav-link hover:text-text-primary py-1 transition-colors flex items-center gap-1'
+          userTab.innerHTML = '<span>Trang Của Tôi</span>'
+          
+          const firstLink = desktopNav.firstElementChild
+          if (firstLink && firstLink.nextElementSibling) {
+            desktopNav.insertBefore(userTab, firstLink.nextElementSibling)
+          } else {
+            desktopNav.appendChild(userTab)
+          }
+        }
+      }
+    }
+
+    // Update Mobile Drawer Nav for logged-in user
+    const mobileNav = document.querySelector('#mobile-menu-drawer nav')
+    if (mobileNav) {
+      const oldTabMobile = mobileNav.querySelector('a[href*="cua-toi"]')
+      if (oldTabMobile) {
+        oldTabMobile.href = '/user-dashboard.html'
+        oldTabMobile.innerHTML = '<span>Trang Của Tôi</span>'
+      } else {
+        const existingUserTabMobile = mobileNav.querySelector('a[href="/user-dashboard.html"]')
+        if (!existingUserTabMobile) {
+          const isUserDashPage = window.location.pathname.includes('user-dashboard')
+          const userTabMobile = document.createElement('a')
+          userTabMobile.href = '/user-dashboard.html'
+          userTabMobile.className = isUserDashPage
+            ? 'px-4 py-3 rounded-2xl bg-black/5 dark:bg-white/5 text-accent-primary font-bold transition-colors flex items-center gap-2'
+            : 'px-4 py-3 rounded-2xl hover:bg-glass-bg-hover text-text-primary transition-colors flex items-center gap-2'
+          userTabMobile.innerHTML = '<span>Trang Của Tôi</span>'
+
+          const firstLink = mobileNav.firstElementChild
+          if (firstLink && firstLink.nextElementSibling) {
+            mobileNav.insertBefore(userTabMobile, firstLink.nextElementSibling)
+          } else {
+            mobileNav.appendChild(userTabMobile)
+          }
+        }
+      }
+    }
+
+    // Refresh active navigation link highlights after header update
+    initNavActiveSpy()
   }
 }
-document.addEventListener("DOMContentLoaded", initAuthHeader)
+
+/**
+ * Synchronizes and highlights the active navigation tab underline across all pages, hash links and sections.
+ */
+export function initNavActiveSpy() {
+  const desktopNav = document.getElementById('desktop-nav')
+  const mobileNav = document.querySelector('#mobile-menu-drawer nav')
+
+  function getAllNavLinks() {
+    const desktopLinks = desktopNav ? Array.from(desktopNav.querySelectorAll('a.nav-link')) : []
+    const mobileLinks = mobileNav ? Array.from(mobileNav.querySelectorAll('a')) : []
+    return { desktopLinks, mobileLinks }
+  }
+
+  function getLinkKey(href) {
+    if (!href) return ''
+    if (href.includes('kho-tab')) return 'kho-tab'
+    if (href.includes('user-dashboard')) return 'dashboard'
+    if (href.includes('#tools') || href.includes('cong-cu') || href.includes('metronome')) return 'tools'
+    if (href.includes('#faq') || href.includes('faq')) return 'faq'
+    if (href.includes('#contact') || href.includes('contact')) return 'contact'
+    if (href.includes('index.html') || href === '/' || href.includes('#about') || href.includes('#hero')) return 'home'
+    return ''
+  }
+
+  function setActiveKey(key) {
+    if (!key) return
+    const { desktopLinks, mobileLinks } = getAllNavLinks()
+
+    desktopLinks.forEach(link => {
+      const linkKey = getLinkKey(link.getAttribute('href'))
+      if (linkKey === key) {
+        link.classList.add('active', 'font-bold', 'text-accent-primary')
+        link.classList.remove('text-text-muted')
+      } else {
+        link.classList.remove('active', 'font-bold', 'text-accent-primary')
+        link.classList.add('text-text-muted')
+      }
+    })
+
+    mobileLinks.forEach(link => {
+      const linkKey = getLinkKey(link.getAttribute('href'))
+      if (linkKey === key) {
+        link.classList.add('text-accent-primary', 'font-bold')
+      } else {
+        link.classList.remove('text-accent-primary', 'font-bold')
+      }
+    })
+  }
+
+  function resolveCurrentKey() {
+    const path = window.location.pathname
+    const hash = window.location.hash
+
+    if (path.includes('kho-tab')) return 'kho-tab'
+    if (path.includes('user-dashboard')) return 'dashboard'
+    if (path.includes('cong-cu') || path.includes('metronome')) return 'tools'
+
+    // Home or index.html
+    if (hash === '#tools') return 'tools'
+    if (hash === '#faq') return 'faq'
+    if (hash === '#contact') return 'contact'
+    return 'home'
+  }
+
+  // Set on load
+  setActiveKey(resolveCurrentKey())
+
+  // Listen to hashchange
+  window.addEventListener('hashchange', () => {
+    setActiveKey(resolveCurrentKey())
+  })
+
+  // Listen to clicks on nav links
+  document.addEventListener('click', (e) => {
+    const targetLink = e.target.closest('a')
+    if (!targetLink) return
+    const href = targetLink.getAttribute('href')
+    if (!href) return
+
+    if (targetLink.classList.contains('nav-link') || targetLink.closest('#desktop-nav') || targetLink.closest('#mobile-menu-drawer')) {
+      const key = getLinkKey(href)
+      if (key) {
+        setActiveKey(key)
+      }
+    }
+  })
+
+  // ScrollSpy for sections on index.html
+  const sections = [
+    { id: 'hero', key: 'home' },
+    { id: 'about', key: 'home' },
+    { id: 'featured', key: 'home' },
+    { id: 'tools', key: 'tools' },
+    { id: 'faq', key: 'faq' },
+    { id: 'contact', key: 'contact' }
+  ]
+
+  const sectionElements = sections.map(s => ({ el: document.getElementById(s.id), key: s.key })).filter(s => s.el !== null)
+
+  if (sectionElements.length > 0) {
+    const observer = new IntersectionObserver((entries) => {
+      const visibleEntries = entries.filter(e => e.isIntersecting)
+      if (visibleEntries.length > 0) {
+        visibleEntries.sort((a, b) => a.boundingClientRect.top - b.boundingClientRect.top)
+        const matched = sectionElements.find(s => s.el === visibleEntries[0].target)
+        if (matched) {
+          setActiveKey(matched.key)
+        }
+      }
+    }, {
+      rootMargin: '-10% 0px -50% 0px',
+      threshold: [0, 0.2, 0.5]
+    })
+
+    sectionElements.forEach(s => observer.observe(s.el))
+  }
+}
+
+document.addEventListener("DOMContentLoaded", () => {
+  initAuthHeader()
+  initNavActiveSpy()
+})
+initNavActiveSpy()

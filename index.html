@@ -63,14 +63,11 @@
       <!-- Desktop Navigation -->
       <nav id="desktop-nav"
         class="hidden md:flex items-center space-x-6 lg:space-x-8 text-sm font-bold text-text-muted flex-nowrap whitespace-nowrap">
-        <a href="#about" class="nav-link hover:text-text-primary py-1 transition-colors">Giới thiệu</a>
+        <a href="/index.html" class="nav-link active font-bold text-accent-primary py-1 transition-colors">Trang chủ</a>
         <a href="/kho-tab.html" class="nav-link hover:text-text-primary py-1 transition-colors">Kho Video Tab</a>
-        <a href="/cong-cu.html" class="nav-link hover:text-text-primary py-1 transition-colors">Công Cụ</a>
-        <a href="/cua-toi.html" class="nav-link hover:text-text-primary py-1 transition-colors flex items-center gap-1">
-          <span>Của Tôi</span>
-        </a>
-        <a href="#faq" class="nav-link hover:text-text-primary py-1 transition-colors">Hỏi đáp</a>
-        <a href="#contact" class="nav-link hover:text-text-primary py-1 transition-colors">Liên hệ</a>
+        <a href="/index.html#tools" class="nav-link hover:text-text-primary py-1 transition-colors">Công Cụ</a>
+        <a href="/index.html#faq" class="nav-link hover:text-text-primary py-1 transition-colors">Hỏi đáp</a>
+        <a href="/index.html#contact" class="nav-link hover:text-text-primary py-1 transition-colors">Liên hệ</a>
       </nav>
 
       <!-- Header Actions: Register + Login + Theme Toggle -->
@@ -140,19 +137,14 @@
       </div>
 
       <nav class="flex flex-col gap-2.5 mt-5 font-bold">
-        <a href="#about" class="px-4 py-3 rounded-2xl hover:bg-glass-bg-hover text-text-primary transition-colors">Giới
-          thiệu</a>
+        <a href="/index.html" class="px-4 py-3 rounded-2xl bg-black/5 dark:bg-white/5 text-accent-primary font-bold transition-colors">Trang chủ</a>
         <a href="/kho-tab.html"
           class="px-4 py-3 rounded-2xl hover:bg-glass-bg-hover text-text-primary transition-colors">Kho Video Tab</a>
-        <a href="/cong-cu.html"
+        <a href="/index.html#tools"
           class="px-4 py-3 rounded-2xl hover:bg-glass-bg-hover text-text-primary transition-colors">Công Cụ</a>
-        <a href="/cua-toi.html"
-          class="px-4 py-3 rounded-2xl hover:bg-glass-bg-hover text-text-primary flex items-center gap-2 transition-colors">
-          <span>Góc Của Tôi</span>
-        </a>
-        <a href="#faq" class="px-4 py-3 rounded-2xl hover:bg-glass-bg-hover text-text-primary transition-colors">Hỏi
+        <a href="/index.html#faq" class="px-4 py-3 rounded-2xl hover:bg-glass-bg-hover text-text-primary transition-colors">Hỏi
           đáp</a>
-        <a href="#contact"
+        <a href="/index.html#contact"
           class="px-4 py-3 rounded-2xl hover:bg-glass-bg-hover text-text-primary transition-colors">Liên hệ</a>
       </nav>
 
@@ -1237,8 +1229,46 @@
     </div>
   </div>
 
+  <!-- AUTH REQUIRED MODAL -->
+  <div id="auth-required-modal" role="dialog" aria-modal="true" aria-labelledby="auth-req-title"
+    class="modal-backdrop fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-md hidden opacity-0 pointer-events-none transition-opacity duration-300">
+    <div class="modal-dialog relative w-full max-w-md modal-surface rounded-3xl p-6 sm:p-7 text-center transform scale-95 transition-transform duration-300 ease-out space-y-5 border border-glass-border shadow-2xl">
+      <!-- Close Button -->
+      <button onclick="window.toggleModal('auth-required-modal', false)" class="absolute top-4 right-4 w-9 h-9 rounded-full bg-glass-bg hover:bg-glass-bg-hover text-text-muted hover:text-text-primary border border-glass-border flex items-center justify-center transition-all cursor-pointer shadow-sm active:scale-95" aria-label="Đóng cửa sổ">
+        <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"></path></svg>
+      </button>
 
-  <!-- TOAST NOTIFICATION -->
+      <!-- Icon & Title -->
+      <div class="w-16 h-16 rounded-3xl bg-warm-gradient text-white flex items-center justify-center text-3xl shadow-lg mx-auto border border-amber-400/50">
+        🎸
+      </div>
+
+      <div class="space-y-2">
+        <span class="text-xs font-mono font-bold uppercase tracking-wider text-accent-primary">Khu Vực Thành Viên</span>
+        <h3 id="auth-req-title" class="text-xl sm:text-2xl font-black text-text-primary tracking-tight">Cần Đăng Nhập Tài Khoản</h3>
+        <p class="text-xs sm:text-sm text-text-muted font-medium leading-relaxed max-w-xs mx-auto">
+          Vui lòng <strong class="text-accent-primary">Đăng nhập</strong> hoặc <strong class="text-accent-primary">Tạo tài khoản</strong> để xem thông tin chuyển khoản và nhận quyền truy cập Video Tab nhé!
+        </p>
+      </div>
+
+      <!-- Action CTA Buttons -->
+      <div class="space-y-2.5 pt-2">
+        <a id="auth-required-login-btn" href="/login.html" class="w-full py-3.5 px-5 rounded-2xl bg-warm-gradient text-white font-extrabold text-sm shadow-md hover:brightness-105 active:scale-98 transition-all flex items-center justify-center gap-2 cursor-pointer">
+          <svg class="w-4 h-4 fill-current" viewBox="0 0 24 24"><path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/></svg>
+          <span>Đăng Nhập Ngay</span>
+        </a>
+
+        <a href="/register.html" class="w-full py-3 px-5 rounded-2xl bg-glass-bg hover:bg-glass-bg-hover border border-glass-border text-text-primary font-bold text-xs transition-all flex items-center justify-center gap-1.5 cursor-pointer">
+          <span>Chưa có tài khoản?</span>
+          <span class="text-accent-primary underline">Đăng ký miễn phí</span>
+        </a>
+      </div>
+
+      <p class="text-[11px] text-text-faint italic">
+        💡 Xem Video Demo bên ngoài thẻ hoàn toàn miễn phí không cần đăng nhập.
+      </p>
+    </div>
+  </div>
   <div id="toast-notification"
     class="fixed top-6 right-6 z-[9999] max-w-md px-5 py-4 rounded-2xl shadow-[0_20px_50px_rgba(0,0,0,0.5)] flex items-center gap-3.5 transform -translate-y-4 opacity-0 transition-all duration-300 pointer-events-none border-2"
     role="alert">
@@ -1284,10 +1314,10 @@
           </h4>
           <ul class="space-y-2 text-xs font-semibold text-text-muted">
             <li>
-              <a href="#about"
+              <a href="/index.html"
                 class="hover:text-accent-primary transition-colors inline-flex items-center gap-1.5 group">
                 <span class="text-accent-primary font-bold group-hover:translate-x-0.5 transition-transform">›</span>
-                <span>Giới thiệu</span>
+                <span>Trang chủ</span>
               </a>
             </li>
             <li>
@@ -1298,23 +1328,22 @@
               </a>
             </li>
             <li>
-              <a href="/cong-cu.html"
+              <a href="/index.html#tools"
                 class="hover:text-accent-primary transition-colors inline-flex items-center gap-1.5 group">
                 <span class="text-accent-primary font-bold group-hover:translate-x-0.5 transition-transform">›</span>
-                <span>Công Cụ & Máy Gõ Nhịp</span>
+                <span>Công Cụ Hỗ Trợ</span>
               </a>
             </li>
             <li>
-              <a href="/cua-toi.html"
-                class="hover:text-accent-primary transition-colors inline-flex items-center gap-1.5 group">
-                <span class="text-accent-primary font-bold group-hover:translate-x-0.5 transition-transform">›</span>
-                <span>Tab Của Tôi</span>
-              </a>
-            </li>
-            <li>
-              <a href="#faq" class="hover:text-accent-primary transition-colors inline-flex items-center gap-1.5 group">
+              <a href="/index.html#faq" class="hover:text-accent-primary transition-colors inline-flex items-center gap-1.5 group">
                 <span class="text-accent-primary font-bold group-hover:translate-x-0.5 transition-transform">›</span>
                 <span>Hỏi đáp thường gặp</span>
+              </a>
+            </li>
+            <li>
+              <a href="/index.html#contact" class="hover:text-accent-primary transition-colors inline-flex items-center gap-1.5 group">
+                <span class="text-accent-primary font-bold group-hover:translate-x-0.5 transition-transform">›</span>
+                <span>Liên hệ</span>
               </a>
             </li>
           </ul>
