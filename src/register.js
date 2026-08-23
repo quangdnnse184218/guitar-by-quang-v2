@@ -163,7 +163,7 @@ document.addEventListener('DOMContentLoaded', () => {
       } else if (msgLower.includes('password') && (msgLower.includes('least') || msgLower.includes('short') || msgLower.includes('weak'))) {
         errorMsg = 'Mật khẩu chưa đủ độ dài (tối thiểu 6 ký tự). Vui lòng thử mật khẩu khác.'
       } else if (msgLower.includes('rate limit') || msgLower.includes('too many requests') || msgLower.includes('over_email_send_rate_limit')) {
-        errorMsg = 'Bạn đã gửi yêu cầu quá nhiều lần liên tiếp. Vui lòng đợi 1-2 phút rồi thử lại.'
+        errorMsg = 'Hệ thống Supabase đang giới hạn số lượt gửi email xác thực (Rate limit). Vui lòng TẮT mục "Confirm email" trong Supabase Auth Settings để đăng ký được ngay mà không bị giới hạn.'
       } else if (msgLower.includes('invalid email') || msgLower.includes('unable to validate email')) {
         errorMsg = 'Địa chỉ email không hợp lệ. Vui lòng nhập đúng email thật (ví dụ: name@gmail.com).'
       } else if (msgLower.includes('signups not allowed') || msgLower.includes('disabled')) {
