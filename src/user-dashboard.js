@@ -776,18 +776,13 @@ export function toggleModal(modalId, show) {
 
 window.openMaterialModal = function openMaterialModal(song) {
   if (!song) return
-  const modal = document.getElementById('material-modal')
-  const titleEl = document.getElementById('material-modal-title')
-  const metaEl = document.getElementById('material-modal-meta')
-  const linkEl = document.getElementById('material-download-link')
-
-  if (titleEl) titleEl.textContent = song.title
-  if (metaEl) metaEl.textContent = `${song.singer || 'Various Artists'} • ${song.category || 'Fingerstyle'} • ${song.level || 'Cơ bản'}`
-  if (linkEl) {
-    linkEl.href = song.drive_url || song.target_url || song.targetUrl || '#'
+  const driveUrl = song.tab_url || song.target_url || song.targetUrl || song.tabUrl || song.drive_url
+  if (driveUrl && driveUrl.startsWith('http')) {
+    showToast(`Đang mở Google Drive bài "${song.title}"...`, 'info')
+    window.open(driveUrl, '_blank')
+  } else {
+    showToast(`Bài hát "${song.title}" đang được cập nhật link Google Drive. Vui lòng liên hệ Admin!`, 'info')
   }
-
-  toggleModal('material-modal', true)
 }
 
 window.navigateToPurchasesTab = function(songId) {
@@ -1167,7 +1162,7 @@ function renderFavorites() {
           </button>
           ${isBought || song.is_free ? `
             <button class="btn-open-material flex-1 py-1.5 sm:py-2 rounded-xl bg-emerald-500/20 text-emerald-600 dark:text-emerald-400 border border-emerald-500/30 text-[10px] sm:text-xs font-bold transition-colors cursor-pointer" data-id="${song.id}">
-              📂 Xem Tab
+              <span class="truncate">🎬 Xem Video Tab</span>
             </button>
           ` : `
             <a href="/kho-tab.html" class="flex-1 py-1.5 sm:py-2 rounded-xl bg-warm-gradient text-white text-[10px] sm:text-xs font-bold text-center shadow-xs hover:brightness-105 transition-all">
@@ -1247,7 +1242,7 @@ function renderPurchases() {
             🎬 Demo
           </button>
           <button class="btn-open-material flex-1 py-1.5 sm:py-2 rounded-xl bg-warm-gradient text-white text-[10px] sm:text-xs font-extrabold shadow-glow hover:brightness-105 transition-all cursor-pointer flex items-center justify-center gap-1" data-id="${song.id}">
-            <span>📂 Tải Tab</span>
+            <span class="truncate">🎬 Xem Video Tab</span>
           </button>
         </div>
       </div>
@@ -1274,12 +1269,20 @@ function attachSongCardEvents(container) {
     })
   })
 
-  // Open Material / Download Button
+  // Open Google Drive Video Tab Button
   container.querySelectorAll('.btn-open-material').forEach(btn => {
     btn.addEventListener('click', () => {
       const id = btn.dataset.id
       const song = allSongs.find(s => String(s.id) === String(id))
-      if (song) openMaterialModal(song)
+      if (!song) return
+
+      const driveUrl = song.tab_url || song.target_url || song.targetUrl || song.tabUrl || song.drive_url
+      if (driveUrl && driveUrl.startsWith('http')) {
+        showToast(`Đang mở Google Drive bài "${song.title}"...`, 'info')
+        window.open(driveUrl, '_blank')
+      } else {
+        showToast(`Bài hát "${song.title}" đang được cập nhật link Google Drive. Vui lòng liên hệ Admin!`, 'info')
+      }
     })
   })
 
