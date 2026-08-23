@@ -1069,39 +1069,39 @@ function renderFavorites() {
   favoritesGrid.innerHTML = filtered.map(song => {
     const isBought = purchasedSongIds.has(String(song.id))
     return `
-      <div class="glass-card rounded-3xl p-5 border border-glass-border hover:border-amber-400/60 hover:shadow-xl transition-all flex flex-col justify-between group relative overflow-hidden" data-song-id="${song.id}">
+      <div class="glass-card rounded-2xl sm:rounded-3xl p-3 sm:p-5 border border-glass-border hover:border-amber-400/60 hover:shadow-xl transition-all flex flex-col justify-between group relative overflow-hidden" data-song-id="${song.id}">
         <div>
-          <div class="flex items-center justify-between gap-2 mb-3">
-            <span class="px-2.5 py-0.5 rounded-full text-[10px] font-bold ${
+          <div class="flex items-center justify-between gap-1 sm:gap-2 mb-2 sm:mb-3">
+            <span class="px-2 sm:px-2.5 py-0.5 rounded-full text-[9px] sm:text-[10px] font-bold ${
               song?.level === 'Dễ' ? 'bg-emerald-500/15 text-emerald-600 dark:text-emerald-400 border border-emerald-500/30' :
               song?.level === 'Trung bình' ? 'bg-amber-500/15 text-amber-600 dark:text-amber-400 border border-amber-500/30' :
               'bg-rose-500/15 text-rose-600 dark:text-rose-400 border border-rose-500/30'
             }">${song?.level || 'Cơ bản'}</span>
             
-            <button class="btn-remove-fav p-1.5 rounded-full text-rose-500 hover:bg-rose-500/15 transition-colors cursor-pointer" data-id="${song?.id}" title="Bỏ lưu khỏi mục yêu thích">
-              <svg class="w-4 h-4 fill-current" viewBox="0 0 24 24"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg>
+            <button class="btn-remove-fav p-1 sm:p-1.5 rounded-full text-rose-500 hover:bg-rose-500/15 transition-colors cursor-pointer" data-id="${song?.id}" title="Bỏ lưu khỏi mục yêu thích">
+              <svg class="w-3.5 h-3.5 sm:w-4 sm:h-4 fill-current" viewBox="0 0 24 24"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg>
             </button>
           </div>
 
-          <h3 class="text-base font-extrabold text-text-primary group-hover:text-accent-primary transition-colors line-clamp-1">${song?.title || 'Chưa có tên'}</h3>
-          <p class="text-xs text-text-muted font-medium mb-3">${song?.singer || 'Various Artists'} • <span class="font-mono">${song?.category || 'Fingerstyle'}</span></p>
+          <h3 class="text-xs sm:text-base font-extrabold text-text-primary group-hover:text-accent-primary transition-colors line-clamp-1">${song?.title || 'Chưa có tên'}</h3>
+          <p class="text-[10px] sm:text-xs text-text-muted font-medium mb-2 sm:mb-3 truncate">${song?.singer || 'Various Artists'} • <span class="font-mono">${song?.category || 'Fingerstyle'}</span></p>
 
-          <div class="grid grid-cols-2 gap-2 text-[11px] bg-black/5 dark:bg-white/5 p-2.5 rounded-xl border border-glass-border mb-4 font-mono">
-            <div><span class="text-text-muted block text-[10px]">Capo:</span><strong class="text-text-primary">${song?.capo ?? 'Không kẹp'}</strong></div>
-            <div><span class="text-text-muted block text-[10px]">Tuning:</span><strong class="text-text-primary">${song?.tuning || 'Standard'}</strong></div>
+          <div class="grid grid-cols-2 gap-1.5 sm:gap-2 text-[10px] sm:text-[11px] bg-black/5 dark:bg-white/5 p-2 sm:p-2.5 rounded-xl border border-glass-border mb-3 sm:mb-4 font-mono">
+            <div><span class="text-text-muted block text-[9px] sm:text-[10px]">Capo:</span><strong class="text-text-primary truncate block">${song?.capo ?? 'Không kẹp'}</strong></div>
+            <div><span class="text-text-muted block text-[9px] sm:text-[10px]">Tuning:</span><strong class="text-text-primary truncate block">${song?.tuning || 'Standard'}</strong></div>
           </div>
         </div>
 
-        <div class="pt-3 border-t border-glass-border flex items-center justify-between gap-2">
-          <button class="btn-demo-view flex-1 py-2 rounded-xl bg-black/5 dark:bg-white/5 hover:bg-glass-bg-hover text-xs font-bold text-text-primary border border-glass-border transition-colors cursor-pointer" data-id="${song.id}">
+        <div class="pt-2 sm:pt-3 border-t border-glass-border flex items-center justify-between gap-1.5 sm:gap-2">
+          <button class="btn-demo-view flex-1 py-1.5 sm:py-2 rounded-xl bg-black/5 dark:bg-white/5 hover:bg-glass-bg-hover text-[10px] sm:text-xs font-bold text-text-primary border border-glass-border transition-colors cursor-pointer" data-id="${song.id}">
             🎬 Demo
           </button>
           ${isBought || song.is_free ? `
-            <button class="btn-open-material flex-1 py-2 rounded-xl bg-emerald-500/20 text-emerald-600 dark:text-emerald-400 border border-emerald-500/30 text-xs font-bold transition-colors cursor-pointer" data-id="${song.id}">
+            <button class="btn-open-material flex-1 py-1.5 sm:py-2 rounded-xl bg-emerald-500/20 text-emerald-600 dark:text-emerald-400 border border-emerald-500/30 text-[10px] sm:text-xs font-bold transition-colors cursor-pointer" data-id="${song.id}">
               📂 Xem Tab
             </button>
           ` : `
-            <a href="/kho-tab.html" class="flex-1 py-2 rounded-xl bg-warm-gradient text-white text-xs font-bold text-center shadow-xs hover:brightness-105 transition-all">
+            <a href="/kho-tab.html" class="flex-1 py-1.5 sm:py-2 rounded-xl bg-warm-gradient text-white text-[10px] sm:text-xs font-bold text-center shadow-xs hover:brightness-105 transition-all">
               Mua Tab
             </a>
           `}
@@ -1154,30 +1154,30 @@ function renderPurchases() {
 
   purchasesGrid.innerHTML = filtered.map(song => {
     return `
-      <div class="glass-card rounded-3xl p-5 border border-amber-500/40 hover:border-amber-400 hover:shadow-xl transition-all flex flex-col justify-between group relative overflow-hidden bg-gradient-to-b from-amber-500/5 to-transparent" data-song-id="${song.id}">
+      <div class="glass-card rounded-2xl sm:rounded-3xl p-3 sm:p-5 border border-amber-500/40 hover:border-amber-400 hover:shadow-xl transition-all flex flex-col justify-between group relative overflow-hidden bg-gradient-to-b from-amber-500/5 to-transparent" data-song-id="${song.id}">
         <div>
-          <div class="flex items-center justify-between gap-2 mb-3">
-            <span class="px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-amber-500/20 text-amber-600 dark:text-amber-300 border border-amber-500/40 flex items-center gap-1">
+          <div class="flex items-center justify-between gap-1 sm:gap-2 mb-2 sm:mb-3">
+            <span class="px-2 sm:px-2.5 py-0.5 rounded-full text-[9px] sm:text-[10px] font-bold bg-amber-500/20 text-amber-600 dark:text-amber-300 border border-amber-500/40 flex items-center gap-1">
               <span>💎</span>
               <span>Đã Sở Hữu</span>
             </span>
-            <span class="text-[11px] font-mono font-bold text-text-muted">${song?.category || 'Fingerstyle'}</span>
+            <span class="text-[9px] sm:text-[11px] font-mono font-bold text-text-muted">${song?.category || 'Fingerstyle'}</span>
           </div>
 
-          <h3 class="text-base font-extrabold text-text-primary group-hover:text-accent-primary transition-colors line-clamp-1">${song?.title || 'Chưa có tên'}</h3>
-          <p class="text-xs text-text-muted font-medium mb-3">${song?.singer || 'Various Artists'}</p>
+          <h3 class="text-xs sm:text-base font-extrabold text-text-primary group-hover:text-accent-primary transition-colors line-clamp-1">${song?.title || 'Chưa có tên'}</h3>
+          <p class="text-[10px] sm:text-xs text-text-muted font-medium mb-2 sm:mb-3 truncate">${song?.singer || 'Various Artists'}</p>
 
-          <div class="grid grid-cols-2 gap-2 text-[11px] bg-black/5 dark:bg-white/5 p-2.5 rounded-xl border border-glass-border mb-4 font-mono">
-            <div><span class="text-text-muted block text-[10px]">Capo:</span><strong class="text-text-primary">${song?.capo ?? 'Không kẹp'}</strong></div>
-            <div><span class="text-text-muted block text-[10px]">Tempo:</span><strong class="text-text-primary">${song?.tempo ? song.tempo + ' BPM' : 'Tùy chỉnh'}</strong></div>
+          <div class="grid grid-cols-2 gap-1.5 sm:gap-2 text-[10px] sm:text-[11px] bg-black/5 dark:bg-white/5 p-2 sm:p-2.5 rounded-xl border border-glass-border mb-3 sm:mb-4 font-mono">
+            <div><span class="text-text-muted block text-[9px] sm:text-[10px]">Capo:</span><strong class="text-text-primary truncate block">${song?.capo ?? 'Không kẹp'}</strong></div>
+            <div><span class="text-text-muted block text-[9px] sm:text-[10px]">Tempo:</span><strong class="text-text-primary truncate block">${song?.tempo ? song.tempo + ' BPM' : 'Tùy chỉnh'}</strong></div>
           </div>
         </div>
 
-        <div class="pt-3 border-t border-glass-border flex items-center justify-between gap-2">
-          <button class="btn-demo-view flex-1 py-2 rounded-xl bg-black/5 dark:bg-white/5 hover:bg-glass-bg-hover text-xs font-bold text-text-primary border border-glass-border transition-colors cursor-pointer" data-id="${song.id}">
-            🎬 Xem Demo
+        <div class="pt-2 sm:pt-3 border-t border-glass-border flex items-center justify-between gap-1.5 sm:gap-2">
+          <button class="btn-demo-view flex-1 py-1.5 sm:py-2 rounded-xl bg-black/5 dark:bg-white/5 hover:bg-glass-bg-hover text-[10px] sm:text-xs font-bold text-text-primary border border-glass-border transition-colors cursor-pointer" data-id="${song.id}">
+            🎬 Demo
           </button>
-          <button class="btn-open-material flex-1 py-2 rounded-xl bg-warm-gradient text-white text-xs font-extrabold shadow-glow hover:brightness-105 transition-all cursor-pointer flex items-center justify-center gap-1" data-id="${song.id}">
+          <button class="btn-open-material flex-1 py-1.5 sm:py-2 rounded-xl bg-warm-gradient text-white text-[10px] sm:text-xs font-extrabold shadow-glow hover:brightness-105 transition-all cursor-pointer flex items-center justify-center gap-1" data-id="${song.id}">
             <span>📂 Tải Tab</span>
           </button>
         </div>

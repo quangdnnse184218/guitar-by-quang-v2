@@ -295,7 +295,7 @@ function setLocalSongs(songs) {
 }
 
 /**
- * Fetch 3 featured songs for Home page
+ * Fetch 4 featured songs for Home page
  */
 export async function fetchFeaturedSongs() {
   try {
@@ -303,18 +303,18 @@ export async function fetchFeaturedSongs() {
       .from('songs')
       .select('*')
       .order('order', { ascending: true })
-      .limit(3)
+      .limit(4)
       
     if (error || !data || data.length === 0) {
       const fallback = getLocalSongs()
-      return fallback.slice(0, 3)
+      return fallback.slice(0, 4)
     }
     
     return data
   } catch (err) {
     console.error('[songs-service] Ngoại lệ khi tải bài hát nổi bật:', err.message, err)
     const fallback = getLocalSongs()
-    return fallback.slice(0, 3)
+    return fallback.slice(0, 4)
   }
 }
 

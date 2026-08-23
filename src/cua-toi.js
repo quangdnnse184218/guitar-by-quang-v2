@@ -183,74 +183,74 @@ function renderSongCard(tab) {
   const compActive = isCompleted(tab.id)
 
   const favBtnHtml = `
-    <button onclick="window.handleToggleFavorite(event, '${tab.id}')" class="w-7 h-7 rounded-full flex items-center justify-center transition-all cursor-pointer shadow-sm ${favActive ? 'bg-rose-500 text-white scale-105' : 'bg-black/40 text-white/80 hover:text-white hover:bg-black/60'}" title="${favActive ? 'Bỏ yêu thích' : 'Yêu thích'}" aria-label="Yêu thích">
-      <svg class="w-3.5 h-3.5 ${favActive ? 'fill-current' : 'fill-none'}" stroke="currentColor" stroke-width="${favActive ? '0' : '2'}" viewBox="0 0 24 24">
+    <button onclick="window.handleToggleFavorite(event, '${tab.id}')" class="w-6 h-6 sm:w-7 sm:h-7 rounded-full flex items-center justify-center transition-all cursor-pointer shadow-sm ${favActive ? 'bg-rose-500 text-white scale-105' : 'bg-black/40 text-white/80 hover:text-white hover:bg-black/60'}" title="${favActive ? 'Bỏ yêu thích' : 'Yêu thích'}" aria-label="Yêu thích">
+      <svg class="w-3 h-3 sm:w-3.5 sm:h-3.5 ${favActive ? 'fill-current' : 'fill-none'}" stroke="currentColor" stroke-width="${favActive ? '0' : '2'}" viewBox="0 0 24 24">
         <path stroke-linecap="round" stroke-linejoin="round" d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/>
       </svg>
     </button>
   `
 
   const compBtnHtml = `
-    <button onclick="window.handleToggleCompleted(event, '${tab.id}')" class="w-7 h-7 rounded-full flex items-center justify-center transition-all cursor-pointer shadow-sm ${compActive ? 'bg-emerald-500 text-white scale-105' : 'bg-black/40 text-white/80 hover:text-white hover:bg-black/60'}" title="${compActive ? 'Đánh dấu chưa học' : 'Đã học xong'}" aria-label="Đã học xong">
-      <svg class="w-3.5 h-3.5 fill-none" stroke="currentColor" stroke-width="${compActive ? '3' : '2.5'}" viewBox="0 0 24 24">
+    <button onclick="window.handleToggleCompleted(event, '${tab.id}')" class="w-6 h-6 sm:w-7 sm:h-7 rounded-full flex items-center justify-center transition-all cursor-pointer shadow-sm ${compActive ? 'bg-emerald-500 text-white scale-105' : 'bg-black/40 text-white/80 hover:text-white hover:bg-black/60'}" title="${compActive ? 'Đánh dấu chưa học' : 'Đã học xong'}" aria-label="Đã học xong">
+      <svg class="w-3 h-3 sm:w-3.5 sm:h-3.5 fill-none" stroke="currentColor" stroke-width="${compActive ? '3' : '2.5'}" viewBox="0 0 24 24">
         <path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/>
       </svg>
     </button>
   `
 
   return `
-    <div class="song-card glass-card card-interactive p-4 sm:p-5 flex flex-col justify-between space-y-4 group rounded-3xl border border-glass-border shadow-sm hover:shadow-md transition-all duration-300">
-      <div class="space-y-3.5">
+    <div class="song-card glass-card card-interactive p-2.5 sm:p-4 flex flex-col justify-between space-y-2.5 sm:space-y-4 group rounded-2xl sm:rounded-3xl border border-glass-border shadow-sm hover:shadow-md transition-all duration-300">
+      <div class="space-y-2 sm:space-y-3.5">
         <!-- Thumbnail / Badge -->
-        <div class="relative overflow-hidden rounded-2xl aspect-[16/10] bg-gradient-to-br from-[#1E293B] via-[#0F172A] to-[#020617] p-4 flex flex-col justify-between text-white shadow-inner group-hover:scale-[1.02] transition-transform duration-300">
-          <div class="flex justify-between items-start text-[10px] uppercase font-bold tracking-wider">
-            <span class="bg-black/50 backdrop-blur px-2.5 py-1 rounded-full text-white/95">${tab.category || 'Fingerstyle'}</span>
-            <div class="flex items-center gap-1.5" onclick="event.stopPropagation()">
+        <div class="relative overflow-hidden rounded-xl sm:rounded-2xl aspect-[16/10] bg-gradient-to-br from-[#1E293B] via-[#0F172A] to-[#020617] p-2 sm:p-4 flex flex-col justify-between text-white shadow-inner group-hover:scale-[1.02] transition-transform duration-300">
+          <div class="flex justify-between items-start text-[8px] sm:text-[10px] uppercase font-bold tracking-wider">
+            <span class="bg-black/50 backdrop-blur px-1.5 sm:px-2.5 py-0.5 sm:py-1 rounded-full text-white/95">${tab.category || 'Fingerstyle'}</span>
+            <div class="flex items-center gap-1 sm:gap-1.5" onclick="event.stopPropagation()">
               ${favBtnHtml}
               ${compBtnHtml}
-              <span class="px-2.5 py-0.5 rounded-full text-[10px] font-black ${isFree ? 'bg-emerald-500 text-white' : 'bg-accent-primary text-white'} shadow-sm">
+              <span class="px-1.5 sm:px-2.5 py-0.5 rounded-full text-[8px] sm:text-[10px] font-black ${isFree ? 'bg-emerald-500 text-white' : 'bg-accent-primary text-white'} shadow-sm">
                 ${isFree ? 'FREE' : (tab.price ? `${tab.price.toLocaleString('vi-VN')}đ` : 'Có phí')}
               </span>
             </div>
           </div>
 
           <div class="my-auto text-center flex flex-col items-center justify-center">
-            <h3 class="text-base sm:text-lg font-extrabold tracking-tight drop-shadow-md line-clamp-1">${tab.title}</h3>
-            <p class="text-xs text-white/70 font-medium">${tab.singer || 'Guitar By Quang'}</p>
+            <h3 class="text-xs sm:text-lg font-extrabold tracking-tight drop-shadow-md line-clamp-1">${tab.title}</h3>
+            <p class="text-[10px] sm:text-xs text-white/70 font-medium truncate">${tab.singer || 'Guitar By Quang'}</p>
           </div>
 
-          <div class="flex justify-between items-center text-[11px] font-medium text-white/80 border-t border-white/10 pt-2">
-            <span>Tuning: ${tab.tuning || 'Standard'}</span>
+          <div class="flex justify-between items-center text-[9px] sm:text-[11px] font-medium text-white/80 border-t border-white/10 pt-1 sm:pt-2">
+            <span class="truncate">Tuning: ${tab.tuning || 'Standard'}</span>
             <span>Capo: ${tab.capo ?? 0}</span>
           </div>
         </div>
 
         <!-- Meta Info -->
-        <div class="space-y-1.5 px-1">
-          <div class="flex justify-between items-center text-xs">
+        <div class="space-y-1 sm:space-y-1.5 px-0.5 sm:px-1">
+          <div class="flex justify-between items-center text-[10px] sm:text-xs">
             <span class="text-text-muted font-medium">Độ khó:</span>
             <span class="font-mono font-bold text-accent-primary">${levelNum}/10</span>
           </div>
-          <div class="w-full bg-black/10 dark:bg-white/10 rounded-full h-1.5 overflow-hidden">
-            <div class="bg-accent-primary h-1.5 rounded-full" style="width: ${levelNum * 10}%"></div>
+          <div class="w-full bg-black/10 dark:bg-white/10 rounded-full h-1 sm:h-1.5 overflow-hidden">
+            <div class="bg-accent-primary h-1 sm:h-1.5 rounded-full" style="width: ${levelNum * 10}%"></div>
           </div>
         </div>
       </div>
 
       <!-- Action Buttons -->
-      <div class="flex items-center gap-2 pt-2 border-t border-glass-border">
-        <button onclick="window.openDemoModal('${tab.id}')" class="flex-1 py-2 px-3 rounded-xl bg-glass-bg hover:bg-glass-bg-hover text-text-primary text-xs font-bold transition-colors flex items-center justify-center gap-1.5 border border-glass-border cursor-pointer">
-          <svg class="w-3.5 h-3.5 text-accent-primary fill-current" viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
+      <div class="flex items-center gap-1.5 sm:gap-2 pt-1.5 sm:pt-2 border-t border-glass-border">
+        <button onclick="window.openDemoModal('${tab.id}')" class="flex-1 py-1.5 sm:py-2 px-1.5 sm:px-3 rounded-xl bg-glass-bg hover:bg-glass-bg-hover text-text-primary text-[10px] sm:text-xs font-bold transition-colors flex items-center justify-center gap-1 border border-glass-border cursor-pointer">
+          <svg class="w-3 h-3 sm:w-3.5 sm:h-3.5 text-accent-primary fill-current" viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
           <span>Xem thử</span>
         </button>
 
         ${isFree ? `
-          <a href="${tab.youtube_id ? `https://youtube.com/watch?v=${tab.youtube_id}` : '/kho-tab.html'}" target="_blank" rel="noopener noreferrer" class="flex-1 py-2 px-3 rounded-xl bg-emerald-500 hover:bg-emerald-600 text-white text-xs font-bold text-center transition-colors shadow-sm flex items-center justify-center gap-1">
-            <span>Học ngay</span>
+          <a href="${tab.youtube_id ? `https://youtube.com/watch?v=${tab.youtube_id}` : '/kho-tab.html'}" target="_blank" rel="noopener noreferrer" class="flex-1 py-1.5 sm:py-2 px-1.5 sm:px-3 rounded-xl bg-emerald-500 hover:bg-emerald-600 text-white text-[10px] sm:text-xs font-bold text-center transition-colors shadow-sm flex items-center justify-center gap-1">
+            <span class="truncate">Học ngay</span>
           </a>
         ` : `
-          <button onclick="window.openCheckoutModal('${tab.id}')" class="flex-1 py-2 px-3 rounded-xl bg-warm-gradient hover:brightness-105 text-white text-xs font-bold transition-all shadow-sm flex items-center justify-center gap-1 cursor-pointer">
-            <span>Nhận Tab</span>
+          <button onclick="window.openCheckoutModal('${tab.id}')" class="flex-1 py-1.5 sm:py-2 px-1.5 sm:px-3 rounded-xl bg-warm-gradient hover:brightness-105 text-white text-[10px] sm:text-xs font-bold transition-all shadow-sm flex items-center justify-center gap-1 cursor-pointer">
+            <span class="truncate">Nhận Tab</span>
           </button>
         `}
       </div>
