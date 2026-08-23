@@ -336,6 +336,40 @@ export async function initAuthHeader() {
       }
     }
 
+    // Hide brand text on mobile when logged in
+    document.querySelectorAll('.brand-text-container').forEach(el => {
+      el.classList.add('hidden', 'sm:flex')
+    })
+
+    // Hide mobile hamburger button when logged in (tabs shown directly in row 2)
+    const mobileMenuBtn = document.getElementById('mobile-menu-btn')
+    if (mobileMenuBtn) mobileMenuBtn.classList.add('hidden')
+
+    // Show or create Row 2 for mobile logged-in navigation
+    let mobileLoggedInNav = document.getElementById('mobile-logged-in-nav')
+    if (!mobileLoggedInNav) {
+      const mainNavContainer = document.querySelector('#main-nav > div') || document.querySelector('header .container') || document.querySelector('header > div')
+      if (mainNavContainer) {
+        mobileLoggedInNav = document.createElement('div')
+        mobileLoggedInNav.id = 'mobile-logged-in-nav'
+        mobileLoggedInNav.className = 'md:hidden pt-2 mt-1 border-t border-glass-border/60 overflow-x-auto no-scrollbar flex items-center justify-start gap-4 text-xs font-bold text-text-muted whitespace-nowrap px-1'
+        mobileLoggedInNav.innerHTML = `
+          <a href="/index.html" class="nav-link py-1 transition-colors">Trang chủ</a>
+          <a href="/user-dashboard.html" class="nav-link py-1 transition-colors flex items-center gap-1">
+            <span>Trang Của Tôi</span>
+          </a>
+          <a href="/kho-tab.html" class="nav-link py-1 transition-colors">Kho Video Tab</a>
+          <a href="/index.html#tools" class="nav-link py-1 transition-colors">Công Cụ</a>
+          <a href="/index.html#faq" class="nav-link py-1 transition-colors">Hỏi đáp</a>
+          <a href="/index.html#contact" class="nav-link py-1 transition-colors">Liên hệ</a>
+        `
+        mainNavContainer.appendChild(mobileLoggedInNav)
+      }
+    } else {
+      mobileLoggedInNav.classList.remove('hidden')
+      mobileLoggedInNav.classList.add('flex')
+    }
+
     // Refresh active navigation link highlights after header update
     initNavActiveSpy()
   }
@@ -350,8 +384,9 @@ export function initNavActiveSpy() {
 
   function getAllNavLinks() {
     const desktopLinks = desktopNav ? Array.from(desktopNav.querySelectorAll('a.nav-link')) : []
+    const mobileHeaderLinks = Array.from(document.querySelectorAll('#mobile-logged-in-nav a.nav-link'))
     const mobileLinks = mobileNav ? Array.from(mobileNav.querySelectorAll('a')) : []
-    return { desktopLinks, mobileLinks }
+    return { desktopLinks: [...desktopLinks, ...mobileHeaderLinks], mobileLinks }
   }
 
   function getLinkKey(href) {
