@@ -303,6 +303,33 @@ function updateCounters() {
   if (tabPurchasedCounter) tabPurchasedCounter.textContent = purCount
 }
 
+export function formatCompactPrice(val) {
+  if (val === 0 || val === '0') return 'Miễn phí'
+  if (!val && val !== 0) return '239k'
+  const str = String(val).trim()
+  if (!str || str.toLowerCase() === 'miễn phí' || str.toLowerCase() === 'free') return 'Miễn phí'
+  if (str.toLowerCase().endsWith('k')) return str.toLowerCase()
+  const numericOnly = Number(str.replace(/[^0-9]/g, ''))
+  if (numericOnly >= 1000) {
+    return `${Math.round(numericOnly / 1000)}k`
+  }
+  if (numericOnly > 0) {
+    return `${numericOnly}k`
+  }
+  return str
+}
+
+export function formatCompactDiscount(note) {
+  if (!note) return 'HSSV: 179k'
+  const str = String(note).trim()
+  if (str.toLowerCase().includes('179')) return 'HSSV: 179k'
+  if (str.length > 15) {
+    const num = str.replace(/[^0-9]/g, '')
+    if (num) return `HSSV: ${num.length >= 4 ? Math.round(Number(num)/1000) : num}k`
+  }
+  return str
+}
+
 // ==========================================================================
 // RENDER OVERVIEW FEATURED TABS (RICH CARDS LIKE LANDING PAGE)
 // ==========================================================================
@@ -332,7 +359,7 @@ function renderOverviewFeatured() {
           </svg>
         </button>
         ${isBought ? `
-          <span class="p-1 sm:p-1.5 rounded-full bg-amber-500/80 text-white shadow-xs" title="Đã sở hữu bài hát này">
+          <span class="p-1 sm:p-1.5 rounded-full bg-emerald-600 text-white shadow-xs" title="Đã sở hữu bài hát này">
             <svg class="w-3 h-3 sm:w-3.5 sm:h-3.5" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/></svg>
           </span>
         ` : ''}
@@ -402,8 +429,9 @@ function renderOverviewFeatured() {
     }
 
     // 2. PAID TAB CARD
-    const priceFormatted = song.price_formatted || song.price || '239.000đ'
-    const discountNote = song.discount_note || 'HSSV ƯU ĐÃI CÒN 179K'
+    const rawPrice = song.price_formatted || song.priceFormatted || song.price || '239k'
+    const priceFormatted = formatCompactPrice(rawPrice)
+    const discountNote = formatCompactDiscount(song.discount_note || song.discountNote)
     const videoDemoUrl = song.video_demo_url || song.video_demo || `/assets/${song.id}demo.mp4`
 
     if (isBought) {
@@ -416,7 +444,7 @@ function renderOverviewFeatured() {
                 <span class="bg-black/50 backdrop-blur px-1.5 sm:px-2 py-0.5 rounded-full text-white/95 text-[8px] sm:text-[10px] font-mono">${song.category || 'NHẠC VIỆT'}</span>
                 <div class="flex items-center gap-1 justify-end">
                   ${userActionGroup}
-                  <span class="px-1.5 sm:px-2 py-0.5 rounded-full text-[8px] sm:text-[10px] font-black bg-emerald-600 text-white shadow-sm uppercase tracking-wide flex items-center gap-0.5">
+                  <span class="px-1.5 sm:px-2 py-0.5 rounded-full text-[8px] sm:text-[9.5px] font-black bg-emerald-600 text-white shadow-sm uppercase tracking-wide flex items-center gap-0.5">
                     <span>✓</span>
                     <span>ĐÃ SỞ HỮU</span>
                   </span>
@@ -480,8 +508,8 @@ function renderOverviewFeatured() {
               <div class="flex items-start gap-1 justify-end">
                 ${userActionGroup}
                 <div class="flex flex-col items-end gap-0.5 sm:gap-1">
-                  <span class="px-1.5 sm:px-2 py-0.5 rounded-full text-[8px] sm:text-[10px] font-black bg-rose-600 text-white shadow-sm uppercase tracking-wide font-mono tabular-nums">BÁN • ${priceFormatted}</span>
-                  ${discountNote ? `<span class="text-[7px] sm:text-[9px] text-white bg-accent-primary px-1.5 py-0.5 rounded-full font-extrabold shadow-xs inline-block leading-none whitespace-nowrap">${discountNote}</span>` : ''}
+                  <span class="px-1.5 sm:px-2 py-0.5 rounded-full text-[8px] sm:text-[9.5px] font-black bg-rose-600 text-white shadow-sm uppercase tracking-wide font-mono tabular-nums">BÁN • ${priceFormatted}</span>
+                  ${discountNote ? `<span class="text-[7px] sm:text-[8.5px] text-white bg-accent-primary px-1.5 py-0.5 rounded-full font-extrabold shadow-xs inline-block leading-none whitespace-nowrap">${discountNote}</span>` : ''}
                 </div>
               </div>
             </div>

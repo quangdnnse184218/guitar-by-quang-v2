@@ -275,9 +275,10 @@ function renderSongsTable() {
     const isFree = song.is_free ?? song.isFree ?? false
     const isFeatured = song.is_featured ?? song.isFeatured ?? false
     const level = song.level_num ?? song.levelNum ?? 5
+    const priceDisplay = isFree ? 'FREE' : formatCompactPrice(song.price_formatted || song.priceFormatted || song.price)
     const priceText = isFree 
       ? '<span class="px-2.5 py-1 rounded-full badge-semantic-success font-bold font-mono text-xs">FREE</span>' 
-      : (song.price ? `<span class="font-mono tabular-nums font-bold text-rose-600 dark:text-rose-400 text-xs">${Number(song.price).toLocaleString('vi-VN')}đ</span>` : '<span class="text-xs text-rose-600 dark:text-rose-400 font-bold">Có phí</span>')
+      : `<span class="font-mono tabular-nums font-bold text-rose-600 dark:text-rose-400 text-xs">${priceDisplay}</span>`
     const currentOrder = song.order || (idx + 1)
     const isFirst = idx === 0
     const isLast = idx === filtered.length - 1
@@ -420,9 +421,27 @@ window.openAddSongModal = function() {
   toggleModal(songModal, true)
 }
 
+export function formatCompactPrice(val) {
+  if (val === 0 || val === '0') return 'Miễn phí'
+  if (!val && val !== 0) return '239k'
+  const str = String(val).trim()
+  if (!str || str.toLowerCase() === 'miễn phí' || str.toLowerCase() === 'free') return 'Miễn phí'
+  if (str.toLowerCase().endsWith('k')) return str.toLowerCase()
+  const numericOnly = Number(str.replace(/[^0-9]/g, ''))
+  if (numericOnly >= 1000) {
+    return `${Math.round(numericOnly / 1000)}k`
+  }
+  if (numericOnly > 0) {
+    return `${numericOnly}k`
+  }
+  return str
+}
+
 window.editSong = function(id) {
   const song = songsList.find(s => String(s.id) === String(id))
   if (!song) return
+
+  const isSongFree = Boolean(song.is_free ?? song.isFree)
 
   document.getElementById('song-id').value = song.id
   document.getElementById('song-title').value = song.title || ''
@@ -433,9 +452,9 @@ window.editSong = function(id) {
   document.getElementById('song-capo').value = song.capo ?? 0
   document.getElementById('song-youtube-id').value = song.youtube_id || song.youtubeId || ''
   document.getElementById('song-demo-url').value = song.demo_video_url || song.video_demo || song.videoDemo || song.demoVideoUrl || ''
-  document.getElementById('song-price').value = song.price ?? ''
+  document.getElementById('song-price').value = isSongFree ? '' : (song.price_formatted || song.priceFormatted || (song.price ? formatCompactPrice(song.price) : '239k'))
   document.getElementById('song-tab-url').value = song.tab_url || song.target_url || song.targetUrl || song.tabUrl || ''
-  document.getElementById('song-is-free').checked = Boolean(song.is_free ?? song.isFree)
+  document.getElementById('song-is-free').checked = isSongFree
   document.getElementById('song-is-featured').checked = Boolean(song.is_featured ?? song.isFeatured)
 
   if (songModalTitle) songModalTitle.textContent = `Sửa Bài Hát: ${song.title}`
@@ -471,7 +490,11 @@ if (songForm) {
     const levelVal = Number(document.getElementById('song-level').value) || 5
     const isFree = document.getElementById('song-is-free').checked
     const isFeatured = document.getElementById('song-is-featured').checked
-    const priceVal = isFree ? 0 : (Number(document.getElementById('song-price').value) || 0)
+    const priceRaw = document.getElementById('song-price').value.trim()
+    const priceFormatted = isFree ? 'Miễn phí' : formatCompactPrice(priceRaw || '239k')
+    const numericPrice = Number(priceRaw.replace(/[^0-9]/g, '')) || 0
+    const priceVal = isFree ? 0 : (numericPrice < 1000 && numericPrice > 0 ? numericPrice * 1000 : numericPrice)
+
     const demoVideoVal = document.getElementById('song-demo-url').value.trim()
     const tabUrlVal = document.getElementById('song-tab-url').value.trim()
     const singerVal = document.getElementById('song-singer').value.trim()
@@ -487,7 +510,9 @@ if (songForm) {
       has_demo: Boolean(demoVideoVal),
       video_demo: demoVideoVal || null,
       price: priceVal,
-      price_formatted: isFree ? 'Miễn phí' : (priceVal ? `${priceVal.toLocaleString('vi-VN')}đ` : 'Miễn phí'),
+      price_formatted: priceFormatted,
+      priceFormatted: priceFormatted,
+      discount_note: 'HSSV: 179k',
       target_url: tabUrlVal || '',
       button_type: isFree ? 'link' : 'buy',
       button_text: isFree ? (demoVideoVal ? 'Tải video tab' : 'Link xem tab') : 'Mua Video Tab',

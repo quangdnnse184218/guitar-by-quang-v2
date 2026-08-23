@@ -57,6 +57,33 @@ window.showToast = function showToast(msg, type = 'success') {
 // ==========================================================================
 // RENDER CARD (Copied from main.js)
 // ==========================================================================
+export function formatCompactPrice(val) {
+  if (val === 0 || val === '0') return 'Miễn phí'
+  if (!val && val !== 0) return '239k'
+  const str = String(val).trim()
+  if (!str || str.toLowerCase() === 'miễn phí' || str.toLowerCase() === 'free') return 'Miễn phí'
+  if (str.toLowerCase().endsWith('k')) return str.toLowerCase()
+  const numericOnly = Number(str.replace(/[^0-9]/g, ''))
+  if (numericOnly >= 1000) {
+    return `${Math.round(numericOnly / 1000)}k`
+  }
+  if (numericOnly > 0) {
+    return `${numericOnly}k`
+  }
+  return str
+}
+
+export function formatCompactDiscount(note) {
+  if (!note) return 'HSSV: 179k'
+  const str = String(note).trim()
+  if (str.toLowerCase().includes('179')) return 'HSSV: 179k'
+  if (str.length > 15) {
+    const num = str.replace(/[^0-9]/g, '')
+    if (num) return `HSSV: ${num.length >= 4 ? Math.round(Number(num)/1000) : num}k`
+  }
+  return str
+}
+
 function renderSongCard(tab, index, extraClass = '') {
   const levelNum = tab.level_num ?? tab.levelNum ?? 5
   const percent = Math.min(100, Math.max(10, (levelNum / 10) * 100))
@@ -120,16 +147,17 @@ function renderSongCard(tab, index, extraClass = '') {
   }
 
   // 2. PAID CARD
-  const priceFormatted = tab.price_formatted || tab.priceFormatted || '239.000đ'
-  const discountNote = tab.discount_note || tab.discountNote || 'HSSV ƯU ĐÃI CÒN 179K'
+  const rawPrice = tab.price_formatted || tab.priceFormatted || tab.price || '239k'
+  const priceFormatted = formatCompactPrice(rawPrice)
+  const discountNote = formatCompactDiscount(tab.discount_note || tab.discountNote)
   const hasDemo = tab.has_demo ?? tab.hasDemo ?? false
   const videoDemo = tab.video_demo || tab.videoDemo || ''
   const thumbnailBg = tab.thumbnail_bg || tab.thumbnailBg || 'from-[#C1602F] to-[#6E3B1F]'
 
   const badgeHtml = `
     <div class="flex flex-col items-end gap-0.5 sm:gap-1">
-      <span class="px-1.5 sm:px-2 py-0.5 rounded-full text-[8px] sm:text-[10px] font-black bg-rose-600 text-white shadow-sm uppercase tracking-wide font-mono tabular-nums">BÁN • ${priceFormatted}</span>
-      ${discountNote ? `<span class="text-[7px] sm:text-[9px] text-white bg-accent-primary px-1.5 py-0.5 rounded-full font-extrabold shadow-xs inline-block leading-none whitespace-nowrap">${discountNote}</span>` : ''}
+      <span class="px-1.5 sm:px-2 py-0.5 rounded-full text-[8px] sm:text-[9.5px] font-black bg-rose-600 text-white shadow-sm uppercase tracking-wide font-mono tabular-nums">BÁN • ${priceFormatted}</span>
+      ${discountNote ? `<span class="text-[7px] sm:text-[8.5px] text-white bg-accent-primary px-1.5 py-0.5 rounded-full font-extrabold shadow-xs inline-block leading-none whitespace-nowrap">${discountNote}</span>` : ''}
     </div>
   `
 
