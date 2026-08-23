@@ -84,6 +84,20 @@ document.addEventListener('DOMContentLoaded', () => {
 
       if (error) throw error
 
+      // Auto create profile record in 'profiles' table
+      if (data?.user) {
+        try {
+          await supabase.from('profiles').insert({
+            id: data.user.id,
+            full_name: displayName || email.split('@')[0],
+            avatar_url: '',
+            role: 'user'
+          })
+        } catch (pErr) {
+          console.warn('Profile insertion note:', pErr)
+        }
+      }
+
       // Check if email confirmation is required
       if (data?.user && data?.session === null) {
          showAlert('Đăng ký thành công! Vui lòng kiểm tra hộp thư email của bạn để xác thực tài khoản.', true)

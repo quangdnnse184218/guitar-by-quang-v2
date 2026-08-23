@@ -14,6 +14,7 @@ export default defineConfig({
         adminDashboard: resolve(import.meta.dirname, 'admin-dashboard.html'),
         register: resolve(import.meta.dirname, 'register.html'),
         login: resolve(import.meta.dirname, 'login.html'),
+        userDashboard: resolve(import.meta.dirname, 'user-dashboard.html'),
       }
     }
   }

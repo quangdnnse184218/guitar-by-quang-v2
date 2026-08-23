@@ -3,6 +3,7 @@ import { initThemeToggle } from './theme-toggle.js'
 import { fetchAllSongs } from './lib/songs-service.js'
 import { applyScrollReveal } from './animations/scroll-reveal.js'
 import { isFavorite, isCompleted, toggleFavorite, toggleCompleted } from './lib/local-storage-service.js'
+import { supabase } from './lib/supabase.js'
 
 // Initialize UI
 renderAmbientBlobs()
@@ -337,6 +338,22 @@ window.handleToggleFavorite = function handleToggleFavorite(event, songId) {
     }
   })
   showToast(nextState ? 'Đã lưu vào danh sách Yêu thích ❤️' : 'Đã bỏ khỏi danh sách Yêu thích')
+
+  // Sync with Supabase favorites if logged in
+  ;(async () => {
+    try {
+      const { data: { session } } = await supabase.auth.getSession()
+      if (session?.user) {
+        if (nextState) {
+          await supabase.from('favorites').upsert({ user_id: session.user.id, song_id: String(songId) })
+        } else {
+          await supabase.from('favorites').delete().match({ user_id: session.user.id, song_id: String(songId) })
+        }
+      }
+    } catch (err) {
+      console.warn('Sync favorite error:', err)
+    }
+  })()
 }
 
 window.handleToggleCompleted = function handleToggleCompleted(event, songId) {

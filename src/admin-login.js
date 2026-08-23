@@ -44,7 +44,15 @@ async function checkExistingSession() {
   try {
     const { data: { session } } = await supabase.auth.getSession()
     if (session && session.user) {
-      window.location.replace('/admin-dashboard.html')
+      const { data: profile } = await supabase
+        .from('profiles')
+        .select('role')
+        .eq('id', session.user.id)
+        .single()
+      
+      if (profile?.role === 'admin') {
+        window.location.replace('/admin-dashboard.html')
+      }
     }
   } catch (err) {
     console.warn('[admin-login] Session check error:', err)
@@ -82,7 +90,21 @@ if (loginForm) {
         return
       }
 
-      if (data?.session) {
+      if (data?.session && data?.user) {
+        // Verify admin role in profiles
+        const { data: profile, error: profErr } = await supabase
+          .from('profiles')
+          .select('role')
+          .eq('id', data.user.id)
+          .single()
+
+        if (profErr || profile?.role !== 'admin') {
+          await supabase.auth.signOut()
+          showError('Tài khoản này không có quyền truy cập Admin.')
+          setLoading(false)
+          return
+        }
+
         window.location.replace('/admin-dashboard.html')
       } else {
         showError('Không nhận được phiên đăng nhập hợp lệ.')

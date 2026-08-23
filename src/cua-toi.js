@@ -15,10 +15,23 @@ import {
   toggleFavorite,
   toggleCompleted
 } from './lib/local-storage-service.js'
+import { supabase } from './lib/supabase.js'
 
 initNavbarShrink()
 initMobileMenu()
 initThemeToggle()
+
+// Check if user is logged in -> redirect to full User Dashboard
+;(async () => {
+  try {
+    const { data: { session } } = await supabase.auth.getSession()
+    if (session && session.user) {
+      window.location.replace('/user-dashboard.html')
+    }
+  } catch (err) {
+    console.warn('Session check warning:', err)
+  }
+})()
 
 // ==========================================================================
 // STATE

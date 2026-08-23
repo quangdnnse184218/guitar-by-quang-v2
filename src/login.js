@@ -67,11 +67,25 @@ document.addEventListener('DOMContentLoaded', () => {
 
       if (error) throw error
 
+      let targetUrl = '/user-dashboard.html'
+      try {
+        const { data: profile } = await supabase
+          .from('profiles')
+          .select('role')
+          .eq('id', data.user.id)
+          .single()
+
+        if (profile?.role === 'admin') {
+          targetUrl = '/user-dashboard.html?is_admin=true'
+        }
+      } catch (profErr) {
+        console.warn('Could not fetch profile role:', profErr)
+      }
+
       showAlert('Đăng nhập thành công! Đang chuyển hướng...', true)
       
-      // Temporarily redirect to index.html until user dashboard is built
       setTimeout(() => {
-        window.location.href = '/'
+        window.location.href = targetUrl
       }, 1000)
 
     } catch (error) {

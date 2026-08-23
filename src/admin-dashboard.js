@@ -134,6 +134,18 @@ async function checkAuth() {
       return false
     }
 
+    const { data: profile } = await supabase
+      .from('profiles')
+      .select('role')
+      .eq('id', session.user.id)
+      .single()
+
+    if (profile?.role !== 'admin') {
+      await supabase.auth.signOut()
+      window.location.replace('/admin-login.html')
+      return false
+    }
+
     if (adminUserEmail) {
       adminUserEmail.textContent = session.user.email || 'Admin'
     }
