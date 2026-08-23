@@ -269,10 +269,10 @@ function updateGrid() {
   }
 
   if (filtered.length === 0) {
-    grid.innerHTML = \`<div class="col-span-full text-center py-20">
+    grid.innerHTML = `<div class="col-span-full text-center py-20">
       <span class="text-4xl block mb-4">🎵</span>
       <p class="text-text-muted font-medium">Không tìm thấy bài hát nào phù hợp.</p>
-    </div>\`
+    </div>`
     return
   }
 
@@ -324,16 +324,16 @@ async function loadData() {
 window.handleToggleFavorite = function handleToggleFavorite(event, songId) {
   if (event) event.stopPropagation()
   const nextState = toggleFavorite(songId)
-  const btns = document.querySelectorAll(\`[data-fav-btn="\${songId}"]\`)
+  const btns = document.querySelectorAll(`[data-fav-btn="${songId}"]`)
   btns.forEach(btn => {
     if (nextState) {
       btn.className = 'w-7 h-7 rounded-full flex items-center justify-center transition-all cursor-pointer shadow-sm bg-rose-500 text-white scale-105'
       btn.title = 'Bỏ yêu thích'
-      btn.innerHTML = \`<svg class="w-3.5 h-3.5 fill-current" viewBox="0 0 24 24"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg>\`
+      btn.innerHTML = `<svg class="w-3.5 h-3.5 fill-current" viewBox="0 0 24 24"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg>`
     } else {
       btn.className = 'w-7 h-7 rounded-full flex items-center justify-center transition-all cursor-pointer shadow-sm bg-black/40 text-white/80 hover:text-white hover:bg-black/60'
       btn.title = 'Yêu thích'
-      btn.innerHTML = \`<svg class="w-3.5 h-3.5 fill-none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg>\`
+      btn.innerHTML = `<svg class="w-3.5 h-3.5 fill-none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg>`
     }
   })
   showToast(nextState ? 'Đã lưu vào danh sách Yêu thích ❤️' : 'Đã bỏ khỏi danh sách Yêu thích')
@@ -342,16 +342,16 @@ window.handleToggleFavorite = function handleToggleFavorite(event, songId) {
 window.handleToggleCompleted = function handleToggleCompleted(event, songId) {
   if (event) event.stopPropagation()
   const nextState = toggleCompleted(songId)
-  const btns = document.querySelectorAll(\`[data-comp-btn="\${songId}"]\`)
+  const btns = document.querySelectorAll(`[data-comp-btn="${songId}"]`)
   btns.forEach(btn => {
     if (nextState) {
       btn.className = 'w-7 h-7 rounded-full flex items-center justify-center transition-all cursor-pointer shadow-sm bg-emerald-500 text-white scale-105'
       btn.title = 'Đánh dấu chưa học'
-      btn.innerHTML = \`<svg class="w-3.5 h-3.5 fill-none" stroke="currentColor" stroke-width="3" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/></svg>\`
+      btn.innerHTML = `<svg class="w-3.5 h-3.5 fill-none" stroke="currentColor" stroke-width="3" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/></svg>`
     } else {
       btn.className = 'w-7 h-7 rounded-full flex items-center justify-center transition-all cursor-pointer shadow-sm bg-black/40 text-white/80 hover:text-white hover:bg-black/60'
       btn.title = 'Đã học xong'
-      btn.innerHTML = \`<svg class="w-3.5 h-3.5 fill-none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/></svg>\`
+      btn.innerHTML = `<svg class="w-3.5 h-3.5 fill-none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/></svg>`
     }
   })
   showToast(nextState ? 'Đã đánh dấu Đã học xong ✓' : 'Đã bỏ đánh dấu Đã học xong')
@@ -437,10 +437,10 @@ window.openCheckoutModal = function openCheckoutModal(tabId) {
   const videoContainer = document.getElementById('checkout-modal-video-container')
 
   if (titleEl) titleEl.textContent = tab.title
-  if (metaEl) metaEl.textContent = \`Tuning: \${tab.tuning || 'Standard'} • Bản Video Tab chạy nốt đồng bộ với âm thanh đàn mộc thật và nhịp gõ\`
+  if (metaEl) metaEl.textContent = `Tuning: ${tab.tuning || 'Standard'} • Bản Video Tab chạy nốt đồng bộ với âm thanh đàn mộc thật và nhịp gõ`
   if (priceEl) priceEl.textContent = tab.price_formatted || tab.priceFormatted || '239.000 VNĐ'
 
-  if (levelEl) levelEl.textContent = tab.level || \`\${tab.level_num ?? tab.levelNum ?? 5}/10\`
+  if (levelEl) levelEl.textContent = tab.level || `${tab.level_num ?? tab.levelNum ?? 5}/10`
   if (tuningEl) tuningEl.textContent = tab.tuning || 'Standard'
   if (capoEl) capoEl.textContent = tab.capo || 'Không kẹp'
   if (tempoEl) tempoEl.textContent = tab.tempo || '~95 BPM'
@@ -449,7 +449,7 @@ window.openCheckoutModal = function openCheckoutModal(tabId) {
   const discountNote = tab.discount_note || tab.discountNote || ''
   if (discountTag) {
     if (discountNote) {
-      discountTag.textContent = \`(\${discountNote})\`
+      discountTag.textContent = `(${discountNote})`
       discountTag.classList.remove('hidden')
     } else {
       discountTag.classList.add('hidden')
@@ -457,7 +457,7 @@ window.openCheckoutModal = function openCheckoutModal(tabId) {
   }
 
   const cleanSongCode = tab.title.replace(/[^a-zA-Z0-9]/g, '').toUpperCase().slice(0, 10)
-  activeCheckoutSyntax = \`VIDEOTAB \${cleanSongCode}\`
+  activeCheckoutSyntax = `VIDEOTAB ${cleanSongCode}`
   if (syntaxEl) syntaxEl.textContent = activeCheckoutSyntax
 
   const hasDemo = tab.has_demo ?? tab.hasDemo ?? false
@@ -494,7 +494,7 @@ window.openFreeTabModal = function openFreeTabModal(tabId) {
   const pdfBtn = document.getElementById('free-tab-pdf-btn')
 
   if (titleEl) titleEl.textContent = tab.title
-  if (levelEl) levelEl.textContent = tab.level || \`\${tab.level_num ?? tab.levelNum ?? 5}/10\`
+  if (levelEl) levelEl.textContent = tab.level || `${tab.level_num ?? tab.levelNum ?? 5}/10`
   if (tuningEl) tuningEl.textContent = tab.tuning || 'Standard'
   if (durationEl) durationEl.textContent = tab.duration || '03:15'
   if (capoEl) capoEl.textContent = tab.capo || 'Không kẹp'
@@ -514,12 +514,12 @@ window.openFreeTabModal = function openFreeTabModal(tabId) {
     let found = false
     knownTech.forEach(tc => {
       if (desc.includes(tc.key)) {
-        html += \`<span class="px-2.5 py-1 rounded-lg modal-inner-card text-text-primary text-[11px] font-semibold shadow-xs">\${tc.label}</span>\`
+        html += `<span class="px-2.5 py-1 rounded-lg modal-inner-card text-text-primary text-[11px] font-semibold shadow-xs">${tc.label}</span>`
         found = true
       }
     })
     if (!found) {
-      html += \`<span class="px-2.5 py-1 rounded-lg modal-inner-card text-text-primary text-[11px] font-semibold shadow-xs">Fingerstyle Cơ bản</span>\`
+      html += `<span class="px-2.5 py-1 rounded-lg modal-inner-card text-text-primary text-[11px] font-semibold shadow-xs">Fingerstyle Cơ bản</span>`
     }
     techContainer.innerHTML = html
   }
@@ -539,13 +539,13 @@ window.openFreeTabModal = function openFreeTabModal(tabId) {
         if (targetUrl.includes('youtu.be/')) videoId = targetUrl.split('youtu.be/')[1].split('?')[0]
         else if (targetUrl.includes('v=')) videoId = targetUrl.split('v=')[1].split('&')[0]
         
-        iframeEl.src = \`https://www.youtube.com/embed/\${videoId}\`
+        iframeEl.src = `https://www.youtube.com/embed/${videoId}`
         iframeEl.classList.remove('hidden')
         localVideoEl.classList.add('hidden')
       } else if (isTiktok) {
         const parts = targetUrl.split('/')
         const videoId = parts[parts.length - 1].split('?')[0]
-        iframeEl.src = \`https://www.tiktok.com/embed/v2/\${videoId}\`
+        iframeEl.src = `https://www.tiktok.com/embed/v2/${videoId}`
         iframeEl.classList.remove('hidden')
         localVideoEl.classList.add('hidden')
       } else if (targetUrl.endsWith('.mp4')) {
