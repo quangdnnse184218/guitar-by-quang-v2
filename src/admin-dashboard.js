@@ -339,11 +339,6 @@ function renderSongsTable() {
         </td>
         <td class="py-3.5 px-4 text-right">
           <div class="flex items-center justify-end gap-2">
-            ${!isFree ? `
-            <button onclick="window.manageCodes('${song.id}', '${song.title.replace(/'/g, "\\'")}')" class="px-3 py-1.5 rounded-lg bg-purple-500/10 hover:bg-purple-500/20 text-purple-600 dark:text-purple-400 font-bold text-xs border border-purple-500/30 transition-colors cursor-pointer">
-              🔑 Mã
-            </button>
-            ` : ''}
             <button onclick="window.editSong('${song.id}')" class="px-3 py-1.5 rounded-lg bg-glass-bg hover:bg-glass-bg-hover text-accent-primary font-bold text-xs border border-glass-border transition-colors cursor-pointer">
               Sửa
             </button>
@@ -518,90 +513,6 @@ if (songForm) {
 }
 
 // ==========================================================================
-// REDEMPTION CODES MANAGEMENT
-// ==========================================================================
-let currentManagingSongId = null
-
-window.manageCodes = async function(songId, songTitle) {
-  currentManagingSongId = songId
-  if (codesModalSongName) codesModalSongName.textContent = `Bài hát: ${songTitle}`
-  toggleModal(codesModal, true)
-  await loadCodesForCurrentSong()
-}
-
-async function loadCodesForCurrentSong() {
-  if (!currentManagingSongId || !codesTbody) return
-  
-  codesTbody.innerHTML = `<tr><td colspan="4" class="py-4 text-center text-xs text-text-muted">Đang tải mã...</td></tr>`
-  
-  try {
-    const codes = await listCodesForSong(currentManagingSongId)
-    
-    if (codes.length === 0) {
-      codesTbody.innerHTML = `<tr><td colspan="4" class="py-4 text-center text-xs text-text-muted">Chưa có mã kích hoạt nào.</td></tr>`
-      return
-    }
-
-    codesTbody.innerHTML = codes.map(c => {
-      const isUsed = c.is_used
-      const statusBadge = isUsed 
-        ? `<span class="px-2 py-0.5 rounded-md bg-rose-500/15 text-rose-600 text-[10px] font-bold">Đã dùng</span>`
-        : `<span class="px-2 py-0.5 rounded-md bg-emerald-500/15 text-emerald-600 text-[10px] font-bold">Chưa dùng</span>`
-      
-      const usedDate = c.used_at ? new Date(c.used_at).toLocaleString('vi-VN') : '-'
-      const createdDate = new Date(c.created_at).toLocaleString('vi-VN')
-      const user = c.profiles ? (c.profiles.full_name || c.profiles.email || c.used_by_user_id) : (c.used_by_user_id || '-')
-
-      return `
-        <tr class="border-b border-glass-border/50 hover:bg-black/5 dark:hover:bg-white/5 transition-colors">
-          <td class="py-3 px-4">
-            <div class="flex items-center gap-2">
-              <span class="font-mono font-bold text-sm tracking-wider text-text-primary">${c.code}</span>
-              <button onclick="window.copyCode('${c.code}')" class="p-1 rounded bg-black/5 hover:bg-black/10 text-text-muted cursor-pointer transition-colors" title="Copy mã">
-                <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"/></svg>
-              </button>
-            </div>
-          </td>
-          <td class="py-3 px-3">${statusBadge}</td>
-          <td class="py-3 px-3 text-[11px] text-text-muted">${createdDate}</td>
-          <td class="py-3 px-4 text-[11px] font-medium text-text-primary">
-            ${isUsed ? `<div class="flex flex-col"><span>${user}</span><span class="text-text-muted text-[10px]">${usedDate}</span></div>` : '-'}
-          </td>
-        </tr>
-      `
-    }).join('')
-
-  } catch (err) {
-    showToast(`❌ Lỗi tải mã: ${err.message}`, 'error')
-    codesTbody.innerHTML = `<tr><td colspan="4" class="py-4 text-center text-xs text-rose-500">Lỗi tải dữ liệu.</td></tr>`
-  }
-}
-
-if (generateCodeBtn) {
-  generateCodeBtn.addEventListener('click', async () => {
-    if (!currentManagingSongId) return
-    const code = generateReadableCode()
-    
-    try {
-      generateCodeBtn.disabled = true
-      showToast('Đang tạo mã mới...', 'info')
-      await createRedemptionCode(currentManagingSongId, code)
-      showToast('✓ Đã tạo mã kích hoạt thành công!', 'success')
-      await loadCodesForCurrentSong()
-    } catch (err) {
-      showToast(`❌ Lỗi tạo mã: ${err.message}`, 'error')
-    } finally {
-      generateCodeBtn.disabled = false
-    }
-  })
-}
-
-window.copyCode = function(code) {
-  navigator.clipboard.writeText(code).then(() => {
-    showToast(`Đã copy mã: ${code}`)
-  }).catch(() => {
-    showToast('Lỗi copy, vui lòng copy thủ công', 'error')
-  })
 }
 
 // ==========================================================================
