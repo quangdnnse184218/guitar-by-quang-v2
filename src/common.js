@@ -496,37 +496,43 @@ export function initNavActiveSpy() {
 }
 
 /**
- * Triggers video fullscreen and requests screen orientation lock to landscape on mobile.
+ * Triggers video or media fullscreen and requests screen orientation lock to landscape on mobile.
  */
 export function openLandscapeFullscreen(videoTarget) {
-  const video = typeof videoTarget === 'string' ? document.getElementById(videoTarget) : videoTarget
-  if (!video) return
+  let target = typeof videoTarget === 'string' ? document.getElementById(videoTarget) : videoTarget
+  if (!target) return
+
+  // If wrapper containing a visible video or iframe, target the active media element
+  if (target.tagName !== 'VIDEO' && target.tagName !== 'IFRAME') {
+    const innerVideo = target.querySelector('video:not(.hidden)') || target.querySelector('video')
+    const innerIframe = target.querySelector('iframe:not(.hidden)') || target.querySelector('iframe')
+    if (innerVideo) target = innerVideo
+    else if (innerIframe) target = innerIframe
+  }
 
   const tryLockLandscape = () => {
     try {
       if (window.screen && window.screen.orientation && typeof window.screen.orientation.lock === 'function') {
-        window.screen.orientation.lock('landscape').catch(() => {
-          // Orientation lock might require user gesture or not supported on some browsers
-        })
+        window.screen.orientation.lock('landscape').catch(() => {})
       }
     } catch (e) {}
   }
 
   // Request fullscreen across browsers
-  if (video.requestFullscreen) {
-    video.requestFullscreen().then(tryLockLandscape).catch(() => {})
-  } else if (video.webkitRequestFullscreen) {
-    video.webkitRequestFullscreen()
+  if (target.requestFullscreen) {
+    target.requestFullscreen().then(tryLockLandscape).catch(() => {})
+  } else if (target.webkitRequestFullscreen) {
+    target.webkitRequestFullscreen()
     tryLockLandscape()
-  } else if (video.webkitEnterFullscreen) {
-    // iOS Safari
-    video.webkitEnterFullscreen()
+  } else if (target.webkitEnterFullscreen && typeof target.webkitEnterFullscreen === 'function') {
+    // iOS Safari for <video>
+    target.webkitEnterFullscreen()
     tryLockLandscape()
-  } else if (video.mozRequestFullScreen) {
-    video.mozRequestFullScreen()
+  } else if (target.mozRequestFullScreen) {
+    target.mozRequestFullScreen()
     tryLockLandscape()
-  } else if (video.msRequestFullscreen) {
-    video.msRequestFullscreen()
+  } else if (target.msRequestFullscreen) {
+    target.msRequestFullscreen()
     tryLockLandscape()
   }
 }
@@ -534,12 +540,12 @@ export function openLandscapeFullscreen(videoTarget) {
 window.openLandscapeFullscreen = openLandscapeFullscreen
 
 /**
- * Automatically locks orientation to landscape when any video enters fullscreen.
+ * Automatically locks orientation to landscape when ANY video/media enters fullscreen.
  */
 export function initVideoOrientationHandlers() {
   const handleFullscreenChange = () => {
     const isFullscreen = document.fullscreenElement || document.webkitFullscreenElement || document.mozFullScreenElement || document.msFullscreenElement
-    if (isFullscreen && isFullscreen.tagName === 'VIDEO') {
+    if (isFullscreen) {
       try {
         if (window.screen && window.screen.orientation && typeof window.screen.orientation.lock === 'function') {
           window.screen.orientation.lock('landscape').catch(() => {})
