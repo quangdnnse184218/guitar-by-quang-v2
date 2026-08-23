@@ -540,23 +540,37 @@ export function openLandscapeFullscreen(videoTarget) {
 window.openLandscapeFullscreen = openLandscapeFullscreen
 
 /**
- * Automatically locks orientation to landscape when ANY video/media enters fullscreen.
+ * Automatically locks orientation to landscape when ANY video/media enters fullscreen (like YouTube).
  */
 export function initVideoOrientationHandlers() {
+  const lockLandscape = () => {
+    try {
+      if (window.screen && window.screen.orientation && typeof window.screen.orientation.lock === 'function') {
+        window.screen.orientation.lock('landscape').catch(() => {
+          window.screen.orientation.lock('landscape-primary').catch(() => {})
+        })
+      }
+    } catch (e) {}
+  }
+
+  const unlockOrientation = () => {
+    try {
+      if (window.screen && window.screen.orientation && typeof window.screen.orientation.unlock === 'function') {
+        window.screen.orientation.unlock()
+      }
+    } catch (e) {}
+  }
+
   const handleFullscreenChange = () => {
-    const isFullscreen = document.fullscreenElement || document.webkitFullscreenElement || document.mozFullScreenElement || document.msFullscreenElement
+    const isFullscreen = document.fullscreenElement || 
+                         document.webkitFullscreenElement || 
+                         document.mozFullScreenElement || 
+                         document.msFullscreenElement
+
     if (isFullscreen) {
-      try {
-        if (window.screen && window.screen.orientation && typeof window.screen.orientation.lock === 'function') {
-          window.screen.orientation.lock('landscape').catch(() => {})
-        }
-      } catch (e) {}
+      lockLandscape()
     } else {
-      try {
-        if (window.screen && window.screen.orientation && typeof window.screen.orientation.unlock === 'function') {
-          window.screen.orientation.unlock()
-        }
-      } catch (e) {}
+      unlockOrientation()
     }
   }
 
@@ -569,27 +583,41 @@ export function initVideoOrientationHandlers() {
     document.querySelectorAll('video').forEach(video => {
       if (!video._orientationAttached) {
         video._orientationAttached = true
+        
+        // iOS Safari native video fullscreen events
         video.addEventListener('webkitbeginfullscreen', () => {
-          try {
-            if (window.screen && window.screen.orientation && typeof window.screen.orientation.lock === 'function') {
-              window.screen.orientation.lock('landscape').catch(() => {})
-            }
-          } catch (e) {}
+          lockLandscape()
         })
         video.addEventListener('webkitendfullscreen', () => {
-          try {
-            if (window.screen && window.screen.orientation && typeof window.screen.orientation.unlock === 'function') {
-              window.screen.orientation.unlock()
+          unlockOrientation()
+        })
+
+        // Mobile double-tap gesture to toggle fullscreen (YouTube gesture)
+        let lastTap = 0
+        video.addEventListener('touchend', (e) => {
+          const currentTime = new Date().getTime()
+          const tapLength = currentTime - lastTap
+          if (tapLength < 350 && tapLength > 0) {
+            const isFs = document.fullscreenElement === video || video.webkitDisplayingFullscreen
+            if (isFs) {
+              if (document.exitFullscreen) document.exitFullscreen().catch(() => {})
+              else if (video.webkitExitFullscreen) video.webkitExitFullscreen()
+            } else {
+              if (video.requestFullscreen) {
+                video.requestFullscreen().then(lockLandscape).catch(() => {})
+              } else if (video.webkitEnterFullscreen) {
+                video.webkitEnterFullscreen()
+              }
             }
-          } catch (e) {}
+          }
+          lastTap = currentTime
         })
       }
     })
   }
 
   attachVideoEvents()
-  // Ensure dynamically created or modal videos get attached
-  setInterval(attachVideoEvents, 1500)
+  setInterval(attachVideoEvents, 1000)
 }
 
 document.addEventListener("DOMContentLoaded", () => {
