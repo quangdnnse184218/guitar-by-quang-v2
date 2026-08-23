@@ -97,21 +97,22 @@ export function showToast(msg, type = 'success') {
   if (!toastNotification || !toastMessage) return
   if (toastTimer) clearTimeout(toastTimer)
   
+  const toastIconEl = document.getElementById('toast-icon')
   const cleanMsg = msg.replace(/^[✓✕❌⟳•\s]+/, '').trim()
   toastMessage.textContent = cleanMsg || msg
 
   toastNotification.className = `toast-${type} toast-visible`
 
-  if (toastIcon) {
+  if (toastIconEl) {
     if (type === 'error') {
-      toastIcon.textContent = '✕'
-      toastIcon.className = 'text-rose-500 font-bold'
+      toastIconEl.textContent = '✕'
+      toastIconEl.className = 'w-8 h-8 rounded-full flex items-center justify-center flex-shrink-0 text-sm font-extrabold shadow-md'
     } else if (type === 'info') {
-      toastIcon.textContent = '⟳'
-      toastIcon.className = 'animate-spin text-amber-500'
+      toastIconEl.textContent = '⟳'
+      toastIconEl.className = 'w-8 h-8 rounded-full flex items-center justify-center flex-shrink-0 text-sm font-extrabold shadow-md animate-spin'
     } else {
-      toastIcon.textContent = '✓'
-      toastIcon.className = 'text-emerald-500 font-bold'
+      toastIconEl.textContent = '✓'
+      toastIconEl.className = 'w-8 h-8 rounded-full flex items-center justify-center flex-shrink-0 text-sm font-extrabold shadow-md'
     }
   }
   
@@ -136,27 +137,36 @@ function setActiveTab(tab) {
     { key: 'profile', btn: null, sec: sectionProfile }
   ]
 
-  tabs.forEach(t => {
-    if (t.key === tab) {
-      if (t.btn) {
-        t.btn.classList.remove('text-text-muted', 'hover:text-text-primary', 'hover:bg-black/5', 'dark:hover:bg-white/5')
-        t.btn.classList.add('bg-warm-gradient', 'text-white', 'shadow-md')
-      }
-      t.sec?.classList.remove('hidden')
-    } else {
-      if (t.btn) {
-        t.btn.classList.remove('bg-warm-gradient', 'text-white', 'shadow-md')
-        t.btn.classList.add('text-text-muted', 'hover:text-text-primary')
-      }
-      t.sec?.classList.add('hidden')
-    }
-  })
+  const isProfile = tab === 'profile'
+  const commonSections = document.getElementById('dashboard-common-sections')
 
-  // Toggle dashboard tab bar visibility (hidden on profile page)
-  if (tab === 'profile') {
+  if (isProfile) {
     dashboardTabBar?.classList.add('hidden')
+    commonSections?.classList.add('hidden')
+    sectionOverview?.classList.add('hidden')
+    sectionFavorites?.classList.add('hidden')
+    sectionPurchases?.classList.add('hidden')
+    sectionProfile?.classList.remove('hidden')
   } else {
     dashboardTabBar?.classList.remove('hidden')
+    commonSections?.classList.remove('hidden')
+    sectionProfile?.classList.add('hidden')
+
+    tabs.slice(0, 3).forEach(t => {
+      if (t.key === tab) {
+        if (t.btn) {
+          t.btn.classList.remove('text-text-muted', 'hover:text-text-primary', 'hover:bg-black/5', 'dark:hover:bg-white/5')
+          t.btn.classList.add('bg-warm-gradient', 'text-white', 'shadow-md')
+        }
+        t.sec?.classList.remove('hidden')
+      } else {
+        if (t.btn) {
+          t.btn.classList.remove('bg-warm-gradient', 'text-white', 'shadow-md')
+          t.btn.classList.add('text-text-muted', 'hover:text-text-primary')
+        }
+        t.sec?.classList.add('hidden')
+      }
+    })
   }
 
   // Render content accordingly
@@ -744,19 +754,30 @@ window.openMaterialModal = function openMaterialModal(song) {
 window.navigateToPurchasesTab = function(songId) {
   window.location.hash = 'purchases'
   setActiveTab('purchases')
-  window.scrollTo({ top: 0, behavior: 'smooth' })
-  showToast('Đã chuyển sang mục Tab Đã Mua 🎸')
+
+  const song = allSongs.find(s => String(s.id) === String(songId))
+  const songTitle = song?.title ? `"${song.title}"` : ''
   
-  if (songId) {
-    setTimeout(() => {
-      const card = document.querySelector(`[data-song-id="${songId}"]`)
-      if (card) {
-        card.scrollIntoView({ behavior: 'smooth', block: 'center' })
-        card.classList.add('ring-2', 'ring-amber-400', 'shadow-2xl')
-        setTimeout(() => card.classList.remove('ring-2', 'ring-amber-400', 'shadow-2xl'), 2500)
-      }
-    }, 150)
-  }
+  showToast(songTitle ? `Đã chuyển sang Tab Đã Mua bài ${songTitle} 🎸` : 'Đã chuyển sang mục Tab Đã Mua 🎸', 'success')
+  
+  // Smooth scroll up to tab bar / purchases section
+  setTimeout(() => {
+    const targetElement = document.getElementById('section-purchases') || document.getElementById('dashboard-tab-bar')
+    if (targetElement) {
+      targetElement.scrollIntoView({ behavior: 'smooth', block: 'start' })
+    }
+    
+    if (songId) {
+      setTimeout(() => {
+        const card = document.querySelector(`[data-song-id="${songId}"]`)
+        if (card) {
+          card.scrollIntoView({ behavior: 'smooth', block: 'center' })
+          card.classList.add('ring-4', 'ring-accent-primary', 'shadow-2xl')
+          setTimeout(() => card.classList.remove('ring-4', 'ring-accent-primary', 'shadow-2xl'), 3000)
+        }
+      }, 250)
+    }
+  }, 50)
 }
 
 window.openCheckoutModal = function openCheckoutModal(tabId) {

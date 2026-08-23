@@ -204,14 +204,13 @@
           <button id="nav-tab-favorites" class="dashboard-tab-btn flex-1 min-w-[120px] py-3 px-4 rounded-2xl text-xs font-bold transition-all cursor-pointer text-text-muted hover:text-text-primary hover:bg-black/5 dark:hover:bg-white/5 flex items-center justify-center gap-2">
             <span>❤️</span>
             <span>Tab Yêu Thích (<span id="tab-fav-counter">0</span>)</span>
-          </button>
           <button id="nav-tab-purchases" class="dashboard-tab-btn flex-1 min-w-[120px] py-3 px-4 rounded-2xl text-xs font-bold transition-all cursor-pointer text-text-muted hover:text-text-primary hover:bg-black/5 dark:hover:bg-white/5 flex items-center justify-center gap-2">
             <span>⚡</span>
             <span>Tab Đã Mua (<span id="tab-purchased-counter">0</span>)</span>
           </button>
         </div>
 
-        <!-- TAB CONTENT 1: TỔNG QUAN (OVERVIEW) -->
+        <!-- TAB CONTENT 1: TỔNG QUAN (OVERVIEW TOP CARDS) -->
         <section id="section-overview" class="space-y-6">
           <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
             <!-- Left Card: Quick Start & Tools -->
@@ -262,6 +261,94 @@
               </div>
             </div>
           </div>
+        </section>
+
+        <!-- TAB CONTENT 2: TAB YÊU THÍCH (FAVORITES) -->
+        <section id="section-favorites" class="space-y-6 hidden">
+          <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-2 border-b border-glass-border">
+            <div>
+              <h2 class="text-xl sm:text-2xl font-extrabold text-text-primary flex items-center gap-2">
+                <span>❤️</span>
+                <span>Danh Sách Tab Yêu Thích Của Tôi</span>
+              </h2>
+              <p class="text-xs text-text-muted font-medium mt-0.5">
+                Các bài hát bạn đã lưu lại để theo dõi và luyện tập dần.
+              </p>
+            </div>
+            
+            <div class="flex flex-col sm:flex-row gap-3 w-full sm:w-auto">
+              <div class="relative w-full sm:w-64">
+                <input id="search-fav-input" type="text" placeholder="Tìm bài hát yêu thích..." class="w-full pl-9 pr-3 py-2.5 rounded-2xl bg-black/5 dark:bg-white/5 border border-glass-border text-xs text-text-primary placeholder:text-text-muted focus:outline-none focus:border-accent-primary" />
+                <svg class="w-4 h-4 text-text-muted absolute left-3 top-1/2 -translate-y-1/2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg>
+              </div>
+              <select id="filter-fav-select" class="w-full sm:w-auto px-4 py-2.5 rounded-2xl bg-black/5 dark:bg-white/5 border border-glass-border text-xs text-text-primary focus:outline-none focus:border-accent-primary appearance-none cursor-pointer">
+                <option value="all">Tất cả bài hát</option>
+                <option value="free">Miễn phí</option>
+                <option value="paid">Có phí</option>
+              </select>
+            </div>
+          </div>
+          
+          <div class="flex items-center gap-3">
+            <a href="/metronome.html" class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-accent-primary/10 text-accent-primary hover:bg-accent-primary/20 text-[11px] font-bold transition-colors">
+              <span>⏱️</span> Máy Gõ Nhịp
+            </a>
+            <a href="/faq.html" class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-black/5 dark:bg-white/5 hover:bg-black/10 dark:hover:bg-white/10 text-text-primary text-[11px] font-bold transition-colors">
+              <span>❓</span> Hướng dẫn (FAQ)
+            </a>
+          </div>
+
+          <!-- Favorites Grid Container -->
+          <div id="favorites-grid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+            <!-- Rendered by user-dashboard.js -->
+          </div>
+        </section>
+
+        <!-- TAB CONTENT 3: TAB ĐÃ MUA (PURCHASES) -->
+        <section id="section-purchases" class="space-y-6 hidden">
+          <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-2 border-b border-glass-border">
+            <div>
+              <h2 class="text-xl sm:text-2xl font-extrabold text-text-primary flex items-center gap-2">
+                <span>⚡</span>
+                <span>Tab Bạn Đã Sở Hữu Bản Quyền</span>
+              </h2>
+              <p class="text-xs text-text-muted font-medium mt-0.5">
+                Tải về hoặc xem lại bất cứ lúc nào không giới hạn thời gian và không cần thanh toán lại.
+              </p>
+            </div>
+
+            <div class="flex flex-col sm:flex-row gap-3 w-full sm:w-auto">
+              <div class="relative w-full sm:w-64">
+                <input id="search-purchased-input" type="text" placeholder="Tìm bài đã mua..." class="w-full pl-9 pr-3 py-2.5 rounded-2xl bg-black/5 dark:bg-white/5 border border-glass-border text-xs text-text-primary placeholder:text-text-muted focus:outline-none focus:border-accent-primary" />
+                <svg class="w-4 h-4 text-text-muted absolute left-3 top-1/2 -translate-y-1/2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg>
+              </div>
+              <select id="filter-purchased-select" class="w-full sm:w-auto px-4 py-2.5 rounded-2xl bg-black/5 dark:bg-white/5 border border-glass-border text-xs text-text-primary focus:outline-none focus:border-accent-primary appearance-none cursor-pointer">
+                <option value="all">Tất cả bài hát</option>
+                <option value="free">Miễn phí</option>
+                <option value="paid">Có phí</option>
+              </select>
+            </div>
+          </div>
+          
+          <div class="flex items-center gap-3">
+            <a href="/metronome.html" class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-accent-primary/10 text-accent-primary hover:bg-accent-primary/20 text-[11px] font-bold transition-colors">
+              <span>⏱️</span> Máy Gõ Nhịp
+            </a>
+            <a href="/faq.html" class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-black/5 dark:bg-white/5 hover:bg-black/10 dark:hover:bg-white/10 text-text-primary text-[11px] font-bold transition-colors">
+              <span>❓</span> Hướng dẫn (FAQ)
+            </a>
+          </div>
+
+          <!-- Purchases Grid Container -->
+          <div id="purchases-grid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+            <!-- Rendered by user-dashboard.js -->
+          </div>
+        </section>
+
+        <!-- ====================================================================
+             COMMON SECTIONS (VISIBLE ON OVERVIEW, FAVORITES & PURCHASES TABS)
+             ==================================================================== -->
+        <div id="dashboard-common-sections" class="space-y-10 pt-4">
 
           <!-- 1. BÀI HÁT NỔI BẬT (KHO VIDEO TAB) -->
           <div class="space-y-6 pt-4">
@@ -492,90 +579,7 @@
               </button>
             </div>
           </div>
-        </section>
-
-        <!-- TAB CONTENT 2: TAB YÊU THÍCH (FAVORITES) -->
-        <section id="section-favorites" class="space-y-6 hidden">
-          <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-2 border-b border-glass-border">
-            <div>
-              <h2 class="text-xl sm:text-2xl font-extrabold text-text-primary flex items-center gap-2">
-                <span>❤️</span>
-                <span>Danh Sách Tab Yêu Thích Của Tôi</span>
-              </h2>
-              <p class="text-xs text-text-muted font-medium mt-0.5">
-                Các bài hát bạn đã lưu lại để theo dõi và luyện tập dần.
-              </p>
-            </div>
-            
-            <div class="flex flex-col sm:flex-row gap-3 w-full sm:w-auto">
-              <div class="relative w-full sm:w-64">
-                <input id="search-fav-input" type="text" placeholder="Tìm bài hát yêu thích..." class="w-full pl-9 pr-3 py-2.5 rounded-2xl bg-black/5 dark:bg-white/5 border border-glass-border text-xs text-text-primary placeholder:text-text-muted focus:outline-none focus:border-accent-primary" />
-                <svg class="w-4 h-4 text-text-muted absolute left-3 top-1/2 -translate-y-1/2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg>
-              </div>
-              <select id="filter-fav-select" class="w-full sm:w-auto px-4 py-2.5 rounded-2xl bg-black/5 dark:bg-white/5 border border-glass-border text-xs text-text-primary focus:outline-none focus:border-accent-primary appearance-none cursor-pointer">
-                <option value="all">Tất cả bài hát</option>
-                <option value="free">Miễn phí</option>
-                <option value="paid">Có phí</option>
-              </select>
-            </div>
-          </div>
-          
-          <div class="flex items-center gap-3">
-            <a href="/metronome.html" class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-accent-primary/10 text-accent-primary hover:bg-accent-primary/20 text-[11px] font-bold transition-colors">
-              <span>⏱️</span> Máy Gõ Nhịp
-            </a>
-            <a href="/faq.html" class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-black/5 dark:bg-white/5 hover:bg-black/10 dark:hover:bg-white/10 text-text-primary text-[11px] font-bold transition-colors">
-              <span>❓</span> Hướng dẫn (FAQ)
-            </a>
-          </div>
-
-          <!-- Favorites Grid Container -->
-          <div id="favorites-grid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-            <!-- Rendered by user-dashboard.js -->
-          </div>
-        </section>
-
-        <!-- TAB CONTENT 3: TAB ĐÃ MUA (PURCHASES) -->
-        <section id="section-purchases" class="space-y-6 hidden">
-          <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-2 border-b border-glass-border">
-            <div>
-              <h2 class="text-xl sm:text-2xl font-extrabold text-text-primary flex items-center gap-2">
-                <span>⚡</span>
-                <span>Tab Bạn Đã Sở Hữu Bản Quyền</span>
-              </h2>
-              <p class="text-xs text-text-muted font-medium mt-0.5">
-                Tải về hoặc xem lại bất cứ lúc nào không giới hạn thời gian và không cần thanh toán lại.
-              </p>
-            </div>
-
-            <div class="flex flex-col sm:flex-row gap-3 w-full sm:w-auto">
-              <div class="relative w-full sm:w-64">
-                <input id="search-purchased-input" type="text" placeholder="Tìm bài đã mua..." class="w-full pl-9 pr-3 py-2.5 rounded-2xl bg-black/5 dark:bg-white/5 border border-glass-border text-xs text-text-primary placeholder:text-text-muted focus:outline-none focus:border-accent-primary" />
-                <svg class="w-4 h-4 text-text-muted absolute left-3 top-1/2 -translate-y-1/2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg>
-              </div>
-              <select id="filter-purchased-select" class="w-full sm:w-auto px-4 py-2.5 rounded-2xl bg-black/5 dark:bg-white/5 border border-glass-border text-xs text-text-primary focus:outline-none focus:border-accent-primary appearance-none cursor-pointer">
-                <option value="all">Tất cả bài hát</option>
-                <option value="free">Miễn phí</option>
-                <option value="paid">Có phí</option>
-              </select>
-            </div>
-          </div>
-          
-          <div class="flex items-center gap-3">
-            <a href="/metronome.html" class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-accent-primary/10 text-accent-primary hover:bg-accent-primary/20 text-[11px] font-bold transition-colors">
-              <span>⏱️</span> Máy Gõ Nhịp
-            </a>
-            <a href="/faq.html" class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-black/5 dark:bg-white/5 hover:bg-black/10 dark:hover:bg-white/10 text-text-primary text-[11px] font-bold transition-colors">
-              <span>❓</span> Hướng dẫn (FAQ)
-            </a>
-          </div>
-
-
-          <!-- Purchases Grid Container -->
-          <div id="purchases-grid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-            <!-- Rendered by user-dashboard.js -->
-          </div>
-        </section>
+        </div>
 
         <!-- TAB CONTENT 4: HỒ SƠ & MẬT KHẨU (PROFILE & SETTINGS) -->
         <section id="section-profile" class="space-y-6 hidden">
@@ -1298,11 +1302,14 @@
     </footer>
 
     <!-- Global Toast Container -->
-    <div id="toast-notification" class="fixed top-6 right-6 z-[9999] opacity-0 pointer-events-none transition-all duration-300 transform translate-x-12">
-      <div class="bg-glass-bg backdrop-blur-xl border border-glass-border rounded-2xl shadow-2xl px-5 py-4 max-w-sm flex items-center gap-3">
-        <div id="toast-icon" class="flex-shrink-0 text-xl font-bold"></div>
-        <p id="toast-message" class="text-text-primary font-bold text-xs leading-snug"></p>
+    <div id="toast-notification"
+      class="fixed top-6 right-6 z-[9999] max-w-md px-5 py-4 rounded-2xl shadow-[0_20px_50px_rgba(0,0,0,0.5)] flex items-center gap-3.5 transform -translate-y-4 opacity-0 transition-all duration-300 pointer-events-none border-2"
+      role="alert">
+      <div id="toast-icon"
+        class="w-8 h-8 rounded-full flex items-center justify-center flex-shrink-0 text-sm font-extrabold shadow-md">
+        ✓
       </div>
+      <p id="toast-message" class="text-sm font-bold text-white leading-snug">Thông báo</p>
     </div>
 
     <!-- Scripts -->
