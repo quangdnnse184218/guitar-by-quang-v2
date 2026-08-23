@@ -1,18 +1,10 @@
-/**
- * ==============================================================================
- * GUITAR BY QUANG v2 — KHO TAB CONTROLLER
- * ==============================================================================
- * Faithful recreation of the original project layout & features, enhanced
- * with v2's Glassmorphism & Light/Dark Theme System.
- */
-
 import { renderAmbientBlobs, renderMusicNotes, initNavbarShrink, initMobileMenu } from './common.js'
 import { initThemeToggle } from './theme-toggle.js'
 import { fetchAllSongs } from './lib/songs-service.js'
 import { applyScrollReveal } from './animations/scroll-reveal.js'
 import { isFavorite, isCompleted, toggleFavorite, toggleCompleted } from './lib/local-storage-service.js'
 
-// 1. Initialize UI Globals
+// Initialize UI
 renderAmbientBlobs()
 renderMusicNotes()
 initNavbarShrink()
@@ -23,56 +15,24 @@ initThemeToggle()
 // STATE
 // ==========================================================================
 let allSongs = []
-let currentFilter = 'all' // 'all' | 'paid' | 'free'
+let activeFilter = 'all' // all, free, paid
 let searchQuery = ''
 let activeCheckoutSyntax = ''
-
-// DOM Elements
-const songsGrid = document.getElementById('songs-grid')
-const tabCount = document.getElementById('tab-count')
-const emptyState = document.getElementById('songs-empty-state')
-const searchInput = document.getElementById('tab-search-input')
-const searchClearBtn = document.getElementById('search-clear-btn')
-const filterPills = document.querySelectorAll('.filter-pill')
-const resetFiltersBtn = document.getElementById('reset-filters-btn')
 
 // Toast Notification
 const toastNotification = document.getElementById('toast-notification')
 const toastMessage = document.getElementById('toast-message')
 let toastTimer = null
 
-/**
- * Remove Vietnamese diacritics for flexible fuzzy searching
- */
-export function normalizeVietnameseStr(str) {
-  if (!str) return ''
-  return str
-    .toLowerCase()
-    .normalize('NFD')
-    .replace(/[\u0300-\u036f]/g, '')
-    .replace(/đ/g, 'd')
-    .replace(/Đ/g, 'd')
-    .trim()
-}
-
-export function normalizeSpacelessStr(str) {
-  return normalizeVietnameseStr(str).replace(/[\s\-_.,/]+/g, '')
-}
-
-/**
- * Show a vibrant, prominent toast notification
- */
-export function showToast(msg, type = 'success') {
+window.showToast = function showToast(msg, type = 'success') {
   if (!toastNotification || !toastMessage) return
   if (toastTimer) clearTimeout(toastTimer)
   
   const toastIcon = document.getElementById('toast-icon')
   
-  // Clean message: strip leading checkmarks/crosses to avoid duplication
   const cleanMsg = msg.replace(/^[✓✕❌⟳•\s]+/, '').trim()
   toastMessage.textContent = cleanMsg || msg
 
-  // Reset and apply dedicated toast class
   toastNotification.className = `toast-${type} toast-visible`
 
   if (toastIcon) {
@@ -93,13 +53,10 @@ export function showToast(msg, type = 'success') {
   }, 4000)
 }
 
-window.showToast = showToast
-
 // ==========================================================================
-// CARD TEMPLATE RENDERING (Matching the original project)
+// RENDER CARD (Copied from main.js)
 // ==========================================================================
-
-export function renderSongCard(tab, index) {
+function renderSongCard(tab, index, extraClass = '') {
   const levelNum = tab.level_num ?? tab.levelNum ?? 5
   const percent = Math.min(100, Math.max(10, (levelNum / 10) * 100))
   const isFree = tab.is_free ?? tab.isFree ?? false
@@ -129,14 +86,10 @@ export function renderSongCard(tab, index) {
     </div>
   `
 
-  // ========================================================================
-  // 1. BIẾN THỂ: CARD BÀI MIỄN PHÍ (FREE)
-  // ========================================================================
   if (isFree) {
     return `
-      <div onclick="window.openFreeTabModal('${tab.id}')" class="song-card glass-card card-interactive p-4 sm:p-5 flex flex-col justify-between space-y-4 group cursor-pointer" data-id="${tab.id}">
+      <div onclick="window.openFreeTabModal('${tab.id}')" class="song-card glass-card card-interactive p-4 sm:p-5 flex flex-col justify-between space-y-4 group cursor-pointer ${extraClass}" data-id="${tab.id}">
         <div class="space-y-3.5">
-          <!-- Visual Banner Header cho Card Free -->
           <div class="relative overflow-hidden rounded-2xl aspect-[16/10] bg-gradient-to-br from-[#1E3A2F] via-[#2A4D3E] to-[#172A22] p-4 flex flex-col justify-between text-white shadow-inner group-hover:scale-[1.02] transition-transform duration-500 ease-out">
             <div class="flex justify-between items-start text-xs uppercase font-bold tracking-wider">
               <span class="bg-black/50 backdrop-blur px-2.5 py-1 rounded-full text-white/95">${tab.category || 'Fingerstyle'}</span>
@@ -161,7 +114,6 @@ export function renderSongCard(tab, index) {
             </div>
           </div>
 
-          <!-- Thông tin bài hát -->
           <div class="space-y-2">
             <h3 class="text-lg sm:text-xl font-bold text-text-primary group-hover:text-emerald-600 dark:group-hover:text-emerald-400 transition-colors leading-snug">
               ${tab.title}
@@ -183,7 +135,6 @@ export function renderSongCard(tab, index) {
           </div>
         </div>
 
-        <!-- Nút CTA xem miễn phí -->
         <div class="pt-2">
           <div class="w-full py-2.5 rounded-full badge-semantic-success font-bold text-xs transition-all shadow-sm flex items-center justify-center gap-1.5 active:scale-95 text-center cursor-pointer">
             <span>Xem Video Tab (Miễn phí)</span>
@@ -196,9 +147,7 @@ export function renderSongCard(tab, index) {
     `
   }
 
-  // ========================================================================
-  // 2. BIẾN THỂ: CARD BÀI TRẢ PHÍ
-  // ========================================================================
+  // 2. PAID CARD
   const priceFormatted = tab.price_formatted || tab.priceFormatted || '239.000đ'
   const discountNote = tab.discount_note || tab.discountNote || ''
   const hasDemo = tab.has_demo ?? tab.hasDemo ?? false
@@ -237,7 +186,7 @@ export function renderSongCard(tab, index) {
   }
 
   return `
-    <div onclick="window.openCheckoutModal('${tab.id}')" class="song-card glass-card card-interactive p-4 sm:p-5 flex flex-col justify-between space-y-4 group cursor-pointer" data-id="${tab.id}">
+    <div onclick="window.openCheckoutModal('${tab.id}')" class="song-card glass-card card-interactive p-4 sm:p-5 flex flex-col justify-between space-y-4 group cursor-pointer ${extraClass}" data-id="${tab.id}">
       <div class="space-y-3.5">
         <div class="relative overflow-hidden rounded-2xl aspect-[16/10] bg-gradient-to-br ${thumbnailBg} p-4 flex flex-col justify-between text-white shadow-inner group-hover:scale-[1.02] transition-transform duration-500 ease-out">
           <div class="flex justify-between items-start text-xs uppercase font-bold tracking-wider">
@@ -290,22 +239,101 @@ export function renderSongCard(tab, index) {
 }
 
 // ==========================================================================
-// FAVORITE & COMPLETED HANDLERS
+// RENDER & FILTER LIST
 // ==========================================================================
+function removeAccents(str) {
+  return str.normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase()
+}
 
+function updateGrid() {
+  const grid = document.getElementById('songs-grid')
+  if (!grid) return
+
+  let filtered = allSongs
+
+  // Lọc theo tag
+  if (activeFilter === 'free') {
+    filtered = filtered.filter(s => s.is_free || s.isFree)
+  } else if (activeFilter === 'paid') {
+    filtered = filtered.filter(s => !s.is_free && !s.isFree)
+  }
+
+  // Lọc theo search
+  if (searchQuery) {
+    const q = removeAccents(searchQuery)
+    filtered = filtered.filter(s => {
+      const titleMatch = removeAccents(s.title || '').includes(q)
+      const singerMatch = removeAccents(s.singer || '').includes(q)
+      return titleMatch || singerMatch
+    })
+  }
+
+  if (filtered.length === 0) {
+    grid.innerHTML = \`<div class="col-span-full text-center py-20">
+      <span class="text-4xl block mb-4">🎵</span>
+      <p class="text-text-muted font-medium">Không tìm thấy bài hát nào phù hợp.</p>
+    </div>\`
+    return
+  }
+
+  const html = filtered.map((song, i) => renderSongCard(song, i)).join('')
+  grid.innerHTML = html
+
+  setTimeout(() => {
+    applyScrollReveal('.song-card')
+  }, 50)
+}
+
+function initSearchAndFilter() {
+  const searchInput = document.getElementById('search-input')
+  const filterPills = document.querySelectorAll('#filter-pills .filter-pill')
+
+  if (searchInput) {
+    searchInput.addEventListener('input', (e) => {
+      searchQuery = e.target.value
+      updateGrid()
+    })
+  }
+
+  filterPills.forEach(pill => {
+    pill.addEventListener('click', () => {
+      filterPills.forEach(p => {
+        p.classList.remove('active', 'text-text-primary')
+        p.classList.add('text-text-muted')
+      })
+      pill.classList.add('active', 'text-text-primary')
+      pill.classList.remove('text-text-muted')
+      
+      activeFilter = pill.getAttribute('data-filter') || 'all'
+      updateGrid()
+    })
+  })
+}
+
+// ==========================================================================
+// LOAD DATA
+// ==========================================================================
+async function loadData() {
+  allSongs = await fetchAllSongs()
+  updateGrid()
+}
+
+// ==========================================================================
+// FAVORITE & COMPLETED HANDLERS (Copied from main.js)
+// ==========================================================================
 window.handleToggleFavorite = function handleToggleFavorite(event, songId) {
   if (event) event.stopPropagation()
   const nextState = toggleFavorite(songId)
-  const btns = document.querySelectorAll(`[data-fav-btn="${songId}"]`)
+  const btns = document.querySelectorAll(\`[data-fav-btn="\${songId}"]\`)
   btns.forEach(btn => {
     if (nextState) {
       btn.className = 'w-7 h-7 rounded-full flex items-center justify-center transition-all cursor-pointer shadow-sm bg-rose-500 text-white scale-105'
       btn.title = 'Bỏ yêu thích'
-      btn.innerHTML = `<svg class="w-3.5 h-3.5 fill-current" viewBox="0 0 24 24"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg>`
+      btn.innerHTML = \`<svg class="w-3.5 h-3.5 fill-current" viewBox="0 0 24 24"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg>\`
     } else {
       btn.className = 'w-7 h-7 rounded-full flex items-center justify-center transition-all cursor-pointer shadow-sm bg-black/40 text-white/80 hover:text-white hover:bg-black/60'
       btn.title = 'Yêu thích'
-      btn.innerHTML = `<svg class="w-3.5 h-3.5 fill-none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg>`
+      btn.innerHTML = \`<svg class="w-3.5 h-3.5 fill-none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg>\`
     }
   })
   showToast(nextState ? 'Đã lưu vào danh sách Yêu thích ❤️' : 'Đã bỏ khỏi danh sách Yêu thích')
@@ -314,25 +342,24 @@ window.handleToggleFavorite = function handleToggleFavorite(event, songId) {
 window.handleToggleCompleted = function handleToggleCompleted(event, songId) {
   if (event) event.stopPropagation()
   const nextState = toggleCompleted(songId)
-  const btns = document.querySelectorAll(`[data-comp-btn="${songId}"]`)
+  const btns = document.querySelectorAll(\`[data-comp-btn="\${songId}"]\`)
   btns.forEach(btn => {
     if (nextState) {
       btn.className = 'w-7 h-7 rounded-full flex items-center justify-center transition-all cursor-pointer shadow-sm bg-emerald-500 text-white scale-105'
       btn.title = 'Đánh dấu chưa học'
-      btn.innerHTML = `<svg class="w-3.5 h-3.5 fill-none" stroke="currentColor" stroke-width="3" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/></svg>`
+      btn.innerHTML = \`<svg class="w-3.5 h-3.5 fill-none" stroke="currentColor" stroke-width="3" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/></svg>\`
     } else {
       btn.className = 'w-7 h-7 rounded-full flex items-center justify-center transition-all cursor-pointer shadow-sm bg-black/40 text-white/80 hover:text-white hover:bg-black/60'
       btn.title = 'Đã học xong'
-      btn.innerHTML = `<svg class="w-3.5 h-3.5 fill-none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/></svg>`
+      btn.innerHTML = \`<svg class="w-3.5 h-3.5 fill-none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/></svg>\`
     }
   })
   showToast(nextState ? 'Đã đánh dấu Đã học xong ✓' : 'Đã bỏ đánh dấu Đã học xong')
 }
 
 // ==========================================================================
-// MODAL CONTROLLER FUNCTIONS
+// MODALS LOGIC
 // ==========================================================================
-
 export function toggleModal(modalId, show) {
   const modal = document.getElementById(modalId)
   if (!modal) return
@@ -350,10 +377,7 @@ export function toggleModal(modalId, show) {
       document.body.classList.add('modal-open')
     })
   } else {
-    // Pause any active videos
-    modal.querySelectorAll('video').forEach(v => {
-      v.pause()
-    })
+    modal.querySelectorAll('video').forEach(v => v.pause())
     const iframe = modal.querySelector('iframe')
     if (iframe) iframe.src = ''
 
@@ -370,7 +394,6 @@ export function toggleModal(modalId, show) {
   }
 }
 
-// Quick Video Demo Modal
 window.openVideoDemoModal = function openVideoDemoModal(title, videoSrc) {
   if (!title || !videoSrc) return
   const titleEl = document.getElementById('video-demo-title')
@@ -384,7 +407,6 @@ window.openVideoDemoModal = function openVideoDemoModal(title, videoSrc) {
   toggleModal('video-demo-modal', true)
 }
 
-// Image Zoom Modal (for QR)
 window.openImageModal = function openImageModal(src, title, caption) {
   const imgEl = document.getElementById('image-modal-img')
   const titleEl = document.getElementById('image-modal-title')
@@ -395,7 +417,6 @@ window.openImageModal = function openImageModal(src, title, caption) {
   toggleModal('image-preview-modal', true)
 }
 
-// Checkout Modal (Paid)
 window.openCheckoutModal = function openCheckoutModal(tabId) {
   if (!allSongs || !allSongs.length) return
   const tab = allSongs.find(t => t.id === tabId)
@@ -416,10 +437,10 @@ window.openCheckoutModal = function openCheckoutModal(tabId) {
   const videoContainer = document.getElementById('checkout-modal-video-container')
 
   if (titleEl) titleEl.textContent = tab.title
-  if (metaEl) metaEl.textContent = `Tuning: ${tab.tuning || 'Standard'} • Bản Video Tab chạy nốt đồng bộ với âm thanh đàn mộc thật và nhịp gõ`
+  if (metaEl) metaEl.textContent = \`Tuning: \${tab.tuning || 'Standard'} • Bản Video Tab chạy nốt đồng bộ với âm thanh đàn mộc thật và nhịp gõ\`
   if (priceEl) priceEl.textContent = tab.price_formatted || tab.priceFormatted || '239.000 VNĐ'
 
-  if (levelEl) levelEl.textContent = tab.level || `${tab.level_num ?? tab.levelNum ?? 5}/10`
+  if (levelEl) levelEl.textContent = tab.level || \`\${tab.level_num ?? tab.levelNum ?? 5}/10\`
   if (tuningEl) tuningEl.textContent = tab.tuning || 'Standard'
   if (capoEl) capoEl.textContent = tab.capo || 'Không kẹp'
   if (tempoEl) tempoEl.textContent = tab.tempo || '~95 BPM'
@@ -428,19 +449,17 @@ window.openCheckoutModal = function openCheckoutModal(tabId) {
   const discountNote = tab.discount_note || tab.discountNote || ''
   if (discountTag) {
     if (discountNote) {
-      discountTag.textContent = `(${discountNote})`
+      discountTag.textContent = \`(\${discountNote})\`
       discountTag.classList.remove('hidden')
     } else {
       discountTag.classList.add('hidden')
     }
   }
 
-  // Syntax calculation
   const cleanSongCode = tab.title.replace(/[^a-zA-Z0-9]/g, '').toUpperCase().slice(0, 10)
-  activeCheckoutSyntax = `VIDEOTAB ${cleanSongCode}`
+  activeCheckoutSyntax = \`VIDEOTAB \${cleanSongCode}\`
   if (syntaxEl) syntaxEl.textContent = activeCheckoutSyntax
 
-  // Video Demo Section
   const hasDemo = tab.has_demo ?? tab.hasDemo ?? false
   const videoDemo = tab.video_demo || tab.videoDemo || ''
   if (videoEl && videoSrcEl && videoContainer) {
@@ -457,7 +476,6 @@ window.openCheckoutModal = function openCheckoutModal(tabId) {
   toggleModal('checkout-modal', true)
 }
 
-// Free Tab Modal
 window.openFreeTabModal = function openFreeTabModal(tabId) {
   if (!allSongs || !allSongs.length) return
   const tab = allSongs.find(t => t.id === tabId)
@@ -476,311 +494,147 @@ window.openFreeTabModal = function openFreeTabModal(tabId) {
   const pdfBtn = document.getElementById('free-tab-pdf-btn')
 
   if (titleEl) titleEl.textContent = tab.title
-  if (levelEl) levelEl.textContent = tab.level || `${tab.level_num ?? tab.levelNum ?? 5}/10`
+  if (levelEl) levelEl.textContent = tab.level || \`\${tab.level_num ?? tab.levelNum ?? 5}/10\`
   if (tuningEl) tuningEl.textContent = tab.tuning || 'Standard'
   if (durationEl) durationEl.textContent = tab.duration || '03:15'
   if (capoEl) capoEl.textContent = tab.capo || 'Không kẹp'
   if (tempoEl) tempoEl.textContent = tab.tempo || '~95 BPM'
 
-  // Techniques Detection
+  // Techniques mapping
+  const knownTech = [
+    { key: 'slap', label: 'Slap (Gõ thùng)' },
+    { key: 'slide', label: 'Slide (Vuốt)' },
+    { key: 'hammer', label: 'Hammer-on' },
+    { key: 'pull', label: 'Pull-off' },
+    { key: 'harmonic', label: 'Harmonic' }
+  ]
   if (techContainer) {
-    let techs = ['Tỉa ngón', 'Slap', 'Nail Attack']
-    if (tab.description) {
-      const descLower = tab.description.toLowerCase()
-      const detected = []
-      if (descLower.includes('slap')) detected.push('Slap')
-      if (descLower.includes('nail attack')) detected.push('Nail Attack')
-      if (descLower.includes('hammer') || descLower.includes('pull')) detected.push('Hammer-on / Pull-off')
-      if (descLower.includes('slide') || descLower.includes('vuốt')) detected.push('Slide (Vuốt dây)')
-      if (descLower.includes('rải') || descLower.includes('tỉa')) detected.push('Tỉa ngón / Rải')
-      if (descLower.includes('bass')) detected.push('Đi Bass')
-      if (detected.length > 0) techs = detected
+    const desc = (tab.description || '').toLowerCase()
+    let html = ''
+    let found = false
+    knownTech.forEach(tc => {
+      if (desc.includes(tc.key)) {
+        html += \`<span class="px-2.5 py-1 rounded-lg modal-inner-card text-text-primary text-[11px] font-semibold shadow-xs">\${tc.label}</span>\`
+        found = true
+      }
+    })
+    if (!found) {
+      html += \`<span class="px-2.5 py-1 rounded-lg modal-inner-card text-text-primary text-[11px] font-semibold shadow-xs">Fingerstyle Cơ bản</span>\`
     }
-    techContainer.innerHTML = techs.map(t => `<span class="px-2.5 py-1 rounded-lg modal-inner-card text-text-primary text-[11px] font-semibold shadow-xs">${t}</span>`).join('')
+    techContainer.innerHTML = html
   }
 
-  // Video embed url: parse Youtube nếu có hoặc dùng local video
-  const videoUrl = tab.target_url || tab.targetUrl || tab.video_demo || tab.videoDemo || ''
-  let isYouTube = false
-  let embedUrl = videoUrl
+  const targetUrl = tab.target_url || tab.targetUrl || tab.tab_url || tab.tabUrl
+  if (targetUrl) {
+    if (backupLinkEl) {
+      backupLinkEl.href = targetUrl
+      backupLinkEl.classList.remove('hidden')
+    }
+    const isYt = targetUrl.includes('youtu')
+    const isTiktok = targetUrl.includes('tiktok.com')
 
-  if (videoUrl.includes('youtube.com/watch?v=')) {
-    const videoId = videoUrl.split('watch?v=')[1]?.split('&')[0]
-    embedUrl = `https://www.youtube.com/embed/${videoId}?autoplay=1`
-    isYouTube = true
-  } else if (videoUrl.includes('youtu.be/')) {
-    const videoId = videoUrl.split('youtu.be/')[1]?.split('?')[0]
-    embedUrl = `https://www.youtube.com/embed/${videoId}?autoplay=1`
-    isYouTube = true
-  }
-
-  if (isYouTube && iframeEl) {
-    iframeEl.src = embedUrl
-    iframeEl.classList.remove('hidden')
-    if (localVideoEl) localVideoEl.classList.add('hidden')
-  } else if (tab.has_demo && tab.video_demo && localVideoEl) {
-    const cleanVideo = tab.video_demo.startsWith('/') ? tab.video_demo : '/' + tab.video_demo
-    localVideoEl.src = cleanVideo
-    localVideoEl.classList.remove('hidden')
+    if (iframeEl && localVideoEl) {
+      if (isYt) {
+        let videoId = ''
+        if (targetUrl.includes('youtu.be/')) videoId = targetUrl.split('youtu.be/')[1].split('?')[0]
+        else if (targetUrl.includes('v=')) videoId = targetUrl.split('v=')[1].split('&')[0]
+        
+        iframeEl.src = \`https://www.youtube.com/embed/\${videoId}\`
+        iframeEl.classList.remove('hidden')
+        localVideoEl.classList.add('hidden')
+      } else if (isTiktok) {
+        const parts = targetUrl.split('/')
+        const videoId = parts[parts.length - 1].split('?')[0]
+        iframeEl.src = \`https://www.tiktok.com/embed/v2/\${videoId}\`
+        iframeEl.classList.remove('hidden')
+        localVideoEl.classList.add('hidden')
+      } else if (targetUrl.endsWith('.mp4')) {
+        iframeEl.src = ''
+        iframeEl.classList.add('hidden')
+        const cleanUrl = targetUrl.startsWith('/') ? targetUrl : '/' + targetUrl
+        localVideoEl.src = cleanUrl
+        localVideoEl.classList.remove('hidden')
+      } else {
+        iframeEl.src = targetUrl
+        iframeEl.classList.remove('hidden')
+        localVideoEl.classList.add('hidden')
+      }
+    }
+  } else {
     if (iframeEl) iframeEl.classList.add('hidden')
-  } else if (iframeEl) {
-    iframeEl.src = ''
-    iframeEl.classList.add('hidden')
     if (localVideoEl) localVideoEl.classList.add('hidden')
-  }
-
-  if (backupLinkEl) {
-    backupLinkEl.href = videoUrl || '#'
+    if (backupLinkEl) backupLinkEl.classList.add('hidden')
   }
 
   if (pdfBtn) {
-    const pdfUrl = tab.pdf_url || tab.pdfUrl
-    if (pdfUrl) {
-      pdfBtn.removeAttribute('disabled')
-      pdfBtn.href = pdfUrl
-      pdfBtn.target = '_blank'
-      pdfBtn.className = 'w-full py-3 rounded-full bg-accent-primary hover:brightness-105 text-white dark:text-[#0B0E1A] font-bold text-xs transition-all shadow-md flex items-center justify-center gap-2 text-center cursor-pointer'
-      pdfBtn.innerHTML = `
-        <svg class="w-4 h-4 fill-none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>
-        <span>Tải file PDF Tab</span>
-      `
+    if (tab.pdf_url || tab.pdfUrl) {
+      pdfBtn.href = tab.pdf_url || tab.pdfUrl
+      pdfBtn.classList.remove('hidden')
     } else {
-      pdfBtn.setAttribute('disabled', 'true')
-      pdfBtn.removeAttribute('href')
-      pdfBtn.className = 'w-full py-3 rounded-full modal-inner-card text-text-muted font-bold text-xs transition-all shadow-xs flex items-center justify-center gap-2 text-center cursor-not-allowed opacity-60'
-      pdfBtn.innerHTML = `
-        <svg class="w-4 h-4 text-accent-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>
-        <span>Tải file PDF (Đang cập nhật)</span>
-      `
+      pdfBtn.classList.add('hidden')
     }
   }
 
   toggleModal('free-tab-modal', true)
 }
 
-// ==========================================================================
-// RENDER TABS GRID
-// ==========================================================================
-
-function renderTabs() {
-  if (!songsGrid) return
-
-  const searchRaw = searchQuery.trim()
-  const searchNormalized = normalizeVietnameseStr(searchRaw)
-  const searchSpaceless = normalizeSpacelessStr(searchRaw)
-
-  const filtered = allSongs.filter(tab => {
-    let matchFilter = true
-    const isFree = tab.is_free ?? tab.isFree ?? false
-    if (currentFilter === 'paid') {
-      matchFilter = isFree === false
-    } else if (currentFilter === 'free') {
-      matchFilter = isFree === true
-    }
-    if (!matchFilter) return false
-    if (!searchRaw) return true
-
-    const titleNorm = normalizeVietnameseStr(tab.title || '')
-    const titleSpaceless = normalizeSpacelessStr(tab.title || '')
-    const descNorm = normalizeVietnameseStr(tab.description || '')
-    const artistNorm = normalizeVietnameseStr(tab.artist || '')
-
-    const matchTitle = titleNorm.includes(searchNormalized) || titleSpaceless.includes(searchSpaceless)
-    const matchDesc = descNorm.includes(searchNormalized) || artistNorm.includes(searchNormalized)
-    return matchTitle || matchDesc
-  })
-
-  if (tabCount) tabCount.textContent = filtered.length
-
-  if (filtered.length === 0) {
-    songsGrid.innerHTML = ''
-    songsGrid.classList.add('hidden')
-    if (emptyState) {
-      emptyState.classList.remove('hidden')
-      const emptyMsg = document.getElementById('empty-state-message')
-      if (emptyMsg) {
-        emptyMsg.textContent = searchRaw 
-          ? `Không tìm thấy bài nào khớp với từ khóa "${searchRaw}". Anh em cần bài gì cứ nhắn thẳng qua Zalo để mình xếp lịch soạn nhé!`
-          : 'Anh em cần bài gì cứ nhắn thẳng qua Zalo để mình xếp lịch soạn nhé!'
-      }
-    }
-    return
-  }
-
-  songsGrid.classList.remove('hidden')
-  if (emptyState) emptyState.classList.add('hidden')
-
-  songsGrid.innerHTML = filtered.map((tab, index) => renderSongCard(tab, index)).join('')
-
-  applyScrollReveal('.song-card')
-}
-
-// ==========================================================================
-// EVENT LISTENERS INITIALIZATION
-// ==========================================================================
-
-function setupEventListeners() {
-  // Filter pills
-  filterPills.forEach(pill => {
-    pill.addEventListener('click', () => {
-      filterPills.forEach(p => p.classList.remove('active'))
-      pill.classList.add('active')
-      currentFilter = pill.getAttribute('data-filter') || 'all'
-      renderTabs()
-    })
-  })
-
-  // Search Input with Debounce
-  let debounceTimeout = null
-  if (searchInput) {
-    searchInput.addEventListener('input', (e) => {
-      clearTimeout(debounceTimeout)
-      const val = e.target.value
-      if (searchClearBtn) searchClearBtn.classList.toggle('hidden', val.length === 0)
-
-      debounceTimeout = setTimeout(() => {
-        searchQuery = val
-        renderTabs()
-      }, 150)
-    })
-  }
-
-  if (searchClearBtn) {
-    searchClearBtn.addEventListener('click', () => {
-      if (searchInput) {
-        searchInput.value = ''
-        searchClearBtn.classList.add('hidden')
-      }
-      searchQuery = ''
-      renderTabs()
-    })
-  }
-
-  if (resetFiltersBtn) {
-    resetFiltersBtn.addEventListener('click', () => {
-      if (searchInput) {
-        searchInput.value = ''
-        if (searchClearBtn) searchClearBtn.classList.add('hidden')
-      }
-      searchQuery = ''
-      currentFilter = 'all'
-      filterPills.forEach(p => {
-        if (p.getAttribute('data-filter') === 'all') p.classList.add('active')
-        else p.classList.remove('active')
-      })
-      renderTabs()
-    })
-  }
-
-  // Modal Closers
+function initModalInteractions() {
   const closeCheckoutBtn = document.getElementById('close-checkout-modal')
-  if (closeCheckoutBtn) closeCheckoutBtn.addEventListener('click', () => toggleModal('checkout-modal', false))
-
   const closeFreeBtn = document.getElementById('close-free-tab-modal')
-  if (closeFreeBtn) closeFreeBtn.addEventListener('click', () => toggleModal('free-tab-modal', false))
-
   const closeVideoDemoBtn = document.getElementById('close-video-demo-modal')
+  const closeImageBtn = document.getElementById('close-image-modal')
+  const checkoutModal = document.getElementById('checkout-modal')
+  const freeTabModal = document.getElementById('free-tab-modal')
+  const videoDemoModal = document.getElementById('video-demo-modal')
+  const imageModal = document.getElementById('image-preview-modal')
+
+  if (closeCheckoutBtn) closeCheckoutBtn.addEventListener('click', () => toggleModal('checkout-modal', false))
+  if (closeFreeBtn) closeFreeBtn.addEventListener('click', () => toggleModal('free-tab-modal', false))
   if (closeVideoDemoBtn) closeVideoDemoBtn.addEventListener('click', () => toggleModal('video-demo-modal', false))
+  if (closeImageBtn) closeImageBtn.addEventListener('click', () => toggleModal('image-preview-modal', false))
 
-  const closeImageModalBtn = document.getElementById('close-image-modal')
-  if (closeImageModalBtn) closeImageModalBtn.addEventListener('click', () => toggleModal('image-preview-modal', false))
+  window.addEventListener('click', (e) => {
+    if (e.target === checkoutModal) toggleModal('checkout-modal', false)
+    if (e.target === freeTabModal) toggleModal('free-tab-modal', false)
+    if (e.target === videoDemoModal) toggleModal('video-demo-modal', false)
+    if (e.target === imageModal) toggleModal('image-preview-modal', false)
+  })
 
-  // QR Trigger in modal
-  const qrTrigger = document.getElementById('qr-preview-trigger')
-  if (qrTrigger) {
-    qrTrigger.addEventListener('click', () => {
-      window.openImageModal('/assets/qr.jpg', 'Mã QR Chuyển Khoản TpBank (03970202801)', 'Quét mã QR bằng App Ngân hàng bất kỳ để nhận bản Video Tab và hỗ trợ 1-1 qua Zalo.')
-    })
-  }
-
-  // Copy Buttons
-  const copyStkBtn = document.getElementById('copy-stk-btn')
-  if (copyStkBtn) {
-    copyStkBtn.addEventListener('click', async () => {
-      try {
-        await navigator.clipboard.writeText('03970202801')
-        showToast('Đã sao chép số tài khoản TpBank: 03970202801 📋')
-      } catch (e) {
-        showToast('Không thể sao chép tự động.')
-      }
-    })
-  }
+  window.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape') {
+      toggleModal('checkout-modal', false)
+      toggleModal('free-tab-modal', false)
+      toggleModal('video-demo-modal', false)
+      toggleModal('image-preview-modal', false)
+    }
+  })
 
   const copySyntaxBtn = document.getElementById('copy-syntax-btn')
   if (copySyntaxBtn) {
-    copySyntaxBtn.addEventListener('click', async () => {
-      try {
-        await navigator.clipboard.writeText(activeCheckoutSyntax || 'VIDEOTAB TAB')
-        showToast(`Đã sao chép cú pháp: ${activeCheckoutSyntax} 📋`)
-      } catch (e) {
-        showToast('Không thể sao chép tự động.')
-      }
-    })
-  }
-
-  // Share Buttons
-  const shareZaloBtn = document.getElementById('share-zalo-btn')
-  if (shareZaloBtn) {
-    shareZaloBtn.addEventListener('click', () => {
-      const url = encodeURIComponent(window.location.href)
-      window.open(`https://sp.zalo.me/share_inline?link=${url}`, '_blank')
-    })
-  }
-
-  const shareFbBtn = document.getElementById('share-fb-btn')
-  if (shareFbBtn) {
-    shareFbBtn.addEventListener('click', () => {
-      const url = encodeURIComponent(window.location.href)
-      window.open(`https://www.facebook.com/sharer/sharer.php?u=${url}`, '_blank')
-    })
-  }
-
-  // Click outside to close modals
-  const modals = ['checkout-modal', 'free-tab-modal', 'video-demo-modal', 'image-preview-modal']
-  modals.forEach(id => {
-    const el = document.getElementById(id)
-    if (el) {
-      el.addEventListener('click', (e) => {
-        if (e.target === el) toggleModal(id, false)
+    copySyntaxBtn.addEventListener('click', () => {
+      navigator.clipboard.writeText(activeCheckoutSyntax).then(() => {
+        showToast('Đã copy cú pháp: ' + activeCheckoutSyntax)
+      }).catch(() => {
+        showToast('Trình duyệt không hỗ trợ copy tự động!', 'error')
       })
-    }
-  })
-
-  // Escape key closes modals
-  document.addEventListener('keydown', (e) => {
-    if (e.key === 'Escape') {
-      modals.forEach(id => toggleModal(id, false))
-    }
-  })
-}
-
-// ==========================================================================
-// INITIALIZATION
-// ==========================================================================
-
-async function initKhoTab() {
-  setupEventListeners()
-
-  allSongs = await fetchAllSongs()
-
-  if (!allSongs || allSongs.length === 0) {
-    if (tabCount) tabCount.textContent = '0'
-    if (songsGrid) {
-      songsGrid.innerHTML = `
-        <div class="col-span-full w-full py-14 text-center text-text-muted text-sm font-medium space-y-3 glass-card p-8 rounded-3xl">
-          <div class="text-4xl">🎸</div>
-          <p class="text-base font-bold text-text-primary">Kho Video Tab đang bị gián đoạn kết nối, anh em thử tải lại trang giúp mình nhé!</p>
-          <p class="text-xs">Nếu vẫn không được, nhắn mình qua Zalo 0326.768.885 để mình gửi tab trực tiếp nhé.</p>
-          <button onclick="location.reload()" class="mt-2 inline-flex items-center gap-2 px-6 py-2.5 rounded-full bg-accent-primary text-[#0B0E1A] text-xs font-bold shadow-md hover:brightness-105 transition-all cursor-pointer">
-            Tải lại trang
-          </button>
-        </div>
-      `
-    }
-    return
+    })
   }
 
-  renderTabs()
+  const copyStkBtn = document.getElementById('copy-stk-btn')
+  if (copyStkBtn) {
+    copyStkBtn.addEventListener('click', () => {
+      const stk = '03970202801'
+      navigator.clipboard.writeText(stk).then(() => {
+        showToast('Đã copy STK: ' + stk)
+      }).catch(() => {
+        showToast('Lỗi khi copy', 'error')
+      })
+    })
+  }
 }
 
-initKhoTab()
+document.addEventListener('DOMContentLoaded', () => {
+  initSearchAndFilter()
+  initModalInteractions()
+  loadData()
+})
