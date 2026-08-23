@@ -126,12 +126,6 @@ document.addEventListener('DOMContentLoaded', () => {
 
       if (error) throw error
 
-      // Kiểm tra trường hợp user đã tồn tại sẵn trong hệ thống (Supabase trả identities rỗng)
-      if (data?.user?.identities && data.user.identities.length === 0) {
-        setLoading(false)
-        return showAlert('Email này đã được đăng ký tài khoản trước đó. Vui lòng đăng nhập hoặc sử dụng email khác.')
-      }
-
       // Tự động ghi bản ghi vào bảng 'profiles'
       if (data?.user) {
         try {
