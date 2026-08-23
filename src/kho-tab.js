@@ -434,10 +434,20 @@ window.openImageModal = function openImageModal(src, title, caption) {
   toggleModal('image-preview-modal', true)
 }
 
-window.openCheckoutModal = function openCheckoutModal(tabId) {
+window.openCheckoutModal = async function openCheckoutModal(tabId) {
   if (!allSongs || !allSongs.length) return
   const tab = allSongs.find(t => t.id === tabId)
   if (!tab) return
+
+  // Gate Check
+  const { data: { session } } = await supabase.auth.getSession()
+  if (!session?.user) {
+    showToast('Vui lòng đăng nhập để xem thông tin mua Tab!', 'error')
+    setTimeout(() => {
+      window.location.href = '/login.html?redirect=/kho-tab.html'
+    }, 1500)
+    return
+  }
 
   const titleEl = document.getElementById('modal-tab-title')
   const metaEl = document.getElementById('modal-tab-meta')

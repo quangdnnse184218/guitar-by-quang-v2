@@ -131,6 +131,7 @@ document.addEventListener('DOMContentLoaded', () => {
         try {
           await supabase.from('profiles').upsert({
             id: data.user.id,
+            email: email,
             full_name: displayName,
             avatar_url: '',
             role: 'user'

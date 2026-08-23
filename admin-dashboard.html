@@ -66,12 +66,18 @@
         </div>
 
         <!-- Navigation Tabs Switcher -->
-        <div class="inline-flex p-1 rounded-2xl glass-card border border-glass-border shadow-xs">
+        <div class="inline-flex p-1 rounded-2xl glass-card border border-glass-border shadow-xs flex-wrap">
           <button type="button" id="tab-nav-songs" class="px-4 py-2 rounded-xl text-xs font-bold transition-all cursor-pointer bg-warm-gradient text-white shadow-xs">
             🎵 Kho Video Tab
           </button>
           <button type="button" id="tab-nav-gears" class="px-4 py-2 rounded-xl text-xs font-bold transition-all cursor-pointer text-text-muted hover:text-text-primary">
             🛠️ Bộ Đồ Nghề
+          </button>
+          <button type="button" id="tab-nav-users" class="px-4 py-2 rounded-xl text-xs font-bold transition-all cursor-pointer text-text-muted hover:text-text-primary">
+            👥 Quản Lý User
+          </button>
+          <button type="button" id="tab-nav-grant" class="px-4 py-2 rounded-xl text-xs font-bold transition-all cursor-pointer text-text-muted hover:text-text-primary">
+            🔑 Cấp Quyền Tab
           </button>
         </div>
       </div>
@@ -229,6 +235,75 @@
         </div>
       </div>
 
+      <!-- ============================================================ -->
+      <!-- VIEW 3: QUẢN LÝ USER                                        -->
+      <!-- ============================================================ -->
+      <div id="section-users" class="space-y-6 hidden">
+        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+          <div>
+            <h2 class="text-lg font-bold text-text-primary">Quản Lý Người Dùng</h2>
+            <p class="text-xs text-text-muted font-medium">Xem danh sách thành viên và xoá tài khoản</p>
+          </div>
+          <div class="glass-card px-4 py-2 rounded-xl border border-glass-border flex items-center gap-2">
+            <span class="text-xs font-bold text-text-muted uppercase tracking-wider">Tổng User:</span>
+            <span id="stat-total-users" class="text-lg font-extrabold text-accent-primary font-mono tabular-nums">0</span>
+          </div>
+        </div>
+
+        <div class="glass-card rounded-2xl border border-glass-border overflow-hidden">
+          <div class="overflow-x-auto">
+            <table class="w-full text-left border-collapse">
+              <thead>
+                <tr class="bg-black/5 dark:bg-white/5 border-b border-glass-border">
+                  <th class="p-4 text-xs font-bold text-text-muted uppercase tracking-wider">Thành viên</th>
+                  <th class="p-4 text-xs font-bold text-text-muted uppercase tracking-wider text-center">Vai trò</th>
+                  <th class="p-4 text-xs font-bold text-text-muted uppercase tracking-wider text-center">Đã mua</th>
+                  <th class="p-4 text-xs font-bold text-text-muted uppercase tracking-wider hidden sm:table-cell">Ngày tham gia</th>
+                  <th class="p-4 text-xs font-bold text-text-muted uppercase tracking-wider text-right">Thao tác</th>
+                </tr>
+              </thead>
+              <tbody id="users-tbody" class="divide-y divide-glass-border">
+                <!-- Data will be injected here -->
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      <!-- ============================================================ -->
+      <!-- VIEW 4: CẤP QUYỀN TAB (MANUAL UUID ACCESS GRANT)             -->
+      <!-- ============================================================ -->
+      <div id="section-grant" class="space-y-6 hidden">
+        <div class="max-w-2xl mx-auto">
+          <div class="glass-card p-6 rounded-3xl border border-glass-border space-y-6 shadow-sm">
+            <div>
+              <h2 class="text-xl font-bold text-text-primary">Cấp Quyền Tab Cho User</h2>
+              <p class="text-xs text-text-muted font-medium mt-1">Gán quyền truy cập bài hát vĩnh viễn cho một tài khoản (sau khi đã nhận chuyển khoản thủ công)</p>
+            </div>
+            
+            <form id="grant-access-form" class="space-y-5">
+              <div class="space-y-1.5">
+                <label for="grant-song-select" class="block text-xs font-bold text-text-primary">Chọn Bài Hát <span class="text-rose-500">*</span></label>
+                <select id="grant-song-select" required class="w-full px-4 py-2.5 rounded-xl bg-black/5 dark:bg-white/5 border border-glass-border text-sm text-text-primary focus:outline-none focus:border-accent-primary">
+                  <option value="">-- Chọn bài hát --</option>
+                  <!-- Song options will be injected here -->
+                </select>
+              </div>
+
+              <div class="space-y-1.5">
+                <label for="grant-user-id" class="block text-xs font-bold text-text-primary">UUID Của User <span class="text-rose-500">*</span></label>
+                <p class="text-[10px] text-text-muted">Bạn có thể lấy UUID của khách trong phần "Quản Lý User"</p>
+                <input type="text" id="grant-user-id" required placeholder="Ví dụ: a1b2c3d4-..." class="w-full px-4 py-2.5 rounded-xl bg-black/5 dark:bg-white/5 border border-glass-border text-sm font-mono text-text-primary placeholder:text-text-muted focus:outline-none focus:border-accent-primary" />
+              </div>
+
+              <button type="submit" id="grant-submit-btn" class="w-full py-3 rounded-xl bg-warm-gradient hover:brightness-105 text-white font-bold text-sm shadow-md active:scale-98 transition-all flex items-center justify-center gap-2 cursor-pointer">
+                <span>🔑 Cấp Quyền Ngay</span>
+              </button>
+            </form>
+          </div>
+        </div>
+      </div>
+
     </main>
 
     <!-- ============================================================ -->
@@ -375,6 +450,7 @@
         </form>
       </div>
     </div>
+
 
     <!-- OVERLAYS & TOAST -->
     <div id="toast-notification" class="fixed top-6 right-6 z-[9999] max-w-md px-5 py-4 rounded-2xl shadow-[0_20px_50px_rgba(0,0,0,0.5)] flex items-center gap-3.5 transform -translate-y-4 opacity-0 transition-all duration-300 pointer-events-none border-2" role="alert">

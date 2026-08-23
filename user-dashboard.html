@@ -18,7 +18,7 @@
     <div class="grain-overlay" aria-hidden="true"></div>
 
     <!-- Header with Member Luxury Accent Line -->
-    <header id="main-nav" class="fixed top-0 left-0 right-0 z-40 transition-all duration-300 py-3.5 border-b border-glass-border bg-glass-bg backdrop-blur-xl">
+    <header id="main-nav" class="fixed top-0 left-0 right-0 z-40 transition-all duration-300 py-3.5 border-b border-glass-border bg-gradient-to-r from-bg-base via-amber-900/10 to-bg-base backdrop-blur-xl">
       <!-- Member gold gradient accent strip -->
       <div class="absolute bottom-0 left-0 right-0 h-[2px] bg-gradient-to-r from-accent-primary via-amber-400 to-accent-primary"></div>
       
@@ -151,10 +151,12 @@
 
               <!-- Greeting & Info -->
               <div class="space-y-1">
-                <div class="flex items-center gap-2 flex-wrap">
-                  <span class="text-xs font-mono font-bold uppercase tracking-wider text-accent-primary">Góc Thành Viên</span>
-                  <span id="user-role-badge" class="px-2 py-0.5 rounded-full bg-amber-500/20 text-amber-700 dark:text-amber-300 text-[10px] font-bold border border-amber-500/30">
-                    👑 Thành viên Chính Thức
+                <div class="mb-1 flex items-center gap-2">
+                  <span class="px-3 py-1 rounded-full bg-amber-500/10 text-amber-500 text-[10px] font-bold tracking-widest border border-amber-500/20 shadow-glow">
+                    💎 VIP Member
+                  </span>
+                  <span class="px-3 py-1 rounded-full bg-accent-primary/10 text-accent-primary text-[10px] font-bold tracking-widest border border-accent-primary/20">
+                    🎸 Học viên Quang
                   </span>
                 </div>
                 <h1 class="text-2xl sm:text-3xl font-black text-text-primary tracking-tight flex items-center gap-2">
@@ -269,9 +271,103 @@
               </h3>
               <span class="text-xs text-text-muted font-medium">Được chọn lọc theo trình độ</span>
             </div>
-            <div id="overview-featured-tabs" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+            <div id="overview-featured-tabs" class="flex overflow-x-auto snap-x snap-mandatory gap-4 pb-4 no-scrollbar">
               <!-- Rendered dynamically -->
-              <div class="p-8 text-center text-text-muted text-xs col-span-full">Đang tải dữ liệu...</div>
+              <div class="p-8 text-center text-text-muted text-xs w-full">Đang tải dữ liệu...</div>
+            </div>
+          </div>
+          <!-- Gears / Dụng Cụ (Horizontal Scroll) -->
+          <div class="glass-card rounded-3xl p-6 border border-glass-border shadow-xl space-y-4">
+            <div class="flex items-center justify-between pb-3 border-b border-glass-border">
+              <h3 class="text-base font-extrabold text-text-primary flex items-center gap-2">
+                <span>🎛️</span>
+                <span>Bộ Đồ Nghề & Phụ Kiện</span>
+              </h3>
+              <a href="/cong-cu.html" class="text-xs text-accent-primary font-bold hover:underline">Chi tiết →</a>
+            </div>
+            
+            <div id="overview-gears-carousel" class="flex overflow-x-auto snap-x snap-mandatory gap-4 pb-4 no-scrollbar">
+              <!-- Item 1 -->
+              <div class="flex-shrink-0 w-64 snap-center rounded-2xl glass-card border border-glass-border overflow-hidden group">
+                <div class="h-32 bg-glass-bg flex items-center justify-center p-2 relative overflow-hidden">
+                  <img src="/assets/akg_mic_1787457688080.jpg" alt="AKG Lyra" onerror="this.src='/assets/avatar.jpg'" class="h-full object-contain mix-blend-multiply dark:mix-blend-normal group-hover:scale-105 transition-transform" />
+                </div>
+                <div class="p-4 space-y-1">
+                  <span class="text-[10px] font-mono font-bold text-text-muted uppercase">Microphone</span>
+                  <h4 class="text-sm font-extrabold text-text-primary line-clamp-1">AKG Lyra Ultra-HD</h4>
+                  <p class="text-[11px] text-text-muted line-clamp-2">Mic thu âm trực tiếp cổng Type-C tiện lợi, tiếng thu rất tự nhiên và ấm.</p>
+                </div>
+              </div>
+              
+              <!-- Item 2 -->
+              <div class="flex-shrink-0 w-64 snap-center rounded-2xl glass-card border border-glass-border overflow-hidden group">
+                <div class="h-32 bg-glass-bg flex items-center justify-center p-2 relative overflow-hidden">
+                  <img src="/assets/elixir_strings_1787457723298.jpg" alt="Elixir Strings" onerror="this.src='/assets/avatar.jpg'" class="h-full object-contain mix-blend-multiply dark:mix-blend-normal group-hover:scale-105 transition-transform" />
+                </div>
+                <div class="p-4 space-y-1">
+                  <span class="text-[10px] font-mono font-bold text-text-muted uppercase">Dây đàn</span>
+                  <h4 class="text-sm font-extrabold text-text-primary line-clamp-1">Elixir Phosphor Bronze</h4>
+                  <p class="text-[11px] text-text-muted line-clamp-2">Dây bọc nano xài cực bền, bấm êm tay, tiếng nổ và vang.</p>
+                </div>
+              </div>
+              
+              <!-- Item 3 -->
+              <div class="flex-shrink-0 w-64 snap-center rounded-2xl glass-card border border-glass-border overflow-hidden group">
+                <div class="h-32 bg-glass-bg flex items-center justify-center p-2 relative overflow-hidden">
+                  <img src="/assets/capo_guitar_1787457698189.jpg" alt="Capo" onerror="this.src='/assets/avatar.jpg'" class="h-full object-contain mix-blend-multiply dark:mix-blend-normal group-hover:scale-105 transition-transform" />
+                </div>
+                <div class="p-4 space-y-1">
+                  <span class="text-[10px] font-mono font-bold text-text-muted uppercase">Phụ kiện</span>
+                  <h4 class="text-sm font-extrabold text-text-primary line-clamp-1">Capo Thép D'Addario</h4>
+                  <p class="text-[11px] text-text-muted line-clamp-2">Kẹp chặt, không rè dây, có thể điều chỉnh lực ép vừa phải.</p>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- FAQ (Compact View) -->
+          <div class="glass-card rounded-3xl p-6 border border-glass-border shadow-xl space-y-4">
+            <div class="flex items-center justify-between pb-3 border-b border-glass-border">
+              <h3 class="text-base font-extrabold text-text-primary flex items-center gap-2">
+                <span>❓</span>
+                <span>Câu Hỏi Thường Gặp</span>
+              </h3>
+            </div>
+            
+            <div class="space-y-3">
+              <!-- Item 1 -->
+              <details class="group p-3 sm:p-4 rounded-2xl bg-black/5 dark:bg-white/5 border border-glass-border hover:border-accent-primary/50 transition-colors">
+                <summary class="flex items-center justify-between gap-3 font-bold text-text-primary text-xs sm:text-sm cursor-pointer list-none [&::-webkit-details-marker]:hidden">
+                  <div class="flex items-center gap-2">
+                    <span class="text-[9px] font-mono font-bold uppercase tracking-wider px-1.5 py-0.5 rounded bg-accent-primary/10 text-accent-primary border border-accent-primary/20 flex-shrink-0">Thanh toán</span>
+                    <span>Sau khi chuyển khoản thì nhận Video Tab như thế nào?</span>
+                  </div>
+                  <span class="flex-shrink-0 text-accent-primary group-open:rotate-45 transition-transform font-black">+</span>
+                </summary>
+                <p class="pt-2 text-xs text-text-muted font-medium leading-relaxed border-t border-glass-border/40 mt-2">
+                  Bạn nhắn tin qua Zalo (0326.768.885) cho mình kèm biên lai. Mình sẽ tạo Mã Kích Hoạt để bạn nhập vào mục "Tab Bạn Đã Sở Hữu Bản Quyền" trên trang này và xem tab vĩnh viễn!
+                </p>
+              </details>
+              
+              <!-- Item 2 -->
+              <details class="group p-3 sm:p-4 rounded-2xl bg-black/5 dark:bg-white/5 border border-glass-border hover:border-accent-primary/50 transition-colors">
+                <summary class="flex items-center justify-between gap-3 font-bold text-text-primary text-xs sm:text-sm cursor-pointer list-none [&::-webkit-details-marker]:hidden">
+                  <div class="flex items-center gap-2">
+                    <span class="text-[9px] font-mono font-bold uppercase tracking-wider px-1.5 py-0.5 rounded bg-emerald-500/10 text-emerald-500 border border-emerald-500/20 flex-shrink-0">Kỹ thuật</span>
+                    <span>Người mới tập, chưa rành đọc tab có học được không?</span>
+                  </div>
+                  <span class="flex-shrink-0 text-accent-primary group-open:rotate-45 transition-transform font-black">+</span>
+                </summary>
+                <p class="pt-2 text-xs text-text-muted font-medium leading-relaxed border-t border-glass-border/40 mt-2">
+                  Tập tốt bạn nhé. Video Tab của mình hiển thị nốt chạy khớp theo tiếng đàn mộc thật, bạn chỉ cần bấm theo số ngăn trên màn hình và nghe nhịp là đánh được.
+                </p>
+              </details>
+            </div>
+            
+            <div class="pt-2 text-center">
+              <a href="/#faq" class="inline-block px-5 py-2 rounded-full bg-glass-bg border border-glass-border text-xs font-bold text-text-primary hover:text-accent-primary hover:border-accent-primary transition-colors">
+                Xem thêm câu hỏi →
+              </a>
             </div>
           </div>
         </section>
@@ -289,10 +385,26 @@
               </p>
             </div>
             
-            <div class="relative w-full sm:w-64">
-              <input id="search-fav-input" type="text" placeholder="Tìm bài hát yêu thích..." class="w-full pl-9 pr-3 py-2.5 rounded-2xl bg-black/5 dark:bg-white/5 border border-glass-border text-xs text-text-primary placeholder:text-text-muted focus:outline-none focus:border-accent-primary" />
-              <svg class="w-4 h-4 text-text-muted absolute left-3 top-1/2 -translate-y-1/2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg>
+            <div class="flex flex-col sm:flex-row gap-3 w-full sm:w-auto">
+              <div class="relative w-full sm:w-64">
+                <input id="search-fav-input" type="text" placeholder="Tìm bài hát yêu thích..." class="w-full pl-9 pr-3 py-2.5 rounded-2xl bg-black/5 dark:bg-white/5 border border-glass-border text-xs text-text-primary placeholder:text-text-muted focus:outline-none focus:border-accent-primary" />
+                <svg class="w-4 h-4 text-text-muted absolute left-3 top-1/2 -translate-y-1/2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg>
+              </div>
+              <select id="filter-fav-select" class="w-full sm:w-auto px-4 py-2.5 rounded-2xl bg-black/5 dark:bg-white/5 border border-glass-border text-xs text-text-primary focus:outline-none focus:border-accent-primary appearance-none cursor-pointer">
+                <option value="all">Tất cả bài hát</option>
+                <option value="free">Miễn phí</option>
+                <option value="paid">Có phí</option>
+              </select>
             </div>
+          </div>
+          
+          <div class="flex items-center gap-3">
+            <a href="/metronome.html" class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-accent-primary/10 text-accent-primary hover:bg-accent-primary/20 text-[11px] font-bold transition-colors">
+              <span>⏱️</span> Máy Gõ Nhịp
+            </a>
+            <a href="/faq.html" class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-black/5 dark:bg-white/5 hover:bg-black/10 dark:hover:bg-white/10 text-text-primary text-[11px] font-bold transition-colors">
+              <span>❓</span> Hướng dẫn (FAQ)
+            </a>
           </div>
 
           <!-- Favorites Grid Container -->
@@ -314,11 +426,28 @@
               </p>
             </div>
 
-            <div class="relative w-full sm:w-64">
-              <input id="search-purchased-input" type="text" placeholder="Tìm bài đã mua..." class="w-full pl-9 pr-3 py-2.5 rounded-2xl bg-black/5 dark:bg-white/5 border border-glass-border text-xs text-text-primary placeholder:text-text-muted focus:outline-none focus:border-accent-primary" />
-              <svg class="w-4 h-4 text-text-muted absolute left-3 top-1/2 -translate-y-1/2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg>
+            <div class="flex flex-col sm:flex-row gap-3 w-full sm:w-auto">
+              <div class="relative w-full sm:w-64">
+                <input id="search-purchased-input" type="text" placeholder="Tìm bài đã mua..." class="w-full pl-9 pr-3 py-2.5 rounded-2xl bg-black/5 dark:bg-white/5 border border-glass-border text-xs text-text-primary placeholder:text-text-muted focus:outline-none focus:border-accent-primary" />
+                <svg class="w-4 h-4 text-text-muted absolute left-3 top-1/2 -translate-y-1/2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg>
+              </div>
+              <select id="filter-purchased-select" class="w-full sm:w-auto px-4 py-2.5 rounded-2xl bg-black/5 dark:bg-white/5 border border-glass-border text-xs text-text-primary focus:outline-none focus:border-accent-primary appearance-none cursor-pointer">
+                <option value="all">Tất cả bài hát</option>
+                <option value="free">Miễn phí</option>
+                <option value="paid">Có phí</option>
+              </select>
             </div>
           </div>
+          
+          <div class="flex items-center gap-3">
+            <a href="/metronome.html" class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-accent-primary/10 text-accent-primary hover:bg-accent-primary/20 text-[11px] font-bold transition-colors">
+              <span>⏱️</span> Máy Gõ Nhịp
+            </a>
+            <a href="/faq.html" class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-black/5 dark:bg-white/5 hover:bg-black/10 dark:hover:bg-white/10 text-text-primary text-[11px] font-bold transition-colors">
+              <span>❓</span> Hướng dẫn (FAQ)
+            </a>
+          </div>
+
 
           <!-- Purchases Grid Container -->
           <div id="purchases-grid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">

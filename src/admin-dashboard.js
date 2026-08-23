@@ -8,6 +8,7 @@ import { supabase } from './lib/supabase.js'
 import { initThemeToggle } from './theme-toggle.js'
 import { fetchAllSongs, saveSong, removeSong, reorderAllSongs } from './lib/songs-service.js'
 import { fetchAllGears, DEFAULT_GEARS, saveGear, removeGear, reorderAllGears } from './lib/gears-service.js'
+import { generateReadableCode, createRedemptionCode, listCodesForSong } from './lib/redemption-service.js'
 
 initThemeToggle()
 
@@ -16,7 +17,8 @@ initThemeToggle()
 // ==========================================================================
 let songsList = []
 let gearsList = []
-let activeTab = 'songs' // 'songs' | 'gears'
+let usersList = []
+let activeTab = 'songs' // 'songs' | 'gears' | 'users' | 'grant'
 let songSearchQuery = ''
 let songCategoryFilter = 'all'
 let songTypeFilter = 'all'
@@ -26,8 +28,12 @@ const adminUserEmail = document.getElementById('admin-user-email')
 const logoutBtn = document.getElementById('logout-btn')
 const tabNavSongs = document.getElementById('tab-nav-songs')
 const tabNavGears = document.getElementById('tab-nav-gears')
+const tabNavUsers = document.getElementById('tab-nav-users')
+const tabNavGrant = document.getElementById('tab-nav-grant')
 const sectionSongs = document.getElementById('section-songs')
 const sectionGears = document.getElementById('section-gears')
+const sectionUsers = document.getElementById('section-users')
+const sectionGrant = document.getElementById('section-grant')
 
 // Songs DOM
 const adminSongsTbody = document.getElementById('admin-songs-tbody')
@@ -53,6 +59,14 @@ const closeGearModal = document.getElementById('close-gear-modal')
 const cancelGearModalBtn = document.getElementById('cancel-gear-modal-btn')
 const gearForm = document.getElementById('gear-form')
 const gearModalTitle = document.getElementById('gear-modal-title')
+
+// Codes DOM
+const codesModal = document.getElementById('codes-modal')
+const closeCodesModal = document.getElementById('close-codes-modal')
+const codesModalTitle = document.getElementById('codes-modal-title')
+const codesModalSongName = document.getElementById('codes-modal-song-name')
+const generateCodeBtn = document.getElementById('generate-code-btn')
+const codesTbody = document.getElementById('codes-tbody')
 
 // Filters
 const adminSearchSongs = document.getElementById('admin-search-songs')
@@ -293,6 +307,11 @@ function renderSongsTable() {
         </td>
         <td class="py-3.5 px-4 text-right">
           <div class="flex items-center justify-end gap-2">
+            ${!isFree ? `
+            <button onclick="window.manageCodes('${song.id}', '${song.title.replace(/'/g, "\\'")}')" class="px-3 py-1.5 rounded-lg bg-purple-500/10 hover:bg-purple-500/20 text-purple-600 dark:text-purple-400 font-bold text-xs border border-purple-500/30 transition-colors cursor-pointer">
+              🔑 Mã
+            </button>
+            ` : ''}
             <button onclick="window.editSong('${song.id}')" class="px-3 py-1.5 rounded-lg bg-glass-bg hover:bg-glass-bg-hover text-accent-primary font-bold text-xs border border-glass-border transition-colors cursor-pointer">
               Sửa
             </button>
@@ -463,6 +482,93 @@ if (songForm) {
     } catch (err) {
       showToast(`❌ Lỗi khi lưu bài hát: ${err.message}`, 'error')
     }
+  })
+}
+
+// ==========================================================================
+// REDEMPTION CODES MANAGEMENT
+// ==========================================================================
+let currentManagingSongId = null
+
+window.manageCodes = async function(songId, songTitle) {
+  currentManagingSongId = songId
+  if (codesModalSongName) codesModalSongName.textContent = `Bài hát: ${songTitle}`
+  toggleModal(codesModal, true)
+  await loadCodesForCurrentSong()
+}
+
+async function loadCodesForCurrentSong() {
+  if (!currentManagingSongId || !codesTbody) return
+  
+  codesTbody.innerHTML = `<tr><td colspan="4" class="py-4 text-center text-xs text-text-muted">Đang tải mã...</td></tr>`
+  
+  try {
+    const codes = await listCodesForSong(currentManagingSongId)
+    
+    if (codes.length === 0) {
+      codesTbody.innerHTML = `<tr><td colspan="4" class="py-4 text-center text-xs text-text-muted">Chưa có mã kích hoạt nào.</td></tr>`
+      return
+    }
+
+    codesTbody.innerHTML = codes.map(c => {
+      const isUsed = c.is_used
+      const statusBadge = isUsed 
+        ? `<span class="px-2 py-0.5 rounded-md bg-rose-500/15 text-rose-600 text-[10px] font-bold">Đã dùng</span>`
+        : `<span class="px-2 py-0.5 rounded-md bg-emerald-500/15 text-emerald-600 text-[10px] font-bold">Chưa dùng</span>`
+      
+      const usedDate = c.used_at ? new Date(c.used_at).toLocaleString('vi-VN') : '-'
+      const createdDate = new Date(c.created_at).toLocaleString('vi-VN')
+      const user = c.profiles ? (c.profiles.full_name || c.profiles.email || c.used_by_user_id) : (c.used_by_user_id || '-')
+
+      return `
+        <tr class="border-b border-glass-border/50 hover:bg-black/5 dark:hover:bg-white/5 transition-colors">
+          <td class="py-3 px-4">
+            <div class="flex items-center gap-2">
+              <span class="font-mono font-bold text-sm tracking-wider text-text-primary">${c.code}</span>
+              <button onclick="window.copyCode('${c.code}')" class="p-1 rounded bg-black/5 hover:bg-black/10 text-text-muted cursor-pointer transition-colors" title="Copy mã">
+                <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"/></svg>
+              </button>
+            </div>
+          </td>
+          <td class="py-3 px-3">${statusBadge}</td>
+          <td class="py-3 px-3 text-[11px] text-text-muted">${createdDate}</td>
+          <td class="py-3 px-4 text-[11px] font-medium text-text-primary">
+            ${isUsed ? `<div class="flex flex-col"><span>${user}</span><span class="text-text-muted text-[10px]">${usedDate}</span></div>` : '-'}
+          </td>
+        </tr>
+      `
+    }).join('')
+
+  } catch (err) {
+    showToast(`❌ Lỗi tải mã: ${err.message}`, 'error')
+    codesTbody.innerHTML = `<tr><td colspan="4" class="py-4 text-center text-xs text-rose-500">Lỗi tải dữ liệu.</td></tr>`
+  }
+}
+
+if (generateCodeBtn) {
+  generateCodeBtn.addEventListener('click', async () => {
+    if (!currentManagingSongId) return
+    const code = generateReadableCode()
+    
+    try {
+      generateCodeBtn.disabled = true
+      showToast('Đang tạo mã mới...', 'info')
+      await createRedemptionCode(currentManagingSongId, code)
+      showToast('✓ Đã tạo mã kích hoạt thành công!', 'success')
+      await loadCodesForCurrentSong()
+    } catch (err) {
+      showToast(`❌ Lỗi tạo mã: ${err.message}`, 'error')
+    } finally {
+      generateCodeBtn.disabled = false
+    }
+  })
+}
+
+window.copyCode = function(code) {
+  navigator.clipboard.writeText(code).then(() => {
+    showToast(`Đã copy mã: ${code}`)
+  }).catch(() => {
+    showToast('Lỗi copy, vui lòng copy thủ công', 'error')
   })
 }
 
@@ -708,6 +814,135 @@ if (gearForm) {
 
 
 // ==========================================================================
+// USERS & ACCESS GRANT LOGIC
+// ==========================================================================
+
+async function loadUsers() {
+  try {
+    const { data, error } = await supabase.rpc('admin_get_users')
+    if (error) throw error
+    usersList = data || []
+    renderUsersTable()
+    if (statTotalUsers) statTotalUsers.textContent = usersList.length
+  } catch (err) {
+    console.error('Error loading users:', err)
+    showToast('Lỗi khi tải danh sách người dùng', 'error')
+  }
+}
+
+function renderUsersTable() {
+  if (!adminUsersTbody) return
+  adminUsersTbody.innerHTML = ''
+
+  if (usersList.length === 0) {
+    adminUsersTbody.innerHTML = `<tr><td colspan="5" class="p-4 text-center text-xs text-text-muted">Chưa có người dùng nào.</td></tr>`
+    return
+  }
+
+  usersList.forEach(u => {
+    const isVip = u.purchases_count > 0 || u.role === 'admin'
+    const roleBadge = u.role === 'admin' 
+      ? `<span class="px-2 py-0.5 rounded-md bg-rose-500/15 text-rose-600 dark:text-rose-400 text-[10px] font-black uppercase tracking-wider border border-rose-500/30">ADMIN</span>`
+      : (isVip ? `<span class="px-2 py-0.5 rounded-full bg-amber-500/20 text-amber-600 dark:text-amber-300 text-[10px] font-bold border border-amber-500/30 shadow-glow">VIP Member</span>`
+               : `<span class="px-2 py-0.5 rounded-full bg-glass-bg border border-glass-border text-text-muted text-[10px] font-medium">Free</span>`)
+    
+    const tr = document.createElement('tr')
+    tr.className = 'hover:bg-black/5 dark:hover:bg-white/5 transition-colors border-b border-glass-border/50 last:border-0'
+    tr.innerHTML = `
+      <td class="p-4">
+        <div class="flex items-center gap-3">
+          <img src="${u.avatar_url || 'https://ui-avatars.com/api/?name=' + encodeURIComponent(u.full_name || u.email) + '&background=random'}" alt="Avatar" class="w-8 h-8 rounded-full border border-glass-border object-cover bg-glass-bg">
+          <div>
+            <div class="text-sm font-bold text-text-primary flex items-center gap-1.5">
+              ${u.full_name || 'Khách Vãng Lai'}
+            </div>
+            <div class="text-[10px] text-text-muted font-mono">${u.email || u.id}</div>
+          </div>
+        </div>
+      </td>
+      <td class="p-4 text-center">
+        ${roleBadge}
+      </td>
+      <td class="p-4 text-center text-sm font-bold text-accent-primary">
+        ${u.purchases_count}
+      </td>
+      <td class="p-4 text-[11px] text-text-muted font-medium hidden sm:table-cell">
+        ${new Date(u.created_at).toLocaleDateString('vi-VN')}
+      </td>
+      <td class="p-4 text-right">
+        <div class="flex items-center justify-end gap-2">
+          <button onclick="copyUserId('${u.id}')" class="p-2 rounded-lg bg-glass-bg border border-glass-border hover:bg-glass-bg-hover hover:border-accent-primary text-text-muted hover:text-accent-primary transition-all cursor-pointer" title="Copy UUID">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"/></svg>
+          </button>
+          <button onclick="deleteUser('${u.id}')" class="p-2 rounded-lg bg-rose-500/10 border border-rose-500/20 hover:bg-rose-500/20 text-rose-600 transition-all cursor-pointer" title="Xoá User">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg>
+          </button>
+        </div>
+      </td>
+    `
+    adminUsersTbody.appendChild(tr)
+  })
+}
+
+window.copyUserId = function(id) {
+  navigator.clipboard.writeText(id)
+  showToast('Đã copy UUID của User!', 'success')
+}
+
+window.deleteUser = async function(id) {
+  if (!confirm('Hành động này sẽ XOÁ VĨNH VIỄN user cùng toàn bộ lịch sử mua và lưu của họ. Bạn có chắc không?')) return
+  try {
+    const { error } = await supabase.rpc('admin_delete_user', { p_user_id: id })
+    if (error) throw error
+    showToast('Đã xoá user thành công!', 'success')
+    await loadUsers()
+  } catch (err) {
+    console.error(err)
+    showToast('Lỗi khi xoá user: ' + err.message, 'error')
+  }
+}
+
+function populateGrantSongSelect() {
+  if (!grantSongSelect) return
+  grantSongSelect.innerHTML = '<option value="">-- Chọn bài hát --</option>'
+  songsList.filter(s => !s.is_free).forEach(s => {
+    const opt = document.createElement('option')
+    opt.value = s.id
+    opt.textContent = s.title + (s.singer ? ` - ${s.singer}` : '')
+    grantSongSelect.appendChild(opt)
+  })
+}
+
+if (grantAccessForm) {
+  grantAccessForm.addEventListener('submit', async (e) => {
+    e.preventDefault()
+    const userId = grantUserIdInput.value.trim()
+    const songId = grantSongSelect.value
+
+    if (!userId || !songId) {
+      showToast('Vui lòng chọn bài hát và nhập UUID của User!', 'error')
+      return
+    }
+
+    try {
+      const { error } = await supabase.rpc('admin_grant_access', {
+        p_user_id: userId,
+        p_song_id: songId
+      })
+      if (error) throw error
+      showToast('Đã cấp quyền thành công cho User!', 'success')
+      grantUserIdInput.value = ''
+      grantSongSelect.value = ''
+      // Reload users to update purchase count
+      await loadUsers()
+    } catch (err) {
+      console.error(err)
+      showToast('Lỗi khi cấp quyền: ' + err.message, 'error')
+    }
+  })
+}
+
+// ==========================================================================
 // INITIALIZATION
 // ==========================================================================
 
@@ -724,26 +959,34 @@ async function initDashboard() {
   }
 
   // Tab Switcher
-  if (tabNavSongs) {
-    tabNavSongs.addEventListener('click', () => {
-      activeTab = 'songs'
-      tabNavSongs.className = 'px-4 py-2 rounded-xl text-xs font-bold transition-all cursor-pointer bg-warm-gradient text-white shadow-xs'
-      tabNavGears.className = 'px-4 py-2 rounded-xl text-xs font-bold transition-all cursor-pointer text-text-muted hover:text-text-primary'
-      sectionSongs?.classList.remove('hidden')
-      sectionGears?.classList.add('hidden')
-    })
+  // Tab Switcher Helper
+  function switchTab(tabId) {
+    activeTab = tabId
+    
+    // Default inactive classes
+    const inactiveClass = 'px-4 py-2 rounded-xl text-xs font-bold transition-all cursor-pointer text-text-muted hover:text-text-primary'
+    const activeClass = 'px-4 py-2 rounded-xl text-xs font-bold transition-all cursor-pointer bg-warm-gradient text-white shadow-xs'
+    
+    if (tabNavSongs) tabNavSongs.className = tabId === 'songs' ? activeClass : inactiveClass
+    if (tabNavGears) tabNavGears.className = tabId === 'gears' ? activeClass : inactiveClass
+    if (tabNavUsers) tabNavUsers.className = tabId === 'users' ? activeClass : inactiveClass
+    if (tabNavGrant) tabNavGrant.className = tabId === 'grant' ? activeClass : inactiveClass
+    
+    if (sectionSongs) sectionSongs.classList.toggle('hidden', tabId !== 'songs')
+    if (sectionGears) sectionGears.classList.toggle('hidden', tabId !== 'gears')
+    if (sectionUsers) sectionUsers.classList.toggle('hidden', tabId !== 'users')
+    if (sectionGrant) sectionGrant.classList.toggle('hidden', tabId !== 'grant')
+
+    if (tabId === 'songs') loadSongs()
+    if (tabId === 'gears') loadGears()
+    if (tabId === 'users') loadUsers()
+    if (tabId === 'grant') populateGrantSongSelect()
   }
 
-  if (tabNavGears) {
-    tabNavGears.addEventListener('click', () => {
-      activeTab = 'gears'
-      tabNavGears.className = 'px-4 py-2 rounded-xl text-xs font-bold transition-all cursor-pointer bg-warm-gradient text-white shadow-xs'
-      tabNavSongs.className = 'px-4 py-2 rounded-xl text-xs font-bold transition-all cursor-pointer text-text-muted hover:text-text-primary'
-      sectionGears?.classList.remove('hidden')
-      sectionSongs?.classList.add('hidden')
-      loadGears()
-    })
-  }
+  if (tabNavSongs) tabNavSongs.addEventListener('click', () => switchTab('songs'))
+  if (tabNavGears) tabNavGears.addEventListener('click', () => switchTab('gears'))
+  if (tabNavUsers) tabNavUsers.addEventListener('click', () => switchTab('users'))
+  if (tabNavGrant) tabNavGrant.addEventListener('click', () => switchTab('grant'))
 
   // Open Add Modals
   if (addSongBtn) addSongBtn.addEventListener('click', window.openAddSongModal)
@@ -783,6 +1026,7 @@ async function initDashboard() {
   if (cancelSongModalBtn) cancelSongModalBtn.addEventListener('click', () => toggleModal(songModal, false))
   if (closeGearModal) closeGearModal.addEventListener('click', () => toggleModal(gearModal, false))
   if (cancelGearModalBtn) cancelGearModalBtn.addEventListener('click', () => toggleModal(gearModal, false))
+  if (closeCodesModal) closeCodesModal.addEventListener('click', () => toggleModal(codesModal, false))
 
   // Filter Listeners
   if (adminSearchSongs) {
@@ -806,9 +1050,10 @@ async function initDashboard() {
     })
   }
 
-  // Load initial data for both tabs
-  loadSongs()
+  // Load initial data
+  loadSongs().then(() => populateGrantSongSelect())
   loadGears()
+  loadUsers()
 }
 
 document.addEventListener('DOMContentLoaded', initDashboard)

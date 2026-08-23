@@ -9,6 +9,7 @@ import { initNavbarShrink, initMobileMenu } from './common.js'
 import { initThemeToggle } from './theme-toggle.js'
 import { fetchAllSongs } from './lib/songs-service.js'
 
+
 initNavbarShrink()
 initMobileMenu()
 initThemeToggle()
@@ -21,9 +22,13 @@ let currentProfile = null
 let allSongs = []
 let favoriteSongIds = new Set()
 let purchasedSongIds = new Set()
+
+// State
 let activeTab = 'overview' // 'overview' | 'favorites' | 'purchases' | 'profile'
 let favSearchQuery = ''
+let favFilter = 'all' // all, free, paid
 let purchasedSearchQuery = ''
+let purchasedFilter = 'all' // all, free, paid
 
 // DOM References
 const adminNoticeBanner = document.getElementById('admin-notice-banner')
@@ -55,7 +60,12 @@ const favoritesGrid = document.getElementById('favorites-grid')
 const purchasesGrid = document.getElementById('purchases-grid')
 
 const searchFavInput = document.getElementById('search-fav-input')
+const filterFavSelect = document.getElementById('filter-fav-select')
 const searchPurchasedInput = document.getElementById('search-purchased-input')
+const filterPurchasedSelect = document.getElementById('filter-purchased-select')
+
+// Redemption DOM
+
 
 // Profile Form
 const profileForm = document.getElementById('profile-update-form')
@@ -141,14 +151,22 @@ function toggleModal(modalId, show = true) {
 function openDemoVideoModal(song) {
   const modalTitle = document.getElementById('modal-video-title')
   const videoPlayer = document.getElementById('demo-video-player')
-  const videoSource = document.getElementById('demo-video-source')
 
-  if (modalTitle) modalTitle.textContent = `Demo: ${song.title} — ${song.artist}`
+  if (modalTitle) modalTitle.textContent = `Demo: ${song.title} - ${song.singer || 'Various Artists'}`
   
-  const videoUrl = song.video_demo_url || `/assets/${song.id}demo.mp4`
-  if (videoSource && videoPlayer) {
-    videoSource.src = videoUrl
+  let videoUrl = song.video_demo_url || song.video_demo || `/assets/${song.id}demo.mp4`
+  if (videoUrl && !videoUrl.startsWith('/') && !videoUrl.startsWith('http')) {
+    videoUrl = '/' + videoUrl;
+  }
+  
+  if (videoPlayer) {
+    videoPlayer.src = videoUrl
     videoPlayer.load()
+    // Automatically play the video when modal opens
+    const playPromise = videoPlayer.play()
+    if (playPromise !== undefined) {
+      playPromise.catch(error => console.log('Auto-play prevented:', error))
+    }
   }
 
   toggleModal('video-demo-modal', true)
@@ -160,7 +178,7 @@ function openMaterialModal(song) {
   const link = document.getElementById('material-download-link')
 
   if (title) title.textContent = song.title
-  if (meta) meta.textContent = `${song.artist} • ${song.category} • ${song.level}`
+  if (meta) meta.textContent = `${song.singer || 'Various Artists'} • ${song.category || 'Fingerstyle'} • ${song.level || 'Cơ bản'}`
   if (link) {
     link.href = song.drive_url || '#'
     if (!song.drive_url) {
@@ -351,14 +369,14 @@ function renderOverviewFeatured() {
         <div>
           <div class="flex items-center justify-between gap-2 mb-2">
             <span class="px-2 py-0.5 rounded-full text-[10px] font-bold ${
-              song.level === 'Dễ' ? 'bg-emerald-500/15 text-emerald-600 dark:text-emerald-400 border border-emerald-500/30' :
-              song.level === 'Trung bình' ? 'bg-amber-500/15 text-amber-600 dark:text-amber-400 border border-amber-500/30' :
+              song?.level === 'Dễ' ? 'bg-emerald-500/15 text-emerald-600 dark:text-emerald-400 border border-emerald-500/30' :
+              song?.level === 'Trung bình' ? 'bg-amber-500/15 text-amber-600 dark:text-amber-400 border border-amber-500/30' :
               'bg-rose-500/15 text-rose-600 dark:text-rose-400 border border-rose-500/30'
-            }">${song.level || 'Cơ bản'}</span>
-            <span class="text-[11px] font-mono font-bold text-text-muted">${song.category || 'Fingerstyle'}</span>
+            }">${song?.level || 'Cơ bản'}</span>
+            <span class="text-[11px] font-mono font-bold text-text-muted">${song?.category || 'Fingerstyle'}</span>
           </div>
-          <h4 class="text-sm font-extrabold text-text-primary group-hover:text-accent-primary transition-colors line-clamp-1">${song.title}</h4>
-          <p class="text-xs text-text-muted font-medium mb-3">${song.artist}</p>
+          <h4 class="text-sm font-extrabold text-text-primary group-hover:text-accent-primary transition-colors line-clamp-1">${song?.title || 'Chưa có tên'}</h4>
+          <p class="text-xs text-text-muted font-medium mb-3">${song?.singer || 'Various Artists'}</p>
         </div>
         <div class="pt-3 border-t border-glass-border flex items-center justify-between gap-2">
           <button class="btn-demo-view px-3 py-1.5 rounded-xl bg-black/5 dark:bg-white/5 hover:bg-glass-bg-hover text-xs font-bold text-text-primary border border-glass-border transition-colors cursor-pointer" data-id="${song.id}">
@@ -388,10 +406,20 @@ function renderFavorites() {
   if (!favoritesGrid) return
 
   const favSongs = allSongs.filter(s => favoriteSongIds.has(String(s.id)))
+  
+  // Filter
+  let filtered = favSongs
+  if (favFilter === 'free') {
+    filtered = filtered.filter(s => s.is_free)
+  } else if (favFilter === 'paid') {
+    filtered = filtered.filter(s => !s.is_free)
+  }
+
+  // Search
   const query = favSearchQuery.toLowerCase().trim()
-  const filtered = query
-    ? favSongs.filter(s => s.title?.toLowerCase().includes(query) || s.artist?.toLowerCase().includes(query))
-    : favSongs
+  if (query) {
+    filtered = filtered.filter(s => s?.title?.toLowerCase().includes(query) || s?.singer?.toLowerCase().includes(query))
+  }
 
   if (filtered.length === 0) {
     favoritesGrid.innerHTML = `
@@ -417,22 +445,22 @@ function renderFavorites() {
         <div>
           <div class="flex items-center justify-between gap-2 mb-3">
             <span class="px-2.5 py-0.5 rounded-full text-[10px] font-bold ${
-              song.level === 'Dễ' ? 'bg-emerald-500/15 text-emerald-600 dark:text-emerald-400 border border-emerald-500/30' :
-              song.level === 'Trung bình' ? 'bg-amber-500/15 text-amber-600 dark:text-amber-400 border border-amber-500/30' :
+              song?.level === 'Dễ' ? 'bg-emerald-500/15 text-emerald-600 dark:text-emerald-400 border border-emerald-500/30' :
+              song?.level === 'Trung bình' ? 'bg-amber-500/15 text-amber-600 dark:text-amber-400 border border-amber-500/30' :
               'bg-rose-500/15 text-rose-600 dark:text-rose-400 border border-rose-500/30'
-            }">${song.level || 'Cơ bản'}</span>
+            }">${song?.level || 'Cơ bản'}</span>
             
-            <button class="btn-remove-fav p-1.5 rounded-full text-rose-500 hover:bg-rose-500/15 transition-colors cursor-pointer" data-id="${song.id}" title="Bỏ lưu khỏi mục yêu thích">
+            <button class="btn-remove-fav p-1.5 rounded-full text-rose-500 hover:bg-rose-500/15 transition-colors cursor-pointer" data-id="${song?.id}" title="Bỏ lưu khỏi mục yêu thích">
               <svg class="w-4 h-4 fill-current" viewBox="0 0 24 24"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg>
             </button>
           </div>
 
-          <h3 class="text-base font-extrabold text-text-primary group-hover:text-accent-primary transition-colors line-clamp-1">${song.title}</h3>
-          <p class="text-xs text-text-muted font-medium mb-3">${song.artist} • <span class="font-mono">${song.category || 'Fingerstyle'}</span></p>
+          <h3 class="text-base font-extrabold text-text-primary group-hover:text-accent-primary transition-colors line-clamp-1">${song?.title || 'Chưa có tên'}</h3>
+          <p class="text-xs text-text-muted font-medium mb-3">${song?.singer || 'Various Artists'} • <span class="font-mono">${song?.category || 'Fingerstyle'}</span></p>
 
           <div class="grid grid-cols-2 gap-2 text-[11px] bg-black/5 dark:bg-white/5 p-2.5 rounded-xl border border-glass-border mb-4 font-mono">
-            <div><span class="text-text-muted block text-[10px]">Capo:</span><strong class="text-text-primary">${song.capo || 'Không kẹp'}</strong></div>
-            <div><span class="text-text-muted block text-[10px]">Tuning:</span><strong class="text-text-primary">${song.tuning || 'Standard'}</strong></div>
+            <div><span class="text-text-muted block text-[10px]">Capo:</span><strong class="text-text-primary">${song?.capo ?? 'Không kẹp'}</strong></div>
+            <div><span class="text-text-muted block text-[10px]">Tuning:</span><strong class="text-text-primary">${song?.tuning || 'Standard'}</strong></div>
           </div>
         </div>
 
@@ -464,10 +492,20 @@ function renderPurchases() {
   if (!purchasesGrid) return
 
   const boughtSongs = allSongs.filter(s => purchasedSongIds.has(String(s.id)))
+  
+  // Filter
+  let filtered = boughtSongs
+  if (purchasedFilter === 'free') {
+    filtered = filtered.filter(s => s.is_free)
+  } else if (purchasedFilter === 'paid') {
+    filtered = filtered.filter(s => !s.is_free)
+  }
+
+  // Search
   const query = purchasedSearchQuery.toLowerCase().trim()
-  const filtered = query
-    ? boughtSongs.filter(s => s.title?.toLowerCase().includes(query) || s.artist?.toLowerCase().includes(query))
-    : boughtSongs
+  if (query) {
+    filtered = filtered.filter(s => s?.title?.toLowerCase().includes(query) || s?.singer?.toLowerCase().includes(query))
+  }
 
   if (filtered.length === 0) {
     purchasesGrid.innerHTML = `
@@ -492,18 +530,18 @@ function renderPurchases() {
         <div>
           <div class="flex items-center justify-between gap-2 mb-3">
             <span class="px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-amber-500/20 text-amber-600 dark:text-amber-300 border border-amber-500/40 flex items-center gap-1">
-              <span>⚡</span>
+              <span>💎</span>
               <span>Đã Sở Hữu</span>
             </span>
-            <span class="text-[11px] font-mono font-bold text-text-muted">${song.category || 'Fingerstyle'}</span>
+            <span class="text-[11px] font-mono font-bold text-text-muted">${song?.category || 'Fingerstyle'}</span>
           </div>
 
-          <h3 class="text-base font-extrabold text-text-primary group-hover:text-accent-primary transition-colors line-clamp-1">${song.title}</h3>
-          <p class="text-xs text-text-muted font-medium mb-3">${song.artist}</p>
+          <h3 class="text-base font-extrabold text-text-primary group-hover:text-accent-primary transition-colors line-clamp-1">${song?.title || 'Chưa có tên'}</h3>
+          <p class="text-xs text-text-muted font-medium mb-3">${song?.singer || 'Various Artists'}</p>
 
           <div class="grid grid-cols-2 gap-2 text-[11px] bg-black/5 dark:bg-white/5 p-2.5 rounded-xl border border-glass-border mb-4 font-mono">
-            <div><span class="text-text-muted block text-[10px]">Capo:</span><strong class="text-text-primary">${song.capo || 'Không kẹp'}</strong></div>
-            <div><span class="text-text-muted block text-[10px]">Tempo:</span><strong class="text-text-primary">${song.tempo ? song.tempo + ' BPM' : 'Tùy chỉnh'}</strong></div>
+            <div><span class="text-text-muted block text-[10px]">Capo:</span><strong class="text-text-primary">${song?.capo ?? 'Không kẹp'}</strong></div>
+            <div><span class="text-text-muted block text-[10px]">Tempo:</span><strong class="text-text-primary">${song?.tempo ? song.tempo + ' BPM' : 'Tùy chỉnh'}</strong></div>
           </div>
         </div>
 
@@ -579,10 +617,22 @@ searchFavInput?.addEventListener('input', (e) => {
   renderFavorites()
 })
 
+filterFavSelect?.addEventListener('change', (e) => {
+  favFilter = e.target.value
+  renderFavorites()
+})
+
 searchPurchasedInput?.addEventListener('input', (e) => {
   purchasedSearchQuery = e.target.value
   renderPurchases()
 })
+
+filterPurchasedSelect?.addEventListener('change', (e) => {
+  purchasedFilter = e.target.value
+  renderPurchases()
+})
+
+
 
 // ==========================================================================
 // PROFILE UPDATE FORM HANDLER
