@@ -74,15 +74,12 @@
       </nav>
 
       <!-- Header Actions: Register + Login + Theme Toggle -->
-      <div class="flex items-center gap-2 sm:gap-2.5 flex-shrink-0">
+      <div class="flex items-center gap-2 sm:gap-2.5 flex-shrink-0" id="desktop-auth-container">
         <!-- Đăng ký Button (Nút phụ outline) -->
-        <button onclick="window.showToast('Tính năng Đăng ký tài khoản thành viên sẽ sớm ra mắt nhé! 🎸')"
-          class="hidden sm:inline-flex items-center bg-glass-bg border border-glass-border text-text-primary font-semibold hover:bg-glass-bg-hover hover:border-accent-primary hover:text-accent-primary px-3.5 sm:px-4 py-1.5 sm:py-2 rounded-full text-xs sm:text-sm transition-all duration-200 cursor-pointer">
-          Đăng ký
-        </button>
+        <a href="/register.html" class="hidden sm:inline-flex items-center bg-glass-bg border border-glass-border text-text-primary font-semibold hover:bg-glass-bg-hover hover:border-accent-primary hover:text-accent-primary px-3.5 sm:px-4 py-1.5 sm:py-2 rounded-full text-xs sm:text-sm transition-all duration-200 cursor-pointer">Đăng ký</a>
 
         <!-- Đăng nhập Button (Nút chính CTA cam nổi bật) -->
-        <a href="/admin-login.html"
+        <a href="/login.html"
           class="bg-warm-gradient text-white font-extrabold shadow-md hover:brightness-105 active:scale-95 transition-all duration-200 px-3.5 sm:px-4 py-1.5 sm:py-2 rounded-full text-xs sm:text-sm flex items-center gap-1.5 whitespace-nowrap">
           <svg class="w-3.5 h-3.5 fill-current" viewBox="0 0 24 24">
             <path
@@ -159,12 +156,9 @@
           class="px-4 py-3 rounded-2xl hover:bg-glass-bg-hover text-text-primary transition-colors">Liên hệ</a>
       </nav>
 
-      <div class="pt-5 border-t border-glass-border flex items-center gap-2 mt-4">
-        <button onclick="window.showToast('Tính năng Đăng ký tài khoản thành viên sẽ sớm ra mắt nhé! 🎸')"
-          class="flex-1 py-2.5 rounded-full bg-glass-bg text-text-primary border border-glass-border font-bold text-xs text-center cursor-pointer">
-          Đăng ký
-        </button>
-        <a href="/admin-login.html"
+      <div class="pt-5 border-t border-glass-border flex items-center gap-2 mt-4" id="mobile-auth-container">
+        <a href="/register.html" class="flex-1 py-2.5 rounded-full bg-glass-bg text-text-primary border border-glass-border font-bold text-xs text-center cursor-pointer block">Đăng ký</a>
+        <a href="/login.html"
           class="flex-1 py-2.5 rounded-full bg-warm-gradient text-white font-extrabold text-xs text-center flex items-center justify-center gap-1.5 shadow-sm">
           <svg class="w-3.5 h-3.5 fill-current" viewBox="0 0 24 24">
             <path

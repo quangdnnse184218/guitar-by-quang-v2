@@ -88,12 +88,12 @@ document.addEventListener('DOMContentLoaded', () => {
       if (data?.user && data?.session === null) {
          showAlert('Đăng ký thành công! Vui lòng kiểm tra hộp thư email của bạn để xác thực tài khoản.', true)
          setTimeout(() => {
-           window.location.href = '/admin-login.html'
+           window.location.href = '/login.html'
          }, 4000)
       } else {
          showAlert('Đăng ký thành công! Đang chuyển hướng...', true)
          setTimeout(() => {
-           window.location.href = '/admin-login.html'
+           window.location.href = '/login.html'
          }, 1500)
       }
 

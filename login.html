@@ -3,7 +3,7 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Đăng Ký Thành Viên — Guitar By Quang</title>
+    <title>Đăng Nhập Thành Viên — Guitar By Quang</title>
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     
     <!-- Google Fonts: Be Vietnam Pro, Inter, JetBrains Mono -->
@@ -32,7 +32,7 @@
       </a>
     </header>
 
-    <!-- Main Register Card -->
+    <!-- Main Login Card -->
     <main class="flex-grow flex items-center justify-center p-4 sm:p-6 my-auto">
       <div class="w-full max-w-md glass-card rounded-3xl p-6 sm:p-8 border border-glass-border shadow-2xl space-y-6">
         
@@ -40,33 +40,23 @@
           <div class="w-14 h-14 mx-auto rounded-2xl bg-accent-primary/15 text-accent-primary border border-accent-primary/30 flex items-center justify-center text-2xl shadow-inner">
             👋
           </div>
-          <h1 class="text-2xl font-extrabold text-text-primary">Tham Gia Cùng Chúng Tôi</h1>
-          <p class="text-xs text-text-muted font-medium">Tạo tài khoản để trải nghiệm toàn bộ tính năng</p>
+          <h1 class="text-2xl font-extrabold text-text-primary">Đăng Nhập Thành Viên</h1>
+          <p class="text-xs text-text-muted font-medium">Truy cập kho tab và lưu trữ yêu thích cá nhân</p>
         </div>
 
         <!-- Alert Box -->
-        <div id="register-alert" class="hidden p-3.5 rounded-2xl bg-rose-500/15 border border-rose-500/30 text-rose-600 dark:text-rose-400 text-xs font-semibold leading-relaxed flex items-center gap-2.5">
-          <svg id="register-alert-icon" class="w-4 h-4 flex-shrink-0 text-rose-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
-          <span id="register-alert-text">Lỗi đăng ký</span>
+        <div id="login-alert" class="hidden p-3.5 rounded-2xl bg-rose-500/15 border border-rose-500/30 text-rose-600 dark:text-rose-400 text-xs font-semibold leading-relaxed flex items-center gap-2.5">
+          <svg id="login-alert-icon" class="w-4 h-4 flex-shrink-0 text-rose-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+          <span id="login-alert-text">Lỗi đăng nhập</span>
         </div>
 
-        <!-- Register Form -->
-        <form id="register-form" class="space-y-4" novalidate>
+        <!-- Login Form -->
+        <form id="login-form" class="space-y-4" novalidate>
           <div class="space-y-1.5">
-            <label for="register-name" class="text-xs font-bold text-text-primary block">Tên Hiển Thị (Tùy chọn)</label>
-            <input
-              type="text"
-              id="register-name"
-              placeholder="Nguyễn Văn A"
-              class="w-full px-4 py-3 rounded-2xl bg-black/5 dark:bg-white/5 border border-glass-border text-sm text-text-primary placeholder:text-text-muted focus:outline-none focus:border-accent-primary transition-colors"
-            />
-          </div>
-
-          <div class="space-y-1.5">
-            <label for="register-email" class="text-xs font-bold text-text-primary block">Địa chỉ Email</label>
+            <label for="login-email" class="text-xs font-bold text-text-primary block">Địa chỉ Email</label>
             <input
               type="email"
-              id="register-email"
+              id="login-email"
               required
               placeholder="email@example.com"
               class="w-full px-4 py-3 rounded-2xl bg-black/5 dark:bg-white/5 border border-glass-border text-sm text-text-primary placeholder:text-text-muted focus:outline-none focus:border-accent-primary transition-colors"
@@ -74,21 +64,10 @@
           </div>
 
           <div class="space-y-1.5">
-            <label for="register-password" class="text-xs font-bold text-text-primary block">Mật Khẩu</label>
+            <label for="login-password" class="text-xs font-bold text-text-primary block">Mật Khẩu</label>
             <input
               type="password"
-              id="register-password"
-              required
-              placeholder="Ít nhất 6 ký tự"
-              class="w-full px-4 py-3 rounded-2xl bg-black/5 dark:bg-white/5 border border-glass-border text-sm text-text-primary placeholder:text-text-muted focus:outline-none focus:border-accent-primary transition-colors"
-            />
-          </div>
-
-          <div class="space-y-1.5">
-            <label for="register-confirm-password" class="text-xs font-bold text-text-primary block">Nhập Lại Mật Khẩu</label>
-            <input
-              type="password"
-              id="register-confirm-password"
+              id="login-password"
               required
               placeholder="••••••••"
               class="w-full px-4 py-3 rounded-2xl bg-black/5 dark:bg-white/5 border border-glass-border text-sm text-text-primary placeholder:text-text-muted focus:outline-none focus:border-accent-primary transition-colors"
@@ -97,22 +76,22 @@
 
           <button
             type="submit"
-            id="register-submit-btn"
+            id="login-submit-btn"
             class="w-full py-3.5 rounded-full bg-warm-gradient hover:brightness-105 text-white font-bold text-sm transition-all shadow-glow active:scale-[0.98] flex items-center justify-center gap-2 cursor-pointer mt-2"
           >
-            <span id="btn-text">Đăng Ký Tài Khoản</span>
+            <span id="btn-text">Đăng Nhập Ngay</span>
             <div id="btn-spinner" class="hidden w-4 h-4 border-2 border-white/40 border-t-white rounded-full animate-spin"></div>
           </button>
         </form>
 
         <div class="text-center pt-2">
           <p class="text-xs text-text-muted font-medium">
-            Đã có tài khoản? <a href="/login.html" class="text-accent-primary font-bold hover:underline">Đăng nhập tại đây</a>
+            Chưa có tài khoản? <a href="/register.html" class="text-accent-primary font-bold hover:underline">Đăng ký tại đây</a>
           </p>
         </div>
         
         <div class="p-3.5 rounded-2xl bg-black/5 dark:bg-white/5 border border-glass-border text-[11px] text-text-muted leading-relaxed font-medium text-center">
-          🔒 Dữ liệu của bạn được mã hóa và bảo mật 100% bằng chuẩn bảo mật cấp doanh nghiệp của Supabase.
+          🔒 Dữ liệu của bạn được mã hóa và bảo mật bằng công nghệ Supabase.
         </div>
 
       </div>
@@ -131,8 +110,8 @@
       </div>
     </div>
 
-    <!-- Common utilities (showToast) -->
+    <!-- Common utilities -->
     <script type="module" src="/src/common.js"></script>
-    <script type="module" src="/src/register.js"></script>
+    <script type="module" src="/src/login.js"></script>
   </body>
 </html>

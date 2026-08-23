@@ -13,6 +13,7 @@ export default defineConfig({
         adminLogin: resolve(import.meta.dirname, 'admin-login.html'),
         adminDashboard: resolve(import.meta.dirname, 'admin-dashboard.html'),
         register: resolve(import.meta.dirname, 'register.html'),
+        login: resolve(import.meta.dirname, 'login.html'),
       }
     }
   }
