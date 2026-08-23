@@ -53,44 +53,56 @@
         <!-- Register Form -->
         <form id="register-form" class="space-y-4" novalidate>
           <div class="space-y-1.5">
-            <label for="register-name" class="text-xs font-bold text-text-primary block">Tên Hiển Thị (Tùy chọn)</label>
+            <label for="register-name" class="text-xs font-bold text-text-primary block flex items-center justify-between">
+              <span>Họ và Tên / Tên Hiển Thị <span class="text-rose-500">*</span></span>
+            </label>
             <input
               type="text"
               id="register-name"
-              placeholder="Nguyễn Văn A"
+              required
+              placeholder="Nhập họ và tên của bạn..."
               class="w-full px-4 py-3 rounded-2xl bg-black/5 dark:bg-white/5 border border-glass-border text-sm text-text-primary placeholder:text-text-muted focus:outline-none focus:border-accent-primary transition-colors"
             />
           </div>
 
           <div class="space-y-1.5">
-            <label for="register-email" class="text-xs font-bold text-text-primary block">Địa chỉ Email</label>
+            <label for="register-email" class="text-xs font-bold text-text-primary block flex items-center justify-between">
+              <span>Địa chỉ Email <span class="text-rose-500">*</span></span>
+            </label>
             <input
               type="email"
               id="register-email"
               required
-              placeholder="email@example.com"
+              placeholder="vidu@gmail.com"
               class="w-full px-4 py-3 rounded-2xl bg-black/5 dark:bg-white/5 border border-glass-border text-sm text-text-primary placeholder:text-text-muted focus:outline-none focus:border-accent-primary transition-colors"
             />
           </div>
 
           <div class="space-y-1.5">
-            <label for="register-password" class="text-xs font-bold text-text-primary block">Mật Khẩu</label>
+            <label for="register-password" class="text-xs font-bold text-text-primary block flex items-center justify-between">
+              <span>Mật Khẩu <span class="text-rose-500">*</span></span>
+              <span class="text-[10px] text-text-muted font-normal">Tối thiểu 6 ký tự</span>
+            </label>
             <input
               type="password"
               id="register-password"
               required
-              placeholder="Ít nhất 6 ký tự"
+              minlength="6"
+              placeholder="••••••••"
               class="w-full px-4 py-3 rounded-2xl bg-black/5 dark:bg-white/5 border border-glass-border text-sm text-text-primary placeholder:text-text-muted focus:outline-none focus:border-accent-primary transition-colors"
             />
           </div>
 
           <div class="space-y-1.5">
-            <label for="register-confirm-password" class="text-xs font-bold text-text-primary block">Nhập Lại Mật Khẩu</label>
+            <label for="register-confirm-password" class="text-xs font-bold text-text-primary block flex items-center justify-between">
+              <span>Xác Nhận Mật Khẩu <span class="text-rose-500">*</span></span>
+            </label>
             <input
               type="password"
               id="register-confirm-password"
               required
-              placeholder="••••••••"
+              minlength="6"
+              placeholder="Nhập lại mật khẩu..."
               class="w-full px-4 py-3 rounded-2xl bg-black/5 dark:bg-white/5 border border-glass-border text-sm text-text-primary placeholder:text-text-muted focus:outline-none focus:border-accent-primary transition-colors"
             />
           </div>

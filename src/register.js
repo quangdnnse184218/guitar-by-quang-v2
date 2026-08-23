@@ -20,11 +20,11 @@ document.addEventListener('DOMContentLoaded', () => {
     alertText.textContent = message
     
     if (isSuccess) {
-      alertBox.className = 'p-3.5 rounded-2xl bg-emerald-500/15 border border-emerald-500/30 text-emerald-600 dark:text-emerald-400 text-xs font-semibold leading-relaxed flex items-center gap-2.5'
+      alertBox.className = 'p-3.5 rounded-2xl bg-emerald-500/15 border border-emerald-500/30 text-emerald-600 dark:text-emerald-400 text-xs font-semibold leading-relaxed flex items-center gap-2.5 shadow-sm'
       alertIcon.innerHTML = '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>'
       alertIcon.classList.replace('text-rose-500', 'text-emerald-500')
     } else {
-      alertBox.className = 'p-3.5 rounded-2xl bg-rose-500/15 border border-rose-500/30 text-rose-600 dark:text-rose-400 text-xs font-semibold leading-relaxed flex items-center gap-2.5'
+      alertBox.className = 'p-3.5 rounded-2xl bg-rose-500/15 border border-rose-500/30 text-rose-600 dark:text-rose-400 text-xs font-semibold leading-relaxed flex items-center gap-2.5 shadow-sm'
       alertIcon.innerHTML = '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>'
       alertIcon.classList.replace('text-emerald-500', 'text-rose-500')
     }
@@ -34,11 +34,17 @@ document.addEventListener('DOMContentLoaded', () => {
     alertBox.classList.add('hidden')
   }
 
+  function isValidEmail(email) {
+    // Standard RFC 5322 regex validation
+    const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/
+    return emailRegex.test(String(email).trim().toLowerCase())
+  }
+
   function setLoading(isLoading) {
     if (isLoading) {
       submitBtn.disabled = true
       submitBtn.classList.add('opacity-70', 'cursor-not-allowed')
-      btnText.textContent = 'Đang đăng ký...'
+      btnText.textContent = 'Đang tạo tài khoản...'
       btnSpinner.classList.remove('hidden')
     } else {
       submitBtn.disabled = false
@@ -48,25 +54,59 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   }
 
+  // Clear alert on typing
+  ;[nameInput, emailInput, passwordInput, confirmPasswordInput].forEach(input => {
+    input?.addEventListener('input', () => {
+      hideAlert()
+    })
+  })
+
   form.addEventListener('submit', async (e) => {
     e.preventDefault()
     hideAlert()
     
-    const email = emailInput.value.trim()
-    const password = passwordInput.value
-    const confirmPassword = confirmPasswordInput.value
-    const displayName = nameInput.value.trim()
+    const displayName = nameInput?.value?.trim() || ''
+    const email = emailInput?.value?.trim() || ''
+    const password = passwordInput?.value || ''
+    const confirmPassword = confirmPasswordInput?.value || ''
 
-    if (!email || !password || !confirmPassword) {
-      return showAlert('Vui lòng điền đầy đủ các thông tin bắt buộc.')
+    // 1. Kiểm tra không được để trống
+    if (!displayName) {
+      nameInput?.focus()
+      return showAlert('Vui lòng nhập Họ và Tên / Tên hiển thị.')
+    }
+
+    if (!email) {
+      emailInput?.focus()
+      return showAlert('Vui lòng nhập Địa chỉ Email.')
+    }
+
+    // 2. Kiểm tra cú pháp Email chuẩn
+    if (!isValidEmail(email)) {
+      emailInput?.focus()
+      return showAlert('Địa chỉ Email không đúng định dạng (Ví dụ đúng: tenban@gmail.com). Vui lòng kiểm tra lại.')
+    }
+
+    // 3. Kiểm tra Mật khẩu
+    if (!password) {
+      passwordInput?.focus()
+      return showAlert('Vui lòng nhập Mật khẩu.')
     }
 
     if (password.length < 6) {
-      return showAlert('Mật khẩu phải có ít nhất 6 ký tự.')
+      passwordInput?.focus()
+      return showAlert('Mật khẩu phải có tối thiểu 6 ký tự.')
+    }
+
+    // 4. Kiểm tra Xác nhận mật khẩu
+    if (!confirmPassword) {
+      confirmPasswordInput?.focus()
+      return showAlert('Vui lòng nhập lại Mật khẩu để xác nhận.')
     }
 
     if (password !== confirmPassword) {
-      return showAlert('Mật khẩu nhập lại không khớp.')
+      confirmPasswordInput?.focus()
+      return showAlert('Mật khẩu nhập lại không khớp với mật khẩu đã nhập.')
     }
 
     setLoading(true)
@@ -77,19 +117,27 @@ document.addEventListener('DOMContentLoaded', () => {
         password,
         options: {
           data: {
-            display_name: displayName
+            full_name: displayName,
+            display_name: displayName,
+            role: 'user'
           }
         }
       })
 
       if (error) throw error
 
-      // Auto create profile record in 'profiles' table
+      // Kiểm tra trường hợp user đã tồn tại sẵn trong hệ thống (Supabase trả identities rỗng)
+      if (data?.user?.identities && data.user.identities.length === 0) {
+        setLoading(false)
+        return showAlert('Email này đã được đăng ký tài khoản trước đó. Vui lòng đăng nhập hoặc sử dụng email khác.')
+      }
+
+      // Tự động ghi bản ghi vào bảng 'profiles'
       if (data?.user) {
         try {
-          await supabase.from('profiles').insert({
+          await supabase.from('profiles').upsert({
             id: data.user.id,
-            full_name: displayName || email.split('@')[0],
+            full_name: displayName,
             avatar_url: '',
             role: 'user'
           })
@@ -98,27 +146,38 @@ document.addEventListener('DOMContentLoaded', () => {
         }
       }
 
-      // Check if email confirmation is required
+      // Kiểm tra xem Supabase có yêu cầu xác thực email hay không
       if (data?.user && data?.session === null) {
-         showAlert('Đăng ký thành công! Vui lòng kiểm tra hộp thư email của bạn để xác thực tài khoản.', true)
-         setTimeout(() => {
-           window.location.href = '/login.html'
-         }, 4000)
+        showAlert('Đăng ký thành công! Vui lòng kiểm tra hộp thư email để kích hoạt tài khoản.', true)
+        setTimeout(() => {
+          window.location.href = '/login.html'
+        }, 3000)
       } else {
-         showAlert('Đăng ký thành công! Đang chuyển hướng...', true)
-         setTimeout(() => {
-           window.location.href = '/login.html'
-         }, 1500)
+        showAlert('Đăng ký thành công! Đang chuyển hướng vào tài khoản...', true)
+        setTimeout(() => {
+          window.location.href = '/user-dashboard.html'
+        }, 1200)
       }
 
     } catch (error) {
-      console.error('Lỗi đăng ký:', error)
-      let errorMsg = 'Đã có lỗi xảy ra. Vui lòng thử lại sau.'
-      if (error.message.includes('User already registered')) {
-         errorMsg = 'Email này đã được đăng ký. Vui lòng dùng email khác hoặc đăng nhập.'
-      } else if (error.message.includes('Password should be')) {
-         errorMsg = 'Mật khẩu chưa đủ mạnh. Vui lòng thử mật khẩu khác.'
+      console.error('Lỗi đăng ký Supabase:', error)
+      const msgLower = (error?.message || '').toLowerCase()
+      let errorMsg = error?.message || 'Đã có lỗi xảy ra. Vui lòng thử lại sau.'
+
+      if (msgLower.includes('already registered') || msgLower.includes('user already exists') || msgLower.includes('email already in use')) {
+        errorMsg = 'Email này đã được đăng ký. Vui lòng sử dụng email khác hoặc bấm Đăng nhập.'
+      } else if (msgLower.includes('password') && (msgLower.includes('least') || msgLower.includes('short') || msgLower.includes('weak'))) {
+        errorMsg = 'Mật khẩu chưa đủ độ dài (tối thiểu 6 ký tự). Vui lòng thử mật khẩu khác.'
+      } else if (msgLower.includes('rate limit') || msgLower.includes('too many requests') || msgLower.includes('over_email_send_rate_limit')) {
+        errorMsg = 'Bạn đã gửi yêu cầu quá nhiều lần liên tiếp. Vui lòng đợi 1-2 phút rồi thử lại.'
+      } else if (msgLower.includes('invalid email') || msgLower.includes('unable to validate email')) {
+        errorMsg = 'Địa chỉ email không hợp lệ. Vui lòng nhập đúng email thật (ví dụ: name@gmail.com).'
+      } else if (msgLower.includes('signups not allowed') || msgLower.includes('disabled')) {
+        errorMsg = 'Hệ thống đăng ký đang tạm bảo trì. Vui lòng liên hệ Admin để được hỗ trợ.'
+      } else {
+        errorMsg = `Lỗi hệ thống: ${error.message}`
       }
+
       showAlert(errorMsg)
     } finally {
       setLoading(false)
