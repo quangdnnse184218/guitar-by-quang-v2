@@ -67,3 +67,25 @@ export async function fetchSongById(id) {
     return null
   }
 }
+
+/**
+ * Update order for all songs in given array of IDs
+ */
+export async function reorderAllSongs(orderedSongIds) {
+  try {
+    if (!orderedSongIds || !orderedSongIds.length) {
+      return { success: false, error: 'Danh sách bài hát không hợp lệ.' }
+    }
+
+    const updates = orderedSongIds.map((id, index) => 
+      supabase.from('songs').update({ order: index + 1 }).eq('id', id)
+    )
+
+    await Promise.all(updates)
+    return { success: true }
+  } catch (error) {
+    console.error('[songs-service] Lỗi khi cập nhật thứ tự bài hát:', error)
+    return { success: false, error: error.message || 'Lỗi khi cập nhật thứ tự' }
+  }
+}
+

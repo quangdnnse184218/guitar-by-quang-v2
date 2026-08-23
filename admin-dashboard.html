@@ -44,7 +44,7 @@
           </svg>
         </button>
 
-        <a href="/" target="_blank" rel="noopener noreferrer" class="px-3.5 py-1.5 rounded-full bg-glass-bg hover:bg-glass-bg-hover text-text-primary border border-glass-border text-xs font-bold transition-colors flex items-center gap-1.5 shadow-xs">
+        <a href="/" class="px-3.5 py-1.5 rounded-full bg-glass-bg hover:bg-glass-bg-hover text-text-primary border border-glass-border text-xs font-bold transition-colors flex items-center gap-1.5 shadow-xs">
           <span>Xem Website</span>
           <svg class="w-3.5 h-3.5 text-text-muted" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"/></svg>
         </a>
@@ -62,7 +62,7 @@
       <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 pb-4 border-b border-glass-border">
         <div>
           <h1 class="text-2xl sm:text-3xl font-extrabold text-text-primary tracking-tight">Bảng Điều Khiển Admin</h1>
-          <p class="text-xs sm:text-sm text-text-muted font-medium mt-0.5">Quản lý kho bài hát, video tab và bộ đồ nghề hiển thị trên website</p>
+          <p class="text-xs sm:text-sm text-text-muted font-medium mt-0.5">Quản lý kho bài hát, video tab, thứ tự hiển thị và bộ đồ nghề trên website</p>
         </div>
 
         <!-- Navigation Tabs Switcher -->
@@ -87,10 +87,12 @@
             <p class="text-xs text-text-muted font-medium">Đồng bộ trực tiếp với cơ sở dữ liệu Supabase table <code class="bg-black/5 dark:bg-white/10 px-1.5 py-0.5 rounded font-mono text-[11px]">songs</code></p>
           </div>
 
-          <button id="add-song-btn" class="px-5 py-2.5 rounded-full bg-warm-gradient hover:brightness-105 text-white font-bold text-xs sm:text-sm transition-all shadow-glow active:scale-95 flex items-center justify-center gap-2 cursor-pointer">
-            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M12 4v16m8-8H4"/></svg>
-            <span>Thêm Bài Hát Mới</span>
-          </button>
+          <div class="flex items-center gap-2">
+            <button id="add-song-btn" class="px-5 py-2.5 rounded-full bg-warm-gradient hover:brightness-105 text-white font-bold text-xs sm:text-sm transition-all shadow-glow active:scale-95 flex items-center justify-center gap-2 cursor-pointer">
+              <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M12 4v16m8-8H4"/></svg>
+              <span>Thêm Bài Hát Mới</span>
+            </button>
+          </div>
         </div>
 
         <!-- Quick Stats Cards -->
@@ -147,12 +149,19 @@
           </div>
         </div>
 
+        <!-- Instruction Note for Moving/Reordering -->
+        <div class="px-4 py-2.5 rounded-2xl bg-accent-primary/10 border border-accent-primary/20 text-xs text-text-primary flex items-center gap-2">
+          <span>💡</span>
+          <span><strong>Mẹo sắp xếp vị trí:</strong> Nhập số vị trí mong muốn (VD: 1, 2, 3...) rồi bấm <strong>Lưu</strong> hoặc dùng nút <strong>▲ / ▼</strong> để di chuyển bài hát. Vị trí các bài khác sẽ tự động trượt theo!</span>
+        </div>
+
         <!-- Songs Data Table / Grid -->
         <div class="glass-card rounded-3xl border border-glass-border overflow-hidden shadow-sm">
           <div class="overflow-x-auto">
             <table class="w-full text-left text-xs text-text-primary">
               <thead class="bg-black/5 dark:bg-white/5 text-[11px] font-mono uppercase tracking-wider text-text-muted border-b border-glass-border">
                 <tr>
+                  <th class="py-3.5 px-3 text-center w-36">Vị Trí & Thứ Tự</th>
                   <th class="py-3.5 px-4">Bài Hát</th>
                   <th class="py-3.5 px-3">Thể Loại</th>
                   <th class="py-3.5 px-3">Độ Khó</th>
@@ -186,12 +195,19 @@
           </button>
         </div>
 
+        <!-- Instruction Note for Moving Gears -->
+        <div class="px-4 py-2.5 rounded-2xl bg-accent-primary/10 border border-accent-primary/20 text-xs text-text-primary flex items-center gap-2">
+          <span>💡</span>
+          <span><strong>Mẹo sắp xếp vị trí:</strong> Nhập số thứ tự hoặc bấm nút <strong>▲ / ▼</strong> để di chuyển đồ nghề trên trang chủ và trang Công Cụ.</span>
+        </div>
+
         <!-- Gears Data Table -->
         <div class="glass-card rounded-3xl border border-glass-border overflow-hidden shadow-sm">
           <div class="overflow-x-auto">
             <table class="w-full text-left text-xs text-text-primary">
               <thead class="bg-black/5 dark:bg-white/5 text-[11px] font-mono uppercase tracking-wider text-text-muted border-b border-glass-border">
                 <tr>
+                  <th class="py-3.5 px-3 text-center w-36">Vị Trí</th>
                   <th class="py-3.5 px-4">Ảnh & Tên Thiết Bị</th>
                   <th class="py-3.5 px-3">Phân Loại</th>
                   <th class="py-3.5 px-3">Mô Tả Ngắn</th>
