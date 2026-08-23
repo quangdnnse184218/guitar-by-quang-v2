@@ -104,6 +104,38 @@ export async function fetchAllGears() {
   }
 }
 
+const VALID_GEAR_COLUMNS = [
+  'id', 'category', 'title', 'image', 'description',
+  'buy_url', 'buy_text', 'footer_text', 'order', 'created_at'
+]
+
+function sanitizeGearPayload(payload) {
+  const clean = {}
+  
+  // Normalization mappings
+  const rawTitle = payload.title || payload.name || ''
+  const rawImage = payload.image || payload.image_url || 'assets/avatar.jpg'
+  const rawBuyUrl = payload.buy_url || payload.link || payload.buyUrl || ''
+  const rawFooter = payload.footer_text || payload.price || ''
+  const rawBuyText = payload.buy_text || payload.buyText || 'Mua ngay'
+
+  const normalized = {
+    ...payload,
+    title: rawTitle,
+    image: rawImage,
+    buy_url: rawBuyUrl,
+    footer_text: rawFooter,
+    buy_text: rawBuyText
+  }
+
+  for (const key of VALID_GEAR_COLUMNS) {
+    if (normalized[key] !== undefined) {
+      clean[key] = normalized[key]
+    }
+  }
+  return clean
+}
+
 /**
  * Save (Insert or Update) a gear item with full Supabase & LocalStorage sync
  */
@@ -118,58 +150,93 @@ export async function saveGear(payload, isEdit = false, gearId = null) {
   let savedRecord = null
   let supabaseError = null
 
+  // Ensure ID is set
+  const targetId = gearId || payload.id || `gear-${Date.now()}`
+  payload.id = targetId
+
+  const cleanPayload = sanitizeGearPayload(payload)
+
   // 1. Try Supabase write
   try {
     if (isEdit && gearId) {
       const { data, error } = await supabase
         .from('gears')
-        .update(payload)
+        .update(cleanPayload)
         .eq('id', gearId)
         .select()
         
       if (error) {
         supabaseError = error
+        console.error('[gears-service] Supabase update error:', error.message)
       } else if (data && data.length > 0) {
         savedRecord = data[0]
       }
     } else {
+      if (!cleanPayload.order) {
+        cleanPayload.order = all.length + 1
+      }
+      cleanPayload.created_at = cleanPayload.created_at || new Date().toISOString()
+
       const { data, error } = await supabase
         .from('gears')
-        .insert([payload])
+        .insert([cleanPayload])
         .select()
         
       if (error) {
         supabaseError = error
+        console.error('[gears-service] Supabase insert error:', error.message)
       } else if (data && data.length > 0) {
         savedRecord = data[0]
       }
     }
   } catch (e) {
     supabaseError = e
+    console.error('[gears-service] Supabase exception:', e.message)
   }
 
   // 2. Sync to LocalStorage
+  const fullRecord = { ...payload, ...(savedRecord || {}), id: targetId }
   if (isEdit && gearId) {
     const idx = all.findIndex(g => String(g.id) === String(gearId))
     if (idx !== -1) {
-      all[idx] = { ...all[idx], ...payload, id: gearId }
+      all[idx] = { ...all[idx], ...fullRecord }
+    } else {
+      all.push(fullRecord)
     }
   } else {
-    const newId = savedRecord?.id || `gear-${Date.now()}`
-    all.push({ ...payload, id: newId, order: payload.order || (all.length + 1) })
+    all.push(fullRecord)
   }
 
   localStorage.setItem('gbq_gears', JSON.stringify(all))
-  return { success: true, record: savedRecord, warning: supabaseError?.message }
+
+  if (supabaseError) {
+    return {
+      success: true,
+      savedLocally: true,
+      supabaseSaved: false,
+      record: fullRecord,
+      warning: supabaseError.message
+    }
+  }
+
+  return {
+    success: true,
+    savedLocally: true,
+    supabaseSaved: true,
+    record: fullRecord
+  }
 }
 
 /**
  * Delete a gear from Supabase and LocalStorage
  */
 export async function removeGear(gearId) {
+  let supabaseError = null
   try {
-    await supabase.from('gears').delete().eq('id', gearId)
+    const { error } = await supabase.from('gears').delete().eq('id', gearId)
+    if (error) supabaseError = error
   } catch (e) {
+    supabaseError = e
     console.warn('[gears-service] Supabase delete warning:', e)
   }
 
@@ -182,7 +249,7 @@ export async function removeGear(gearId) {
 
   all = all.filter(g => String(g.id) !== String(gearId))
   localStorage.setItem('gbq_gears', JSON.stringify(all))
-  return { success: true }
+  return { success: true, warning: supabaseError?.message }
 }
 
 /**

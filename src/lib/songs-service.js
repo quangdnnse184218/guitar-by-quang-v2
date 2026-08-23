@@ -364,6 +364,24 @@ export async function fetchSongById(id) {
   }
 }
 
+const VALID_SONG_COLUMNS = [
+  'id', 'title', 'category', 'level', 'level_num', 'is_free',
+  'price', 'price_formatted', 'discount_note', 'tuning',
+  'duration', 'description', 'has_demo', 'video_demo',
+  'button_type', 'button_text', 'target_url', 'thumbnail_bg',
+  'capo', 'tempo', 'order', 'created_at'
+]
+
+function sanitizeSongPayload(payload) {
+  const clean = {}
+  for (const key of VALID_SONG_COLUMNS) {
+    if (payload[key] !== undefined) {
+      clean[key] = payload[key]
+    }
+  }
+  return clean
+}
+
 /**
  * Save (Insert or Update) a song with full Supabase & LocalStorage sync
  */
@@ -372,64 +390,99 @@ export async function saveSong(payload, isEdit = false, songId = null) {
   let savedRecord = null
   let supabaseError = null
 
+  // Ensure ID is generated for new records
+  const targetId = songId || payload.id || `tab-${Date.now()}`
+  payload.id = targetId
+
+  const cleanPayload = sanitizeSongPayload(payload)
+
   // 1. Try Supabase write
   try {
     if (isEdit && songId) {
       const { data, error } = await supabase
         .from('songs')
-        .update(payload)
+        .update(cleanPayload)
         .eq('id', songId)
         .select()
         
       if (error) {
         supabaseError = error
+        console.error('[songs-service] Supabase update error:', error.message)
       } else if (data && data.length > 0) {
         savedRecord = data[0]
       }
     } else {
+      if (!cleanPayload.order) {
+        cleanPayload.order = all.length + 1
+      }
+      cleanPayload.created_at = cleanPayload.created_at || new Date().toISOString()
+      
       const { data, error } = await supabase
         .from('songs')
-        .insert([payload])
+        .insert([cleanPayload])
         .select()
         
       if (error) {
         supabaseError = error
+        console.error('[songs-service] Supabase insert error:', error.message)
       } else if (data && data.length > 0) {
         savedRecord = data[0]
       }
     }
   } catch (e) {
     supabaseError = e
+    console.error('[songs-service] Supabase exception:', e.message)
   }
 
-  // 2. Sync to LocalStorage
+  // 2. Sync to LocalStorage (Always persists so user never loses data)
+  const fullRecord = { ...payload, ...(savedRecord || {}), id: targetId }
   if (isEdit && songId) {
     const idx = all.findIndex(s => String(s.id) === String(songId))
     if (idx !== -1) {
-      all[idx] = { ...all[idx], ...payload, id: songId }
+      all[idx] = { ...all[idx], ...fullRecord }
+    } else {
+      all.push(fullRecord)
     }
   } else {
-    const newId = savedRecord?.id || `tab-${Date.now()}`
-    all.push({ ...payload, id: newId, order: payload.order || (all.length + 1) })
+    all.push(fullRecord)
   }
 
   setLocalSongs(all)
-  return { success: true, record: savedRecord, warning: supabaseError?.message }
+
+  if (supabaseError) {
+    return {
+      success: true, // Local cache updated
+      savedLocally: true,
+      supabaseSaved: false,
+      record: fullRecord,
+      warning: supabaseError.message
+    }
+  }
+
+  return {
+    success: true,
+    savedLocally: true,
+    supabaseSaved: true,
+    record: fullRecord
+  }
 }
 
 /**
  * Delete a song from Supabase and LocalStorage
  */
 export async function removeSong(songId) {
+  let supabaseError = null
   try {
-    await supabase.from('songs').delete().eq('id', songId)
+    const { error } = await supabase.from('songs').delete().eq('id', songId)
+    if (error) supabaseError = error
   } catch (e) {
+    supabaseError = e
     console.warn('[songs-service] Supabase delete warning:', e)
   }
 
   const all = getLocalSongs().filter(s => String(s.id) !== String(songId))
   setLocalSongs(all)
-  return { success: true }
+  return { success: true, warning: supabaseError?.message }
 }
 
 /**
@@ -479,5 +532,6 @@ export async function reorderAllSongs(orderedSongIds) {
     return { success: false, error: error.message || 'Lỗi khi cập nhật thứ tự' }
   }
 }
+
 
 

@@ -64,18 +64,37 @@ const toastNotification = document.getElementById('toast-notification')
 const toastMessage = document.getElementById('toast-message')
 let toastTimer = null
 
-export function showToast(msg) {
+export function showToast(msg, type = 'success') {
   if (!toastNotification || !toastMessage) return
   if (toastTimer) clearTimeout(toastTimer)
   
+  const toastIcon = document.getElementById('toast-icon')
   toastMessage.textContent = msg
-  toastNotification.classList.remove('opacity-0', '-translate-y-4', 'pointer-events-none')
-  toastNotification.classList.add('opacity-100', 'translate-y-0', 'pointer-events-auto')
+
+  if (type === 'error') {
+    toastNotification.className = "fixed top-6 right-6 z-50 max-w-sm glass-card px-5 py-3.5 rounded-2xl border border-rose-500/60 shadow-2xl flex items-center gap-3 transform translate-y-0 opacity-100 transition-all duration-300 pointer-events-auto bg-rose-950/80 text-rose-200"
+    if (toastIcon) {
+      toastIcon.className = "w-6 h-6 rounded-full bg-rose-500/30 text-rose-300 flex items-center justify-center flex-shrink-0 text-xs font-bold"
+      toastIcon.textContent = '✕'
+    }
+  } else if (type === 'info') {
+    toastNotification.className = "fixed top-6 right-6 z-50 max-w-sm glass-card px-5 py-3.5 rounded-2xl border border-amber-500/60 shadow-2xl flex items-center gap-3 transform translate-y-0 opacity-100 transition-all duration-300 pointer-events-auto bg-amber-950/80 text-amber-200"
+    if (toastIcon) {
+      toastIcon.className = "w-6 h-6 rounded-full bg-amber-500/30 text-amber-300 flex items-center justify-center flex-shrink-0 text-xs font-bold animate-spin"
+      toastIcon.textContent = '⟳'
+    }
+  } else {
+    toastNotification.className = "fixed top-6 right-6 z-50 max-w-sm glass-card px-5 py-3.5 rounded-2xl border border-emerald-500/60 shadow-2xl flex items-center gap-3 transform translate-y-0 opacity-100 transition-all duration-300 pointer-events-auto bg-emerald-950/80 text-emerald-200"
+    if (toastIcon) {
+      toastIcon.className = "w-6 h-6 rounded-full bg-emerald-500/30 text-emerald-300 flex items-center justify-center flex-shrink-0 text-xs font-bold"
+      toastIcon.textContent = '✓'
+    }
+  }
   
   toastTimer = setTimeout(() => {
     toastNotification.classList.add('opacity-0', '-translate-y-4', 'pointer-events-none')
     toastNotification.classList.remove('opacity-100', 'translate-y-0', 'pointer-events-auto')
-  }, 3200)
+  }, 4000)
 }
 
 window.showToast = showToast
@@ -287,7 +306,7 @@ window.handleSaveSongPosition = async function(songId) {
   if (currentIdx === -1) return
 
   if (targetPos === currentIdx + 1) {
-    showToast(`Bài hát đang ở đúng vị trí ${targetPos}!`)
+    showToast(`Bài hát đang ở đúng vị trí ${targetPos}!`, 'info')
     return
   }
 
@@ -297,15 +316,15 @@ window.handleSaveSongPosition = async function(songId) {
   list.splice(targetPos - 1, 0, movedSong)
 
   const orderedIds = list.map(s => s.id)
-  showToast('Đang cập nhật vị trí...')
+  showToast('Đang cập nhật vị trí...', 'info')
   
   const res = await reorderAllSongs(orderedIds)
 
   if (res.success) {
-    showToast(`✓ Đã di chuyển "${movedSong.title}" về vị trí số ${targetPos}! Các bài khác đã tự động dời.`)
+    showToast(`✓ Đã di chuyển "${movedSong.title}" về vị trí số ${targetPos}! Các bài khác đã tự động dời.`, 'success')
     await loadSongs()
   } else {
-    showToast(res.error || 'Lỗi khi lưu vị trí.')
+    showToast(`❌ Lỗi khi lưu vị trí: ${res.error}`, 'error')
   }
 }
 
@@ -324,10 +343,10 @@ window.handleMoveSong = async function(songId, direction) {
   const res = await reorderAllSongs(orderedIds)
 
   if (res.success) {
-    showToast(`✓ Đã di chuyển "${movedSong.title}" ${direction === 'up' ? 'lên' : 'xuống'} vị trí ${targetIdx + 1}!`)
+    showToast(`✓ Đã di chuyển "${movedSong.title}" ${direction === 'up' ? 'lên' : 'xuống'} vị trí ${targetIdx + 1}!`, 'success')
     await loadSongs()
   } else {
-    showToast(res.error || 'Lỗi khi di chuyển bài hát.')
+    showToast(`❌ Lỗi khi di chuyển bài hát: ${res.error}`, 'error')
   }
 }
 
@@ -346,7 +365,7 @@ window.editSong = function(id) {
   document.getElementById('song-id').value = song.id
   document.getElementById('song-title').value = song.title || ''
   document.getElementById('song-singer').value = song.singer || ''
-  document.getElementById('song-category').value = song.category || 'Fingerstyle'
+  document.getElementById('song-category').value = song.category || 'Nhạc Việt'
   document.getElementById('song-level').value = song.level_num ?? song.levelNum ?? 5
   document.getElementById('song-tuning').value = song.tuning || 'Standard'
   document.getElementById('song-capo').value = song.capo ?? 0
@@ -368,10 +387,10 @@ window.deleteSong = async function(id, title) {
 
   try {
     await removeSong(id)
-    showToast(`✓ Đã xóa thành công bài hát "${title}"!`)
+    showToast(`✓ Đã xóa thành công bài hát "${title}"!`, 'success')
     await loadSongs()
   } catch (err) {
-    showToast('Lỗi khi xóa bài hát.')
+    showToast(`❌ Lỗi khi xóa bài hát: ${err.message}`, 'error')
   }
 }
 
@@ -379,56 +398,54 @@ if (songForm) {
   songForm.addEventListener('submit', async (e) => {
     e.preventDefault()
 
-    const songId = document.getElementById('song-id').value
+    const songId = document.getElementById('song-id').value.trim()
     const isEdit = Boolean(songId)
+    const titleVal = document.getElementById('song-title').value.trim()
+    if (!titleVal) {
+      showToast('❌ Vui lòng nhập Tên Bài Hát!', 'error')
+      return
+    }
+
     const levelVal = Number(document.getElementById('song-level').value) || 5
     const isFree = document.getElementById('song-is-free').checked
     const isFeatured = document.getElementById('song-is-featured').checked
     const priceVal = isFree ? 0 : (Number(document.getElementById('song-price').value) || 0)
     const demoVideoVal = document.getElementById('song-demo-url').value.trim()
     const tabUrlVal = document.getElementById('song-tab-url').value.trim()
-    const youtubeVal = document.getElementById('song-youtube-id').value.trim()
+    const singerVal = document.getElementById('song-singer').value.trim()
 
     const payload = {
-      title: document.getElementById('song-title').value.trim(),
-      singer: document.getElementById('song-singer').value.trim() || 'Guitar By Quang',
-      category: document.getElementById('song-category').value.trim() || 'Fingerstyle',
+      title: titleVal,
+      singer: singerVal || 'Guitar By Quang',
+      category: document.getElementById('song-category').value.trim() || 'Nhạc Việt',
       level_num: levelVal,
-      levelNum: levelVal,
       level: `${levelVal}/10`,
       tuning: document.getElementById('song-tuning').value.trim() || 'Standard',
-      capo: Number(document.getElementById('song-capo').value) || 0,
-      youtube_id: youtubeVal,
-      demo_video_url: demoVideoVal,
-      video_demo: demoVideoVal,
+      capo: String(document.getElementById('song-capo').value || '0'),
       has_demo: Boolean(demoVideoVal),
-      hasDemo: Boolean(demoVideoVal),
+      video_demo: demoVideoVal || null,
       price: priceVal,
-      price_formatted: isFree ? 'Miễn phí' : `${priceVal.toLocaleString('vi-VN')}đ`,
-      priceFormatted: isFree ? 'Miễn phí' : `${priceVal.toLocaleString('vi-VN')}đ`,
-      tab_url: tabUrlVal,
-      target_url: tabUrlVal,
-      targetUrl: tabUrlVal,
+      price_formatted: isFree ? 'Miễn phí' : (priceVal ? `${priceVal.toLocaleString('vi-VN')}đ` : 'Miễn phí'),
+      target_url: tabUrlVal || '',
+      button_type: isFree ? 'link' : 'buy',
+      button_text: isFree ? (demoVideoVal ? 'Tải video tab' : 'Link xem tab') : 'Mua Video Tab',
       is_free: isFree,
-      isFree: isFree,
-      is_featured: isFeatured,
-      isFeatured: isFeatured,
-      updated_at: new Date().toISOString()
+      description: singerVal ? `Ca sĩ / Tác giả: ${singerVal}` : ''
     }
 
     try {
-      showToast('Đang lưu bài hát...')
+      showToast('Đang lưu bài hát...', 'info')
       const res = await saveSong(payload, isEdit, songId)
       
       if (res.success) {
-        showToast(isEdit ? '✓ Đã cập nhật bài hát thành công!' : '✓ Đã thêm bài hát mới thành công!')
+        showToast(isEdit ? `✓ Đã cập nhật thành công bài hát: "${titleVal}"!` : `✓ Đã thêm bài hát mới thành công: "${titleVal}"!`, 'success')
         toggleModal(songModal, false)
         await loadSongs()
       } else {
-        showToast(`Lỗi khi lưu: ${res.warning || 'Không thể lưu'}`)
+        showToast(`❌ Lưu thất bại: ${res.warning || 'Không thể lưu bài hát'}`, 'error')
       }
     } catch (err) {
-      showToast(`Lỗi khi lưu bài hát: ${err.message}`)
+      showToast(`❌ Lỗi khi lưu bài hát: ${err.message}`, 'error')
     }
   })
 }
@@ -463,7 +480,7 @@ function renderGearsTable() {
     const name = gear.name || gear.title || 'Món đồ nghề'
     const image = gear.image_url || gear.image || '/assets/avatar.jpg'
     const category = gear.category || 'Phụ kiện'
-    const price = gear.price || 'Liên hệ'
+    const price = gear.footer_text || gear.price || 'Liên hệ'
     const description = gear.description || 'Chưa có mô tả'
 
     return `
@@ -546,7 +563,7 @@ window.handleSaveGearPosition = async function(gearId) {
   if (currentIdx === -1) return
 
   if (targetPos === currentIdx + 1) {
-    showToast(`Món đồ nghề đang ở đúng vị trí ${targetPos}!`)
+    showToast(`Món đồ nghề đang ở đúng vị trí ${targetPos}!`, 'info')
     return
   }
 
@@ -556,16 +573,16 @@ window.handleSaveGearPosition = async function(gearId) {
   list.splice(targetPos - 1, 0, movedGear)
 
   const orderedIds = list.map(g => g.id)
-  showToast('Đang cập nhật vị trí...')
+  showToast('Đang cập nhật vị trí...', 'info')
   
   const res = await reorderAllGears(orderedIds)
 
   if (res.success) {
     const gearTitle = movedGear.name || movedGear.title
-    showToast(`✓ Đã di chuyển "${gearTitle}" về vị trí số ${targetPos}! Các món khác đã tự động dời.`)
+    showToast(`✓ Đã di chuyển "${gearTitle}" về vị trí số ${targetPos}! Các món khác đã tự động dời.`, 'success')
     await loadGears()
   } else {
-    showToast(res.error || 'Lỗi khi lưu vị trí gear.')
+    showToast(`❌ Lỗi khi lưu vị trí gear: ${res.error}`, 'error')
   }
 }
 
@@ -585,10 +602,10 @@ window.handleMoveGear = async function(gearId, direction) {
 
   if (res.success) {
     const gearTitle = movedGear.name || movedGear.title
-    showToast(`✓ Đã di chuyển "${gearTitle}" ${direction === 'up' ? 'lên' : 'xuống'} vị trí ${targetIdx + 1}!`)
+    showToast(`✓ Đã di chuyển "${gearTitle}" ${direction === 'up' ? 'lên' : 'xuống'} vị trí ${targetIdx + 1}!`, 'success')
     await loadGears()
   } else {
-    showToast(res.error || 'Lỗi khi di chuyển gear.')
+    showToast(`❌ Lỗi khi di chuyển gear: ${res.error}`, 'error')
   }
 }
 
@@ -607,10 +624,10 @@ window.editGear = function(id) {
   document.getElementById('gear-id').value = gear.id
   document.getElementById('gear-name').value = gear.name || gear.title || ''
   document.getElementById('gear-category').value = gear.category || 'Phụ kiện'
-  document.getElementById('gear-price').value = gear.price || gear.footerText || ''
+  document.getElementById('gear-price').value = gear.footer_text || gear.price || gear.footerText || ''
   document.getElementById('gear-description').value = gear.description || ''
-  document.getElementById('gear-link').value = gear.link || gear.buyUrl || gear.buy_url || ''
-  document.getElementById('gear-image').value = gear.image_url || gear.image || ''
+  document.getElementById('gear-link').value = gear.buy_url || gear.link || gear.buyUrl || ''
+  document.getElementById('gear-image').value = gear.image || gear.image_url || ''
 
   if (gearModalTitle) gearModalTitle.textContent = `Sửa Gear: ${gear.name || gear.title}`
   toggleModal(gearModal, true)
@@ -623,10 +640,10 @@ window.deleteGear = async function(id, name) {
 
   try {
     await removeGear(id)
-    showToast(`✓ Đã xóa gear "${name}" thành công!`)
+    showToast(`✓ Đã xóa gear "${name}" thành công!`, 'success')
     await loadGears()
   } catch (err) {
-    showToast('Lỗi khi xóa gear.')
+    showToast(`❌ Lỗi khi xóa gear: ${err.message}`, 'error')
   }
 }
 
@@ -634,38 +651,45 @@ if (gearForm) {
   gearForm.addEventListener('submit', async (e) => {
     e.preventDefault()
 
-    const gearId = document.getElementById('gear-id').value
+    const gearId = document.getElementById('gear-id').value.trim()
     const isEdit = Boolean(gearId)
+    const nameVal = document.getElementById('gear-name').value.trim()
+    if (!nameVal) {
+      showToast('❌ Vui lòng nhập Tên Thiết Bị / Phụ Kiện!', 'error')
+      return
+    }
 
     const payload = {
-      name: document.getElementById('gear-name').value.trim(),
-      title: document.getElementById('gear-name').value.trim(),
+      title: nameVal,
+      name: nameVal,
       category: document.getElementById('gear-category').value.trim() || 'Phụ kiện',
-      price: document.getElementById('gear-price').value.trim(),
-      description: document.getElementById('gear-description').value.trim(),
-      link: document.getElementById('gear-link').value.trim(),
-      buy_url: document.getElementById('gear-link').value.trim(),
-      buyUrl: document.getElementById('gear-link').value.trim(),
-      image_url: document.getElementById('gear-image').value.trim() || '/assets/avatar.jpg',
-      image: document.getElementById('gear-image').value.trim() || '/assets/avatar.jpg'
+      footer_text: document.getElementById('gear-price').value.trim() || '',
+      price: document.getElementById('gear-price').value.trim() || '',
+      description: document.getElementById('gear-description').value.trim() || '',
+      buy_url: document.getElementById('gear-link').value.trim() || '',
+      link: document.getElementById('gear-link').value.trim() || '',
+      image: document.getElementById('gear-image').value.trim() || 'assets/avatar.jpg',
+      image_url: document.getElementById('gear-image').value.trim() || 'assets/avatar.jpg',
+      buy_text: 'Mua ngay'
     }
 
     try {
-      showToast('Đang lưu gear...')
+      showToast('Đang lưu gear...', 'info')
       const res = await saveGear(payload, isEdit, gearId)
 
       if (res.success) {
-        showToast(isEdit ? '✓ Đã cập nhật gear thành công!' : '✓ Đã thêm gear mới thành công!')
+        showToast(isEdit ? `✓ Đã cập nhật gear: "${nameVal}"!` : `✓ Đã thêm gear mới: "${nameVal}"!`, 'success')
         toggleModal(gearModal, false)
         await loadGears()
       } else {
-        showToast(`Lỗi khi lưu: ${res.warning || 'Không thể lưu'}`)
+        showToast(`❌ Lưu thất bại: ${res.warning || 'Không thể lưu món đồ nghề'}`, 'error')
       }
     } catch (err) {
-      showToast(`Lỗi khi lưu gear: ${err.message}`)
+      showToast(`❌ Lỗi khi lưu gear: ${err.message}`, 'error')
     }
   })
 }
+
 
 // ==========================================================================
 // INITIALIZATION
