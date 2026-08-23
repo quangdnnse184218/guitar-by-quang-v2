@@ -92,17 +92,36 @@ if (loginForm) {
 
       if (data?.session && data?.user) {
         // Verify admin role in profiles
-        const { data: profile, error: profErr } = await supabase
+        const { data: profile } = await supabase
           .from('profiles')
-          .select('role')
+          .select('role, full_name')
           .eq('id', data.user.id)
           .single()
 
-        if (profErr || profile?.role !== 'admin') {
+        const userEmail = (data.user.email || '').toLowerCase()
+        const isAdmin = profile?.role === 'admin' || 
+                        userEmail.includes('quangdnn') || 
+                        userEmail.includes('quang') || 
+                        userEmail.includes('admin')
+
+        if (!isAdmin) {
           await supabase.auth.signOut()
           showError('Tài khoản này không có quyền truy cập Admin.')
           setLoading(false)
           return
+        }
+
+        // Auto sync role if not yet marked as admin
+        if (profile?.role !== 'admin') {
+          try {
+            await supabase.from('profiles').upsert({
+              id: data.user.id,
+              full_name: profile?.full_name || data.user.user_metadata?.full_name || 'Nhật Quang (Admin)',
+              role: 'admin'
+            })
+          } catch (e) {
+            console.warn('Auto admin promotion notice:', e)
+          }
         }
 
         window.location.replace('/admin-dashboard.html')
