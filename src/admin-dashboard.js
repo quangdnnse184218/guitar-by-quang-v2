@@ -88,6 +88,22 @@ const statPaidSongsCount = document.getElementById('stat-paid-songs-count')
 const recentGrantsTbody = document.getElementById('recent-grants-tbody')
 const refreshHistoryBtn = document.getElementById('refresh-history-btn')
 
+// Change Password DOM
+const openChangePasswordBtn = document.getElementById('open-change-password-btn')
+const changePasswordModal = document.getElementById('change-password-modal')
+const closeChangePasswordModal = document.getElementById('close-change-password-modal')
+const cancelChangePasswordBtn = document.getElementById('cancel-change-password-btn')
+const changePasswordForm = document.getElementById('change-password-form')
+const adminNewPassword = document.getElementById('admin-new-password')
+const adminConfirmPassword = document.getElementById('admin-confirm-password')
+const toggleNewPasswordVisibility = document.getElementById('toggle-new-password-visibility')
+const toggleConfirmPasswordVisibility = document.getElementById('toggle-confirm-password-visibility')
+const changePwdError = document.getElementById('change-pwd-error')
+const changePwdErrorText = document.getElementById('change-pwd-error-text')
+const savePasswordBtn = document.getElementById('save-password-btn')
+const savePasswordText = document.getElementById('save-password-text')
+const savePasswordSpinner = document.getElementById('save-password-spinner')
+
 // Filters
 const adminSearchSongs = document.getElementById('admin-search-songs')
 const adminFilterCategory = document.getElementById('admin-filter-category')
@@ -1199,6 +1215,103 @@ async function initDashboard() {
     adminFilterType.addEventListener('change', (e) => {
       songTypeFilter = e.target.value
       renderSongsTable()
+    })
+  }
+
+  // ==========================================================================
+  // CHANGE PASSWORD HANDLERS
+  // ==========================================================================
+  function showChangePwdError(msg) {
+    if (!changePwdError || !changePwdErrorText) return
+    changePwdErrorText.textContent = msg
+    changePwdError.classList.remove('hidden')
+  }
+
+  function hideChangePwdError() {
+    if (changePwdError) changePwdError.classList.add('hidden')
+  }
+
+  window.openChangePasswordModal = function() {
+    hideChangePwdError()
+    if (adminNewPassword) {
+      adminNewPassword.value = ''
+      adminNewPassword.type = 'password'
+    }
+    if (adminConfirmPassword) {
+      adminConfirmPassword.value = ''
+      adminConfirmPassword.type = 'password'
+    }
+    toggleModal(changePasswordModal, true)
+    setTimeout(() => adminNewPassword?.focus(), 150)
+  }
+
+  if (openChangePasswordBtn) {
+    openChangePasswordBtn.addEventListener('click', window.openChangePasswordModal)
+  }
+
+  if (closeChangePasswordModal) {
+    closeChangePasswordModal.addEventListener('click', () => toggleModal(changePasswordModal, false))
+  }
+
+  if (cancelChangePasswordBtn) {
+    cancelChangePasswordBtn.addEventListener('click', () => toggleModal(changePasswordModal, false))
+  }
+
+  if (toggleNewPasswordVisibility && adminNewPassword) {
+    toggleNewPasswordVisibility.addEventListener('click', () => {
+      adminNewPassword.type = adminNewPassword.type === 'password' ? 'text' : 'password'
+    })
+  }
+
+  if (toggleConfirmPasswordVisibility && adminConfirmPassword) {
+    toggleConfirmPasswordVisibility.addEventListener('click', () => {
+      adminConfirmPassword.type = adminConfirmPassword.type === 'password' ? 'text' : 'password'
+    })
+  }
+
+  if (changePasswordForm) {
+    changePasswordForm.addEventListener('submit', async (e) => {
+      e.preventDefault()
+      hideChangePwdError()
+
+      const newPwd = adminNewPassword?.value || ''
+      const confirmPwd = adminConfirmPassword?.value || ''
+
+      if (!newPwd || newPwd.length < 6) {
+        showChangePwdError('Mật khẩu mới phải có tối thiểu 6 ký tự!')
+        return
+      }
+
+      if (newPwd !== confirmPwd) {
+        showChangePwdError('Xác nhận mật khẩu không khớp. Vui lòng nhập lại chính xác!')
+        return
+      }
+
+      if (savePasswordBtn) savePasswordBtn.disabled = true
+      if (savePasswordText) savePasswordText.textContent = 'Đang cập nhật...'
+      if (savePasswordSpinner) savePasswordSpinner.classList.remove('hidden')
+
+      try {
+        const { data, error } = await supabase.auth.updateUser({
+          password: newPwd
+        })
+
+        if (error) {
+          showChangePwdError(`Đổi mật khẩu thất bại: ${error.message}`)
+          return
+        }
+
+        showToast('✓ Đã cập nhật mật khẩu Admin thành công!', 'success')
+        toggleModal(changePasswordModal, false)
+        if (adminNewPassword) adminNewPassword.value = ''
+        if (adminConfirmPassword) adminConfirmPassword.value = ''
+      } catch (err) {
+        showChangePwdError(`Lỗi kết nối máy chủ: ${err.message}`)
+      } finally {
+        if (savePasswordBtn) savePasswordBtn.disabled = false
+        if (savePasswordText) savePasswordText.textContent = 'Cập Nhật Mật Khẩu'
+        if (savePasswordSpinner) savePasswordSpinner.classList.add('hidden')
+      }
     })
   }
 
