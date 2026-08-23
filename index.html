@@ -301,32 +301,23 @@
             <h3 class="text-2xl sm:text-3xl font-extrabold text-text-primary">Bộ đồ nghề mình đang dùng</h3>
             <p class="text-xs sm:text-sm text-text-muted font-medium">Mấy món đồ đơn giản mình dùng để quay clip và thu
               âm hằng ngày.</p>
-            <div class="flex justify-center md:hidden pt-2">
-              <span
-                class="inline-flex items-center gap-1.5 px-4 py-1.5 rounded-full bg-accent-primary/15 border border-accent-primary/30 text-accent-primary font-extrabold text-xs shadow-sm animate-pulse">
-                👉 Vuốt sang để xem trọn bộ đồ nghề ✨
-              </span>
-            </div>
           </div>
 
-          <!-- Flashcard Snap Carousel on Mobile / Flex-Wrap Centered Grid on Desktop -->
+          <!-- 2-col Grid on Mobile / Flex-Wrap Centered Grid on Desktop -->
           <div id="gear-container"
-            class="flex overflow-x-auto snap-x snap-mandatory scrollbar-none gap-4 pb-4 pt-1 -mx-6 px-6 md:mx-0 md:px-0 md:flex md:flex-wrap md:justify-center md:gap-5 lg:gap-6 md:overflow-visible md:snap-none w-full">
+            class="grid grid-cols-2 sm:grid-cols-3 md:flex md:flex-wrap md:justify-center gap-3 sm:gap-4 md:gap-5 lg:gap-6 w-full">
             <!-- Skeletons: Populated by JS -->
             <div
-              class="flex-shrink-0 w-[74vw] max-w-[270px] snap-center md:w-[230px] lg:w-[245px] xl:w-[235px] rounded-3xl bg-glass-bg animate-pulse aspect-square border border-glass-border">
+              class="w-full md:w-[230px] lg:w-[245px] xl:w-[235px] rounded-2xl sm:rounded-3xl bg-glass-bg animate-pulse aspect-square border border-glass-border">
             </div>
             <div
-              class="flex-shrink-0 w-[74vw] max-w-[270px] snap-center md:w-[230px] lg:w-[245px] xl:w-[235px] rounded-3xl bg-glass-bg animate-pulse aspect-square border border-glass-border">
+              class="w-full md:w-[230px] lg:w-[245px] xl:w-[235px] rounded-2xl sm:rounded-3xl bg-glass-bg animate-pulse aspect-square border border-glass-border">
             </div>
             <div
-              class="flex-shrink-0 w-[74vw] max-w-[270px] snap-center md:w-[230px] lg:w-[245px] xl:w-[235px] rounded-3xl bg-glass-bg animate-pulse aspect-square border border-glass-border">
+              class="w-full md:w-[230px] lg:w-[245px] xl:w-[235px] rounded-2xl sm:rounded-3xl bg-glass-bg animate-pulse aspect-square border border-glass-border">
             </div>
             <div
-              class="flex-shrink-0 w-[74vw] max-w-[270px] snap-center md:w-[230px] lg:w-[245px] xl:w-[235px] rounded-3xl bg-glass-bg animate-pulse aspect-square border border-glass-border">
-            </div>
-            <div
-              class="flex-shrink-0 w-[74vw] max-w-[270px] snap-center md:w-[230px] lg:w-[245px] xl:w-[235px] rounded-3xl bg-glass-bg animate-pulse aspect-square border border-glass-border">
+              class="w-full md:w-[230px] lg:w-[245px] xl:w-[235px] rounded-2xl sm:rounded-3xl bg-glass-bg animate-pulse aspect-square border border-glass-border">
             </div>
           </div>
         </div>
@@ -348,12 +339,6 @@
             <h2 class="text-3xl sm:text-4xl lg:text-5xl text-text-primary font-extrabold">Bài Hát Nổi Bật</h2>
             <p class="text-text-muted text-sm sm:text-base font-medium leading-relaxed pt-1">Mấy bài được anh em yêu
               thích nhất — xem hết rồi ghé qua Kho Video Tab để khám phá thêm nhé!</p>
-            <div class="flex justify-start md:hidden pt-1">
-              <span
-                class="inline-flex items-center gap-1.5 px-4 py-1.5 rounded-full bg-accent-primary/15 border border-accent-primary/30 text-accent-primary font-extrabold text-xs shadow-sm animate-pulse">
-                👉 Vuốt sang để xem thêm bài hát 🎸
-              </span>
-            </div>
           </div>
           <a href="/kho-tab.html"
             class="flex-shrink-0 inline-flex items-center gap-2 text-sm font-bold text-text-muted hover:text-accent-primary transition-colors">
@@ -365,17 +350,17 @@
           </a>
         </div>
 
-        <!-- Featured Grid -->
+        <!-- Featured Grid (Vertical on Mobile / 3 Columns on Desktop) -->
         <div id="featured-grid"
-          class="flex overflow-x-auto snap-x snap-mandatory gap-4 pb-4 -mx-6 px-6 md:mx-0 md:px-0 md:grid md:grid-cols-3 md:gap-6 md:overflow-visible md:pb-0 scrollbar-none">
+          class="grid grid-cols-1 md:grid-cols-3 gap-4 sm:gap-6 w-full">
           <div
-            class="flex-shrink-0 w-[74vw] max-w-[280px] snap-center md:w-auto md:max-w-none skeleton-pulse rounded-3xl bg-glass-bg border border-glass-border aspect-[3/4]">
+            class="w-full skeleton-pulse rounded-2xl sm:rounded-3xl bg-glass-bg border border-glass-border aspect-[3/4]">
           </div>
           <div
-            class="flex-shrink-0 w-[74vw] max-w-[280px] snap-center md:w-auto md:max-w-none skeleton-pulse rounded-3xl bg-glass-bg border border-glass-border aspect-[3/4]">
+            class="w-full skeleton-pulse rounded-2xl sm:rounded-3xl bg-glass-bg border border-glass-border aspect-[3/4]">
           </div>
           <div
-            class="flex-shrink-0 w-[74vw] max-w-[280px] snap-center md:w-auto md:max-w-none skeleton-pulse rounded-3xl bg-glass-bg border border-glass-border aspect-[3/4]">
+            class="w-full skeleton-pulse rounded-2xl sm:rounded-3xl bg-glass-bg border border-glass-border aspect-[3/4]">
           </div>
         </div>
 

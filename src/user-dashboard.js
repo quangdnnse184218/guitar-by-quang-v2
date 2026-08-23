@@ -341,26 +341,26 @@ function renderOverviewFeatured() {
     // 1. FREE TAB CARD
     if (isFree) {
       return `
-        <div onclick="window.openFreeTabModal('${song.id}')" class="song-card glass-card card-interactive p-4 sm:p-5 flex flex-col justify-between space-y-4 group cursor-pointer rounded-3xl border border-glass-border hover:border-emerald-500/50 hover:shadow-xl transition-all" data-id="${song.id}">
-          <div class="space-y-3.5">
-            <!-- Thumbnail Visual (Green Gradient) -->
-            <div class="relative overflow-hidden rounded-2xl aspect-[16/10] bg-gradient-to-br from-[#16382c] via-[#1f4a3a] to-[#0d221b] p-4 flex flex-col justify-between text-white shadow-inner group-hover:scale-[1.02] transition-transform duration-500 ease-out">
+        <div onclick="window.openFreeTabModal('${song.id}')" class="song-card glass-card card-interactive p-4 sm:p-5 rounded-2xl sm:rounded-3xl border border-glass-border flex flex-col justify-between space-y-3.5 sm:space-y-4 group cursor-pointer w-full" data-id="${song.id}">
+          <div class="space-y-3">
+            <!-- Thumbnail Visual (Emerald Green Gradient) -->
+            <div class="relative overflow-hidden rounded-xl sm:rounded-2xl aspect-[16/9] sm:aspect-[16/10] bg-gradient-to-br from-[#1E3A2F] via-[#2A4D3E] to-[#172A22] p-3 sm:p-4 flex flex-col justify-between text-white shadow-inner group-hover:scale-[1.02] transition-transform duration-500 ease-out">
               <div class="flex justify-between items-start text-xs uppercase font-bold tracking-wider">
-                <span class="bg-black/50 backdrop-blur px-2.5 py-1 rounded-full text-white/95 text-[10px] font-mono">${song.category || 'NHẠC VIỆT'}</span>
-                <div class="flex items-center gap-1.5 flex-wrap justify-end">
+                <span class="bg-black/50 backdrop-blur px-2.5 py-0.5 rounded-full text-white/95 text-[10px] font-mono">${song.category || 'Fingerstyle'}</span>
+                <div class="flex items-center gap-1.5 justify-end">
                   ${userActionGroup}
-                  <span class="px-2.5 py-1 rounded-full text-[10px] font-black bg-emerald-600 text-white shadow-sm uppercase tracking-wide">FREE</span>
+                  <span class="px-2.5 py-0.5 rounded-full text-[10px] font-black bg-emerald-600 text-white shadow-sm uppercase tracking-wide">FREE</span>
                 </div>
               </div>
 
               <!-- Center Play Demo Button -->
               <div class="my-auto text-center flex flex-col items-center justify-center">
-                <div class="w-11 h-11 rounded-full bg-white text-emerald-800 flex items-center justify-center shadow-lg transform group-hover:scale-110 transition-transform">
-                  <svg class="w-5 h-5 fill-current ml-0.5" viewBox="0 0 24 24">
+                <div class="w-10 h-10 sm:w-12 sm:h-12 rounded-full bg-white text-emerald-800 flex items-center justify-center shadow-lg transform group-hover:scale-110 transition-transform">
+                  <svg class="w-4 h-4 sm:w-5 sm:h-5 fill-current ml-0.5" viewBox="0 0 24 24">
                     <path d="M8 5v14l11-7z"/>
                   </svg>
                 </div>
-                <span class="text-[11px] font-bold mt-2 text-white/95 tracking-wide bg-black/45 px-3 py-1 rounded-full backdrop-blur-sm">Xem Tab Miễn Phí</span>
+                <span class="text-[11px] font-bold mt-1.5 text-white/95 tracking-wide bg-black/45 px-2.5 py-0.5 rounded-full backdrop-blur-sm">Xem Tab Miễn Phí</span>
               </div>
 
               <div class="flex justify-between items-end text-xs text-white/95 font-semibold">
@@ -370,12 +370,12 @@ function renderOverviewFeatured() {
             </div>
 
             <!-- Details -->
-            <div class="space-y-2">
-              <h3 class="text-lg font-bold text-text-primary group-hover:text-emerald-500 transition-colors leading-snug line-clamp-1">
+            <div class="space-y-1.5">
+              <h3 class="text-base sm:text-xl font-bold text-text-primary group-hover:text-emerald-500 transition-colors leading-snug line-clamp-1">
                 ${song.title}
               </h3>
 
-              <div class="space-y-1.5 pt-0.5">
+              <div class="space-y-1 pt-0.5">
                 <div class="flex items-center justify-between text-xs font-bold text-text-muted">
                   <span>Độ khó: <strong class="text-emerald-500 font-mono tabular-nums">${song.level || (levelNum + '/10')}</strong></span>
                   <span class="text-xs font-semibold text-text-muted">Tuning: ${song.tuning || 'Standard'}</span>
@@ -385,14 +385,14 @@ function renderOverviewFeatured() {
                 </div>
               </div>
 
-              <p class="text-xs text-text-muted font-medium leading-relaxed pt-1 line-clamp-2">
+              <p class="text-xs text-text-muted font-medium leading-relaxed pt-0.5 line-clamp-2">
                 ${song.description || 'Bản tab guitar fingerstyle miễn phí kèm video hướng dẫn.'}
               </p>
             </div>
           </div>
 
-          <div class="pt-2">
-            <div class="w-full py-2.5 rounded-full bg-emerald-500/15 border border-emerald-500/30 text-emerald-600 dark:text-emerald-400 font-bold text-xs transition-all shadow-xs flex items-center justify-center gap-1.5 active:scale-95 text-center cursor-pointer group-hover:bg-emerald-500/25">
+          <div class="pt-1.5 sm:pt-2">
+            <div class="w-full py-2 sm:py-2.5 rounded-full bg-emerald-500/15 border border-emerald-500/30 text-emerald-600 dark:text-emerald-400 font-bold text-xs transition-all shadow-xs flex items-center justify-center gap-1.5 active:scale-95 text-center cursor-pointer group-hover:bg-emerald-500/25">
               <span>Xem Video Tab (Miễn phí)</span>
               <svg class="w-3.5 h-3.5 transform group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M14 5l7 7m0 0l-7 7m7-7H3"></path>
@@ -410,15 +410,15 @@ function renderOverviewFeatured() {
 
     if (isBought) {
       return `
-        <div onclick="window.navigateToPurchasesTab('${song.id}')" class="song-card glass-card card-interactive p-4 sm:p-5 flex flex-col justify-between space-y-4 group cursor-pointer rounded-3xl border border-amber-500/40 hover:border-amber-400 hover:shadow-xl transition-all" data-id="${song.id}">
-          <div class="space-y-3.5">
+        <div onclick="window.navigateToPurchasesTab('${song.id}')" class="song-card glass-card card-interactive p-4 sm:p-5 flex flex-col justify-between space-y-3.5 sm:space-y-4 group cursor-pointer rounded-2xl sm:rounded-3xl border border-amber-500/40 hover:border-amber-400 hover:shadow-xl transition-all w-full" data-id="${song.id}">
+          <div class="space-y-3">
             <!-- Thumbnail Visual (Warm Brown/Orange Gradient) -->
-            <div class="relative overflow-hidden rounded-2xl aspect-[16/10] bg-gradient-to-br from-[#9a4b24] via-[#7d3b19] to-[#54240d] p-4 flex flex-col justify-between text-white shadow-inner group-hover:scale-[1.02] transition-transform duration-500 ease-out">
+            <div class="relative overflow-hidden rounded-xl sm:rounded-2xl aspect-[16/9] sm:aspect-[16/10] bg-gradient-to-br from-[#9a4b24] via-[#7d3b19] to-[#54240d] p-3 sm:p-4 flex flex-col justify-between text-white shadow-inner group-hover:scale-[1.02] transition-transform duration-500 ease-out">
               <div class="flex justify-between items-start text-xs uppercase font-bold tracking-wider">
-                <span class="bg-black/50 backdrop-blur px-2.5 py-1 rounded-full text-white/95 text-[10px] font-mono">${song.category || 'NHẠC VIỆT'}</span>
+                <span class="bg-black/50 backdrop-blur px-2.5 py-0.5 rounded-full text-white/95 text-[10px] font-mono">${song.category || 'NHẠC VIỆT'}</span>
                 <div class="flex items-center gap-1.5 justify-end">
                   ${userActionGroup}
-                  <span class="px-2.5 py-1 rounded-full text-[10px] font-black bg-amber-500 text-white shadow-sm uppercase tracking-wide flex items-center gap-1">
+                  <span class="px-2.5 py-0.5 rounded-full text-[10px] font-black bg-amber-500 text-white shadow-sm uppercase tracking-wide flex items-center gap-1">
                     <span>✓</span>
                     <span>ĐÃ SỞ HỮU</span>
                   </span>
@@ -427,12 +427,12 @@ function renderOverviewFeatured() {
 
               <!-- Center Play Demo Button -->
               <div class="my-auto text-center flex flex-col items-center justify-center" onclick="event.stopPropagation(); window.navigateToPurchasesTab('${song.id}')">
-                <div class="w-11 h-11 rounded-full bg-white text-[#9a4b24] flex items-center justify-center shadow-lg transform group-hover:scale-110 transition-transform">
-                  <svg class="w-5 h-5 fill-current ml-0.5 text-accent-primary" viewBox="0 0 24 24">
+                <div class="w-10 h-10 sm:w-11 sm:h-11 rounded-full bg-white text-[#9a4b24] flex items-center justify-center shadow-lg transform group-hover:scale-110 transition-transform">
+                  <svg class="w-4 h-4 sm:w-5 sm:h-5 fill-current ml-0.5 text-accent-primary" viewBox="0 0 24 24">
                     <path d="M8 5v14l11-7z"/>
                   </svg>
                 </div>
-                <span class="text-[11px] font-bold mt-2 text-white/95 tracking-wide bg-black/45 px-3 py-1 rounded-full backdrop-blur-sm">Xem Trong Tab Đã Mua</span>
+                <span class="text-[11px] font-bold mt-1.5 text-white/95 tracking-wide bg-black/45 px-2.5 py-0.5 rounded-full backdrop-blur-sm">Xem Trong Tab Đã Mua</span>
               </div>
 
               <div class="flex justify-between items-end text-xs text-white/95 font-semibold">
@@ -442,12 +442,12 @@ function renderOverviewFeatured() {
             </div>
 
             <!-- Details -->
-            <div class="space-y-2">
-              <h3 class="text-lg font-bold text-text-primary group-hover:text-accent-primary transition-colors leading-snug line-clamp-1">
+            <div class="space-y-1.5">
+              <h3 class="text-base sm:text-xl font-bold text-text-primary group-hover:text-accent-primary transition-colors leading-snug line-clamp-1">
                 ${song.title}
               </h3>
 
-              <div class="space-y-1.5 pt-0.5">
+              <div class="space-y-1 pt-0.5">
                 <div class="flex items-center justify-between text-xs font-bold text-text-muted">
                   <span>Độ khó: <strong class="text-accent-primary font-mono tabular-nums">${song.level || (levelNum + '/10')}</strong></span>
                   <span class="text-xs font-semibold text-text-muted">Tuning: ${song.tuning || 'Standard'}</span>
@@ -457,14 +457,14 @@ function renderOverviewFeatured() {
                 </div>
               </div>
 
-              <p class="text-xs text-text-muted font-medium leading-relaxed pt-1 line-clamp-2">
+              <p class="text-xs text-text-muted font-medium leading-relaxed pt-0.5 line-clamp-2">
                 ${song.description || 'Fingerstyle nâng cao: nhiều đoạn hammer-on/pull-off tốc độ cao, thế tay dãn rộng và có slap kết hợp tỉa nốt.'}
               </p>
             </div>
           </div>
 
-          <div class="pt-2">
-            <div class="w-full py-2.5 rounded-full bg-amber-500/15 border border-amber-500/30 hover:bg-amber-500/25 text-amber-600 dark:text-amber-300 font-extrabold text-xs transition-all shadow-xs flex items-center justify-center gap-1.5 active:scale-95 text-center cursor-pointer">
+          <div class="pt-1.5 sm:pt-2">
+            <div class="w-full py-2 sm:py-2.5 rounded-full bg-amber-500/15 border border-amber-500/30 hover:bg-amber-500/25 text-amber-600 dark:text-amber-300 font-extrabold text-xs transition-all shadow-xs flex items-center justify-center gap-1.5 active:scale-95 text-center cursor-pointer">
               <span>📂 Mở Tab Trong Mục Đã Mua</span>
               <svg class="w-3.5 h-3.5 transform group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M14 5l7 7m0 0l-7 7m7-7H3"></path>
@@ -476,12 +476,12 @@ function renderOverviewFeatured() {
     }
 
     return `
-      <div onclick="window.openCheckoutModal('${song.id}')" class="song-card glass-card card-interactive p-4 sm:p-5 flex flex-col justify-between space-y-4 group cursor-pointer rounded-3xl border border-glass-border hover:border-amber-400 hover:shadow-xl transition-all" data-id="${song.id}">
-        <div class="space-y-3.5">
+      <div onclick="window.openCheckoutModal('${song.id}')" class="song-card glass-card card-interactive p-4 sm:p-5 flex flex-col justify-between space-y-3.5 sm:space-y-4 group cursor-pointer rounded-2xl sm:rounded-3xl border border-glass-border hover:border-amber-400 hover:shadow-xl transition-all w-full" data-id="${song.id}">
+        <div class="space-y-3">
           <!-- Thumbnail Visual (Warm Brown/Orange Gradient) -->
-          <div class="relative overflow-hidden rounded-2xl aspect-[16/10] bg-gradient-to-br from-[#9a4b24] via-[#7d3b19] to-[#54240d] p-4 flex flex-col justify-between text-white shadow-inner group-hover:scale-[1.02] transition-transform duration-500 ease-out">
+          <div class="relative overflow-hidden rounded-xl sm:rounded-2xl aspect-[16/9] sm:aspect-[16/10] bg-gradient-to-br from-[#9a4b24] via-[#7d3b19] to-[#54240d] p-3 sm:p-4 flex flex-col justify-between text-white shadow-inner group-hover:scale-[1.02] transition-transform duration-500 ease-out">
             <div class="flex justify-between items-start text-xs uppercase font-bold tracking-wider">
-              <span class="bg-black/50 backdrop-blur px-2.5 py-1 rounded-full text-white/95 text-[10px] font-mono">${song.category || 'NHẠC VIỆT'}</span>
+              <span class="bg-black/50 backdrop-blur px-2.5 py-0.5 rounded-full text-white/95 text-[10px] font-mono">${song.category || 'NHẠC VIỆT'}</span>
               <div class="flex flex-col items-end gap-1">
                 <div class="flex items-center gap-1.5 justify-end">
                   ${userActionGroup}
@@ -493,12 +493,12 @@ function renderOverviewFeatured() {
 
             <!-- Center Play Demo Button -->
             <div class="my-auto text-center flex flex-col items-center justify-center" onclick="event.stopPropagation(); window.openVideoDemoModal('${escapeHtml(song.title)}', '${videoDemoUrl}')">
-              <div class="w-11 h-11 rounded-full bg-white text-[#9a4b24] flex items-center justify-center shadow-lg transform group-hover:scale-110 transition-transform">
-                <svg class="w-5 h-5 fill-current ml-0.5 text-accent-primary" viewBox="0 0 24 24">
+              <div class="w-10 h-10 sm:w-11 sm:h-11 rounded-full bg-white text-[#9a4b24] flex items-center justify-center shadow-lg transform group-hover:scale-110 transition-transform">
+                <svg class="w-4 h-4 sm:w-5 sm:h-5 fill-current ml-0.5 text-accent-primary" viewBox="0 0 24 24">
                   <path d="M8 5v14l11-7z"/>
                 </svg>
               </div>
-              <span class="text-[11px] font-bold mt-2 text-white/95 tracking-wide bg-black/45 px-3 py-1 rounded-full backdrop-blur-sm">Xem Video Demo</span>
+              <span class="text-[11px] font-bold mt-1.5 text-white/95 tracking-wide bg-black/45 px-2.5 py-0.5 rounded-full backdrop-blur-sm">Xem Video Demo</span>
             </div>
 
             <div class="flex justify-between items-end text-xs text-white/95 font-semibold">
@@ -508,12 +508,12 @@ function renderOverviewFeatured() {
           </div>
 
           <!-- Details -->
-          <div class="space-y-2">
-            <h3 class="text-lg font-bold text-text-primary group-hover:text-accent-primary transition-colors leading-snug line-clamp-1">
+          <div class="space-y-1.5">
+            <h3 class="text-base sm:text-xl font-bold text-text-primary group-hover:text-accent-primary transition-colors leading-snug line-clamp-1">
               ${song.title}
             </h3>
 
-            <div class="space-y-1.5 pt-0.5">
+            <div class="space-y-1 pt-0.5">
               <div class="flex items-center justify-between text-xs font-bold text-text-muted">
                 <span>Độ khó: <strong class="text-accent-primary font-mono tabular-nums">${song.level || (levelNum + '/10')}</strong></span>
                 <span class="text-xs font-semibold text-text-muted">Tuning: ${song.tuning || 'Standard'}</span>
@@ -523,14 +523,14 @@ function renderOverviewFeatured() {
               </div>
             </div>
 
-            <p class="text-xs text-text-muted font-medium leading-relaxed pt-1 line-clamp-2">
+            <p class="text-xs text-text-muted font-medium leading-relaxed pt-0.5 line-clamp-2">
               ${song.description || 'Fingerstyle nâng cao: nhiều đoạn hammer-on/pull-off tốc độ cao, thế tay dãn rộng và có slap kết hợp tỉa nốt.'}
             </p>
           </div>
         </div>
 
-        <div class="pt-2">
-          <div class="w-full py-2.5 rounded-full bg-warm-gradient hover:brightness-105 text-white font-bold text-xs transition-all shadow-md flex items-center justify-center gap-1.5 active:scale-95 text-center cursor-pointer">
+        <div class="pt-1.5 sm:pt-2">
+          <div class="w-full py-2 sm:py-2.5 rounded-full bg-warm-gradient hover:brightness-105 text-white font-bold text-xs transition-all shadow-md flex items-center justify-center gap-1.5 active:scale-95 text-center cursor-pointer">
             <span>Nhận Trọn Bộ Tab & Video</span>
             <svg class="w-3.5 h-3.5 transform group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M14 5l7 7m0 0l-7 7m7-7H3"></path>
@@ -543,7 +543,7 @@ function renderOverviewFeatured() {
 }
 
 // ==========================================================================
-// RENDER OVERVIEW GEARS (RICH CARDS LIKE LANDING PAGE)
+// RENDER OVERVIEW GEARS (2-COLUMN ON MOBILE / FLEX-WRAP ON DESKTOP)
 // ==========================================================================
 async function renderOverviewGears() {
   if (!overviewGearsCarousel) return
@@ -558,33 +558,33 @@ async function renderOverviewGears() {
 
   overviewGearsCarousel.innerHTML = gears.map(gear => {
     const buyButtonHtml = gear.buy_url || gear.buyUrl
-      ? `<a href="${gear.buy_url || gear.buyUrl}" target="_blank" rel="noopener noreferrer" class="inline-flex items-center gap-1.5 text-xs font-bold text-accent-primary hover:underline">
+      ? `<a href="${gear.buy_url || gear.buyUrl}" target="_blank" rel="noopener noreferrer" class="inline-flex items-center gap-1 text-[11px] sm:text-xs font-bold text-accent-primary hover:underline">
           <span>${gear.buy_text || gear.buyText || 'Mua trên Shopee'}</span>
-          <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M14 5l7 7m0 0l-7 7m7-7H3"></path></svg>
+          <svg class="w-3 h-3 sm:w-3.5 sm:h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M14 5l7 7m0 0l-7 7m7-7H3"></path></svg>
         </a>`
-      : `<div class="text-xs font-bold text-accent-primary italic">${gear.footer_text || gear.footerText ? `"${(gear.footer_text || gear.footerText).replace(/"/g, '')}"` : ''}</div>`
+      : `<div class="text-[11px] sm:text-xs font-bold text-accent-primary italic">${gear.footer_text || gear.footerText ? `"${(gear.footer_text || gear.footerText).replace(/"/g, '')}"` : ''}</div>`
 
     const cleanDesc = (gear.description || '').replace(/'/g, "\\'").replace(/"/g, '&quot;')
     const cleanTitle = (gear.title || gear.name || '').replace(/'/g, "\\'").replace(/"/g, '&quot;')
     const imagePath = gear.image ? (gear.image.startsWith('/') ? gear.image : '/' + gear.image) : '/assets/clover.jpg'
 
     return `
-      <div class="flex-shrink-0 w-[74vw] max-w-[270px] snap-center md:w-[230px] lg:w-[245px] xl:w-[235px] rounded-3xl glass-card p-4 sm:p-5 border border-glass-border flex flex-col justify-between space-y-4 hover:border-accent-primary/50 transition-all duration-300 group shadow-md text-left">
-        <div class="space-y-3">
-          <!-- Chuẩn hóa khung ảnh vuông 1:1 với nền nhẹ đồng bộ, object-contain -->
-          <div onclick="window.openImageModal('${imagePath}', '${cleanTitle}', '${cleanDesc}')" class="w-full aspect-square rounded-2xl bg-white/95 dark:bg-white/[0.06] flex items-center justify-center p-3.5 border border-glass-border shadow-inner overflow-hidden group/img relative cursor-zoom-in group-hover:scale-[1.02] transition-transform duration-300" title="Click để phóng to ảnh">
+      <div class="w-full glass-card card-interactive rounded-2xl sm:rounded-3xl p-3 sm:p-5 shadow-md flex flex-col justify-between gap-2.5 sm:gap-3.5 group md:w-[230px] lg:w-[245px] xl:w-[235px] md:max-w-none text-left border border-glass-border">
+        <div class="space-y-2 sm:space-y-3">
+          <!-- Khung ảnh vuông 1:1 -->
+          <div onclick="window.openImageModal('${imagePath}', '${cleanTitle}', '${cleanDesc}')" class="w-full aspect-square rounded-xl sm:rounded-2xl bg-white/95 dark:bg-white/[0.06] flex items-center justify-center p-2.5 sm:p-3.5 border border-glass-border shadow-inner overflow-hidden group/img relative cursor-zoom-in group-hover:scale-[1.02] transition-transform duration-300" title="Click để phóng to ảnh">
             <img src="${imagePath}" alt="${cleanTitle}" class="w-full h-full object-contain filter drop-shadow-xs transition-transform duration-300 group-hover/img:scale-105" onerror="this.src='/assets/clover.jpg'" />
-            <div class="absolute bottom-2 right-2 p-1.5 rounded-lg bg-black/70 text-white opacity-0 group-hover/img:opacity-100 transition-opacity backdrop-blur-sm shadow-sm pointer-events-none">
-              <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0zM10 7v6m3-3H7"/></svg>
+            <div class="absolute bottom-1.5 right-1.5 sm:bottom-2 sm:right-2 p-1 sm:p-1.5 rounded-lg bg-black/70 text-white opacity-0 group-hover/img:opacity-100 transition-opacity backdrop-blur-sm shadow-sm pointer-events-none">
+              <svg class="w-3 h-3 sm:w-3.5 sm:h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0zM10 7v6m3-3H7"/></svg>
             </div>
           </div>
           <div>
-            <span class="text-[10px] font-extrabold font-mono tracking-widest text-accent-primary uppercase block">${gear.category || 'THIẾT BỊ'}</span>
-            <h4 class="text-sm sm:text-base font-bold text-text-primary group-hover:text-accent-primary transition-colors leading-snug">${gear.title || gear.name}</h4>
-            <p class="text-xs text-text-muted font-medium leading-relaxed mt-1 line-clamp-3">${gear.description || ''}</p>
+            <span class="text-[9px] sm:text-[10px] font-extrabold font-mono tracking-widest text-accent-primary uppercase block">${gear.category || 'THIẾT BỊ'}</span>
+            <h4 class="text-xs sm:text-base font-bold text-text-primary group-hover:text-accent-primary transition-colors leading-snug line-clamp-1">${gear.title || gear.name}</h4>
+            <p class="text-[11px] sm:text-xs text-text-muted font-medium leading-snug mt-0.5 sm:mt-1 line-clamp-2 sm:line-clamp-3">${gear.description || ''}</p>
           </div>
         </div>
-        <div class="pt-2 border-t border-glass-border">
+        <div class="pt-1.5 sm:pt-2 border-t border-glass-border">
           ${buyButtonHtml}
         </div>
       </div>

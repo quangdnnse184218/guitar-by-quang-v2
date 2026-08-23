@@ -79,37 +79,37 @@ export function renderSongCard(tab, index, extraClass = '') {
   // ========================================================================
   if (isFree) {
     return `
-      <div onclick="window.openFreeTabModal('${tab.id}')" class="song-card glass-card card-interactive p-4 sm:p-5 flex flex-col justify-between space-y-4 group cursor-pointer ${extraClass}" data-id="${tab.id}">
-        <div class="space-y-3.5">
-          <div class="relative overflow-hidden rounded-2xl aspect-[16/10] bg-gradient-to-br from-[#1E3A2F] via-[#2A4D3E] to-[#172A22] p-4 flex flex-col justify-between text-white shadow-inner group-hover:scale-[1.02] transition-transform duration-500 ease-out">
+      <div onclick="window.openFreeTabModal('${tab.id}')" class="song-card glass-card card-interactive p-4 sm:p-5 rounded-2xl sm:rounded-3xl border border-glass-border flex flex-col justify-between space-y-3.5 sm:space-y-4 group cursor-pointer ${extraClass}" data-id="${tab.id}">
+        <div class="space-y-3">
+          <div class="relative overflow-hidden rounded-xl sm:rounded-2xl aspect-[16/9] sm:aspect-[16/10] bg-gradient-to-br from-[#1E3A2F] via-[#2A4D3E] to-[#172A22] p-3 sm:p-4 flex flex-col justify-between text-white shadow-inner group-hover:scale-[1.02] transition-transform duration-500 ease-out">
             <div class="flex justify-between items-start text-xs uppercase font-bold tracking-wider">
-              <span class="bg-black/50 backdrop-blur px-2.5 py-1 rounded-full text-white/95">${tab.category || 'Fingerstyle'}</span>
+              <span class="bg-black/50 backdrop-blur px-2.5 py-0.5 rounded-full text-white/95 text-[10px] font-mono">${tab.category || 'Fingerstyle'}</span>
               <div class="flex items-center gap-1.5 flex-wrap justify-end">
-                <span class="px-2.5 py-1 rounded-full text-xs font-black bg-emerald-600 text-white shadow-sm uppercase tracking-wide">FREE</span>
+                <span class="px-2.5 py-0.5 rounded-full text-[10px] font-black bg-emerald-600 text-white shadow-sm uppercase tracking-wide">FREE</span>
               </div>
             </div>
 
             <div class="my-auto text-center flex flex-col items-center justify-center">
-              <div class="w-11 h-11 sm:w-12 sm:h-12 rounded-full bg-white text-emerald-800 flex items-center justify-center shadow-lg transform group-hover:scale-110 transition-transform">
-                <svg class="w-5 h-5 fill-current ml-0.5" viewBox="0 0 24 24">
+              <div class="w-10 h-10 sm:w-12 sm:h-12 rounded-full bg-white text-emerald-800 flex items-center justify-center shadow-lg transform group-hover:scale-110 transition-transform">
+                <svg class="w-4 h-4 sm:w-5 sm:h-5 fill-current ml-0.5" viewBox="0 0 24 24">
                   <path d="M8 5v14l11-7z"/>
                 </svg>
               </div>
-              <span class="text-xs font-bold mt-2 text-white/95 tracking-wide bg-black/45 px-3 py-1 rounded-full backdrop-blur-sm">Xem Tab Miễn Phí</span>
+              <span class="text-[11px] font-bold mt-1.5 text-white/95 tracking-wide bg-black/45 px-2.5 py-0.5 rounded-full backdrop-blur-sm">Xem Tab Miễn Phí</span>
             </div>
 
             <div class="flex justify-between items-end text-xs text-white/95 font-semibold">
-              <span class="font-mono tabular-nums">${tab.duration || 'Full Video'}</span>
-              <span class="text-white/80">Tuning: ${tab.tuning || 'Standard'}</span>
+              <span class="font-mono tabular-nums text-[11px]">${tab.duration || 'Full Video'}</span>
+              <span class="text-white/80 text-[11px]">Tuning: ${tab.tuning || 'Standard'}</span>
             </div>
           </div>
 
-          <div class="space-y-2">
-            <h3 class="text-lg sm:text-xl font-bold text-text-primary group-hover:text-emerald-600 dark:group-hover:text-emerald-400 transition-colors leading-snug">
+          <div class="space-y-1.5">
+            <h3 class="text-base sm:text-xl font-bold text-text-primary group-hover:text-emerald-600 dark:group-hover:text-emerald-400 transition-colors leading-snug line-clamp-1">
               ${tab.title}
             </h3>
 
-            <div class="space-y-1.5 pt-0.5">
+            <div class="space-y-1 pt-0.5">
               <div class="flex items-center justify-between text-xs font-bold text-text-muted">
                 <span>Độ khó: <strong class="text-emerald-700 dark:text-emerald-400 font-mono tabular-nums">${tab.level || (levelNum + '/10')}</strong></span>
                 <span class="text-xs font-semibold text-text-faint">Tuning: ${tab.tuning || 'Standard'}</span>
@@ -119,14 +119,14 @@ export function renderSongCard(tab, index, extraClass = '') {
               </div>
             </div>
 
-            <p class="text-xs text-text-muted font-medium leading-relaxed pt-1 line-clamp-2">
+            <p class="text-xs text-text-muted font-medium leading-relaxed pt-0.5 line-clamp-2">
               ${tab.description || 'Bản tab guitar fingerstyle miễn phí kèm video hướng dẫn.'}
             </p>
           </div>
         </div>
 
-        <div class="pt-2">
-          <div class="w-full py-2.5 rounded-full badge-semantic-success font-bold text-xs transition-all shadow-sm flex items-center justify-center gap-1.5 active:scale-95 text-center cursor-pointer">
+        <div class="pt-1.5 sm:pt-2">
+          <div class="w-full py-2 sm:py-2.5 rounded-full badge-semantic-success font-bold text-xs transition-all shadow-sm flex items-center justify-center gap-1.5 active:scale-95 text-center cursor-pointer">
             <span>Xem Video Tab (Miễn phí)</span>
             <svg class="w-3.5 h-3.5 transform group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M14 5l7 7m0 0l-7 7m7-7H3"></path>
@@ -146,8 +146,8 @@ export function renderSongCard(tab, index, extraClass = '') {
 
   const badgeHtml = `
     <div class="flex flex-col items-end gap-1">
-      <span class="px-2.5 py-1 rounded-full text-xs font-black bg-rose-600 text-white shadow-sm uppercase tracking-wide font-mono tabular-nums">BÁN • ${priceFormatted}</span>
-      ${discountNote ? `<span class="text-xs text-white bg-accent-primary px-2.5 py-0.5 rounded-full font-extrabold shadow-xs">${discountNote}</span>` : ''}
+      <span class="px-2.5 py-0.5 rounded-full text-[10px] font-black bg-rose-600 text-white shadow-sm uppercase tracking-wide font-mono tabular-nums">BÁN • ${priceFormatted}</span>
+      ${discountNote ? `<span class="text-[9px] text-white bg-accent-primary px-2 py-0.5 rounded-full font-extrabold shadow-xs">${discountNote}</span>` : ''}
     </div>
   `
 
@@ -156,31 +156,31 @@ export function renderSongCard(tab, index, extraClass = '') {
     const cleanVideoDemo = videoDemo.startsWith('/') ? videoDemo : '/' + videoDemo
     artworkCenterHtml = `
       <div class="my-auto text-center flex flex-col items-center justify-center" onclick="event.stopPropagation(); window.openVideoDemoModal('${tab.title.replace(/'/g, "\\'")}', '${cleanVideoDemo}')">
-        <button class="w-11 h-11 sm:w-12 sm:h-12 rounded-full bg-white text-[#0B0E1A] flex items-center justify-center shadow-lg transform group-hover:scale-110 transition-transform cursor-pointer" aria-label="Xem video demo bài hát">
-          <svg class="w-5 h-5 fill-current ml-0.5 text-accent-primary" viewBox="0 0 24 24">
+        <button class="w-10 h-10 sm:w-12 sm:h-12 rounded-full bg-white text-[#0B0E1A] flex items-center justify-center shadow-lg transform group-hover:scale-110 transition-transform cursor-pointer" aria-label="Xem video demo bài hát">
+          <svg class="w-4 h-4 sm:w-5 sm:h-5 fill-current ml-0.5 text-accent-primary" viewBox="0 0 24 24">
             <path d="M8 5v14l11-7z"/>
           </svg>
         </button>
-        <span class="text-xs font-bold mt-2 text-white/95 tracking-wide bg-black/45 px-3 py-1 rounded-full backdrop-blur-sm">Xem Video Demo</span>
+        <span class="text-[11px] font-bold mt-1.5 text-white/95 tracking-wide bg-black/45 px-2.5 py-0.5 rounded-full backdrop-blur-sm">Xem Video Demo</span>
       </div>
     `
   } else {
     artworkCenterHtml = `
       <div class="my-auto text-center flex flex-col items-center justify-center opacity-80">
-        <div class="w-10 h-10 rounded-full bg-black/30 flex items-center justify-center text-lg shadow-sm">
+        <div class="w-9 h-9 sm:w-10 sm:h-10 rounded-full bg-black/30 flex items-center justify-center text-base sm:text-lg shadow-sm">
           🎸
         </div>
-        <span class="text-xs font-bold mt-1.5 text-white/80 tracking-wide">Acoustic Tab</span>
+        <span class="text-[11px] font-bold mt-1 text-white/80 tracking-wide">Acoustic Tab</span>
       </div>
     `
   }
 
   return `
-    <div onclick="window.openCheckoutModal('${tab.id}')" class="song-card glass-card card-interactive p-4 sm:p-5 flex flex-col justify-between space-y-4 group cursor-pointer ${extraClass}" data-id="${tab.id}">
-      <div class="space-y-3.5">
-        <div class="relative overflow-hidden rounded-2xl aspect-[16/10] bg-gradient-to-br ${thumbnailBg} p-4 flex flex-col justify-between text-white shadow-inner group-hover:scale-[1.02] transition-transform duration-500 ease-out">
+    <div onclick="window.openCheckoutModal('${tab.id}')" class="song-card glass-card card-interactive p-4 sm:p-5 rounded-2xl sm:rounded-3xl border border-glass-border flex flex-col justify-between space-y-3.5 sm:space-y-4 group cursor-pointer ${extraClass}" data-id="${tab.id}">
+      <div class="space-y-3">
+        <div class="relative overflow-hidden rounded-xl sm:rounded-2xl aspect-[16/9] sm:aspect-[16/10] bg-gradient-to-br ${thumbnailBg} p-3 sm:p-4 flex flex-col justify-between text-white shadow-inner group-hover:scale-[1.02] transition-transform duration-500 ease-out">
           <div class="flex justify-between items-start text-xs uppercase font-bold tracking-wider">
-            <span class="bg-black/50 backdrop-blur px-2.5 py-1 rounded-full text-white/95">${tab.category || 'Nhạc Việt'}</span>
+            <span class="bg-black/50 backdrop-blur px-2.5 py-0.5 rounded-full text-white/95 text-[10px] font-mono">${tab.category || 'Nhạc Việt'}</span>
             <div class="flex items-start gap-1.5 flex-wrap justify-end">
               ${badgeHtml}
             </div>
@@ -189,17 +189,17 @@ export function renderSongCard(tab, index, extraClass = '') {
           ${artworkCenterHtml}
 
           <div class="flex justify-between items-end text-xs text-white/95 font-semibold">
-            <span class="font-mono tabular-nums">${tab.duration || 'Full Video'}</span>
-            <span class="text-white/80">Tuning: ${tab.tuning || 'Standard'}</span>
+            <span class="font-mono tabular-nums text-[11px]">${tab.duration || 'Full Video'}</span>
+            <span class="text-white/80 text-[11px]">Tuning: ${tab.tuning || 'Standard'}</span>
           </div>
         </div>
 
-        <div class="space-y-2">
-          <h3 class="text-lg sm:text-xl font-bold text-text-primary group-hover:text-accent-primary transition-colors leading-snug">
+        <div class="space-y-1.5">
+          <h3 class="text-base sm:text-xl font-bold text-text-primary group-hover:text-accent-primary transition-colors leading-snug line-clamp-1">
             ${tab.title}
           </h3>
 
-          <div class="space-y-1.5 pt-0.5">
+          <div class="space-y-1 pt-0.5">
             <div class="flex items-center justify-between text-xs font-bold text-text-muted">
               <span>Độ khó: <strong class="text-accent-primary font-mono tabular-nums">${tab.level || (levelNum + '/10')}</strong></span>
               <span class="text-xs font-semibold text-text-faint">Tuning: ${tab.tuning || 'Standard'}</span>
@@ -209,14 +209,14 @@ export function renderSongCard(tab, index, extraClass = '') {
             </div>
           </div>
 
-          <p class="text-xs text-text-muted font-medium leading-relaxed pt-1 line-clamp-2">
+          <p class="text-xs text-text-muted font-medium leading-relaxed pt-0.5 line-clamp-2">
             ${tab.description || 'Bản tab guitar fingerstyle chuẩn âm thanh acoustic.'}
           </p>
         </div>
       </div>
 
-      <div class="pt-2">
-        <div class="w-full py-2.5 rounded-full bg-warm-gradient hover:opacity-90 text-white font-bold text-xs transition-all shadow-md shadow-accent-primary/20 flex items-center justify-center gap-1.5 active:scale-95 text-center cursor-pointer">
+      <div class="pt-1.5 sm:pt-2">
+        <div class="w-full py-2 sm:py-2.5 rounded-full bg-warm-gradient hover:opacity-90 text-white font-bold text-xs transition-all shadow-md shadow-accent-primary/20 flex items-center justify-center gap-1.5 active:scale-95 text-center cursor-pointer">
           <span>Nhận Trọn Bộ Tab & Video</span>
           <svg class="w-3.5 h-3.5 transform group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M14 5l7 7m0 0l-7 7m7-7H3"></path>
@@ -228,7 +228,7 @@ export function renderSongCard(tab, index, extraClass = '') {
 }
 
 // ==========================================================================
-// GEARS RENDERING
+// GEARS RENDERING (2-COLUMN ON MOBILE / FLEX-WRAP ON DESKTOP)
 // ==========================================================================
 
 export function renderGears(gears) {
@@ -237,33 +237,33 @@ export function renderGears(gears) {
 
   container.innerHTML = gears.map(gear => {
     const buyButtonHtml = gear.buy_url || gear.buyUrl
-      ? `<a href="${gear.buy_url || gear.buyUrl}" target="_blank" rel="noopener noreferrer" class="inline-flex items-center gap-1.5 text-xs font-bold text-accent-primary hover:underline">
+      ? `<a href="${gear.buy_url || gear.buyUrl}" target="_blank" rel="noopener noreferrer" class="inline-flex items-center gap-1 text-[11px] sm:text-xs font-bold text-accent-primary hover:underline">
           <span>${gear.buy_text || gear.buyText || 'Mua trên Shopee'}</span>
-          <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M14 5l7 7m0 0l-7 7m7-7H3"></path></svg>
+          <svg class="w-3 h-3 sm:w-3.5 sm:h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M14 5l7 7m0 0l-7 7m7-7H3"></path></svg>
         </a>`
-      : `<div class="text-xs font-bold text-accent-primary italic">${gear.footer_text || gear.footerText ? `"${(gear.footer_text || gear.footerText).replace(/"/g, '')}"` : ''}</div>`
+      : `<div class="text-[11px] sm:text-xs font-bold text-accent-primary italic">${gear.footer_text || gear.footerText ? `"${(gear.footer_text || gear.footerText).replace(/"/g, '')}"` : ''}</div>`
 
     const cleanDesc = (gear.description || '').replace(/'/g, "\\'").replace(/"/g, '&quot;')
     const cleanTitle = (gear.title || '').replace(/'/g, "\\'").replace(/"/g, '&quot;')
     const imagePath = gear.image ? (gear.image.startsWith('/') ? gear.image : '/' + gear.image) : '/assets/clover.jpg'
 
     return `
-      <div class="flex-shrink-0 w-[74vw] max-w-[270px] snap-center glass-card card-interactive rounded-3xl p-4 sm:p-5 shadow-md flex flex-col justify-between gap-3.5 group md:w-[230px] lg:w-[245px] xl:w-[235px] md:max-w-none">
-        <div class="space-y-3">
-          <!-- Chuẩn hóa khung ảnh vuông 1:1 với nền nhẹ đồng bộ, object-contain -->
-          <div onclick="window.openImageModal('${imagePath}', '${cleanTitle}', '${cleanDesc}')" class="w-full aspect-square rounded-2xl bg-white/95 dark:bg-white/[0.06] flex items-center justify-center p-3.5 border border-glass-border shadow-inner overflow-hidden group/img relative cursor-zoom-in group-hover:scale-[1.02] transition-transform duration-300" title="Click để phóng to ảnh">
+      <div class="w-full glass-card card-interactive rounded-2xl sm:rounded-3xl p-3 sm:p-5 shadow-md flex flex-col justify-between gap-2.5 sm:gap-3.5 group md:w-[230px] lg:w-[245px] xl:w-[235px] md:max-w-none text-left border border-glass-border">
+        <div class="space-y-2 sm:space-y-3">
+          <!-- Khung ảnh vuông 1:1 -->
+          <div onclick="window.openImageModal('${imagePath}', '${cleanTitle}', '${cleanDesc}')" class="w-full aspect-square rounded-xl sm:rounded-2xl bg-white/95 dark:bg-white/[0.06] flex items-center justify-center p-2.5 sm:p-3.5 border border-glass-border shadow-inner overflow-hidden group/img relative cursor-zoom-in group-hover:scale-[1.02] transition-transform duration-300" title="Click để phóng to ảnh">
             <img src="${imagePath}" alt="${cleanTitle}" class="w-full h-full object-contain filter drop-shadow-xs transition-transform duration-300 group-hover/img:scale-105" onerror="this.src='/assets/clover.jpg'" />
-            <div class="absolute bottom-2 right-2 p-1.5 rounded-lg bg-black/70 text-white opacity-0 group-hover/img:opacity-100 transition-opacity backdrop-blur-sm shadow-sm pointer-events-none">
-              <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0zM10 7v6m3-3H7"/></svg>
+            <div class="absolute bottom-1.5 right-1.5 sm:bottom-2 sm:right-2 p-1 sm:p-1.5 rounded-lg bg-black/70 text-white opacity-0 group-hover/img:opacity-100 transition-opacity backdrop-blur-sm shadow-sm pointer-events-none">
+              <svg class="w-3 h-3 sm:w-3.5 sm:h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0zM10 7v6m3-3H7"/></svg>
             </div>
           </div>
           <div>
-            <span class="text-[10px] font-extrabold font-mono tracking-widest text-accent-primary uppercase block">${gear.category || 'THIẾT BỊ'}</span>
-            <h4 class="text-sm sm:text-base font-bold text-text-primary group-hover:text-accent-primary transition-colors leading-snug">${gear.title}</h4>
-            <p class="text-xs text-text-muted font-medium leading-relaxed mt-1 line-clamp-3">${gear.description || ''}</p>
+            <span class="text-[9px] sm:text-[10px] font-extrabold font-mono tracking-widest text-accent-primary uppercase block">${gear.category || 'THIẾT BỊ'}</span>
+            <h4 class="text-xs sm:text-base font-bold text-text-primary group-hover:text-accent-primary transition-colors leading-snug line-clamp-1">${gear.title}</h4>
+            <p class="text-[11px] sm:text-xs text-text-muted font-medium leading-snug mt-0.5 sm:mt-1 line-clamp-2 sm:line-clamp-3">${gear.description || ''}</p>
           </div>
         </div>
-        <div class="pt-2 border-t border-glass-border">
+        <div class="pt-1.5 sm:pt-2 border-t border-glass-border">
           ${buyButtonHtml}
         </div>
       </div>
@@ -728,25 +728,10 @@ async function initHome() {
   if (featuredContainer) {
     if (featuredSongs && featuredSongs.length > 0) {
       const songsHtml = featuredSongs.slice(0, 3).map((tab, idx) => 
-        renderSongCard(tab, idx, 'flex-shrink-0 w-[74vw] max-w-[280px] snap-center md:w-auto md:max-w-none')
+        renderSongCard(tab, idx, 'w-full')
       ).join('')
 
-      const moreCardHtml = `
-        <a href="/kho-tab.html" class="flex-shrink-0 w-[74vw] max-w-[280px] snap-center md:hidden glass-card hover:bg-accent-primary hover:text-[#0B0E1A] border-2 border-dashed border-accent-primary/50 rounded-3xl p-6 shadow-md transition-all duration-300 flex flex-col items-center justify-center text-center space-y-4 group/cta min-h-[360px]">
-          <div class="w-14 h-14 rounded-full bg-accent-primary/20 text-accent-primary group-hover/cta:bg-white group-hover/cta:text-[#0B0E1A] flex items-center justify-center text-2xl shadow-sm group-hover/cta:scale-110 transition-transform">
-            🎸
-          </div>
-          <div class="space-y-1.5">
-            <span class="text-base font-black text-text-primary group-hover/cta:text-[#0B0E1A] transition-colors block">Xem Thêm Tab Khác</span>
-            <p class="text-xs text-text-muted group-hover/cta:text-[#0B0E1A]/80 transition-colors font-medium">Khám phá toàn bộ kho Video Tab fingerstyle & acoustic</p>
-          </div>
-          <span class="inline-flex items-center gap-1.5 px-4 py-2 rounded-full bg-accent-primary text-[#0B0E1A] group-hover/cta:bg-white group-hover/cta:text-[#0B0E1A] text-xs font-black transition-colors shadow-sm">
-            <span>Xem toàn bộ kho tab</span>
-            <svg class="w-3.5 h-3.5 transform group-hover/cta:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M14 5l7 7m0 0l-7 7m7-7H3"/></svg>
-          </span>
-        </a>
-      `
-      featuredContainer.innerHTML = songsHtml + moreCardHtml
+      featuredContainer.innerHTML = songsHtml
       applyScrollReveal('#featured-grid .song-card')
     } else {
       featuredContainer.innerHTML = `
