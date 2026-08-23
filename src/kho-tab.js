@@ -66,7 +66,7 @@ function renderSongCard(tab, index, extraClass = '') {
     return `
       <div onclick="window.openFreeTabModal('${tab.id}')" class="song-card glass-card card-interactive p-2.5 sm:p-4 rounded-2xl sm:rounded-3xl border border-glass-border flex flex-col justify-between space-y-2.5 sm:space-y-3.5 group cursor-pointer ${extraClass}" data-id="${tab.id}">
         <div class="space-y-2 sm:space-y-3">
-          <div class="relative overflow-hidden rounded-xl sm:rounded-2xl aspect-[16/10] bg-gradient-to-br from-[#1E3A2F] via-[#2A4D3E] to-[#172A22] p-2 sm:p-3.5 flex flex-col justify-between text-white shadow-inner group-hover:scale-[1.02] transition-transform duration-500 ease-out">
+          <div class="relative overflow-hidden rounded-xl sm:rounded-2xl aspect-[4/3] sm:aspect-[16/10] bg-gradient-to-br from-[#1E3A2F] via-[#2A4D3E] to-[#172A22] p-2 sm:p-3.5 flex flex-col justify-between text-white shadow-inner group-hover:scale-[1.02] transition-transform duration-500 ease-out">
             <div class="flex justify-between items-start text-xs uppercase font-bold tracking-wider">
               <span class="bg-black/50 backdrop-blur px-1.5 sm:px-2 py-0.5 rounded-full text-white/95 text-[8px] sm:text-[10px] font-mono">${tab.category || 'Fingerstyle'}</span>
               <div class="flex items-center gap-1 flex-wrap justify-end">
@@ -74,13 +74,13 @@ function renderSongCard(tab, index, extraClass = '') {
               </div>
             </div>
 
-            <div class="my-auto text-center flex flex-col items-center justify-center">
-              <div class="w-8 h-8 sm:w-11 sm:h-11 rounded-full bg-white text-emerald-800 flex items-center justify-center shadow-lg transform group-hover:scale-110 transition-transform">
-                <svg class="w-3.5 h-3.5 sm:w-5 sm:h-5 fill-current ml-0.5" viewBox="0 0 24 24">
+            <div class="my-auto text-center flex flex-col items-center justify-center py-0.5">
+              <div class="w-7 h-7 sm:w-10 sm:h-10 rounded-full bg-white text-emerald-800 flex items-center justify-center shadow-lg transform group-hover:scale-110 transition-transform">
+                <svg class="w-3.5 h-3.5 sm:w-4.5 sm:h-4.5 fill-current ml-0.5" viewBox="0 0 24 24">
                   <path d="M8 5v14l11-7z"/>
                 </svg>
               </div>
-              <span class="text-[9px] sm:text-[11px] font-bold mt-1 text-white/95 tracking-wide bg-black/45 px-2 py-0.5 rounded-full backdrop-blur-sm">Xem Tab Miễn Phí</span>
+              <span class="text-[8px] sm:text-[10px] font-bold mt-1 text-white/95 tracking-wide bg-black/60 px-2 py-0.5 rounded-full backdrop-blur-xs leading-none whitespace-nowrap">Xem Tab Miễn Phí</span>
             </div>
 
             <div class="flex justify-between items-end text-xs text-white/95 font-semibold">
@@ -137,22 +137,22 @@ function renderSongCard(tab, index, extraClass = '') {
   if (hasDemo && videoDemo) {
     const cleanVideoDemo = videoDemo.startsWith('/') ? videoDemo : '/' + videoDemo
     artworkCenterHtml = `
-      <div class="my-auto text-center flex flex-col items-center justify-center" onclick="event.stopPropagation(); window.openVideoDemoModal('${tab.title.replace(/'/g, "\\'")}', '${cleanVideoDemo}')">
-        <button class="w-8 h-8 sm:w-11 sm:h-11 rounded-full bg-white text-[#0B0E1A] flex items-center justify-center shadow-lg transform group-hover:scale-110 transition-transform cursor-pointer" aria-label="Xem video demo bài hát">
+      <div class="my-auto text-center flex flex-col items-center justify-center py-0.5" onclick="event.stopPropagation(); window.openVideoDemoModal('${tab.title.replace(/'/g, "\\'")}', '${cleanVideoDemo}')">
+        <button class="w-7 h-7 sm:w-10 sm:h-10 rounded-full bg-white text-[#0B0E1A] flex items-center justify-center shadow-lg transform group-hover:scale-110 transition-transform cursor-pointer" aria-label="Xem video demo bài hát">
           <svg class="w-3.5 h-3.5 sm:w-4.5 sm:h-4.5 fill-current ml-0.5 text-accent-primary" viewBox="0 0 24 24">
             <path d="M8 5v14l11-7z"/>
           </svg>
         </button>
-        <span class="text-[9px] sm:text-[11px] font-bold mt-1 text-white/95 tracking-wide bg-black/45 px-2 py-0.5 rounded-full backdrop-blur-sm">Xem Video Demo</span>
+        <span class="text-[8px] sm:text-[10px] font-bold mt-1 text-white/95 tracking-wide bg-black/60 px-2 py-0.5 rounded-full backdrop-blur-xs leading-none whitespace-nowrap">Xem Video Demo</span>
       </div>
     `
   } else {
     artworkCenterHtml = `
-      <div class="my-auto text-center flex flex-col items-center justify-center opacity-80">
-        <div class="w-7 h-7 sm:w-9 sm:h-9 rounded-full bg-black/30 flex items-center justify-center text-sm sm:text-base shadow-sm">
+      <div class="my-auto text-center flex flex-col items-center justify-center opacity-80 py-0.5">
+        <div class="w-6 h-6 sm:w-8 sm:h-8 rounded-full bg-black/30 flex items-center justify-center text-xs sm:text-sm shadow-sm">
           🎸
         </div>
-        <span class="text-[9px] sm:text-[11px] font-bold mt-1 text-white/80 tracking-wide">Acoustic Tab</span>
+        <span class="text-[8px] sm:text-[10px] font-bold mt-0.5 text-white/80 tracking-wide">Acoustic Tab</span>
       </div>
     `
   }
@@ -160,7 +160,7 @@ function renderSongCard(tab, index, extraClass = '') {
   return `
     <div onclick="window.openCheckoutModal('${tab.id}')" class="song-card glass-card card-interactive p-2.5 sm:p-4 rounded-2xl sm:rounded-3xl border border-glass-border flex flex-col justify-between space-y-2.5 sm:space-y-3.5 group cursor-pointer ${extraClass}" data-id="${tab.id}">
       <div class="space-y-2 sm:space-y-3">
-        <div class="relative overflow-hidden rounded-xl sm:rounded-2xl aspect-[16/10] bg-gradient-to-br ${thumbnailBg} p-2 sm:p-3.5 flex flex-col justify-between text-white shadow-inner group-hover:scale-[1.02] transition-transform duration-500 ease-out">
+        <div class="relative overflow-hidden rounded-xl sm:rounded-2xl aspect-[4/3] sm:aspect-[16/10] bg-gradient-to-br ${thumbnailBg} p-2 sm:p-3.5 flex flex-col justify-between text-white shadow-inner group-hover:scale-[1.02] transition-transform duration-500 ease-out">
           <div class="flex justify-between items-start text-xs uppercase font-bold tracking-wider">
             <span class="bg-black/50 backdrop-blur px-1.5 sm:px-2 py-0.5 rounded-full text-white/95 text-[8px] sm:text-[10px] font-mono">${tab.category || 'Nhạc Việt'}</span>
             <div class="flex items-start gap-1 flex-wrap justify-end">
@@ -378,6 +378,8 @@ export function toggleModal(modalId, show) {
   }
 }
 
+window.toggleModal = toggleModal
+
 window.openVideoDemoModal = function openVideoDemoModal(title, videoSrc) {
   if (!title || !videoSrc) return
   const titleEl = document.getElementById('video-demo-title')
@@ -582,21 +584,25 @@ function initModalInteractions() {
   const closeFreeBtn = document.getElementById('close-free-tab-modal')
   const closeVideoDemoBtn = document.getElementById('close-video-demo-modal')
   const closeImageBtn = document.getElementById('close-image-modal')
+  const closeAuthReqBtn = document.getElementById('close-auth-required-modal')
   const checkoutModal = document.getElementById('checkout-modal')
   const freeTabModal = document.getElementById('free-tab-modal')
   const videoDemoModal = document.getElementById('video-demo-modal')
   const imageModal = document.getElementById('image-preview-modal')
+  const authReqModal = document.getElementById('auth-required-modal')
 
   if (closeCheckoutBtn) closeCheckoutBtn.addEventListener('click', () => toggleModal('checkout-modal', false))
   if (closeFreeBtn) closeFreeBtn.addEventListener('click', () => toggleModal('free-tab-modal', false))
   if (closeVideoDemoBtn) closeVideoDemoBtn.addEventListener('click', () => toggleModal('video-demo-modal', false))
   if (closeImageBtn) closeImageBtn.addEventListener('click', () => toggleModal('image-preview-modal', false))
+  if (closeAuthReqBtn) closeAuthReqBtn.addEventListener('click', () => toggleModal('auth-required-modal', false))
 
   window.addEventListener('click', (e) => {
     if (e.target === checkoutModal) toggleModal('checkout-modal', false)
     if (e.target === freeTabModal) toggleModal('free-tab-modal', false)
     if (e.target === videoDemoModal) toggleModal('video-demo-modal', false)
     if (e.target === imageModal) toggleModal('image-preview-modal', false)
+    if (e.target === authReqModal) toggleModal('auth-required-modal', false)
   })
 
   window.addEventListener('keydown', (e) => {
@@ -605,6 +611,7 @@ function initModalInteractions() {
       toggleModal('free-tab-modal', false)
       toggleModal('video-demo-modal', false)
       toggleModal('image-preview-modal', false)
+      toggleModal('auth-required-modal', false)
     }
   })
 

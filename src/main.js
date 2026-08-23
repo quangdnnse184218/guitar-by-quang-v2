@@ -81,7 +81,7 @@ export function renderSongCard(tab, index, extraClass = '') {
     return `
       <div onclick="window.openFreeTabModal('${tab.id}')" class="song-card glass-card card-interactive p-2.5 sm:p-4 rounded-2xl sm:rounded-3xl border border-glass-border flex flex-col justify-between space-y-2.5 sm:space-y-3.5 group cursor-pointer ${extraClass}" data-id="${tab.id}">
         <div class="space-y-2 sm:space-y-3">
-          <div class="relative overflow-hidden rounded-xl sm:rounded-2xl aspect-[16/10] bg-gradient-to-br from-[#1E3A2F] via-[#2A4D3E] to-[#172A22] p-2 sm:p-3.5 flex flex-col justify-between text-white shadow-inner group-hover:scale-[1.02] transition-transform duration-500 ease-out">
+          <div class="relative overflow-hidden rounded-xl sm:rounded-2xl aspect-[4/3] sm:aspect-[16/10] bg-gradient-to-br from-[#1E3A2F] via-[#2A4D3E] to-[#172A22] p-2 sm:p-3.5 flex flex-col justify-between text-white shadow-inner group-hover:scale-[1.02] transition-transform duration-500 ease-out">
             <div class="flex justify-between items-start text-xs uppercase font-bold tracking-wider">
               <span class="bg-black/50 backdrop-blur px-1.5 sm:px-2 py-0.5 rounded-full text-white/95 text-[8px] sm:text-[10px] font-mono">${tab.category || 'Fingerstyle'}</span>
               <div class="flex items-center gap-1 flex-wrap justify-end">
@@ -89,13 +89,13 @@ export function renderSongCard(tab, index, extraClass = '') {
               </div>
             </div>
 
-            <div class="my-auto text-center flex flex-col items-center justify-center">
-              <div class="w-8 h-8 sm:w-11 sm:h-11 rounded-full bg-white text-emerald-800 flex items-center justify-center shadow-lg transform group-hover:scale-110 transition-transform">
-                <svg class="w-3.5 h-3.5 sm:w-5 sm:h-5 fill-current ml-0.5" viewBox="0 0 24 24">
+            <div class="my-auto text-center flex flex-col items-center justify-center py-0.5">
+              <div class="w-7 h-7 sm:w-10 sm:h-10 rounded-full bg-white text-emerald-800 flex items-center justify-center shadow-lg transform group-hover:scale-110 transition-transform">
+                <svg class="w-3.5 h-3.5 sm:w-4.5 sm:h-4.5 fill-current ml-0.5" viewBox="0 0 24 24">
                   <path d="M8 5v14l11-7z"/>
                 </svg>
               </div>
-              <span class="text-[9px] sm:text-[11px] font-bold mt-1 text-white/95 tracking-wide bg-black/45 px-2 py-0.5 rounded-full backdrop-blur-sm">Xem Tab Miễn Phí</span>
+              <span class="text-[8px] sm:text-[10px] font-bold mt-1 text-white/95 tracking-wide bg-black/60 px-2 py-0.5 rounded-full backdrop-blur-xs leading-none whitespace-nowrap">Xem Tab Miễn Phí</span>
             </div>
 
             <div class="flex justify-between items-end text-xs text-white/95 font-semibold">
@@ -152,22 +152,22 @@ export function renderSongCard(tab, index, extraClass = '') {
   if (hasDemo && videoDemo) {
     const cleanVideoDemo = videoDemo.startsWith('/') ? videoDemo : '/' + videoDemo
     artworkCenterHtml = `
-      <div class="my-auto text-center flex flex-col items-center justify-center" onclick="event.stopPropagation(); window.openVideoDemoModal('${tab.title.replace(/'/g, "\\'")}', '${cleanVideoDemo}')">
-        <button class="w-8 h-8 sm:w-11 sm:h-11 rounded-full bg-white text-[#0B0E1A] flex items-center justify-center shadow-lg transform group-hover:scale-110 transition-transform cursor-pointer" aria-label="Xem video demo bài hát">
+      <div class="my-auto text-center flex flex-col items-center justify-center py-0.5" onclick="event.stopPropagation(); window.openVideoDemoModal('${tab.title.replace(/'/g, "\\'")}', '${cleanVideoDemo}')">
+        <button class="w-7 h-7 sm:w-10 sm:h-10 rounded-full bg-white text-[#0B0E1A] flex items-center justify-center shadow-lg transform group-hover:scale-110 transition-transform cursor-pointer" aria-label="Xem video demo bài hát">
           <svg class="w-3.5 h-3.5 sm:w-4.5 sm:h-4.5 fill-current ml-0.5 text-accent-primary" viewBox="0 0 24 24">
             <path d="M8 5v14l11-7z"/>
           </svg>
         </button>
-        <span class="text-[9px] sm:text-[11px] font-bold mt-1 text-white/95 tracking-wide bg-black/45 px-2 py-0.5 rounded-full backdrop-blur-sm">Xem Video Demo</span>
+        <span class="text-[8px] sm:text-[10px] font-bold mt-1 text-white/95 tracking-wide bg-black/60 px-2 py-0.5 rounded-full backdrop-blur-xs leading-none whitespace-nowrap">Xem Video Demo</span>
       </div>
     `
   } else {
     artworkCenterHtml = `
-      <div class="my-auto text-center flex flex-col items-center justify-center opacity-80">
-        <div class="w-7 h-7 sm:w-9 sm:h-9 rounded-full bg-black/30 flex items-center justify-center text-sm sm:text-base shadow-sm">
+      <div class="my-auto text-center flex flex-col items-center justify-center opacity-80 py-0.5">
+        <div class="w-6 h-6 sm:w-8 sm:h-8 rounded-full bg-black/30 flex items-center justify-center text-xs sm:text-sm shadow-sm">
           🎸
         </div>
-        <span class="text-[9px] sm:text-[11px] font-bold mt-1 text-white/80 tracking-wide">Acoustic Tab</span>
+        <span class="text-[8px] sm:text-[10px] font-bold mt-0.5 text-white/80 tracking-wide">Acoustic Tab</span>
       </div>
     `
   }
@@ -175,7 +175,7 @@ export function renderSongCard(tab, index, extraClass = '') {
   return `
     <div onclick="window.openCheckoutModal('${tab.id}')" class="song-card glass-card card-interactive p-2.5 sm:p-4 rounded-2xl sm:rounded-3xl border border-glass-border flex flex-col justify-between space-y-2.5 sm:space-y-3.5 group cursor-pointer ${extraClass}" data-id="${tab.id}">
       <div class="space-y-2 sm:space-y-3">
-        <div class="relative overflow-hidden rounded-xl sm:rounded-2xl aspect-[16/10] bg-gradient-to-br ${thumbnailBg} p-2 sm:p-3.5 flex flex-col justify-between text-white shadow-inner group-hover:scale-[1.02] transition-transform duration-500 ease-out">
+        <div class="relative overflow-hidden rounded-xl sm:rounded-2xl aspect-[4/3] sm:aspect-[16/10] bg-gradient-to-br ${thumbnailBg} p-2 sm:p-3.5 flex flex-col justify-between text-white shadow-inner group-hover:scale-[1.02] transition-transform duration-500 ease-out">
           <div class="flex justify-between items-start text-xs uppercase font-bold tracking-wider">
             <span class="bg-black/50 backdrop-blur px-1.5 sm:px-2 py-0.5 rounded-full text-white/95 text-[8px] sm:text-[10px] font-mono">${tab.category || 'Nhạc Việt'}</span>
             <div class="flex items-start gap-1 flex-wrap justify-end">
@@ -222,14 +222,19 @@ export function renderSongCard(tab, index, extraClass = '') {
 }
 
 // ==========================================================================
-// GEARS RENDERING (2-COLUMN ON MOBILE / FLEX-WRAP ON DESKTOP)
+// GEARS RENDERING (2-COLUMN ON MOBILE / MAX 4 INITIALLY WITH SEE MORE BUTTON)
 // ==========================================================================
 
 export function renderGears(gears) {
   const container = document.getElementById('gear-container')
   if (!container || !gears || gears.length === 0) return
 
-  container.innerHTML = gears.map(gear => {
+  const showMoreWrap = document.getElementById('gear-show-more-wrap')
+  const showMoreBtn = document.getElementById('gear-show-more-btn')
+  const showMoreText = document.getElementById('gear-show-more-text')
+  const showMoreIcon = document.getElementById('gear-show-more-icon')
+
+  container.innerHTML = gears.map((gear, idx) => {
     const buyButtonHtml = gear.buy_url || gear.buyUrl
       ? `<a href="${gear.buy_url || gear.buyUrl}" target="_blank" rel="noopener noreferrer" class="inline-flex items-center gap-1 text-[11px] sm:text-xs font-bold text-accent-primary hover:underline">
           <span>${gear.buy_text || gear.buyText || 'Mua trên Shopee'}</span>
@@ -240,9 +245,10 @@ export function renderGears(gears) {
     const cleanDesc = (gear.description || '').replace(/'/g, "\\'").replace(/"/g, '&quot;')
     const cleanTitle = (gear.title || '').replace(/'/g, "\\'").replace(/"/g, '&quot;')
     const imagePath = gear.image ? (gear.image.startsWith('/') ? gear.image : '/' + gear.image) : '/assets/clover.jpg'
+    const extraClass = idx >= 4 ? 'gear-card-extra hidden md:flex' : ''
 
     return `
-      <div class="w-full glass-card card-interactive rounded-2xl sm:rounded-3xl p-3 sm:p-5 shadow-md flex flex-col justify-between gap-2.5 sm:gap-3.5 group md:w-[230px] lg:w-[245px] xl:w-[235px] md:max-w-none text-left border border-glass-border">
+      <div class="w-full glass-card card-interactive rounded-2xl sm:rounded-3xl p-3 sm:p-5 shadow-md flex flex-col justify-between gap-2.5 sm:gap-3.5 group md:w-[230px] lg:w-[245px] xl:w-[235px] md:max-w-none text-left border border-glass-border ${extraClass}">
         <div class="space-y-2 sm:space-y-3">
           <!-- Khung ảnh vuông 1:1 -->
           <div onclick="window.openImageModal('${imagePath}', '${cleanTitle}', '${cleanDesc}')" class="w-full aspect-square rounded-xl sm:rounded-2xl bg-white/95 dark:bg-white/[0.06] flex items-center justify-center p-2.5 sm:p-3.5 border border-glass-border shadow-inner overflow-hidden group/img relative cursor-zoom-in group-hover:scale-[1.02] transition-transform duration-300" title="Click để phóng to ảnh">
@@ -263,6 +269,37 @@ export function renderGears(gears) {
       </div>
     `
   }).join('')
+
+  // Configure Show More Button on Mobile
+  if (showMoreWrap && showMoreBtn && gears.length > 4) {
+    showMoreWrap.classList.remove('hidden')
+    let isExpanded = false
+    const extraCount = gears.length - 4
+
+    showMoreText.textContent = `Xem thêm (${extraCount} món đồ khác)`
+
+    showMoreBtn.onclick = () => {
+      isExpanded = !isExpanded
+      const extraCards = container.querySelectorAll('.gear-card-extra')
+      extraCards.forEach(card => {
+        if (isExpanded) {
+          card.classList.remove('hidden')
+        } else {
+          card.classList.add('hidden')
+        }
+      })
+
+      if (isExpanded) {
+        showMoreText.textContent = 'Thu gọn'
+        if (showMoreIcon) showMoreIcon.classList.add('rotate-180')
+      } else {
+        showMoreText.textContent = `Xem thêm (${extraCount} món đồ khác)`
+        if (showMoreIcon) showMoreIcon.classList.remove('rotate-180')
+      }
+    }
+  } else if (showMoreWrap) {
+    showMoreWrap.classList.add('hidden')
+  }
 
   applyScrollReveal('#gear-container .glass-card')
 }
@@ -436,6 +473,8 @@ export function toggleModal(modalId, show) {
     }, 300)
   }
 }
+
+window.toggleModal = toggleModal
 
 window.openVideoDemoModal = function openVideoDemoModal(title, videoSrc) {
   if (!title || !videoSrc) return
@@ -647,6 +686,9 @@ function setupEventListeners() {
   const closeImageModalBtn = document.getElementById('close-image-modal')
   if (closeImageModalBtn) closeImageModalBtn.addEventListener('click', () => toggleModal('image-preview-modal', false))
 
+  const closeAuthReqBtn = document.getElementById('close-auth-required-modal')
+  if (closeAuthReqBtn) closeAuthReqBtn.addEventListener('click', () => toggleModal('auth-required-modal', false))
+
   const qrTrigger = document.getElementById('qr-preview-trigger')
   if (qrTrigger) {
     qrTrigger.addEventListener('click', () => {
@@ -694,7 +736,7 @@ function setupEventListeners() {
     })
   }
 
-  const modals = ['checkout-modal', 'free-tab-modal', 'video-demo-modal', 'image-preview-modal']
+  const modals = ['checkout-modal', 'free-tab-modal', 'video-demo-modal', 'image-preview-modal', 'auth-required-modal']
   modals.forEach(id => {
     const el = document.getElementById(id)
     if (el) {
