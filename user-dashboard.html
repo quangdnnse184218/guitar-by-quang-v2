@@ -17,69 +17,61 @@
   <body class="bg-bg-base text-text-primary min-h-screen relative overflow-x-hidden flex flex-col justify-between">
     <div class="grain-overlay" aria-hidden="true"></div>
 
-    <!-- Header with Member Luxury Accent Line -->
-    <header id="main-nav" class="fixed top-0 left-0 right-0 z-40 transition-all duration-300 py-3.5 border-b border-glass-border bg-gradient-to-r from-bg-base via-amber-900/10 to-bg-base backdrop-blur-xl">
-      <!-- Member gold gradient accent strip -->
-      <div class="absolute bottom-0 left-0 right-0 h-[2px] bg-gradient-to-r from-accent-primary via-amber-400 to-accent-primary"></div>
-      
-      <div class="container mx-auto px-6 max-w-6xl flex justify-between items-center">
-        <!-- Logo -->
-        <a href="/" class="text-2xl font-bold tracking-tight text-text-primary flex items-center gap-2.5 hover:text-accent-primary transition-colors group">
-          <svg class="w-7 h-7 text-accent-primary flex-shrink-0 group-hover:scale-105 transition-transform" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
-            <path d="M16 2.5C9.5 2.5 4 7 4 13.5C4 20.5 13 28.5 16 30C19 28.5 28 20.5 28 13.5C28 7 22.5 2.5 16 2.5Z" fill="url(#header-pick-grad)" stroke="var(--accent-primary)" stroke-width="1.5"/>
-            <path d="M13 10V18M13 14C14.5 12.5 17.5 12.5 19 14V10M19 14V18" stroke="var(--bg-base)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
-            <defs>
-              <linearGradient id="header-pick-grad" x1="4" y1="2.5" x2="28" y2="30" gradientUnits="userSpaceOnUse">
-                <stop stop-color="var(--accent-primary)"/>
-                <stop offset="1" stop-color="var(--blob-amber)"/>
-              </linearGradient>
-            </defs>
-          </svg>
-          <div class="flex items-center gap-2">
-            <span class="font-extrabold tracking-tight">GuitarByQuang</span>
-            <span class="px-2 py-0.5 rounded-full bg-amber-500/20 text-amber-600 dark:text-amber-300 text-[10px] font-mono font-bold uppercase tracking-wider border border-amber-500/30 hidden sm:inline-block">VIP Member</span>
+    <!-- Header Navigation Bar -->
+    <header class="fixed top-0 left-0 right-0 z-40 bg-glass-bg backdrop-blur-xl border-b border-glass-border shadow-xs transition-all duration-300">
+      <div class="max-w-7xl mx-auto px-6 h-20 flex items-center justify-between gap-4">
+        <!-- Logo & Avatar Brand -->
+        <a href="/" class="flex items-center gap-2.5 sm:gap-3 group flex-shrink-0">
+          <div
+            class="w-9 h-9 sm:w-11 sm:h-11 rounded-full overflow-hidden border-2 border-accent-primary/80 shadow-sm flex-shrink-0 bg-stone-300 group-hover:scale-105 transition-transform duration-200">
+            <img src="/assets/avatar.jpg" alt="Guitar By Quang" class="w-full h-full object-cover object-center" />
+          </div>
+          <div class="flex flex-col">
+            <span
+              class="text-lg sm:text-2xl font-extrabold tracking-tight text-text-primary group-hover:text-accent-primary transition-colors leading-tight">Guitar
+              By Quang</span>
+            <span class="text-[11px] font-semibold text-text-muted hidden sm:inline-block tracking-wide">fingerstyle diary
+              • Nhật Quang</span>
           </div>
         </a>
 
         <!-- Desktop Navigation -->
-        <div class="hidden md:flex items-center gap-7 font-medium">
-          <nav class="flex items-center gap-6 text-sm">
-            <a href="/kho-tab.html" class="nav-link">Kho Tab</a>
-            <a href="/cong-cu.html" class="nav-link">Công Cụ & Gear</a>
-            <a href="/metronome.html" class="nav-link">Metronome</a>
-            <a href="/user-dashboard.html" class="nav-link active font-bold text-accent-primary flex items-center gap-1">
-              <span>Góc Của Tôi</span>
-            </a>
-          </nav>
+        <nav id="desktop-nav"
+          class="hidden md:flex items-center space-x-6 lg:space-x-8 text-sm font-bold text-text-muted flex-nowrap whitespace-nowrap">
+          <a href="/index.html#about" class="nav-link hover:text-text-primary py-1 transition-colors">Giới thiệu</a>
+          <a href="/user-dashboard.html" class="nav-link active font-bold text-accent-primary py-1 transition-colors flex items-center gap-1">
+            <span>Trang Của Tôi</span>
+          </a>
+          <a href="/kho-tab.html" class="nav-link hover:text-text-primary py-1 transition-colors">Kho Video Tab</a>
+          <a href="/cong-cu.html" class="nav-link hover:text-text-primary py-1 transition-colors">Công Cụ</a>
+          <a href="#faq" class="nav-link hover:text-text-primary py-1 transition-colors">Hỏi đáp</a>
+          <a href="/index.html#contact" class="nav-link hover:text-text-primary py-1 transition-colors">Liên hệ</a>
+        </nav>
 
-          <!-- Desktop Auth Container -->
-          <div class="flex items-center gap-2 sm:gap-2.5 flex-shrink-0" id="desktop-auth-container">
-            <!-- Theme Toggle Button -->
-            <button id="theme-toggle-btn" aria-label="Chuyển đổi giao diện Sáng / Tối" title="Chuyển đổi giao diện Sáng / Tối" class="p-2 sm:p-2.5 rounded-full bg-glass-bg hover:bg-glass-bg-hover text-text-primary border border-glass-border flex items-center justify-center transition-colors cursor-pointer">
-              <svg class="sun-icon w-4 h-4 text-accent-primary" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                <circle cx="12" cy="12" r="4"></circle>
-                <path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M6.34 17.66l-1.41 1.41M19.07 4.93l-1.41 1.41"></path>
-              </svg>
-              <svg class="moon-icon w-4 h-4 text-accent-primary" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                <path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z"></path>
-              </svg>
-            </button>
-          </div>
-        </div>
-
-        <!-- Mobile Header Actions -->
-        <div class="flex items-center gap-3 md:hidden">
-          <button id="mobile-theme-toggle-btn" aria-label="Chuyển đổi giao diện Sáng / Tối" title="Chuyển đổi giao diện" class="theme-toggle-btn p-2 rounded-xl bg-glass-bg hover:bg-glass-bg-hover text-text-primary border border-glass-border flex items-center justify-center cursor-pointer">
-            <svg class="sun-icon w-5 h-5 text-accent-primary" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <!-- Header Actions: User Profile Dropdown + Theme Toggle -->
+        <div class="flex items-center gap-2 sm:gap-2.5 flex-shrink-0" id="desktop-auth-container">
+          <!-- Theme Toggle Button -->
+          <button id="theme-toggle-btn" aria-label="Chuyển đổi giao diện Sáng / Tối"
+            title="Chuyển đổi giao diện Sáng / Tối"
+            class="p-2 sm:p-2.5 rounded-full bg-glass-bg hover:bg-glass-bg-hover text-text-primary border border-glass-border flex items-center justify-center transition-colors cursor-pointer">
+            <svg class="sun-icon w-4 h-4 text-accent-primary" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+              stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
               <circle cx="12" cy="12" r="4"></circle>
-              <path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M6.34 17.66l-1.41 1.41M19.07 4.93l-1.41 1.41"></path>
+              <path
+                d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M6.34 17.66l-1.41 1.41M19.07 4.93l-1.41 1.41">
+              </path>
             </svg>
-            <svg class="moon-icon w-5 h-5 text-accent-primary" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <svg class="moon-icon w-4 h-4 text-accent-primary" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+              stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
               <path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z"></path>
             </svg>
           </button>
-          <button id="mobile-menu-btn" aria-label="Mở menu" class="p-2 rounded-xl bg-glass-bg hover:bg-glass-bg-hover text-text-primary border border-glass-border cursor-pointer">
-            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+
+          <!-- Mobile Hamburger Button -->
+          <button id="mobile-menu-btn"
+            class="md:hidden p-2 rounded-xl bg-glass-bg hover:bg-glass-bg-hover text-text-primary border border-glass-border transition-colors cursor-pointer"
+            aria-label="Mở menu">
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path>
             </svg>
           </button>
@@ -87,31 +79,50 @@
       </div>
     </header>
 
-    <!-- Mobile Drawer -->
-    <div id="mobile-menu-backdrop" class="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 hidden opacity-0 transition-opacity duration-300 md:hidden"></div>
-    <div id="mobile-menu-drawer" class="fixed top-0 right-0 bottom-0 w-4/5 max-w-sm mobile-drawer-panel rounded-l-3xl p-6 z-50 transform translate-x-full transition-transform duration-300 ease-out flex flex-col justify-between md:hidden pointer-events-none">
+    <!-- Mobile Drawer Backdrop & Panel -->
+    <div id="mobile-menu-backdrop"
+      class="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 hidden opacity-0 transition-opacity duration-300 md:hidden">
+    </div>
+    <div id="mobile-menu-drawer"
+      class="fixed top-0 right-0 bottom-0 w-4/5 max-w-sm mobile-drawer-panel rounded-l-3xl p-6 z-50 transform translate-x-full transition-transform duration-300 ease-out flex flex-col justify-between md:hidden pointer-events-none">
       <div>
-        <div class="flex items-center justify-between pb-6 border-b border-glass-border">
-          <div class="flex items-center gap-2">
-            <span class="text-xl font-bold text-text-primary">Menu</span>
-            <span class="px-2 py-0.5 rounded-full bg-amber-500/20 text-amber-600 dark:text-amber-300 text-[10px] font-bold">VIP</span>
+        <div class="flex items-center justify-between pb-5 border-b border-glass-border">
+          <div class="flex items-center gap-2.5">
+            <div class="w-8 h-8 rounded-full overflow-hidden border border-accent-primary">
+              <img src="/assets/avatar.jpg" alt="Avatar" class="w-full h-full object-cover" />
+            </div>
+            <span class="text-base font-extrabold text-text-primary">Guitar By Quang</span>
           </div>
-          <button id="mobile-menu-close" aria-label="Đóng menu" class="p-2 rounded-xl text-text-muted hover:text-text-primary cursor-pointer">
+          <button id="mobile-menu-close" aria-label="Đóng menu"
+            class="p-2 rounded-xl text-text-muted hover:text-text-primary cursor-pointer">
             <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
             </svg>
           </button>
         </div>
-        <nav class="flex flex-col gap-3 mt-6">
-          <a href="/kho-tab.html" class="px-4 py-3 rounded-2xl hover:bg-glass-bg-hover text-base font-medium text-text-primary transition-colors">Kho Tab</a>
-          <a href="/cong-cu.html" class="px-4 py-3 rounded-2xl hover:bg-glass-bg-hover text-base font-medium text-text-primary transition-colors">Công Cụ & Gear</a>
-          <a href="/metronome.html" class="px-4 py-3 rounded-2xl hover:bg-glass-bg-hover text-base font-medium text-text-primary transition-colors">Metronome</a>
-          <a href="/user-dashboard.html" class="px-4 py-3 rounded-2xl bg-accent-primary/15 text-accent-primary text-base font-bold transition-colors">Dashboard Thành Viên</a>
+
+        <nav class="flex flex-col gap-2.5 mt-5 font-bold">
+          <a href="/index.html#about" class="px-4 py-3 rounded-2xl hover:bg-glass-bg-hover text-text-primary transition-colors">Giới thiệu</a>
+          <a href="/user-dashboard.html"
+            class="px-4 py-3 rounded-2xl bg-accent-primary/15 text-accent-primary flex items-center gap-2 transition-colors">
+            <span>Trang Của Tôi</span>
+          </a>
+          <a href="/kho-tab.html"
+            class="px-4 py-3 rounded-2xl hover:bg-glass-bg-hover text-text-primary transition-colors">Kho Video Tab</a>
+          <a href="/cong-cu.html"
+            class="px-4 py-3 rounded-2xl hover:bg-glass-bg-hover text-text-primary transition-colors">Công Cụ</a>
+          <a href="#faq" class="px-4 py-3 rounded-2xl hover:bg-glass-bg-hover text-text-primary transition-colors">Hỏi đáp</a>
+          <a href="/index.html#contact"
+            class="px-4 py-3 rounded-2xl hover:bg-glass-bg-hover text-text-primary transition-colors">Liên hệ</a>
         </nav>
+
+        <div class="pt-5 border-t border-glass-border mt-4" id="mobile-auth-container">
+        </div>
       </div>
 
-      <!-- Mobile Auth Container -->
-      <div id="mobile-auth-container"></div>
+      <div class="pt-4 border-t border-glass-border text-center text-xs text-text-faint">
+        <p>&copy; 2026 Guitar By Quang (Nhật Quang)</p>
+      </div>
     </div>
 
     <!-- Main Content -->
@@ -292,62 +303,203 @@
           </div>
 
           <!-- 2. BỘ ĐỒ NGHỀ MÌNH ĐANG DÙNG (THIẾT BỊ & PHỤ KIỆN) -->
-          <div class="space-y-6 pt-8">
-            <div class="text-center max-w-2xl mx-auto space-y-1.5 mb-2">
-              <span class="text-xs font-mono font-bold uppercase tracking-wider text-accent-primary block">THIẾT BỊ & PHỤ KIỆN</span>
+          <div class="pt-6 w-full">
+            <div class="text-center max-w-2xl mx-auto mb-8 space-y-2">
+              <span class="text-xs font-mono font-bold uppercase tracking-wider text-accent-primary block">Thiết Bị & Phụ Kiện</span>
               <h3 class="text-2xl sm:text-3xl font-extrabold text-text-primary">Bộ đồ nghề mình đang dùng</h3>
               <p class="text-xs sm:text-sm text-text-muted font-medium">Mấy món đồ đơn giản mình dùng để quay clip và thu âm hằng ngày.</p>
+              <div class="flex justify-center md:hidden pt-2">
+                <span
+                  class="inline-flex items-center gap-1.5 px-4 py-1.5 rounded-full bg-accent-primary/15 border border-accent-primary/30 text-accent-primary font-extrabold text-xs shadow-sm animate-pulse">
+                  👉 Vuốt sang để xem trọn bộ đồ nghề ✨
+                </span>
+              </div>
             </div>
 
-            <!-- Gears Grid -->
-            <div id="overview-gears-carousel" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-5 lg:gap-6 justify-center">
+            <!-- Flashcard Snap Carousel on Mobile / Flex-Wrap Centered Grid on Desktop -->
+            <div id="overview-gears-carousel"
+              class="flex overflow-x-auto snap-x snap-mandatory scrollbar-none gap-4 pb-4 pt-1 -mx-4 px-4 sm:-mx-6 sm:px-6 md:mx-0 md:px-0 md:flex md:flex-wrap md:justify-center md:gap-5 lg:gap-6 md:overflow-visible md:snap-none w-full">
               <!-- Rendered dynamically by user-dashboard.js -->
             </div>
           </div>
 
-          <!-- FAQ (Compact View) -->
-          <div class="glass-card rounded-3xl p-6 border border-glass-border shadow-xl space-y-4">
-            <div class="flex items-center justify-between pb-3 border-b border-glass-border">
-              <h3 class="text-base font-extrabold text-text-primary flex items-center gap-2">
-                <span>❓</span>
-                <span>Câu Hỏi Thường Gặp</span>
-              </h3>
+          <!-- 3. CÂU HỎI THƯỜNG GẶP (FAQ SECTION) -->
+          <div id="faq" class="pt-10 w-full space-y-6">
+            <div class="text-center max-w-2xl mx-auto space-y-1.5 mb-2">
+              <span class="text-xs font-mono font-bold uppercase tracking-wider text-accent-primary block">Giải đáp thắc mắc</span>
+              <h3 class="text-2xl sm:text-3xl font-extrabold text-text-primary">Câu hỏi thường gặp</h3>
+              <p class="text-xs sm:text-sm text-text-muted font-medium">Mấy thắc mắc anh em hay nhắn hỏi mình nhất trước khi bắt đầu tập.</p>
             </div>
-            
-            <div class="space-y-3">
-              <!-- Item 1 -->
-              <details class="group p-3 sm:p-4 rounded-2xl bg-black/5 dark:bg-white/5 border border-glass-border hover:border-accent-primary/50 transition-colors">
-                <summary class="flex items-center justify-between gap-3 font-bold text-text-primary text-xs sm:text-sm cursor-pointer list-none [&::-webkit-details-marker]:hidden">
-                  <div class="flex items-center gap-2">
-                    <span class="text-[9px] font-mono font-bold uppercase tracking-wider px-1.5 py-0.5 rounded bg-accent-primary/10 text-accent-primary border border-accent-primary/20 flex-shrink-0">Thanh toán</span>
-                    <span>Sau khi chuyển khoản thì nhận Video Tab như thế nào?</span>
+
+            <!-- Thanh Lọc Chủ Đề & Nút Mở Rộng Tất Cả -->
+            <div class="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 pb-2.5 border-b border-glass-border/60">
+              <!-- Filter Pills theo chủ đề -->
+              <div class="flex flex-wrap items-center gap-1.5 sm:gap-2" id="faq-filters">
+                <button type="button" class="faq-filter-pill active" data-faq-filter="all">Tất cả</button>
+                <button type="button" class="faq-filter-pill" data-faq-filter="payment">Thanh toán</button>
+                <button type="button" class="faq-filter-pill" data-faq-filter="technique">Kỹ thuật</button>
+                <button type="button" class="faq-filter-pill" data-faq-filter="service">Dịch vụ đặt Tab</button>
+              </div>
+
+              <!-- Nút Mở rộng / Thu gọn tất cả -->
+              <button type="button" id="faq-toggle-all-btn"
+                class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-glass-bg border border-glass-border hover:border-accent-primary text-xs font-bold text-text-primary hover:text-accent-primary transition-all shadow-xs cursor-pointer flex-shrink-0 self-end sm:self-auto">
+                <svg id="faq-toggle-icon" class="w-3.5 h-3.5 text-accent-primary transition-transform duration-300"
+                  fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7" />
+                </svg>
+                <span id="faq-toggle-text">Mở rộng tất cả</span>
+              </button>
+            </div>
+
+            <!-- Danh Sách Câu Hỏi (Lưới 2 Cột Trên Desktop, Tối Ưu Chiều Cao) -->
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-3 sm:gap-3.5 items-start" id="faq-list">
+
+              <!-- Item 1: Thanh toán -->
+              <details class="faq-item group p-3.5 sm:p-4 rounded-2xl glass-card border border-glass-border shadow-xs"
+                data-category="payment">
+                <summary class="flex items-center justify-between gap-3 font-bold text-text-primary text-xs sm:text-sm">
+                  <div class="flex items-center gap-2 flex-wrap">
+                    <span
+                      class="text-[9px] font-mono font-bold uppercase tracking-wider px-1.5 py-0.5 rounded bg-accent-primary/10 text-accent-primary border border-accent-primary/20 flex-shrink-0">Thanh
+                      toán</span>
+                    <span class="leading-snug">Sau khi chuyển khoản thì nhận Video Tab như thế nào?</span>
                   </div>
-                  <span class="flex-shrink-0 text-accent-primary group-open:rotate-45 transition-transform font-black">+</span>
+                  <span
+                    class="faq-icon flex-shrink-0 w-6 h-6 rounded-full bg-accent-primary/20 text-accent-primary flex items-center justify-center text-base font-black">+</span>
                 </summary>
-                <p class="pt-2 text-xs text-text-muted font-medium leading-relaxed border-t border-glass-border/40 mt-2">
-                  Bạn nhắn tin qua Zalo (0987.654.321) cho mình kèm biên lai chuyển khoản và email tài khoản đăng ký. Mình sẽ cấp quyền trực tiếp vào tài khoản của bạn để bạn mở khoá và xem tab không giới hạn trong mục "Tab Bạn Đã Sở Hữu Bản Quyền"!
+                <p
+                  class="pt-2.5 text-xs text-text-muted font-medium leading-relaxed border-t border-glass-border/40 mt-2.5">
+                  Bạn chuyển khoản xong chụp lại ảnh giao dịch rồi gửi qua Zalo (0326.768.885) cho mình kèm email tài khoản đăng ký. Mình check xong sẽ mở quyền truy cập và tab sẽ tự động xuất hiện trong mục "Tab Đã Mua" của bạn ngay.</p>
+              </details>
+
+              <!-- Item 2: Thanh toán -->
+              <details class="faq-item group p-3.5 sm:p-4 rounded-2xl glass-card border border-glass-border shadow-xs"
+                data-category="payment">
+                <summary class="flex items-center justify-between gap-3 font-bold text-text-primary text-xs sm:text-sm">
+                  <div class="flex items-center gap-2 flex-wrap">
+                    <span
+                      class="text-[9px] font-mono font-bold uppercase tracking-wider px-1.5 py-0.5 rounded bg-accent-primary/10 text-accent-primary border border-accent-primary/20 flex-shrink-0">Thanh
+                      toán</span>
+                    <span class="leading-snug">Nếu chuyển khoản nhầm cú pháp hoặc mua nhiều bài thì sao?</span>
+                  </div>
+                  <span
+                    class="faq-icon flex-shrink-0 w-6 h-6 rounded-full bg-accent-primary/20 text-accent-primary flex items-center justify-center text-base font-black">+</span>
+                </summary>
+                <p
+                  class="pt-2.5 text-xs text-text-muted font-medium leading-relaxed border-t border-glass-border/40 mt-2.5">
+                  Bạn chỉ cần gửi ảnh chụp biên lai giao dịch qua Zalo (0326.768.885) kèm tên các bài hát bạn muốn lấy và email. Mình sẽ đối soát thông tin tài khoản và kích hoạt đầy đủ tài liệu cho bạn trong vòng vài phút.</p>
+              </details>
+
+              <!-- Item 3: Kỹ thuật -->
+              <details class="faq-item group p-3.5 sm:p-4 rounded-2xl glass-card border border-glass-border shadow-xs"
+                data-category="technique">
+                <summary class="flex items-center justify-between gap-3 font-bold text-text-primary text-xs sm:text-sm">
+                  <div class="flex items-center gap-2 flex-wrap">
+                    <span
+                      class="text-[9px] font-mono font-bold uppercase tracking-wider px-1.5 py-0.5 rounded bg-emerald-500/10 text-emerald-500 border border-emerald-500/20 flex-shrink-0">Kỹ
+                      thuật</span>
+                    <span class="leading-snug">Người mới tập, chưa rành đọc tab có học được không?</span>
+                  </div>
+                  <span
+                    class="faq-icon flex-shrink-0 w-6 h-6 rounded-full bg-accent-primary/20 text-accent-primary flex items-center justify-center text-base font-black">+</span>
+                </summary>
+                <p
+                  class="pt-2.5 text-xs text-text-muted font-medium leading-relaxed border-t border-glass-border/40 mt-2.5">
+                  Tập tốt bạn nhé. Video Tab của mình hiển thị nốt chạy khớp theo tiếng đàn mộc thật, bạn chỉ cần bấm theo
+                  số ngăn trên màn hình và nghe nhịp là đánh được. Chỗ nào chưa rõ cứ nhắn mình hỗ trợ thêm.</p>
+              </details>
+
+              <!-- Item 4: Kỹ thuật -->
+              <details class="faq-item group p-3.5 sm:p-4 rounded-2xl glass-card border border-glass-border shadow-xs"
+                data-category="technique">
+                <summary class="flex items-center justify-between gap-3 font-bold text-text-primary text-xs sm:text-sm">
+                  <div class="flex items-center gap-2 flex-wrap">
+                    <span
+                      class="text-[9px] font-mono font-bold uppercase tracking-wider px-1.5 py-0.5 rounded bg-emerald-500/10 text-emerald-500 border border-emerald-500/20 flex-shrink-0">Kỹ
+                      thuật</span>
+                    <span class="leading-snug">Video Tab khác gì so với file Tab thông thường (Guitar Pro/PDF)?</span>
+                  </div>
+                  <span
+                    class="faq-icon flex-shrink-0 w-6 h-6 rounded-full bg-accent-primary/20 text-accent-primary flex items-center justify-center text-base font-black">+</span>
+                </summary>
+                <p
+                  class="pt-2.5 text-xs text-text-muted font-medium leading-relaxed border-t border-glass-border/40 mt-2.5">
+                  File PDF chỉ có hình ảnh tĩnh, còn file Guitar Pro chạy tiếng MIDI giả lập rất khô. Video Tab là video nốt
+                  chạy đồng bộ với tiếng đàn mộc thật mình đánh, nghe rõ luyến láy và nhịp gõ thùng nên tập nhanh hơn nhiều.
                 </p>
               </details>
-              
-              <!-- Item 2 -->
-              <details class="group p-3 sm:p-4 rounded-2xl bg-black/5 dark:bg-white/5 border border-glass-border hover:border-accent-primary/50 transition-colors">
-                <summary class="flex items-center justify-between gap-3 font-bold text-text-primary text-xs sm:text-sm cursor-pointer list-none [&::-webkit-details-marker]:hidden">
-                  <div class="flex items-center gap-2">
-                    <span class="text-[9px] font-mono font-bold uppercase tracking-wider px-1.5 py-0.5 rounded bg-emerald-500/10 text-emerald-500 border border-emerald-500/20 flex-shrink-0">Kỹ thuật</span>
-                    <span>Người mới tập, chưa rành đọc tab có học được không?</span>
+
+              <!-- Item 5: Kỹ thuật & Hỗ trợ -->
+              <details class="faq-item group p-3.5 sm:p-4 rounded-2xl glass-card border border-glass-border shadow-xs"
+                data-category="technique">
+                <summary class="flex items-center justify-between gap-3 font-bold text-text-primary text-xs sm:text-sm">
+                  <div class="flex items-center gap-2 flex-wrap">
+                    <span
+                      class="text-[9px] font-mono font-bold uppercase tracking-wider px-1.5 py-0.5 rounded bg-emerald-500/10 text-emerald-500 border border-emerald-500/20 flex-shrink-0">Kỹ
+                      thuật</span>
+                    <span class="leading-snug">Tập mãi một đoạn mà không bấm được thì làm sao?</span>
                   </div>
-                  <span class="flex-shrink-0 text-accent-primary group-open:rotate-45 transition-transform font-black">+</span>
+                  <span
+                    class="faq-icon flex-shrink-0 w-6 h-6 rounded-full bg-accent-primary/20 text-accent-primary flex items-center justify-center text-base font-black">+</span>
                 </summary>
-                <p class="pt-2 text-xs text-text-muted font-medium leading-relaxed border-t border-glass-border/40 mt-2">
-                  Tập tốt bạn nhé. Video Tab của mình hiển thị nốt chạy khớp theo tiếng đàn mộc thật, bạn chỉ cần bấm theo số ngăn trên màn hình và nghe nhịp là đánh được.
-                </p>
+                <p
+                  class="pt-2.5 text-xs text-text-muted font-medium leading-relaxed border-t border-glass-border/40 mt-2.5">
+                  Cứ quay một đoạn video ngắn tay bạn đang bấm rồi gửi qua Zalo cho mình. Mình xem lỗi sai ở đâu (thế ngón,
+                  cổ tay hay lực bấm) rồi gửi clip chỉ lại cho bạn. Yên tâm không lo bị bỏ rơi đâu nhé!</p>
               </details>
+
+              <!-- Item 6: Dịch vụ đặt Tab -->
+              <details class="faq-item group p-3.5 sm:p-4 rounded-2xl glass-card border border-glass-border shadow-xs"
+                data-category="service">
+                <summary class="flex items-center justify-between gap-3 font-bold text-text-primary text-xs sm:text-sm">
+                  <div class="flex items-center gap-2 flex-wrap">
+                    <span
+                      class="text-[9px] font-mono font-bold uppercase tracking-wider px-1.5 py-0.5 rounded bg-blue-500/10 text-blue-500 border border-blue-500/20 flex-shrink-0">Dịch
+                      vụ</span>
+                    <span class="leading-snug">Mình muốn đặt làm Video Tab bài hát riêng thì sao?</span>
+                  </div>
+                  <span
+                    class="faq-icon flex-shrink-0 w-6 h-6 rounded-full bg-accent-primary/20 text-accent-primary flex items-center justify-center text-base font-black">+</span>
+                </summary>
+                <p
+                  class="pt-2.5 text-xs text-text-muted font-medium leading-relaxed border-t border-glass-border/40 mt-2.5">
+                  Bạn nhắn tên bài hát hoặc gửi link video bài gốc qua Zalo (0326.768.885) hoặc TikTok cho mình. Mình sẽ
+                  nghe thử, tư vấn tone giọng/thế tay phù hợp, báo thời gian hoàn thành và chi phí cho bạn.</p>
+              </details>
+
+              <!-- Item 7: Dịch vụ đặt Tab -->
+              <details class="faq-item group p-3.5 sm:p-4 rounded-2xl glass-card border border-glass-border shadow-xs"
+                data-category="service">
+                <summary class="flex items-center justify-between gap-3 font-bold text-text-primary text-xs sm:text-sm">
+                  <div class="flex items-center gap-2 flex-wrap">
+                    <span
+                      class="text-[9px] font-mono font-bold uppercase tracking-wider px-1.5 py-0.5 rounded bg-blue-500/10 text-blue-500 border border-blue-500/20 flex-shrink-0">Dịch
+                      vụ</span>
+                    <span class="leading-snug">Thời gian hoàn thiện và tài liệu nhận được khi đặt làm tab riêng?</span>
+                  </div>
+                  <span
+                    class="faq-icon flex-shrink-0 w-6 h-6 rounded-full bg-accent-primary/20 text-accent-primary flex items-center justify-center text-base font-black">+</span>
+                </summary>
+                <p
+                  class="pt-2.5 text-xs text-text-muted font-medium leading-relaxed border-t border-glass-border/40 mt-2.5">
+                  Thường mất từ 2 đến 4 ngày tùy vào độ phức tạp của bài hát. Khi hoàn tất, bạn sẽ nhận được trọn bộ: Video
+                  Tab HD quay nốt chạy chậm theo tiếng đàn thật, file PDF tab chuẩn in ấn, và file gốc Guitar Pro (.gp /
+                  .gpx).</p>
+              </details>
+
             </div>
-            
-            <div class="pt-2 text-center">
-              <a href="/#faq" class="inline-block px-5 py-2 rounded-full bg-glass-bg border border-glass-border text-xs font-bold text-text-primary hover:text-accent-primary hover:border-accent-primary transition-colors">
-                Xem thêm câu hỏi →
-              </a>
+
+            <!-- Nút Xem Thêm / Thu Gọn Bớt Câu Hỏi -->
+            <div class="mt-6 text-center" id="faq-show-more-wrap">
+              <button type="button" id="faq-show-more-btn"
+                class="inline-flex items-center gap-2 px-5 py-2.5 rounded-full bg-glass-bg border border-glass-border hover:border-accent-primary text-xs font-bold text-text-primary hover:text-accent-primary transition-all shadow-xs cursor-pointer active:scale-98">
+                <span id="faq-show-more-text">Xem thêm câu hỏi</span>
+                <svg id="faq-show-more-icon" class="w-3.5 h-3.5 text-accent-primary transition-transform duration-300"
+                  fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7" />
+                </svg>
+              </button>
             </div>
           </div>
         </section>
@@ -1014,15 +1166,128 @@
       </div>
     </div>
 
-    <!-- Footer -->
-    <footer class="mt-20 py-8 border-t border-glass-border bg-glass-bg">
-      <div class="max-w-6xl mx-auto px-6 flex flex-col sm:flex-row items-center justify-between gap-4 text-xs text-text-muted">
-        <p class="font-medium">© 2026 Guitar By Quang • Bảng Điều Khiển Thành Viên</p>
-        <div class="flex items-center gap-6">
-          <a href="/kho-tab.html" class="hover:text-accent-primary transition-colors">Kho Tab</a>
-          <a href="/cong-cu.html" class="hover:text-accent-primary transition-colors">Công Cụ</a>
-          <a href="/metronome.html" class="hover:text-accent-primary transition-colors">Metronome</a>
-          <a href="/" class="hover:text-accent-primary transition-colors">Trang chủ</a>
+    <!-- ====================================================================
+         FOOTER (EXACTLY MATCHING GUEST LANDING PAGE)
+         ==================================================================== -->
+    <footer class="footer-section mt-20 pt-10 pb-6 border-t border-glass-border">
+      <div class="max-w-7xl mx-auto px-6">
+        <div class="grid grid-cols-1 md:grid-cols-12 gap-8 sm:gap-10 pb-6">
+
+          <!-- Cột 1: Logo + Tagline + Mô tả (md:col-span-5) -->
+          <div class="md:col-span-5 space-y-3 text-left">
+            <a href="/"
+              class="inline-flex items-center gap-2.5 text-xl font-extrabold text-text-primary hover:text-accent-primary transition-colors group">
+              <span
+                class="w-9 h-9 rounded-xl bg-warm-gradient text-white flex items-center justify-center font-black text-base shadow-sm group-hover:scale-105 transition-transform">
+                🎸
+              </span>
+              <span class="font-extrabold tracking-tight text-text-primary">Guitar By Quang</span>
+            </a>
+            <div class="space-y-1.5">
+              <p class="text-xs font-bold text-accent-primary uppercase tracking-wider">
+                fingerstyle diary • Nhật Quang
+              </p>
+              <p class="text-xs text-text-muted leading-relaxed font-medium max-w-sm">
+                Nơi chia sẻ video tab guitar fingerstyle, tài liệu học đàn và công cụ hỗ trợ luyện tập chuẩn xác, chất
+                lượng cao dành cho cộng đồng yêu guitar.
+              </p>
+            </div>
+          </div>
+
+          <!-- Cột 2: Liên kết nhanh (md:col-span-4) -->
+          <div class="md:col-span-4 space-y-3 text-left">
+            <h4 class="text-xs font-mono font-bold uppercase tracking-wider text-text-primary">
+              Liên Kết Nhanh
+            </h4>
+            <ul class="space-y-2 text-xs font-semibold text-text-muted">
+              <li>
+                <a href="/index.html#about"
+                  class="hover:text-accent-primary transition-colors inline-flex items-center gap-1.5 group">
+                  <span class="text-accent-primary font-bold group-hover:translate-x-0.5 transition-transform">›</span>
+                  <span>Giới thiệu</span>
+                </a>
+              </li>
+              <li>
+                <a href="/user-dashboard.html"
+                  class="hover:text-accent-primary transition-colors inline-flex items-center gap-1.5 group">
+                  <span class="text-accent-primary font-bold group-hover:translate-x-0.5 transition-transform">›</span>
+                  <span>Trang Của Tôi</span>
+                </a>
+              </li>
+              <li>
+                <a href="/kho-tab.html"
+                  class="hover:text-accent-primary transition-colors inline-flex items-center gap-1.5 group">
+                  <span class="text-accent-primary font-bold group-hover:translate-x-0.5 transition-transform">›</span>
+                  <span>Kho Video Tab</span>
+                </a>
+              </li>
+              <li>
+                <a href="/cong-cu.html"
+                  class="hover:text-accent-primary transition-colors inline-flex items-center gap-1.5 group">
+                  <span class="text-accent-primary font-bold group-hover:translate-x-0.5 transition-transform">›</span>
+                  <span>Công Cụ & Máy Gõ Nhịp</span>
+                </a>
+              </li>
+              <li>
+                <a href="#faq" class="hover:text-accent-primary transition-colors inline-flex items-center gap-1.5 group">
+                  <span class="text-accent-primary font-bold group-hover:translate-x-0.5 transition-transform">›</span>
+                  <span>Hỏi đáp thường gặp</span>
+                </a>
+              </li>
+            </ul>
+          </div>
+
+          <!-- Cột 3: Kết nối mạng xã hội (md:col-span-3) -->
+          <div class="md:col-span-3 space-y-3 text-left">
+            <h4 class="text-xs font-mono font-bold uppercase tracking-wider text-text-primary">
+              Kết Nối & Giao Lưu
+            </h4>
+            <div class="flex flex-col gap-2.5">
+              <a href="https://www.tiktok.com/@quangdnn104" target="_blank" rel="noopener noreferrer"
+                class="inline-flex items-center gap-2.5 px-3.5 py-2 rounded-xl bg-glass-bg border border-glass-border hover:border-accent-primary text-xs font-bold text-text-primary hover:text-accent-primary transition-all shadow-xs group">
+                <span
+                  class="w-7 h-7 rounded-lg bg-black/10 dark:bg-white/10 flex items-center justify-center text-text-primary group-hover:scale-105 transition-transform flex-shrink-0">
+                  <svg class="w-4 h-4 fill-current" viewBox="0 0 24 24">
+                    <path
+                      d="M19.59 6.69a4.83 4.83 0 0 1-3.77-4.25V2h-3.45v13.67a2.89 2.89 0 0 1-5.2 1.74 2.89 2.89 0 0 1 2.31-4.64 2.93 2.93 0 0 1 .88.13V9.4a6.84 6.84 0 0 0-1-.05A6.33 6.33 0 0 0 5 20.1a6.34 6.34 0 0 0 10.86-4.43v-7a8.16 8.16 0 0 0 4.77 1.52v-3.4a4.85 4.85 0 0 1-1.04-.1z" />
+                  </svg>
+                </span>
+                <span>TikTok: @quangdnn104</span>
+              </a>
+              <a href="https://zalo.me/0326768885" target="_blank" rel="noopener noreferrer"
+                class="inline-flex items-center gap-2.5 px-3.5 py-2 rounded-xl bg-glass-bg border border-glass-border hover:border-accent-primary text-xs font-bold text-text-primary hover:text-accent-primary transition-all shadow-xs group">
+                <span
+                  class="w-7 h-7 rounded-lg bg-[#0068FF] text-white flex items-center justify-center font-black text-xs group-hover:scale-105 transition-transform flex-shrink-0 shadow-xs">
+                  Z
+                </span>
+                <span>Zalo: 0326.768.885</span>
+              </a>
+              <a href="https://www.facebook.com/quang.doan.969429" target="_blank" rel="noopener noreferrer"
+                class="inline-flex items-center gap-2.5 px-3.5 py-2 rounded-xl bg-glass-bg border border-glass-border hover:border-accent-primary text-xs font-bold text-text-primary hover:text-accent-primary transition-all shadow-xs group">
+                <span
+                  class="w-7 h-7 rounded-lg bg-[#1877F2] text-white flex items-center justify-center group-hover:scale-105 transition-transform flex-shrink-0 shadow-xs">
+                  <svg class="w-4 h-4 fill-current text-white" viewBox="0 0 24 24">
+                    <path
+                      d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z" />
+                  </svg>
+                </span>
+                <span>Facebook: Nhật Quang</span>
+              </a>
+            </div>
+          </div>
+
+        </div>
+
+        <!-- Thanh Ngang Phía Dưới (Bottom Bar) -->
+        <div
+          class="pt-4 border-t border-black/10 dark:border-white/10 flex flex-col sm:flex-row items-center justify-between gap-3 text-xs text-text-muted">
+          <p class="font-medium text-center sm:text-left">
+            © 2026 Guitar By Quang (Nhật Quang).
+          </p>
+          <p class="font-bold text-text-primary text-center sm:text-right flex items-center gap-1.5">
+            <span>Chúc anh em tập đàn vui vẻ và sớm đánh trọn vẹn bài hát mình thích!</span>
+            <span>🎸</span>
+          </p>
         </div>
       </div>
     </footer>

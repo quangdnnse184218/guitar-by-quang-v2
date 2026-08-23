@@ -191,7 +191,7 @@ export async function initAuthHeader() {
           ${adminDropdownOption}
           <a href="/user-dashboard.html" class="block px-3 py-2 text-xs font-semibold text-text-primary hover:bg-glass-bg-hover hover:text-accent-primary rounded-xl transition-colors flex items-center gap-2">
             <span>🎸</span>
-            <span>Dashboard Cá Nhân</span>
+            <span>Trang Của Tôi</span>
           </a>
           <a href="/user-dashboard.html#favorites" class="block px-3 py-2 text-xs font-semibold text-text-primary hover:bg-glass-bg-hover hover:text-accent-primary rounded-xl transition-colors flex items-center gap-2">
             <span>❤️</span>
@@ -242,7 +242,7 @@ export async function initAuthHeader() {
                  <p class="text-sm font-bold text-text-primary">${fullName}</p>
                </div>
                <a href="/user-dashboard.html" class="text-xs text-accent-primary font-bold hover:underline flex items-center gap-1 mt-0.5">
-                 <span>Vào Dashboard →</span>
+                 <span>Vào Trang Của Tôi →</span>
                </a>
              </div>
           </div>

@@ -221,6 +221,7 @@ async function checkAuthAndInit() {
       setActiveTab('overview')
     }
 
+    initFaq()
   } catch (err) {
     console.error('Initialization error:', err)
     showToast('Lỗi tải dữ liệu thành viên. Vui lòng thử lại!', 'error')
@@ -533,9 +534,9 @@ async function renderOverviewGears() {
     const imagePath = gear.image ? (gear.image.startsWith('/') ? gear.image : '/' + gear.image) : '/assets/clover.jpg'
 
     return `
-      <div class="glass-card card-interactive rounded-3xl p-5 border border-glass-border shadow-md flex flex-col justify-between gap-3.5 group hover:border-amber-400/50 hover:shadow-xl transition-all">
+      <div class="flex-shrink-0 w-[74vw] max-w-[270px] snap-center md:w-[230px] lg:w-[245px] xl:w-[235px] rounded-3xl glass-card p-4 sm:p-5 border border-glass-border flex flex-col justify-between space-y-4 hover:border-accent-primary/50 transition-all duration-300 group shadow-md text-left">
         <div class="space-y-3">
-          <!-- Chuẩn hóa khung ảnh vuông 1:1 với nền nhẹ đồng bộ, click phóng to -->
+          <!-- Chuẩn hóa khung ảnh vuông 1:1 với nền nhẹ đồng bộ, object-contain -->
           <div onclick="window.openImageModal('${imagePath}', '${cleanTitle}', '${cleanDesc}')" class="w-full aspect-square rounded-2xl bg-white/95 dark:bg-white/[0.06] flex items-center justify-center p-3.5 border border-glass-border shadow-inner overflow-hidden group/img relative cursor-zoom-in group-hover:scale-[1.02] transition-transform duration-300" title="Click để phóng to ảnh">
             <img src="${imagePath}" alt="${cleanTitle}" class="w-full h-full object-contain filter drop-shadow-xs transition-transform duration-300 group-hover/img:scale-105" onerror="this.src='/assets/clover.jpg'" />
             <div class="absolute bottom-2 right-2 p-1.5 rounded-lg bg-black/70 text-white opacity-0 group-hover/img:opacity-100 transition-opacity backdrop-blur-sm shadow-sm pointer-events-none">
@@ -544,7 +545,7 @@ async function renderOverviewGears() {
           </div>
           <div>
             <span class="text-[10px] font-extrabold font-mono tracking-widest text-accent-primary uppercase block">${gear.category || 'THIẾT BỊ'}</span>
-            <h4 class="text-sm sm:text-base font-bold text-text-primary group-hover:text-accent-primary transition-colors leading-snug mt-0.5">${gear.title || gear.name}</h4>
+            <h4 class="text-sm sm:text-base font-bold text-text-primary group-hover:text-accent-primary transition-colors leading-snug">${gear.title || gear.name}</h4>
             <p class="text-xs text-text-muted font-medium leading-relaxed mt-1 line-clamp-3">${gear.description || ''}</p>
           </div>
         </div>
@@ -554,6 +555,99 @@ async function renderOverviewGears() {
       </div>
     `
   }).join('')
+}
+
+// ==========================================================================
+// FAQ INTERACTIONS (CATEGORIES & EXPAND/COLLAPSE ALL)
+// ==========================================================================
+export function initFaq() {
+  const faqItems = Array.from(document.querySelectorAll('#faq .faq-item'))
+  const filterBtns = document.querySelectorAll('[data-faq-filter]')
+  const toggleAllBtn = document.getElementById('faq-toggle-all-btn')
+  const toggleIcon = document.getElementById('faq-toggle-icon')
+  const toggleText = document.getElementById('faq-toggle-text')
+  const showMoreWrap = document.getElementById('faq-show-more-wrap')
+  const showMoreBtn = document.getElementById('faq-show-more-btn')
+  const showMoreText = document.getElementById('faq-show-more-text')
+  const showMoreIcon = document.getElementById('faq-show-more-icon')
+
+  if (!faqItems.length) return
+
+  let currentCategory = 'all'
+  let isShowMore = false
+  let isAllExpanded = false
+  const INITIAL_LIMIT = 4
+
+  function updateFaqDisplay() {
+    const matchingItems = faqItems.filter(item => {
+      const itemCat = item.getAttribute('data-category')
+      return currentCategory === 'all' || itemCat === currentCategory
+    })
+
+    const totalMatching = matchingItems.length
+    const visibleCount = isShowMore ? totalMatching : Math.min(INITIAL_LIMIT, totalMatching)
+
+    faqItems.forEach(item => {
+      item.classList.add('hidden')
+    })
+
+    matchingItems.slice(0, visibleCount).forEach(item => {
+      item.classList.remove('hidden')
+    })
+
+    // Cập nhật nút Xem thêm / Thu gọn bớt
+    if (showMoreWrap && showMoreBtn && showMoreText) {
+      if (totalMatching > INITIAL_LIMIT) {
+        showMoreWrap.classList.remove('hidden')
+        if (isShowMore) {
+          showMoreText.textContent = 'Thu gọn bớt'
+          if (showMoreIcon) showMoreIcon.classList.add('rotate-180')
+        } else {
+          const remaining = totalMatching - INITIAL_LIMIT
+          showMoreText.textContent = `Xem thêm ${remaining} câu hỏi`
+          if (showMoreIcon) showMoreIcon.classList.remove('rotate-180')
+        }
+      } else {
+        showMoreWrap.classList.add('hidden')
+      }
+    }
+  }
+
+  // Lọc theo chủ đề
+  filterBtns.forEach(btn => {
+    btn.addEventListener('click', () => {
+      filterBtns.forEach(b => b.classList.remove('active'))
+      btn.classList.add('active')
+      currentCategory = btn.getAttribute('data-faq-filter') || 'all'
+      isShowMore = false
+      updateFaqDisplay()
+    })
+  })
+
+  // Mở rộng / Thu gọn tất cả
+  if (toggleAllBtn) {
+    toggleAllBtn.addEventListener('click', () => {
+      isAllExpanded = !isAllExpanded
+      faqItems.forEach(item => {
+        if (!item.classList.contains('hidden')) {
+          item.open = isAllExpanded
+        }
+      })
+      if (toggleText) toggleText.textContent = isAllExpanded ? 'Thu gọn tất cả' : 'Mở rộng tất cả'
+      if (toggleIcon) toggleIcon.classList.toggle('rotate-180', isAllExpanded)
+    })
+  }
+
+  // Nút xem thêm
+  if (showMoreBtn) {
+    showMoreBtn.addEventListener('click', () => {
+      isShowMore = !isShowMore
+      updateFaqDisplay()
+    })
+  }
+
+  // Khởi chạy lần đầu
+  updateFaqDisplay()
 }
 
 // ==========================================================================
