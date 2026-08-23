@@ -12,6 +12,7 @@ export default defineConfig({
         cuaToi: resolve(import.meta.dirname, 'cua-toi.html'),
         adminLogin: resolve(import.meta.dirname, 'admin-login.html'),
         adminDashboard: resolve(import.meta.dirname, 'admin-dashboard.html'),
+        register: resolve(import.meta.dirname, 'register.html'),
       }
     }
   }
