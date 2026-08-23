@@ -1,0 +1,314 @@
+/* ========================================== */
+/* GSAP 3D SCROLL CINEMA & PERSPECTIVE UTILS  */
+/* ========================================== */
+
+.perspective-container {
+  perspective: 1200px;
+}
+
+.perspective-card {
+  perspective: 800px;
+}
+
+.transform-3d {
+  transform-style: preserve-3d;
+  will-change: transform, opacity;
+  backface-visibility: hidden;
+  -webkit-backface-visibility: hidden;
+}
+
+.cinema-3d-card {
+  transform-style: preserve-3d;
+  transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.4s ease;
+  will-change: transform;
+}
+
+.cinema-3d-card:hover {
+  transform: translateY(-8px) rotateX(3deg) rotateY(-2deg) scale(1.02);
+  box-shadow: 0 25px 40px -15px rgba(60, 40, 20, 0.18);
+}
+
+/* ========================================== */
+/* ACOUSTIC GUITAR CUSTOM CURSOR              */
+/* ========================================== */
+
+@media (pointer: fine) {
+  /* Ẩn con trỏ chuột mặc định trên Desktop khi dùng Custom Cursor (trừ các trang Admin) */
+  body:not(.admin-page),
+  body:not(.admin-page) a,
+  body:not(.admin-page) button,
+  body:not(.admin-page) input,
+  body:not(.admin-page) textarea,
+  body:not(.admin-page) select,
+  body:not(.admin-page) details,
+  body:not(.admin-page) summary,
+  body:not(.admin-page) [role="button"],
+  body:not(.admin-page) .song-card,
+  body:not(.admin-page) .gear-card,
+  body:not(.admin-page) .cinema-3d-card,
+  body:not(.admin-page) .cursor-pointer,
+  body:not(.admin-page) .cursor-zoom-in {
+    cursor: none !important;
+  }
+
+  /* Khôi phục hoàn toàn con trỏ hệ thống cho Admin */
+  body.admin-page,
+  body.admin-page * {
+    cursor: auto !important;
+  }
+  body.admin-page button,
+  body.admin-page a,
+  body.admin-page [role="button"],
+  body.admin-page summary,
+  body.admin-page .cursor-pointer {
+    cursor: pointer !important;
+  }
+  body.admin-page input,
+  body.admin-page textarea,
+  body.admin-page select {
+    cursor: text !important;
+  }
+
+  #cursor-guitar-container {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 0;
+    height: 0;
+    pointer-events: none;
+    z-index: 99999;
+    will-change: transform;
+  }
+
+  #cursor-guitar {
+    position: fixed;
+    top: 0;
+    left: 0;
+    pointer-events: none;
+    z-index: 100000;
+    transform: translate(-3px, -3px) rotate(-15deg);
+    transition: transform 0.15s cubic-bezier(0.2, 1, 0.3, 1), opacity 0.2s ease, filter 0.2s ease;
+    filter: drop-shadow(0 2px 5px rgba(193, 96, 47, 0.4));
+    will-change: transform;
+  }
+
+  #cursor-guitar.cursor-hover {
+    transform: translate(-4px, -4px) rotate(-35deg) scale(1.22);
+    filter: drop-shadow(0 4px 10px rgba(193, 96, 47, 0.7));
+  }
+
+  .cursor-hidden {
+    opacity: 0 !important;
+  }
+}
+
+@media (pointer: coarse) {
+  #cursor-guitar-container,
+  #cursor-guitar {
+    display: none !important;
+  }
+}
+
+
+
+/**
+ * Custom CSS dùng chung cho tất cả trang.
+ * Được tách ra từ <style> inline trong index.html để tránh duplicate.
+ */
+
+body {
+  background-color: #F4EFE6;
+  color: #2D231C;
+  font-family: 'Nunito', sans-serif;
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+}
+
+/* Grain pattern for organic paper texture */
+.bg-grain {
+  background-image: radial-gradient(rgba(193, 96, 47, 0.04) 1px, transparent 0);
+  background-size: 20px 20px;
+}
+
+/* Custom underline transitions & Active Tab styling */
+.nav-tab-link {
+  position: relative;
+  display: inline-block;
+  transition: all 0.25s ease;
+}
+.nav-tab-link::after {
+  content: '';
+  position: absolute;
+  width: 100%;
+  transform: scaleX(0);
+  height: 2.5px;
+  bottom: -4px;
+  left: 0;
+  background-color: #C1602F;
+  border-radius: 9999px;
+  transform-origin: bottom right;
+  transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+.nav-tab-link:hover::after,
+.nav-tab-link.active::after {
+  transform: scaleX(1);
+  transform-origin: bottom left;
+}
+.nav-tab-link.active {
+  color: #C1602F !important;
+  font-weight: 800 !important;
+}
+
+/* Custom scrollbar */
+::-webkit-scrollbar {
+  width: 6px;
+}
+::-webkit-scrollbar-track {
+  background: #F4EFE6;
+}
+::-webkit-scrollbar-thumb {
+  background: #D0C3B2;
+  border-radius: 9999px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: #C1602F;
+}
+
+/* Scroll-reveal: fade + slide up khi cuộn tới */
+.reveal {
+  opacity: 0;
+  transform: translateY(20px);
+  transition: opacity 0.6s cubic-bezier(0.16, 1, 0.3, 1),
+              transform 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+  will-change: opacity, transform;
+}
+.reveal.is-visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+@media (prefers-reduced-motion: reduce) {
+  .reveal {
+    opacity: 1;
+    transform: none;
+    transition: none;
+  }
+}
+
+/* Modal dialog zoom */
+.modal-dialog {
+  transition: transform 0.35s cubic-bezier(0.34, 1.56, 0.64, 1),
+              opacity 0.3s ease;
+}
+
+/* Navbar shrink transition */
+#navbar .navbar-inner {
+  transition: height 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* Filter pill slider */
+#filter-pill {
+  position: absolute;
+  top: 6px;
+  bottom: 6px;
+  left: 6px;
+  border-radius: 9999px;
+  background: linear-gradient(135deg, #C1602F 0%, #CE9145 100%);
+  box-shadow: 0 4px 10px -2px rgba(193, 96, 47, 0.35);
+  transition: transform 0.35s cubic-bezier(0.4, 0, 0.2, 1),
+              width 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+  z-index: 0;
+}
+
+/* Focus visible */
+a:focus-visible,
+button:focus-visible,
+input:focus-visible {
+  outline: none;
+  box-shadow: 0 0 0 3px rgba(193, 96, 47, 0.45);
+  border-radius: 9999px;
+}
+
+body.modal-open {
+  overflow: hidden;
+}
+
+/* Skeleton loading */
+@keyframes skeleton-pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.55; }
+}
+.skeleton-card {
+  animation: skeleton-pulse 1.6s ease-in-out infinite;
+}
+
+/* Card fade in animation */
+@keyframes card-fade-in {
+  from { opacity: 0; transform: translateY(14px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+.card-fade-in {
+  animation: card-fade-in 0.5s cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+@media (prefers-reduced-motion: reduce) {
+  .card-fade-in {
+    animation: none;
+  }
+}
+
+/* Carousel ngang trên Mobile */
+.scrollbar-none {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+  -webkit-overflow-scrolling: touch;
+  overscroll-behavior-x: contain;
+}
+.scrollbar-none::-webkit-scrollbar {
+  display: none;
+}
+
+/* FAQ accordion icon rotation */
+details.faq-item summary {
+  list-style: none;
+  cursor: pointer;
+}
+details.faq-item summary::-webkit-details-marker {
+  display: none;
+}
+details.faq-item .faq-icon {
+  transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+details.faq-item[open] .faq-icon {
+  transform: rotate(45deg);
+}
+
+/* Họa tiết âm nhạc trang trí */
+.music-motif {
+  position: absolute;
+  pointer-events: none;
+  z-index: 0;
+  color: #C1602F;
+}
+.motif-fade-terracotta { opacity: 0.10; }
+.motif-fade-sage { opacity: 0.12; color: #7E9885; }
+.motif-fade-faint { opacity: 0.07; }
+
+@keyframes note-float {
+  0%, 100% { transform: translateY(0) rotate(-4deg); }
+  50% { transform: translateY(-14px) rotate(4deg); }
+}
+.motif-float {
+  animation: note-float 6s ease-in-out infinite;
+}
+@media (prefers-reduced-motion: reduce) {
+  .motif-float { animation: none; }
+}
+
+.staff-lines {
+  background-image: repeating-linear-gradient(
+    to bottom,
+    rgba(56, 44, 36, 0.06) 0px,
+    rgba(56, 44, 36, 0.06) 1px,
+    transparent 1px,
+    transparent 9px
+  );
+}

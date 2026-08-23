@@ -1,0 +1,755 @@
+@import url('https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,400;1,600&family=Inter:wght@400;500;600;700&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* ==============================================================================
+   DESIGN TOKENS — DARK MODE (DEFAULT — ELEVATED CARDS, CLEAN SLATE TEXT)
+   ============================================================================== */
+:root {
+  --bg-base: #0B0E14;
+  --sec-hero-bg: #0B0E14;
+  --sec-about-bg: #111520;
+  --sec-featured-bg: #0D1018;
+  --sec-tools-bg: #121723;
+  --sec-faq-bg: #0F131D;
+  --sec-contact-bg: #131826;
+  --header-bg: rgba(11, 14, 20, 0.90);
+  --footer-bg-grad: linear-gradient(to bottom, #111520, #080A0F);
+  
+  /* Brand Floating Blobs */
+  --blob-amber: #E87A30;
+  --blob-violet: #E87A30;
+  --blob-rose: #C2410C;
+
+  /* Card Surfaces — Dark Mode Elevation */
+  --glass-bg: #151A27;
+  --glass-border: rgba(255, 255, 255, 0.09);
+  --glass-bg-hover: #1C2234;
+  --glass-blur: 20px;
+  
+  /* High-Contrast Neutral Text (No Muddy Purple) */
+  --text-primary: #F8FAFC;
+  --text-muted: #94A3B8;
+  --text-faint: #64748B;
+  
+  /* Unified 1 Primary Brand Color + Max 2 Functional Colors */
+  --accent-primary: #E87A30;
+  --accent-primary-hover: #F28C48;
+  --accent-secondary: #E87A30;
+  --terracotta: #D96B27;
+  --terracotta-light: rgba(232, 122, 48, 0.15);
+  
+  /* Functional Colors: Green for Free, Red for Paid */
+  --success: #34D399;
+  --danger: #F87171;
+
+  /* Modal Tokens — Dark Mode */
+  --modal-surface-bg: #131722;
+  --modal-surface-border: rgba(255, 255, 255, 0.12);
+  --modal-card-bg: #1A2030;
+  --modal-card-border: rgba(255, 255, 255, 0.08);
+  --badge-free-bg: rgba(52, 211, 153, 0.16);
+  --badge-free-text: #34D399;
+  --badge-free-border: rgba(52, 211, 153, 0.35);
+  --badge-paid-bg: rgba(248, 113, 113, 0.16);
+  --badge-paid-text: #FCA5A5;
+  --badge-paid-border: rgba(248, 113, 113, 0.35);
+  --btn-metronome-bg: rgba(52, 211, 153, 0.12);
+  --btn-metronome-text: #34D399;
+  --btn-metronome-border: rgba(52, 211, 153, 0.3);
+  --btn-metronome-hover: rgba(52, 211, 153, 0.22);
+}
+
+/* ==============================================================================
+   DESIGN TOKENS — LIGHT MODE (WARM ORGANIC ACOUSTIC PALETTE — DISTINCT SECTIONS)
+   ============================================================================== */
+[data-theme="light"] {
+  --bg-base: #F7F2EA;
+  --sec-hero-bg: #F7F2EA;
+  --sec-about-bg: #EFE8DC; /* Distinct warm parchment */
+  --sec-featured-bg: #FAF6EF; /* Ivory cream */
+  --sec-tools-bg: #EDE4D6; /* Rich acoustic beige */
+  --sec-faq-bg: #F6EFE5; /* Parchment */
+  --sec-contact-bg: #EAE0D1; /* Warm cedar */
+  --header-bg: rgba(247, 242, 234, 0.92);
+  --footer-bg: #DECAB6;
+  --footer-bg-grad: linear-gradient(180deg, #E2D0BD 0%, #D8C3AE 100%);
+  
+  --blob-amber: #F5A25D;
+  --blob-violet: #E87A30;
+  --blob-rose: #EA580C;
+
+  /* Card Surfaces — Light Mode Elevation (Crisp Solid White on Warm Cream) */
+  --glass-bg: #FFFFFF;
+  --glass-border: rgba(180, 150, 120, 0.22);
+  --glass-bg-hover: #FFFDF9;
+  
+  /* Legible Walnut & Deep Charcoal Text */
+  --text-primary: #231C16;
+  --text-muted: #5C4D40;
+  --text-faint: #8A7868;
+  
+  /* Primary Brand Color: Warm Acoustic Orange */
+  --accent-primary: #D35F1D;
+  --accent-primary-hover: #B84E14;
+  --accent-secondary: #D35F1D;
+  --terracotta: #D35F1D;
+  --terracotta-light: rgba(211, 95, 29, 0.12);
+  
+  /* Functional Colors */
+  --success: #059669;
+  --danger: #DC2626;
+
+  /* Modal Tokens — Light Mode */
+  --modal-surface-bg: #FFFFFF;
+  --modal-surface-border: #E2D7CC;
+  --modal-card-bg: #F8F4EC;
+  --modal-card-border: #E8DFD3;
+  --badge-free-bg: #DEF7EC;
+  --badge-free-text: #03543F;
+  --badge-free-border: #84E1BC;
+  --badge-paid-bg: #FDE8E8;
+  --badge-paid-text: #9B1C1C;
+  --badge-paid-border: #F8B4B4;
+  --btn-metronome-bg: #EDFDF5;
+  --btn-metronome-text: #046C4E;
+  --btn-metronome-border: #A7F3D0;
+  --btn-metronome-hover: #D1FAE5;
+}
+
+/* ==============================================================================
+   BASE & TYPOGRAPHY SETTINGS (PERFECT VIETNAMESE RENDERING)
+   ============================================================================== */
+body {
+  background-color: var(--bg-base);
+  color: var(--text-primary);
+  font-family: 'Be Vietnam Pro', 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  min-height: 100vh;
+  position: relative;
+  overflow-x: hidden;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+h1, h2, h3, h4, h5, h6 {
+  font-family: 'Be Vietnam Pro', sans-serif;
+  text-shadow: none !important; /* Eliminate all glitch / double-text shadows on Vietnamese diacritics */
+  letter-spacing: -0.015em;
+}
+
+header, footer, nav, .ambient-blob {
+  transition: background-color 0.3s ease, border-color 0.3s ease, color 0.3s ease, box-shadow 0.3s ease;
+}
+
+/* ==============================================================================
+   UNIFIED RADIUS SYSTEM
+   ============================================================================== */
+.radius-btn { border-radius: 12px; }
+.radius-card { border-radius: 20px; }
+.radius-container { border-radius: 28px; }
+
+/* ==============================================================================
+   CARD ELEVATION SYSTEM (DARK & LIGHT)
+   ============================================================================== */
+.glass-card {
+  position: relative;
+  background-color: var(--glass-bg);
+  border: 1px solid var(--glass-border);
+  border-radius: 20px;
+  box-shadow: 0 10px 30px -5px rgba(0, 0, 0, 0.4), 0 0 0 1px rgba(255, 255, 255, 0.04);
+}
+
+[data-theme="light"] .glass-card {
+  box-shadow: 0 8px 24px rgba(60, 40, 20, 0.06), 0 0 0 1px rgba(180, 150, 120, 0.12);
+}
+
+/* Interactive Cards (Song cards, Gear cards, clickables) */
+.song-card,
+.gear-card,
+.card-interactive {
+  position: relative;
+  overflow: hidden;
+  transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1),
+              background-color 0.3s ease,
+              border-color 0.3s ease,
+              box-shadow 0.3s ease;
+}
+
+/* Card Light Sweep Shimmer Effect on Hover */
+.song-card::before,
+.gear-card::before,
+.card-interactive::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -120%;
+  width: 60%;
+  height: 100%;
+  background: linear-gradient(
+    90deg,
+    transparent 0%,
+    rgba(255, 255, 255, 0.08) 50%,
+    transparent 100%
+  );
+  transform: skewX(-20deg);
+  transition: none;
+  pointer-events: none;
+  z-index: 5;
+}
+
+[data-theme="light"] .song-card::before,
+[data-theme="light"] .gear-card::before,
+[data-theme="light"] .card-interactive::before {
+  background: linear-gradient(
+    90deg,
+    transparent 0%,
+    rgba(255, 255, 255, 0.4) 50%,
+    transparent 100%
+  );
+}
+
+.song-card:hover::before,
+.gear-card:hover::before,
+.card-interactive:hover::before {
+  left: 180%;
+  transition: left 0.75s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.song-card:hover,
+.gear-card:hover,
+.card-interactive:hover {
+  background-color: var(--glass-bg-hover);
+  transform: translateY(-5px);
+  box-shadow: 0 16px 36px rgba(0, 0, 0, 0.45), 0 0 20px rgba(232, 122, 48, 0.15);
+  border-color: rgba(232, 122, 48, 0.4);
+}
+
+[data-theme="light"] .song-card:hover,
+[data-theme="light"] .gear-card:hover,
+[data-theme="light"] .card-interactive:hover {
+  box-shadow: 0 16px 32px rgba(60, 40, 20, 0.12), 0 0 16px rgba(211, 95, 29, 0.12);
+  border-color: rgba(211, 95, 29, 0.4);
+}
+
+/* ==============================================================================
+   HERO REFINEMENTS
+   ============================================================================== */
+.hero-highlight-text {
+  background: linear-gradient(135deg, var(--accent-primary) 0%, var(--terracotta) 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  display: inline-block;
+}
+
+.hero-version-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 14px;
+  border-radius: 9999px;
+  font-size: 0.75rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--accent-primary);
+  background: rgba(232, 122, 48, 0.14);
+  border: 1px solid rgba(232, 122, 48, 0.35);
+}
+
+[data-theme="light"] .hero-version-badge {
+  background: rgba(201, 127, 46, 0.12);
+  border-color: rgba(201, 127, 46, 0.35);
+}
+
+/* ==============================================================================
+   HEADER & NAVIGATION
+   ============================================================================== */
+#main-nav {
+  border-bottom: 1px solid var(--glass-border);
+  backdrop-filter: blur(var(--glass-blur));
+  -webkit-backdrop-filter: blur(var(--glass-blur));
+  background-color: var(--header-bg, var(--bg-base));
+  box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
+}
+
+#main-nav::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, var(--glass-border), transparent);
+}
+
+.nav-link {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  padding: 6px 4px;
+  font-size: 0.95rem;
+  font-weight: 500;
+  color: var(--text-muted);
+  transition: color 0.2s ease;
+}
+
+.nav-link:hover,
+.nav-link.active {
+  color: var(--text-primary);
+}
+
+/* Active Link Underline Indicator */
+.nav-link::after {
+  content: '';
+  position: absolute;
+  bottom: -2px;
+  left: 0;
+  width: 100%;
+  height: 2px;
+  background: var(--accent-primary);
+  border-radius: 2px;
+  transform: scaleX(0);
+  transform-origin: center;
+  transition: transform 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.nav-link:hover::after,
+.nav-link.active::after {
+  transform: scaleX(1);
+}
+
+/* Theme Toggle Button Icons */
+#theme-toggle-btn .sun-icon,
+.theme-toggle-btn .sun-icon {
+  display: block;
+}
+#theme-toggle-btn .moon-icon,
+.theme-toggle-btn .moon-icon {
+  display: none;
+}
+
+[data-theme="light"] #theme-toggle-btn .sun-icon,
+[data-theme="light"] .theme-toggle-btn .sun-icon {
+  display: none;
+}
+[data-theme="light"] #theme-toggle-btn .moon-icon,
+[data-theme="light"] .theme-toggle-btn .moon-icon {
+  display: block;
+}
+
+/* Mobile Drawer Panel */
+.mobile-drawer-panel {
+  background: var(--bg-base);
+  border-left: 1px solid var(--glass-border);
+  box-shadow: -10px 0 40px rgba(0, 0, 0, 0.4);
+}
+
+[data-theme="light"] .mobile-drawer-panel {
+  background: #F8F9FE;
+  box-shadow: -10px 0 40px rgba(20, 22, 43, 0.1);
+}
+
+/* ==============================================================================
+   SOCIAL BUTTONS
+   ============================================================================== */
+
+.social-icon-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 38px;
+  height: 38px;
+  border-radius: 12px;
+  background: var(--glass-bg);
+  border: 1px solid var(--glass-border);
+  color: var(--text-muted);
+  transition: all 0.25s ease;
+}
+
+.social-icon-btn:hover {
+  color: var(--accent-primary);
+  background: var(--glass-bg-hover);
+  border-color: var(--accent-primary);
+  transform: translateY(-2px);
+}
+
+/* ==============================================================================
+   AMBIENT FLOATING BLOBS
+   ============================================================================== */
+.ambient-blobs-container {
+  position: fixed;
+  inset: 0;
+  overflow: hidden;
+  pointer-events: none;
+  z-index: -1;
+}
+
+.ambient-blob {
+  position: absolute;
+  border-radius: 9999px;
+  filter: blur(120px);
+  will-change: transform;
+}
+
+.blob-amber {
+  background-color: var(--blob-amber);
+  opacity: 0.42;
+  width: 450px;
+  height: 450px;
+  top: -120px;
+  left: -120px;
+  animation: floatAmber 18s ease-in-out infinite alternate;
+}
+
+.blob-violet {
+  background-color: var(--blob-violet);
+  opacity: 0.48;
+  width: 520px;
+  height: 520px;
+  bottom: -140px;
+  right: -120px;
+  animation: floatViolet 22s ease-in-out infinite alternate;
+}
+
+.blob-rose {
+  background-color: var(--blob-rose);
+  opacity: 0.38;
+  width: 400px;
+  height: 400px;
+  top: 45%;
+  left: 40%;
+  transform: translate(-50%, -50%);
+  animation: floatRose 20s ease-in-out infinite alternate;
+}
+
+/* Reduced opacity for light mode to prevent visual clutter */
+[data-theme="light"] .blob-amber {
+  opacity: 0.25;
+  filter: blur(140px);
+}
+
+[data-theme="light"] .blob-violet {
+  opacity: 0.25;
+  filter: blur(140px);
+}
+
+[data-theme="light"] .blob-rose {
+  opacity: 0.22;
+  filter: blur(140px);
+}
+
+@keyframes floatAmber {
+  0% { transform: translate(0, 0) scale(1); }
+  50% { transform: translate(120px, 90px) scale(1.12); }
+  100% { transform: translate(50px, 150px) scale(0.95); }
+}
+
+@keyframes floatViolet {
+  0% { transform: translate(0, 0) scale(1); }
+  50% { transform: translate(-110px, -100px) scale(1.1); }
+  100% { transform: translate(-60px, -160px) scale(0.9); }
+}
+
+@keyframes floatRose {
+  0% { transform: translate(-50%, -50%) scale(1); }
+  50% { transform: translate(-30%, -60%) scale(1.15); }
+  100% { transform: translate(-70%, -40%) scale(0.9); }
+}
+
+/* ==============================================================================
+   GRAIN OVERLAY
+   ============================================================================== */
+.grain-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 50;
+  pointer-events: none;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E");
+  opacity: 0.04;
+  mix-blend-mode: overlay;
+}
+
+[data-theme="light"] .grain-overlay {
+  opacity: 0.06;
+}
+
+/* ==============================================================================
+   FORM CONTROLS & FILTER PILLS (Giai đoạn 3)
+   ============================================================================== */
+.glass-input {
+  background: var(--glass-bg);
+  border: 1px solid var(--glass-border);
+  backdrop-filter: blur(var(--glass-blur));
+  -webkit-backdrop-filter: blur(var(--glass-blur));
+  color: var(--text-primary);
+  border-radius: 14px;
+  transition: all 0.25s ease;
+}
+
+.glass-input:focus {
+  outline: none;
+  border-color: var(--accent-primary);
+  background: var(--glass-bg-hover);
+  box-shadow: 0 0 20px rgba(232, 168, 85, 0.2);
+}
+
+[data-theme="light"] .glass-input:focus {
+  box-shadow: 0 0 20px rgba(201, 127, 46, 0.15);
+}
+
+.glass-input::placeholder {
+  color: var(--text-faint);
+}
+
+.filter-pill {
+  position: relative;
+  padding: 8px 18px;
+  border-radius: 9999px;
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: var(--text-muted);
+  background: var(--glass-bg);
+  border: 1px solid var(--glass-border);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  cursor: pointer;
+  transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+  user-select: none;
+}
+
+.filter-pill:hover {
+  color: var(--text-primary);
+  background: var(--glass-bg-hover);
+  border-color: rgba(232, 168, 85, 0.3);
+}
+
+.filter-pill.active {
+  color: #0B0E1A;
+  background: var(--accent-primary);
+  border-color: var(--accent-primary);
+  box-shadow: 0 4px 18px rgba(232, 168, 85, 0.35);
+}
+
+[data-theme="light"] .filter-pill.active {
+  color: #FFFFFF;
+  background: var(--accent-primary);
+  border-color: var(--accent-primary);
+  box-shadow: 0 4px 18px rgba(201, 127, 46, 0.25);
+}
+
+.faq-filter-pill {
+  position: relative;
+  padding: 6px 14px;
+  border-radius: 9999px;
+  font-size: 0.75rem;
+  font-weight: 700;
+  color: var(--text-muted);
+  background: var(--glass-bg);
+  border: 1px solid var(--glass-border);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  cursor: pointer;
+  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+  user-select: none;
+}
+
+.faq-filter-pill:hover {
+  color: var(--text-primary);
+  background: var(--glass-bg-hover);
+  border-color: rgba(232, 168, 85, 0.3);
+}
+
+.faq-filter-pill.active {
+  color: #0B0E1A;
+  background: var(--accent-primary);
+  border-color: var(--accent-primary);
+  box-shadow: 0 2px 12px rgba(232, 168, 85, 0.3);
+}
+
+[data-theme="light"] .faq-filter-pill.active {
+  color: #FFFFFF;
+  background: var(--accent-primary);
+  border-color: var(--accent-primary);
+  box-shadow: 0 2px 12px rgba(201, 127, 46, 0.22);
+}
+
+/* ==============================================================================
+   MODALS & SKELETON ANIMATIONS
+   ============================================================================== */
+/* ==============================================================================
+   SECTION BACKGROUNDS & ACCORDION / FAQ
+   ============================================================================== */
+.section-hero {
+  background-color: var(--sec-hero-bg);
+}
+
+.section-about {
+  background-color: var(--sec-about-bg);
+  border-top: 1px solid var(--glass-border);
+  border-bottom: 1px solid var(--glass-border);
+}
+
+.section-featured {
+  background-color: var(--sec-featured-bg);
+  border-bottom: 1px solid var(--glass-border);
+}
+
+.section-tools {
+  background-color: var(--sec-tools-bg);
+  border-bottom: 1px solid var(--glass-border);
+}
+
+.section-faq {
+  background-color: var(--sec-faq-bg);
+  border-bottom: 1px solid var(--glass-border);
+}
+
+.section-contact {
+  background-color: var(--sec-contact-bg);
+  border-top: 1px solid var(--glass-border);
+}
+
+.footer-section {
+  background: var(--footer-bg-grad, #0C0F17);
+  border-top: 1px solid var(--glass-border);
+  color: var(--text-muted);
+  position: relative;
+  overflow: hidden;
+  z-index: 10;
+  margin: 0;
+}
+
+[data-theme="light"] .footer-section {
+  background: var(--footer-bg-grad, #DECAB6);
+  border-top: 1px solid rgba(160, 120, 80, 0.35);
+  box-shadow: inset 0 1px 0 0 rgba(255, 255, 255, 0.35);
+  color: #4A3D31;
+}
+
+.bg-warm-gradient {
+  background: linear-gradient(135deg, var(--accent-primary) 0%, var(--terracotta) 100%);
+}
+
+/* FAQ Details & Summary */
+.faq-item {
+  transition: all 0.3s ease;
+}
+
+.faq-item[open] {
+  border-color: var(--accent-primary);
+  background: var(--glass-bg-hover);
+}
+
+.faq-item summary {
+  list-style: none;
+  cursor: pointer;
+}
+
+.faq-item summary::-webkit-details-marker {
+  display: none;
+}
+
+.faq-item summary .faq-icon {
+  transition: transform 0.3s ease;
+}
+
+.faq-item[open] summary .faq-icon {
+  transform: rotate(45deg);
+}
+
+/* Scrollbar none utility */
+.scrollbar-none::-webkit-scrollbar {
+  display: none;
+}
+.scrollbar-none {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+
+.skeleton-pulse {
+  background: linear-gradient(
+    90deg,
+    var(--glass-bg) 0%,
+    var(--glass-bg-hover) 50%,
+    var(--glass-bg) 100%
+  );
+  background-size: 200% 100%;
+  animation: skeletonPulse 1.8s infinite ease-in-out;
+}
+
+@keyframes skeletonPulse {
+  0% { background-position: 200% 0; }
+  100% { background-position: -200% 0; }
+}
+
+/* ==============================================================================
+   MODAL DEDICATED THEME CLASSES
+   ============================================================================== */
+.modal-surface {
+  background-color: var(--modal-surface-bg) !important;
+  border: 1px solid var(--modal-surface-border) !important;
+  color: var(--text-primary) !important;
+  box-shadow: 0 25px 60px -15px rgba(0, 0, 0, 0.5) !important;
+}
+
+.modal-inner-card {
+  background-color: var(--modal-card-bg) !important;
+  border: 1px solid var(--modal-card-border) !important;
+}
+
+.badge-free {
+  background-color: var(--badge-free-bg) !important;
+  color: var(--badge-free-text) !important;
+  border: 1px solid var(--badge-free-border) !important;
+}
+
+.badge-paid {
+  background-color: var(--badge-paid-bg) !important;
+  color: var(--badge-paid-text) !important;
+  border: 1px solid var(--badge-paid-border) !important;
+}
+
+.btn-metronome-link {
+  background-color: var(--btn-metronome-bg) !important;
+  color: var(--btn-metronome-text) !important;
+  border: 1px solid var(--btn-metronome-border) !important;
+  transition: all 0.2s ease;
+}
+
+.btn-metronome-link:hover {
+  background-color: var(--btn-metronome-hover) !important;
+}
+
+/* ==============================================================================
+   TAB ORIGIN BADGES ("Tab của Quang" / "Tab sưu tầm")
+   ============================================================================== */
+.badge-origin-quang {
+  background-color: rgba(232, 122, 48, 0.22);
+  color: #FDBA74;
+  border: 1px solid rgba(232, 122, 48, 0.45);
+}
+
+[data-theme="light"] .badge-origin-quang {
+  background-color: #FEF3C7;
+  color: #92400E;
+  border-color: #FDE68A;
+}
+
+.badge-origin-curated {
+  background-color: rgba(148, 163, 184, 0.18);
+  color: #E2E8F0;
+  border: 1px solid rgba(148, 163, 184, 0.35);
+}
+
+[data-theme="light"] .badge-origin-curated {
+  background-color: #F1F5F9;
+  color: #475569;
+  border-color: #E2E8F0;
+}
+
+
