@@ -7,7 +7,7 @@
 import { supabase } from './lib/supabase.js'
 import { initThemeToggle } from './theme-toggle.js'
 import { fetchAllSongs } from './lib/songs-service.js'
-import { fetchAllGears } from './lib/gears-service.js'
+import { fetchAllGears, DEFAULT_GEARS } from './lib/gears-service.js'
 
 initThemeToggle()
 
@@ -47,6 +47,7 @@ const statFeaturedSongs = document.getElementById('stat-featured-songs')
 // Gears DOM
 const adminGearsTbody = document.getElementById('admin-gears-tbody')
 const addGearBtn = document.getElementById('add-gear-btn')
+const resetGearsBtn = document.getElementById('reset-gears-btn')
 const gearModal = document.getElementById('gear-modal')
 const closeGearModal = document.getElementById('close-gear-modal')
 const cancelGearModalBtn = document.getElementById('cancel-gear-modal-btn')
@@ -402,6 +403,7 @@ if (songForm) {
         showToast('✓ Đã cập nhật bài hát thành công!')
       } else {
         payload.created_at = new Date().toISOString()
+        payload.order = songsList.length + 1
         const { error } = await supabase.from('songs').insert([payload])
         if (error) throw error
         showToast('✓ Đã thêm bài hát mới thành công!')
@@ -427,11 +429,11 @@ async function loadGears() {
 function renderGearsTable() {
   if (!adminGearsTbody) return
 
-  if (gearsList.length === 0) {
+  if (!gearsList || gearsList.length === 0) {
     adminGearsTbody.innerHTML = `
       <tr>
         <td colspan="6" class="py-8 text-center text-text-muted">
-          Chưa có gear nào trong danh sách.
+          Chưa có gear nào trong danh sách. Bấm "Nạp 4 Món Mẫu" để khởi tạo nhé!
         </td>
       </tr>
     `
@@ -442,6 +444,11 @@ function renderGearsTable() {
     const currentOrder = gear.order || (idx + 1)
     const isFirst = idx === 0
     const isLast = idx === gearsList.length - 1
+    const name = gear.name || gear.title || 'Món đồ nghề'
+    const image = gear.image_url || gear.image || '/assets/avatar.jpg'
+    const category = gear.category || 'Thiết bị'
+    const description = gear.description || ''
+    const price = gear.price || gear.footerText || 'Liên hệ'
 
     return `
       <tr class="hover:bg-black/5 dark:hover:bg-white/5 transition-colors" data-id="${gear.id}">
@@ -483,21 +490,21 @@ function renderGearsTable() {
 
         <td class="py-3.5 px-4 font-bold text-text-primary">
           <div class="flex items-center gap-3">
-            <img src="${gear.image || gear.image_url || '/assets/avatar.jpg'}" alt="${gear.name}" class="w-10 h-10 rounded-xl object-cover bg-black/5 border border-glass-border flex-shrink-0" onerror="this.src='/assets/avatar.jpg'" />
-            <span class="text-sm font-extrabold">${gear.name}</span>
+            <img src="${image}" alt="${name}" class="w-10 h-10 rounded-xl object-cover bg-black/5 border border-glass-border flex-shrink-0" onerror="this.src='/assets/avatar.jpg'" />
+            <span class="text-sm font-extrabold">${name}</span>
           </div>
         </td>
         <td class="py-3.5 px-3">
-          <span class="px-2 py-0.5 rounded-md bg-black/5 dark:bg-white/5 text-[10px] font-bold text-text-muted">${gear.category || 'Gear'}</span>
+          <span class="px-2 py-0.5 rounded-md bg-black/5 dark:bg-white/5 text-[10px] font-bold text-text-muted">${category}</span>
         </td>
-        <td class="py-3.5 px-3 text-text-muted text-[11px] max-w-xs truncate">${gear.description || ''}</td>
-        <td class="py-3.5 px-3 font-mono font-bold text-text-primary text-xs">${gear.price || 'Liên hệ'}</td>
+        <td class="py-3.5 px-3 text-text-muted text-[11px] max-w-xs truncate">${description}</td>
+        <td class="py-3.5 px-3 font-mono font-bold text-text-primary text-xs">${price}</td>
         <td class="py-3.5 px-4 text-right">
           <div class="flex items-center justify-end gap-2">
             <button onclick="window.editGear('${gear.id}')" class="px-2.5 py-1 rounded-lg bg-glass-bg hover:bg-glass-bg-hover text-accent-primary font-bold text-[11px] border border-glass-border transition-colors cursor-pointer">
               Sửa
             </button>
-            <button onclick="window.deleteGear('${gear.id}', '${gear.name.replace(/'/g, "\\'")}')" class="px-2.5 py-1 rounded-lg bg-rose-500/10 hover:bg-rose-500/20 text-rose-600 dark:text-rose-400 font-bold text-[11px] border border-rose-500/30 transition-colors cursor-pointer">
+            <button onclick="window.deleteGear('${gear.id}', '${name.replace(/'/g, "\\'")}')" class="px-2.5 py-1 rounded-lg bg-rose-500/10 hover:bg-rose-500/20 text-rose-600 dark:text-rose-400 font-bold text-[11px] border border-rose-500/30 transition-colors cursor-pointer">
               Xóa
             </button>
           </div>
@@ -539,7 +546,8 @@ window.handleSaveGearPosition = async function(gearId) {
   const res = await reorderAllGears(orderedIds)
 
   if (res.success) {
-    showToast(`✓ Đã di chuyển "${movedGear.name}" về vị trí số ${targetPos}! Các món khác đã tự động dời.`)
+    const gearTitle = movedGear.name || movedGear.title
+    showToast(`✓ Đã di chuyển "${gearTitle}" về vị trí số ${targetPos}! Các món khác đã tự động dời.`)
     await loadGears()
   } else {
     showToast(res.error || 'Lỗi khi lưu vị trí gear.')
@@ -562,7 +570,8 @@ window.handleMoveGear = async function(gearId, direction) {
   const res = await reorderAllGears(orderedIds)
 
   if (res.success) {
-    showToast(`✓ Đã di chuyển "${movedGear.name}" ${direction === 'up' ? 'lên' : 'xuống'} vị trí ${targetIdx + 1}!`)
+    const gearTitle = movedGear.name || movedGear.title
+    showToast(`✓ Đã di chuyển "${gearTitle}" ${direction === 'up' ? 'lên' : 'xuống'} vị trí ${targetIdx + 1}!`)
     await loadGears()
   } else {
     showToast(res.error || 'Lỗi khi di chuyển gear.')
@@ -582,14 +591,14 @@ window.editGear = function(id) {
   if (!gear) return
 
   document.getElementById('gear-id').value = gear.id
-  document.getElementById('gear-name').value = gear.name || ''
+  document.getElementById('gear-name').value = gear.name || gear.title || ''
   document.getElementById('gear-category').value = gear.category || 'Phụ kiện'
-  document.getElementById('gear-price').value = gear.price || ''
+  document.getElementById('gear-price').value = gear.price || gear.footerText || ''
   document.getElementById('gear-description').value = gear.description || ''
-  document.getElementById('gear-link').value = gear.link || ''
-  document.getElementById('gear-image').value = gear.image || gear.image_url || ''
+  document.getElementById('gear-link').value = gear.link || gear.buyUrl || gear.buy_url || ''
+  document.getElementById('gear-image').value = gear.image_url || gear.image || ''
 
-  if (gearModalTitle) gearModalTitle.textContent = `Sửa Gear: ${gear.name}`
+  if (gearModalTitle) gearModalTitle.textContent = `Sửa Gear: ${gear.name || gear.title}`
   toggleModal(gearModal, true)
 }
 
@@ -634,6 +643,7 @@ if (gearForm) {
         if (error) throw error
         showToast('✓ Đã cập nhật gear thành công!')
       } else {
+        payload.order = gearsList.length + 1
         const { error } = await supabase.from('gears').insert([payload])
         if (error) throw error
         showToast('✓ Đã thêm gear mới thành công!')
@@ -689,6 +699,35 @@ async function initDashboard() {
   if (addSongBtn) addSongBtn.addEventListener('click', window.openAddSongModal)
   if (addGearBtn) addGearBtn.addEventListener('click', window.openAddGearModal)
 
+  // Reset / Populate Sample Gears Button
+  if (resetGearsBtn) {
+    resetGearsBtn.addEventListener('click', async () => {
+      if (!confirm('Bạn có muốn nạp lại 4 món đồ nghề mẫu (Clover 914c, AKG Ara, Elixir Bronze, Guitar Pro 8) không?')) return
+      showToast('Đang nạp 4 món đồ nghề mẫu...')
+      
+      try {
+        for (const item of DEFAULT_GEARS) {
+          const payload = {
+            name: item.name || item.title,
+            category: item.category,
+            price: item.price,
+            description: item.description,
+            link: item.link || item.buyUrl || item.buy_url,
+            image_url: item.image_url || item.image,
+            order: item.order
+          }
+          await supabase.from('gears').upsert([payload])
+        }
+      } catch (e) {
+        console.warn('Upsert gear warning:', e)
+      }
+      
+      localStorage.setItem('gbq_gears', JSON.stringify(DEFAULT_GEARS))
+      showToast('✓ Đã nạp thành công 4 món đồ nghề mẫu!')
+      await loadGears()
+    })
+  }
+
   // Close Modals
   if (closeSongModal) closeSongModal.addEventListener('click', () => toggleModal(songModal, false))
   if (cancelSongModalBtn) cancelSongModalBtn.addEventListener('click', () => toggleModal(songModal, false))
@@ -717,8 +756,9 @@ async function initDashboard() {
     })
   }
 
-  // Load initial data
+  // Load initial data for both tabs
   loadSongs()
+  loadGears()
 }
 
 document.addEventListener('DOMContentLoaded', initDashboard)
