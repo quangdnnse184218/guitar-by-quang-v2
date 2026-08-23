@@ -336,32 +336,33 @@ export async function initAuthHeader() {
       }
     }
 
-    // Hide brand text on mobile when logged in
-    document.querySelectorAll('.brand-text-container').forEach(el => {
-      el.classList.add('hidden', 'sm:flex')
-    })
-
-    // Hide mobile hamburger button when logged in (tabs shown directly in row 2)
+    // Hide mobile hamburger button when logged in (tabs shown directly in rows 2 & 3)
     const mobileMenuBtn = document.getElementById('mobile-menu-btn')
     if (mobileMenuBtn) mobileMenuBtn.classList.add('hidden')
 
-    // Show or create Row 2 for mobile logged-in navigation
+    // Show or create 3-row layout for mobile logged-in navigation (Row 2 & Row 3)
     let mobileLoggedInNav = document.getElementById('mobile-logged-in-nav')
     if (!mobileLoggedInNav) {
       const mainNavContainer = document.querySelector('#main-nav > div') || document.querySelector('header .container') || document.querySelector('header > div')
       if (mainNavContainer) {
         mobileLoggedInNav = document.createElement('div')
         mobileLoggedInNav.id = 'mobile-logged-in-nav'
-        mobileLoggedInNav.className = 'md:hidden pt-2 mt-1 border-t border-glass-border/60 overflow-x-auto no-scrollbar flex items-center justify-start gap-4 text-xs font-bold text-text-muted whitespace-nowrap px-1'
+        mobileLoggedInNav.className = 'md:hidden flex flex-col pt-1.5 mt-1.5 border-t border-glass-border/60 text-xs font-bold text-text-muted'
         mobileLoggedInNav.innerHTML = `
-          <a href="/index.html" class="nav-link py-1 transition-colors">Trang chủ</a>
-          <a href="/user-dashboard.html" class="nav-link py-1 transition-colors flex items-center gap-1">
-            <span>Trang Của Tôi</span>
-          </a>
-          <a href="/kho-tab.html" class="nav-link py-1 transition-colors">Kho Video Tab</a>
-          <a href="/index.html#tools" class="nav-link py-1 transition-colors">Công Cụ</a>
-          <a href="/index.html#faq" class="nav-link py-1 transition-colors">Hỏi đáp</a>
-          <a href="/index.html#contact" class="nav-link py-1 transition-colors">Liên hệ</a>
+          <!-- Hàng 2: Trang chủ, Trang của tôi, Kho Video Tab -->
+          <div class="grid grid-cols-3 text-center py-1 gap-1 border-b border-glass-border/30">
+            <a href="/index.html" class="nav-link py-1 text-[11px] sm:text-xs font-bold justify-center transition-colors">Trang chủ</a>
+            <a href="/user-dashboard.html" class="nav-link py-1 text-[11px] sm:text-xs font-bold justify-center transition-colors flex items-center gap-0.5">
+              <span>Trang Của Tôi</span>
+            </a>
+            <a href="/kho-tab.html" class="nav-link py-1 text-[11px] sm:text-xs font-bold justify-center transition-colors">Kho Video Tab</a>
+          </div>
+          <!-- Hàng 3: Công Cụ, Hỏi đáp, Liên hệ -->
+          <div class="grid grid-cols-3 text-center py-1 gap-1">
+            <a href="/index.html#tools" class="nav-link py-1 text-[11px] sm:text-xs font-bold justify-center transition-colors">Công Cụ</a>
+            <a href="/index.html#faq" class="nav-link py-1 text-[11px] sm:text-xs font-bold justify-center transition-colors">Hỏi đáp</a>
+            <a href="/index.html#contact" class="nav-link py-1 text-[11px] sm:text-xs font-bold justify-center transition-colors">Liên hệ</a>
+          </div>
         `
         mainNavContainer.appendChild(mobileLoggedInNav)
       }
