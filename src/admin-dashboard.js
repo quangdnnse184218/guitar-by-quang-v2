@@ -17,10 +17,16 @@ initThemeToggle()
 let songsList = []
 let gearsList = []
 let usersList = []
+let recentGrantsList = []
+let currentAdminId = null
+
 let activeTab = 'songs' // 'songs' | 'gears' | 'users' | 'grant'
 let songSearchQuery = ''
 let songCategoryFilter = 'all'
 let songTypeFilter = 'all'
+
+let userSearchQuery = ''
+let userSortBy = 'newest'
 
 // DOM Elements
 const adminUserEmail = document.getElementById('admin-user-email')
@@ -67,6 +73,21 @@ const codesModalSongName = document.getElementById('codes-modal-song-name')
 const generateCodeBtn = document.getElementById('generate-code-btn')
 const codesTbody = document.getElementById('codes-tbody')
 
+// Users DOM
+const adminSearchUsers = document.getElementById('admin-search-users')
+const adminSortUsers = document.getElementById('admin-sort-users')
+const statTotalUsers = document.getElementById('stat-total-users')
+const adminUsersTbody = document.getElementById('users-tbody')
+
+// Grant / Orders DOM
+const grantAccessForm = document.getElementById('grant-access-form')
+const grantSongSelect = document.getElementById('grant-song-select')
+const grantUserIdInput = document.getElementById('grant-user-id')
+const paidSongsList = document.getElementById('paid-songs-list')
+const statPaidSongsCount = document.getElementById('stat-paid-songs-count')
+const recentGrantsTbody = document.getElementById('recent-grants-tbody')
+const refreshHistoryBtn = document.getElementById('refresh-history-btn')
+
 // Filters
 const adminSearchSongs = document.getElementById('admin-search-songs')
 const adminFilterCategory = document.getElementById('admin-filter-category')
@@ -76,6 +97,16 @@ const adminFilterType = document.getElementById('admin-filter-type')
 const toastNotification = document.getElementById('toast-notification')
 const toastMessage = document.getElementById('toast-message')
 let toastTimer = null
+
+function escapeHtml(str) {
+  if (!str) return ''
+  return String(str)
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#039;')
+}
 
 export function showToast(msg, type = 'success') {
   if (!toastNotification || !toastMessage) return
@@ -164,6 +195,8 @@ async function checkAuth() {
       window.location.replace('/admin-login.html')
       return false
     }
+
+    currentAdminId = session.user.id
 
     if (adminUserEmail) {
       adminUserEmail.textContent = session.user.email || 'Admin'
@@ -813,7 +846,7 @@ if (gearForm) {
 
 
 // ==========================================================================
-// USERS & ACCESS GRANT LOGIC
+// USERS & ACCESS GRANT (ORDERS) LOGIC
 // ==========================================================================
 
 async function loadUsers() {
@@ -821,11 +854,11 @@ async function loadUsers() {
     const { data, error } = await supabase.rpc('admin_get_users')
     if (error) throw error
     usersList = data || []
-    renderUsersTable()
     if (statTotalUsers) statTotalUsers.textContent = usersList.length
+    renderUsersTable()
   } catch (err) {
     console.error('Error loading users:', err)
-    showToast('Lỗi khi tải danh sách người dùng', 'error')
+    showToast('Lỗi khi tải danh sách người dùng: ' + err.message, 'error')
   }
 }
 
@@ -833,49 +866,102 @@ function renderUsersTable() {
   if (!adminUsersTbody) return
   adminUsersTbody.innerHTML = ''
 
-  if (usersList.length === 0) {
-    adminUsersTbody.innerHTML = `<tr><td colspan="5" class="p-4 text-center text-xs text-text-muted">Chưa có người dùng nào.</td></tr>`
+  let filtered = [...usersList]
+
+  // Filter Search Query
+  const q = userSearchQuery.toLowerCase().trim()
+  if (q) {
+    filtered = filtered.filter(u => 
+      (u.full_name && u.full_name.toLowerCase().includes(q)) ||
+      (u.email && u.email.toLowerCase().includes(q)) ||
+      (u.id && u.id.toLowerCase().includes(q))
+    )
+  }
+
+  // Sorting
+  if (userSortBy === 'newest') {
+    filtered.sort((a, b) => new Date(b.created_at || 0) - new Date(a.created_at || 0))
+  } else if (userSortBy === 'oldest') {
+    filtered.sort((a, b) => new Date(a.created_at || 0) - new Date(b.created_at || 0))
+  } else if (userSortBy === 'purchases_desc') {
+    filtered.sort((a, b) => (b.purchases_count || 0) - (a.purchases_count || 0))
+  } else if (userSortBy === 'name_asc') {
+    filtered.sort((a, b) => (a.full_name || '').localeCompare(b.full_name || ''))
+  }
+
+  if (filtered.length === 0) {
+    adminUsersTbody.innerHTML = `<tr><td colspan="7" class="p-8 text-center text-xs text-text-muted">Không tìm thấy người dùng nào phù hợp.</td></tr>`
     return
   }
 
-  usersList.forEach(u => {
+  filtered.forEach(u => {
+    const isSelf = currentAdminId && u.id === currentAdminId
     const isVip = u.purchases_count > 0 || u.role === 'admin'
     const roleBadge = u.role === 'admin' 
       ? `<span class="px-2 py-0.5 rounded-md bg-rose-500/15 text-rose-600 dark:text-rose-400 text-[10px] font-black uppercase tracking-wider border border-rose-500/30">ADMIN</span>`
       : (isVip ? `<span class="px-2 py-0.5 rounded-full bg-amber-500/20 text-amber-600 dark:text-amber-300 text-[10px] font-bold border border-amber-500/30 shadow-glow">VIP Member</span>`
-               : `<span class="px-2 py-0.5 rounded-full bg-glass-bg border border-glass-border text-text-muted text-[10px] font-medium">Free</span>`)
+               : `<span class="px-2 py-0.5 rounded-full bg-black/5 dark:bg-white/5 border border-glass-border text-text-muted text-[10px] font-medium">Free</span>`)
     
+    // Short UUID format: a1b2c3d4...9f8e
+    const uuidStr = String(u.id || '')
+    const shortUuid = uuidStr.length > 12 
+      ? `${uuidStr.slice(0, 8)}...${uuidStr.slice(-4)}`
+      : uuidStr
+
     const tr = document.createElement('tr')
     tr.className = 'hover:bg-black/5 dark:hover:bg-white/5 transition-colors border-b border-glass-border/50 last:border-0'
     tr.innerHTML = `
       <td class="p-4">
         <div class="flex items-center gap-3">
-          <img src="${u.avatar_url || 'https://ui-avatars.com/api/?name=' + encodeURIComponent(u.full_name || u.email) + '&background=random'}" alt="Avatar" class="w-8 h-8 rounded-full border border-glass-border object-cover bg-glass-bg">
+          <img src="${u.avatar_url || 'https://ui-avatars.com/api/?name=' + encodeURIComponent(u.full_name || u.email || 'User') + '&background=random'}" alt="Avatar" class="w-9 h-9 rounded-xl border border-glass-border object-cover bg-glass-bg flex-shrink-0">
           <div>
             <div class="text-sm font-bold text-text-primary flex items-center gap-1.5">
-              ${u.full_name || 'Khách Vãng Lai'}
+              <span>${escapeHtml(u.full_name || 'Khách Vãng Lai')}</span>
+              ${isSelf ? '<span class="text-[10px] text-accent-primary font-bold">(Bạn)</span>' : ''}
             </div>
-            <div class="text-[10px] text-text-muted font-mono">${u.email || u.id}</div>
+            <div class="text-xs text-text-muted font-medium">${escapeHtml(u.email || 'Chưa cập nhật email')}</div>
           </div>
+        </div>
+      </td>
+      <td class="p-4">
+        <div class="flex items-center gap-1.5">
+          <span class="font-mono text-xs text-accent-primary bg-black/5 dark:bg-white/5 px-2 py-1 rounded-lg border border-glass-border cursor-help" title="${escapeHtml(uuidStr)}">
+            ${shortUuid}
+          </span>
+          <button onclick="copyUserId('${escapeHtml(uuidStr)}')" class="p-1.5 rounded-lg bg-glass-bg border border-glass-border hover:bg-glass-bg-hover hover:border-accent-primary text-text-muted hover:text-accent-primary transition-all cursor-pointer" title="Copy đầy đủ UUID để cấp quyền">
+            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"/></svg>
+          </button>
         </div>
       </td>
       <td class="p-4 text-center">
         ${roleBadge}
       </td>
-      <td class="p-4 text-center text-sm font-bold text-accent-primary">
-        ${u.purchases_count}
+      <td class="p-4 text-center">
+        <span class="text-xs font-mono font-bold ${u.purchases_count > 0 ? 'text-amber-500 bg-amber-500/10 px-2 py-0.5 rounded-md border border-amber-500/20' : 'text-text-muted'}">
+          ${u.purchases_count || 0}
+        </span>
+      </td>
+      <td class="p-4 text-center">
+        <span class="text-xs font-mono font-bold ${u.favorites_count > 0 ? 'text-rose-500 bg-rose-500/10 px-2 py-0.5 rounded-md border border-rose-500/20' : 'text-text-muted'}">
+          ${u.favorites_count || 0}
+        </span>
       </td>
       <td class="p-4 text-[11px] text-text-muted font-medium hidden sm:table-cell">
-        ${new Date(u.created_at).toLocaleDateString('vi-VN')}
+        ${u.created_at ? new Date(u.created_at).toLocaleDateString('vi-VN') : '—'}
       </td>
       <td class="p-4 text-right">
-        <div class="flex items-center justify-end gap-2">
-          <button onclick="copyUserId('${u.id}')" class="p-2 rounded-lg bg-glass-bg border border-glass-border hover:bg-glass-bg-hover hover:border-accent-primary text-text-muted hover:text-accent-primary transition-all cursor-pointer" title="Copy UUID">
-            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"/></svg>
+        <div class="flex items-center justify-end gap-1.5">
+          <button onclick="selectUserForGrant('${escapeHtml(uuidStr)}')" class="px-2.5 py-1 rounded-lg bg-accent-primary/10 hover:bg-accent-primary/20 text-accent-primary text-[11px] font-bold transition-colors cursor-pointer" title="Cấp quyền tab cho user này">
+            Cấp quyền
           </button>
-          <button onclick="deleteUser('${u.id}')" class="p-2 rounded-lg bg-rose-500/10 border border-rose-500/20 hover:bg-rose-500/20 text-rose-600 transition-all cursor-pointer" title="Xoá User">
-            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg>
-          </button>
+          ${isSelf 
+            ? `<button disabled class="p-2 rounded-lg bg-black/5 dark:bg-white/5 text-text-muted opacity-30 cursor-not-allowed" title="Không thể xoá tài khoản của chính mình">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg>
+               </button>`
+            : `<button onclick="confirmDeleteUser('${escapeHtml(uuidStr)}', '${escapeHtml(u.full_name || 'Khách')}', '${escapeHtml(u.email || '')}')" class="p-2 rounded-lg bg-rose-500/10 border border-rose-500/20 hover:bg-rose-500/20 text-rose-600 transition-all cursor-pointer" title="Xoá vĩnh viễn tài khoản">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg>
+               </button>`
+          }
         </div>
       </td>
     `
@@ -885,33 +971,130 @@ function renderUsersTable() {
 
 window.copyUserId = function(id) {
   navigator.clipboard.writeText(id)
-  showToast('Đã copy UUID của User!', 'success')
+  showToast('✓ Đã copy toàn bộ UUID: ' + id, 'success')
 }
 
-window.deleteUser = async function(id) {
-  if (!confirm('Hành động này sẽ XOÁ VĨNH VIỄN user cùng toàn bộ lịch sử mua và lưu của họ. Bạn có chắc không?')) return
+window.selectUserForGrant = function(id) {
+  switchTab('grant')
+  if (grantUserIdInput) {
+    grantUserIdInput.value = id
+    grantUserIdInput.focus()
+  }
+  showToast('✓ Đã nạp UUID vào form cấp quyền!', 'info')
+}
+
+window.confirmDeleteUser = async function(id, name, email) {
+  const msg = `⚠️ BẠN ĐANG THỰC HIỆN XOÁ TRIỆT ĐỂ USER:\n- Tên: ${name}\n- Email: ${email || 'Chưa có'}\n- UUID: ${id}\n\nHành động này sẽ xoá tài khoản khỏi hệ thống và xoá sạch lịch sử tab đã mua, yêu thích. Bấm OK để xác nhận xoá!`
+  if (!confirm(msg)) return
+
   try {
     const { error } = await supabase.rpc('admin_delete_user', { p_user_id: id })
     if (error) throw error
-    showToast('Đã xoá user thành công!', 'success')
+    showToast(`✓ Đã xoá thành công tài khoản "${name}"!`, 'success')
     await loadUsers()
   } catch (err) {
     console.error(err)
-    showToast('Lỗi khi xoá user: ' + err.message, 'error')
+    showToast('❌ Lỗi khi xoá user: ' + err.message, 'error')
   }
 }
 
-function populateGrantSongSelect() {
-  if (!grantSongSelect) return
-  grantSongSelect.innerHTML = '<option value="">-- Chọn bài hát --</option>'
-  songsList.filter(s => !s.is_free).forEach(s => {
-    const opt = document.createElement('option')
-    opt.value = s.id
-    opt.textContent = s.title + (s.singer ? ` - ${s.singer}` : '')
-    grantSongSelect.appendChild(opt)
+// Populate Grant Dropdown & Paid Songs Grid
+function renderPaidSongs() {
+  const paidSongs = songsList.filter(s => !s.is_free)
+  
+  if (statPaidSongsCount) statPaidSongsCount.textContent = `${paidSongs.length} bài`
+
+  // Select dropdown
+  if (grantSongSelect) {
+    grantSongSelect.innerHTML = '<option value="">-- Chọn bài hát cần cấp quyền --</option>'
+    paidSongs.forEach(s => {
+      const opt = document.createElement('option')
+      opt.value = s.id
+      opt.textContent = `${s.title}${s.singer ? ' - ' + s.singer : ''} (${s.price || 'Có phí'})`
+      grantSongSelect.appendChild(opt)
+    })
+  }
+
+  // Cards List
+  if (paidSongsList) {
+    paidSongsList.innerHTML = ''
+    if (paidSongs.length === 0) {
+      paidSongsList.innerHTML = `<div class="col-span-2 p-6 text-center text-xs text-text-muted">Chưa có bài hát nào ở chế độ trả phí.</div>`
+      return
+    }
+
+    paidSongs.forEach(s => {
+      const div = document.createElement('div')
+      div.className = 'p-3 rounded-2xl bg-black/5 dark:bg-white/5 border border-glass-border flex items-center justify-between gap-2 hover:border-accent-primary/40 transition-colors'
+      div.innerHTML = `
+        <div class="min-w-0">
+          <h4 class="text-xs font-bold text-text-primary truncate">${escapeHtml(s.title || 'Không tên')}</h4>
+          <p class="text-[10px] text-text-muted truncate">${escapeHtml(s.singer || 'Guitar Solo')} • <span class="text-accent-primary font-bold">${s.price || 'Có phí'}</span></p>
+        </div>
+        <button onclick="quickSelectSongForGrant('${s.id}')" class="px-2.5 py-1.5 rounded-xl bg-warm-gradient hover:brightness-105 text-white font-bold text-[10px] shadow-xs cursor-pointer whitespace-nowrap active:scale-95 transition-all">
+          Cấp quyền
+        </button>
+      `
+      paidSongsList.appendChild(div)
+    })
+  }
+}
+
+window.quickSelectSongForGrant = function(songId) {
+  if (grantSongSelect) {
+    grantSongSelect.value = songId
+  }
+  if (grantUserIdInput) {
+    grantUserIdInput.focus()
+  }
+  showToast('✓ Đã chọn bài hát vào form!', 'info')
+}
+
+// Load Recent Grant History
+async function loadRecentGrants() {
+  if (!recentGrantsTbody) return
+  recentGrantsTbody.innerHTML = `<tr><td colspan="3" class="p-4 text-center text-text-muted text-xs">Đang tải lịch sử...</td></tr>`
+
+  try {
+    const { data, error } = await supabase.rpc('admin_get_recent_purchases')
+    if (error) throw error
+    recentGrantsList = data || []
+    renderRecentGrants()
+  } catch (err) {
+    console.error('Error loading recent grants:', err)
+    recentGrantsTbody.innerHTML = `<tr><td colspan="3" class="p-4 text-center text-rose-500 text-xs">Lỗi khi tải lịch sử.</td></tr>`
+  }
+}
+
+function renderRecentGrants() {
+  if (!recentGrantsTbody) return
+  recentGrantsTbody.innerHTML = ''
+
+  if (recentGrantsList.length === 0) {
+    recentGrantsTbody.innerHTML = `<tr><td colspan="3" class="p-6 text-center text-text-muted text-xs">Chưa có lượt cấp quyền nào gần đây.</td></tr>`
+    return
+  }
+
+  recentGrantsList.forEach(r => {
+    const tr = document.createElement('tr')
+    tr.className = 'hover:bg-black/5 dark:hover:bg-white/5 transition-colors border-b border-glass-border/40 last:border-0'
+    tr.innerHTML = `
+      <td class="p-3">
+        <div class="font-bold text-text-primary">${escapeHtml(r.user_name || 'Học viên')}</div>
+        <div class="text-[10px] text-text-muted font-mono">${escapeHtml(r.user_email || r.user_id)}</div>
+      </td>
+      <td class="p-3">
+        <span class="font-bold text-accent-primary">${escapeHtml(r.song_title || r.song_id)}</span>
+      </td>
+      <td class="p-3 text-right text-[11px] text-text-muted font-mono">
+        ${r.purchased_at ? new Date(r.purchased_at).toLocaleString('vi-VN', { hour: '2-digit', minute: '2-digit', day: '2-digit', month: '2-digit' }) : '—'}
+      </td>
+    `
+    recentGrantsTbody.appendChild(tr)
   })
 }
 
+// Grant Form Submit Handler
 if (grantAccessForm) {
   grantAccessForm.addEventListener('submit', async (e) => {
     e.preventDefault()
@@ -919,26 +1102,60 @@ if (grantAccessForm) {
     const songId = grantSongSelect.value
 
     if (!userId || !songId) {
-      showToast('Vui lòng chọn bài hát và nhập UUID của User!', 'error')
+      showToast('⚠️ Vui lòng chọn bài hát và nhập UUID của User!', 'error')
       return
     }
 
+    const submitBtn = document.getElementById('grant-submit-btn')
+    if (submitBtn) {
+      submitBtn.disabled = true
+      submitBtn.textContent = 'Đang xử lý...'
+    }
+
     try {
-      const { error } = await supabase.rpc('admin_grant_access', {
+      const { data, error } = await supabase.rpc('admin_grant_access', {
         p_user_id: userId,
         p_song_id: songId
       })
       if (error) throw error
-      showToast('Đã cấp quyền thành công cho User!', 'success')
+
+      showToast('✓ Đã cấp quyền xem Tab thành công!', 'success')
       grantUserIdInput.value = ''
-      grantSongSelect.value = ''
-      // Reload users to update purchase count
-      await loadUsers()
+      
+      // Reload both lists
+      await Promise.all([
+        loadUsers(),
+        loadRecentGrants()
+      ])
     } catch (err) {
       console.error(err)
-      showToast('Lỗi khi cấp quyền: ' + err.message, 'error')
+      showToast('❌ ' + (err.message || 'Lỗi khi cấp quyền'), 'error')
+    } finally {
+      if (submitBtn) {
+        submitBtn.disabled = false
+        submitBtn.innerHTML = '<span>⚡ Xác Nhận Cấp Quyền</span>'
+      }
     }
   })
+}
+
+// User Search & Sort Event Listeners
+if (adminSearchUsers) {
+  adminSearchUsers.addEventListener('input', (e) => {
+    userSearchQuery = e.target.value
+    renderUsersTable()
+  })
+}
+
+if (adminSortUsers) {
+  adminSortUsers.addEventListener('change', (e) => {
+    userSortBy = e.target.value
+    renderUsersTable()
+  })
+}
+
+if (refreshHistoryBtn) {
+  refreshHistoryBtn.addEventListener('click', () => loadRecentGrants())
 }
 
 // ==========================================================================
@@ -979,7 +1196,10 @@ async function initDashboard() {
     if (tabId === 'songs') loadSongs()
     if (tabId === 'gears') loadGears()
     if (tabId === 'users') loadUsers()
-    if (tabId === 'grant') populateGrantSongSelect()
+    if (tabId === 'grant') {
+      renderPaidSongs()
+      loadRecentGrants()
+    }
   }
 
   if (tabNavSongs) tabNavSongs.addEventListener('click', () => switchTab('songs'))
@@ -1050,9 +1270,10 @@ async function initDashboard() {
   }
 
   // Load initial data
-  loadSongs().then(() => populateGrantSongSelect())
+  loadSongs().then(() => renderPaidSongs())
   loadGears()
   loadUsers()
+  loadRecentGrants()
 }
 
 document.addEventListener('DOMContentLoaded', initDashboard)
