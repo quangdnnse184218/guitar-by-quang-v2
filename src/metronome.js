@@ -114,25 +114,23 @@ function secondsPerBeat() {
 function triggerVisualBeat(beatIndex, isAccent) {
   requestAnimationFrame(() => {
     if (beatFlash) {
-      beatFlash.className = `metro-pulse w-14 h-14 rounded-2xl flex items-center justify-center shadow-inner cursor-default ${
+      beatFlash.className = `metro-pulse w-16 h-16 rounded-2xl flex items-center justify-center cursor-default ${
         isAccent ? 'metro-flash-accent' : 'metro-flash-active'
       }`
       setTimeout(() => {
         if (beatFlash) {
-          beatFlash.className = 'metro-pulse w-14 h-14 rounded-2xl bg-black/10 dark:bg-white/10 border border-glass-border flex items-center justify-center shadow-inner cursor-default'
+          beatFlash.className = 'metro-pulse metro-pulse-box w-16 h-16 rounded-2xl flex items-center justify-center cursor-default'
         }
-      }, 100)
+      }, 90)
     }
 
     if (beatDots) {
-      const dots = beatDots.querySelectorAll('.metro-dot')
+      const dots = beatDots.querySelectorAll('.metro-dot-item')
       dots.forEach((dot, idx) => {
         if (idx === beatIndex) {
-          dot.className = `metro-dot w-2.5 h-2.5 rounded-full transition-all duration-75 ${
-            isAccent ? 'bg-amber-400 shadow-md shadow-amber-400/50 scale-125' : 'metro-dot-active'
-          }`
+          dot.className = `metro-dot-item ${isAccent ? 'active-accent' : 'active'}`
         } else {
-          dot.className = 'metro-dot w-2 h-2 rounded-full bg-black/20 dark:bg-white/20 transition-all duration-75'
+          dot.className = 'metro-dot-item'
         }
       })
     }
@@ -220,12 +218,12 @@ function updatePlayButtonUI(active) {
 
 function resetBeatVisuals() {
   if (beatFlash) {
-    beatFlash.className = 'metro-pulse w-14 h-14 rounded-2xl bg-black/10 dark:bg-white/10 border border-glass-border flex items-center justify-center shadow-inner cursor-default'
+    beatFlash.className = 'metro-pulse metro-pulse-box w-16 h-16 rounded-2xl flex items-center justify-center cursor-default'
   }
   if (beatDots) {
-    const dots = beatDots.querySelectorAll('.metro-dot')
+    const dots = beatDots.querySelectorAll('.metro-dot-item')
     dots.forEach(dot => {
-      dot.className = 'metro-dot w-2 h-2 rounded-full bg-black/20 dark:bg-white/20 transition-all duration-75'
+      dot.className = 'metro-dot-item'
     })
   }
 }
@@ -278,7 +276,7 @@ function handleTapTempo() {
 function renderBeatDots() {
   if (!beatDots) return
   beatDots.innerHTML = Array.from({ length: beatsPerBar })
-    .map(() => '<span class="metro-dot w-2 h-2 rounded-full bg-black/20 dark:bg-white/20 transition-all duration-75"></span>')
+    .map(() => '<span class="metro-dot-item"></span>')
     .join('')
 }
 

@@ -89,11 +89,11 @@ export function renderSongCard(tab, index, extraClass = '') {
       <div onclick="window.openFreeTabModal('${tab.id}')" class="song-card glass-card card-interactive p-4 sm:p-5 flex flex-col justify-between space-y-4 group cursor-pointer ${extraClass}" data-id="${tab.id}">
         <div class="space-y-3.5">
           <div class="relative overflow-hidden rounded-2xl aspect-[16/10] bg-gradient-to-br from-[#1E3A2F] via-[#2A4D3E] to-[#172A22] p-4 flex flex-col justify-between text-white shadow-inner group-hover:scale-[1.02] transition-transform duration-500 ease-out">
-            <div class="flex justify-between items-start text-[10px] uppercase font-bold tracking-wider">
+            <div class="flex justify-between items-start text-xs uppercase font-bold tracking-wider">
               <span class="bg-black/50 backdrop-blur px-2.5 py-1 rounded-full text-white/95">${tab.category || 'Fingerstyle'}</span>
               <div class="flex items-center gap-1.5 flex-wrap justify-end">
                 ${userActionGroup}
-                <span class="px-2.5 py-0.5 rounded-full text-xs font-black bg-emerald-500 text-white shadow-sm uppercase tracking-wide">FREE</span>
+                <span class="px-2.5 py-1 rounded-full text-xs font-black bg-emerald-600 text-white shadow-sm uppercase tracking-wide">FREE</span>
               </div>
             </div>
 
@@ -103,27 +103,27 @@ export function renderSongCard(tab, index, extraClass = '') {
                   <path d="M8 5v14l11-7z"/>
                 </svg>
               </div>
-              <span class="text-[10px] font-bold mt-2 text-white/95 tracking-wide bg-black/45 px-2.5 py-0.5 rounded-full backdrop-blur-sm">Xem Tab Miễn Phí</span>
+              <span class="text-xs font-bold mt-2 text-white/95 tracking-wide bg-black/45 px-3 py-1 rounded-full backdrop-blur-sm">Xem Tab Miễn Phí</span>
             </div>
 
-            <div class="flex justify-between items-end text-[11px] text-white/95 font-semibold">
-              <span>${tab.duration || 'Full Video'}</span>
+            <div class="flex justify-between items-end text-xs text-white/95 font-semibold">
+              <span class="font-mono tabular-nums">${tab.duration || 'Full Video'}</span>
               <span class="text-white/80">Tuning: ${tab.tuning || 'Standard'}</span>
             </div>
           </div>
 
           <div class="space-y-2">
-            <h3 class="text-lg sm:text-xl font-bold text-text-primary group-hover:text-success transition-colors leading-snug">
+            <h3 class="text-lg sm:text-xl font-bold text-text-primary group-hover:text-emerald-600 dark:group-hover:text-emerald-400 transition-colors leading-snug">
               ${tab.title}
             </h3>
 
             <div class="space-y-1.5 pt-0.5">
               <div class="flex items-center justify-between text-xs font-bold text-text-muted">
-                <span>Độ khó: <strong class="text-success">${tab.level || (levelNum + '/10')}</strong></span>
-                <span class="text-[11px] font-semibold text-text-faint">Tuning: ${tab.tuning || 'Standard'}</span>
+                <span>Độ khó: <strong class="text-emerald-700 dark:text-emerald-400 font-mono tabular-nums">${tab.level || (levelNum + '/10')}</strong></span>
+                <span class="text-xs font-semibold text-text-faint">Tuning: ${tab.tuning || 'Standard'}</span>
               </div>
               <div class="w-full bg-glass-bg rounded-full h-1.5 overflow-hidden border border-glass-border">
-                <div class="bg-success h-1.5 rounded-full transition-all duration-500" style="width: ${percent}%"></div>
+                <div class="bg-emerald-600 dark:bg-emerald-400 h-1.5 rounded-full transition-all duration-500" style="width: ${percent}%"></div>
               </div>
             </div>
 
@@ -134,7 +134,7 @@ export function renderSongCard(tab, index, extraClass = '') {
         </div>
 
         <div class="pt-2">
-          <div class="w-full py-2.5 rounded-full bg-success/15 border border-success/35 text-success group-hover:bg-success group-hover:text-white font-bold text-xs transition-all shadow-sm flex items-center justify-center gap-1.5 active:scale-95 text-center">
+          <div class="w-full py-2.5 rounded-full badge-semantic-success font-bold text-xs transition-all shadow-sm flex items-center justify-center gap-1.5 active:scale-95 text-center cursor-pointer">
             <span>Xem Video Tab (Miễn phí)</span>
             <svg class="w-3.5 h-3.5 transform group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M14 5l7 7m0 0l-7 7m7-7H3"></path>
@@ -154,8 +154,8 @@ export function renderSongCard(tab, index, extraClass = '') {
 
   const badgeHtml = `
     <div class="flex flex-col items-end gap-1">
-      <span class="px-2.5 py-0.5 rounded-full text-xs font-black bg-rose-600 text-white shadow-sm uppercase tracking-wide">BÁN • ${priceFormatted}</span>
-      ${discountNote ? `<span class="text-[10px] text-white bg-accent-primary px-2.5 py-0.5 rounded-full font-extrabold shadow-xs">${discountNote}</span>` : ''}
+      <span class="px-2.5 py-1 rounded-full text-xs font-black bg-rose-600 text-white shadow-sm uppercase tracking-wide font-mono tabular-nums">BÁN • ${priceFormatted}</span>
+      ${discountNote ? `<span class="text-xs text-white bg-accent-primary px-2.5 py-0.5 rounded-full font-extrabold shadow-xs">${discountNote}</span>` : ''}
     </div>
   `
 
@@ -169,7 +169,7 @@ export function renderSongCard(tab, index, extraClass = '') {
             <path d="M8 5v14l11-7z"/>
           </svg>
         </button>
-        <span class="text-[10px] font-bold mt-2 text-white/95 tracking-wide bg-black/45 px-2.5 py-0.5 rounded-full backdrop-blur-sm">Xem Video Demo</span>
+        <span class="text-xs font-bold mt-2 text-white/95 tracking-wide bg-black/45 px-3 py-1 rounded-full backdrop-blur-sm">Xem Video Demo</span>
       </div>
     `
   } else {
@@ -178,7 +178,7 @@ export function renderSongCard(tab, index, extraClass = '') {
         <div class="w-10 h-10 rounded-full bg-black/30 flex items-center justify-center text-lg shadow-sm">
           🎸
         </div>
-        <span class="text-[10px] font-bold mt-1.5 text-white/80 tracking-wide">Acoustic Tab</span>
+        <span class="text-xs font-bold mt-1.5 text-white/80 tracking-wide">Acoustic Tab</span>
       </div>
     `
   }
@@ -187,7 +187,7 @@ export function renderSongCard(tab, index, extraClass = '') {
     <div onclick="window.openCheckoutModal('${tab.id}')" class="song-card glass-card card-interactive p-4 sm:p-5 flex flex-col justify-between space-y-4 group cursor-pointer ${extraClass}" data-id="${tab.id}">
       <div class="space-y-3.5">
         <div class="relative overflow-hidden rounded-2xl aspect-[16/10] bg-gradient-to-br ${thumbnailBg} p-4 flex flex-col justify-between text-white shadow-inner group-hover:scale-[1.02] transition-transform duration-500 ease-out">
-          <div class="flex justify-between items-start text-[10px] uppercase font-bold tracking-wider">
+          <div class="flex justify-between items-start text-xs uppercase font-bold tracking-wider">
             <span class="bg-black/50 backdrop-blur px-2.5 py-1 rounded-full text-white/95">${tab.category || 'Nhạc Việt'}</span>
             <div class="flex items-start gap-1.5 flex-wrap justify-end">
               ${userActionGroup}
@@ -197,8 +197,8 @@ export function renderSongCard(tab, index, extraClass = '') {
 
           ${artworkCenterHtml}
 
-          <div class="flex justify-between items-end text-[11px] text-white/95 font-semibold">
-            <span>${tab.duration || '03:30'}</span>
+          <div class="flex justify-between items-end text-xs text-white/95 font-semibold">
+            <span class="font-mono tabular-nums">${tab.duration || 'Full Video'}</span>
             <span class="text-white/80">Tuning: ${tab.tuning || 'Standard'}</span>
           </div>
         </div>
@@ -210,24 +210,27 @@ export function renderSongCard(tab, index, extraClass = '') {
 
           <div class="space-y-1.5 pt-0.5">
             <div class="flex items-center justify-between text-xs font-bold text-text-muted">
-              <span>Độ khó: <strong class="text-accent-primary">${tab.level || (levelNum + '/10')}</strong></span>
-              <span class="text-[11px] font-semibold text-text-faint">Tuning: ${tab.tuning || 'Standard'}</span>
+              <span>Độ khó: <strong class="text-accent-primary font-mono tabular-nums">${tab.level || (levelNum + '/10')}</strong></span>
+              <span class="text-xs font-semibold text-text-faint">Tuning: ${tab.tuning || 'Standard'}</span>
             </div>
             <div class="w-full bg-glass-bg rounded-full h-1.5 overflow-hidden border border-glass-border">
-              <div class="bg-accent-primary h-1.5 rounded-full transition-all duration-500" style="width: ${percent}%"></div>
+              <div class="bg-warm-gradient h-1.5 rounded-full transition-all duration-500" style="width: ${percent}%"></div>
             </div>
           </div>
 
           <p class="text-xs text-text-muted font-medium leading-relaxed pt-1 line-clamp-2">
-            ${tab.description || 'Bản Video Tab được soạn chi tiết từng ô nhịp chuẩn xác.'}
+            ${tab.description || 'Bản tab guitar fingerstyle chuẩn âm thanh acoustic.'}
           </p>
         </div>
       </div>
 
       <div class="pt-2">
-        <button class="w-full py-2.5 rounded-full bg-warm-gradient hover:brightness-110 text-white font-extrabold text-xs transition-all shadow-sm flex items-center justify-center gap-1.5 active:scale-95 cursor-pointer">
-          <span>Xem chi tiết →</span>
-        </button>
+        <div class="w-full py-2.5 rounded-full bg-warm-gradient hover:opacity-90 text-white font-bold text-xs transition-all shadow-md shadow-accent-primary/20 flex items-center justify-center gap-1.5 active:scale-95 text-center cursor-pointer">
+          <span>Nhận Trọn Bộ Tab & Video</span>
+          <svg class="w-3.5 h-3.5 transform group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M14 5l7 7m0 0l-7 7m7-7H3"></path>
+          </svg>
+        </div>
       </div>
     </div>
   `

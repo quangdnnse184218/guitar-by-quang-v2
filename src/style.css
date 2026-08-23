@@ -1,4 +1,4 @@
-@import url('https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,400;1,600&family=Inter:wght@400;500;600;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,400;1,600&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600;700;800&display=swap');
 
 @tailwind base;
 @tailwind components;
@@ -29,21 +29,36 @@
   --glass-bg-hover: #1C2234;
   --glass-blur: 20px;
   
-  /* High-Contrast Neutral Text (No Muddy Purple) */
+  /* High-Contrast Neutral Text */
   --text-primary: #F8FAFC;
   --text-muted: #94A3B8;
   --text-faint: #64748B;
   
-  /* Unified 1 Primary Brand Color + Max 2 Functional Colors */
+  /* Primary Brand Color: Warm Orange */
   --accent-primary: #E87A30;
   --accent-primary-hover: #F28C48;
   --accent-secondary: #E87A30;
   --terracotta: #D96B27;
   --terracotta-light: rgba(232, 122, 48, 0.15);
   
-  /* Functional Colors: Green for Free, Red for Paid */
-  --success: #34D399;
-  --danger: #F87171;
+  /* Semantic Functional Colors — Dark Mode */
+  --success-text: #34D399;
+  --success-bg: rgba(52, 211, 153, 0.15);
+  --success-border: rgba(52, 211, 153, 0.35);
+  --success-solid: #10B981;
+
+  --danger-text: #FCA5A5;
+  --danger-bg: rgba(248, 113, 113, 0.16);
+  --danger-border: rgba(248, 113, 113, 0.35);
+  --danger-solid: #EF4444;
+
+  --warning-text: #FDE68A;
+  --warning-bg: rgba(245, 158, 11, 0.16);
+  --warning-border: rgba(245, 158, 11, 0.35);
+  --warning-solid: #F59E0B;
+
+  --neutral-subtle: rgba(255, 255, 255, 0.06);
+  --neutral-border: rgba(255, 255, 255, 0.12);
 
   /* Modal Tokens — Dark Mode */
   --modal-surface-bg: #131722;
@@ -56,23 +71,31 @@
   --badge-paid-bg: rgba(248, 113, 113, 0.16);
   --badge-paid-text: #FCA5A5;
   --badge-paid-border: rgba(248, 113, 113, 0.35);
-  --btn-metronome-bg: rgba(52, 211, 153, 0.12);
-  --btn-metronome-text: #34D399;
-  --btn-metronome-border: rgba(52, 211, 153, 0.3);
-  --btn-metronome-hover: rgba(52, 211, 153, 0.22);
+  
+  /* Metronome Dedicated Tokens — Dark Mode */
+  --metro-badge-bg: rgba(16, 185, 129, 0.12);
+  --metro-badge-text: #34D399;
+  --metro-badge-border: rgba(52, 211, 153, 0.3);
+  --metro-dot-idle: rgba(255, 255, 255, 0.2);
+  --metro-dot-active: #10B981;
+  --metro-pulse-idle-dot: rgba(52, 211, 153, 0.5);
+  --metro-kbd-bg: rgba(255, 255, 255, 0.08);
+  --metro-kbd-border: rgba(255, 255, 255, 0.15);
+  --metro-kbd-text: #34D399;
+  --metro-bpm-sub: #34D399;
 }
 
 /* ==============================================================================
-   DESIGN TOKENS — LIGHT MODE (WARM ORGANIC ACOUSTIC PALETTE — DISTINCT SECTIONS)
+   DESIGN TOKENS — LIGHT MODE (WARM ORGANIC ACOUSTIC PALETTE — HIGH CONTRAST)
    ============================================================================== */
 [data-theme="light"] {
   --bg-base: #F7F2EA;
   --sec-hero-bg: #F7F2EA;
-  --sec-about-bg: #EFE8DC; /* Distinct warm parchment */
-  --sec-featured-bg: #FAF6EF; /* Ivory cream */
-  --sec-tools-bg: #EDE4D6; /* Rich acoustic beige */
-  --sec-faq-bg: #F6EFE5; /* Parchment */
-  --sec-contact-bg: #EAE0D1; /* Warm cedar */
+  --sec-about-bg: #EFE8DC;
+  --sec-featured-bg: #FAF6EF;
+  --sec-tools-bg: #EDE4D6;
+  --sec-faq-bg: #F6EFE5;
+  --sec-contact-bg: #EAE0D1;
   --header-bg: rgba(247, 242, 234, 0.92);
   --footer-bg: #DECAB6;
   --footer-bg-grad: linear-gradient(180deg, #E2D0BD 0%, #D8C3AE 100%);
@@ -81,26 +104,41 @@
   --blob-violet: #E87A30;
   --blob-rose: #EA580C;
 
-  /* Card Surfaces — Light Mode Elevation (Crisp Solid White on Warm Cream) */
+  /* Card Surfaces — Light Mode Elevation */
   --glass-bg: #FFFFFF;
-  --glass-border: rgba(180, 150, 120, 0.22);
+  --glass-border: rgba(180, 150, 120, 0.25);
   --glass-bg-hover: #FFFDF9;
   
-  /* Legible Walnut & Deep Charcoal Text */
+  /* Legible Walnut & Charcoal Text */
   --text-primary: #231C16;
   --text-muted: #5C4D40;
   --text-faint: #8A7868;
   
-  /* Primary Brand Color: Warm Acoustic Orange */
+  /* Primary Brand Color: Warm Acoustic Terracotta */
   --accent-primary: #D35F1D;
   --accent-primary-hover: #B84E14;
   --accent-secondary: #D35F1D;
   --terracotta: #D35F1D;
   --terracotta-light: rgba(211, 95, 29, 0.12);
   
-  /* Functional Colors */
-  --success: #059669;
-  --danger: #DC2626;
+  /* Semantic Functional Colors — Light Mode (Rich, High Contrast WCAG AA) */
+  --success-text: #065F46;
+  --success-bg: #ECFDF5;
+  --success-border: #A7F3D0;
+  --success-solid: #059669;
+
+  --danger-text: #991B1C;
+  --danger-bg: #FEF2F2;
+  --danger-border: #FECACA;
+  --danger-solid: #DC2626;
+
+  --warning-text: #92400E;
+  --warning-bg: #FEF3C7;
+  --warning-border: #FDE68A;
+  --warning-solid: #D97706;
+
+  --neutral-subtle: #F3EDE3;
+  --neutral-border: #E2D7CB;
 
   /* Modal Tokens — Light Mode */
   --modal-surface-bg: #FFFFFF;
@@ -113,10 +151,18 @@
   --badge-paid-bg: #FDE8E8;
   --badge-paid-text: #9B1C1C;
   --badge-paid-border: #F8B4B4;
-  --btn-metronome-bg: #EDFDF5;
-  --btn-metronome-text: #046C4E;
-  --btn-metronome-border: #A7F3D0;
-  --btn-metronome-hover: #D1FAE5;
+  
+  /* Metronome Dedicated Tokens — Light Mode (High Contrast Forest/Emerald) */
+  --metro-badge-bg: #ECFDF5;
+  --metro-badge-text: #065F46;
+  --metro-badge-border: #A7F3D0;
+  --metro-dot-idle: #C4B9AD;
+  --metro-dot-active: #059669;
+  --metro-pulse-idle-dot: #059669;
+  --metro-kbd-bg: #EDE5DA;
+  --metro-kbd-border: #D1C4B4;
+  --metro-kbd-text: #065F46;
+  --metro-bpm-sub: #065F46;
 }
 
 /* ==============================================================================
@@ -125,7 +171,9 @@
 body {
   background-color: var(--bg-base);
   color: var(--text-primary);
-  font-family: 'Be Vietnam Pro', 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  font-family: 'Inter', 'Be Vietnam Pro', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  font-size: 1rem;
+  line-height: 1.6;
   min-height: 100vh;
   position: relative;
   overflow-x: hidden;
@@ -137,9 +185,48 @@ body {
 
 h1, h2, h3, h4, h5, h6 {
   font-family: 'Be Vietnam Pro', sans-serif;
-  text-shadow: none !important; /* Eliminate all glitch / double-text shadows on Vietnamese diacritics */
+  font-weight: 700;
+  text-shadow: none !important;
   letter-spacing: -0.015em;
+  color: var(--text-primary);
 }
+
+/* Numeric Mono Font & Tabular Figures */
+.font-mono,
+.numeric-mono {
+  font-family: 'JetBrains Mono', ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace !important;
+  font-variant-numeric: tabular-nums;
+}
+
+/* Consistent Type Scale */
+.text-h1 {
+  font-size: clamp(1.75rem, 4vw, 2.75rem); /* 28px - 44px */
+  line-height: 1.18;
+  font-weight: 800;
+}
+
+.text-h2 {
+  font-size: clamp(1.375rem, 3vw, 1.875rem); /* 22px - 30px */
+  line-height: 1.25;
+  font-weight: 700;
+}
+
+.text-h3 {
+  font-size: clamp(1.125rem, 2vw, 1.25rem); /* 18px - 20px */
+  line-height: 1.35;
+  font-weight: 700;
+}
+
+.text-body {
+  font-size: 1rem; /* 16px */
+  line-height: 1.6;
+}
+
+.text-small {
+  font-size: 0.8125rem; /* 13px */
+  line-height: 1.45;
+}
+
 
 header, footer, nav, .ambient-blob {
   transition: background-color 0.3s ease, border-color 0.3s ease, color 0.3s ease, box-shadow 0.3s ease;
@@ -746,10 +833,137 @@ header, footer, nav, .ambient-blob {
   border: 1px solid rgba(148, 163, 184, 0.35);
 }
 
-[data-theme="light"] .badge-origin-curated {
-  background-color: #F1F5F9;
-  color: #475569;
-  border-color: #E2E8F0;
+/* ==============================================================================
+   SEMANTIC SYSTEM UTILITY CLASSES
+   ============================================================================== */
+.badge-semantic-success {
+  background-color: var(--success-bg) !important;
+  color: var(--success-text) !important;
+  border: 1px solid var(--success-border) !important;
 }
+
+.badge-semantic-danger {
+  background-color: var(--danger-bg) !important;
+  color: var(--danger-text) !important;
+  border: 1px solid var(--danger-border) !important;
+}
+
+.badge-semantic-warning {
+  background-color: var(--warning-bg) !important;
+  color: var(--warning-text) !important;
+  border: 1px solid var(--warning-border) !important;
+}
+
+.badge-semantic-primary {
+  background-color: var(--terracotta-light) !important;
+  color: var(--accent-primary) !important;
+  border: 1px solid rgba(211, 95, 29, 0.3) !important;
+}
+
+/* ==============================================================================
+   METRONOME HIGH-CONTRAST COMPONENT STYLES
+   ============================================================================== */
+.metro-badge {
+  background-color: var(--metro-badge-bg) !important;
+  color: var(--metro-badge-text) !important;
+  border: 1px solid var(--metro-badge-border) !important;
+}
+
+.metro-pulse-box {
+  background-color: var(--neutral-subtle);
+  border: 1px solid var(--neutral-border);
+  box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.08);
+}
+
+.metro-pulse-dot {
+  background-color: var(--metro-pulse-idle-dot);
+  box-shadow: 0 0 4px var(--metro-pulse-idle-dot);
+}
+
+[data-theme="light"] .metro-pulse-dot {
+  background-color: #047857;
+  box-shadow: 0 0 6px rgba(4, 120, 87, 0.4);
+}
+
+.metro-flash-active {
+  background-color: var(--success-solid) !important;
+  box-shadow: 0 0 25px var(--success-solid), inset 0 0 10px rgba(255, 255, 255, 0.4) !important;
+  transform: scale(1.15);
+}
+
+.metro-flash-accent {
+  background-color: #F59E0B !important;
+  box-shadow: 0 0 30px #F59E0B, inset 0 0 12px rgba(255, 255, 255, 0.5) !important;
+  transform: scale(1.22);
+}
+
+.metro-dot-item {
+  width: 8px;
+  height: 8px;
+  border-radius: 9999px;
+  background-color: var(--metro-dot-idle);
+  transition: all 0.08s ease-out;
+}
+
+[data-theme="light"] .metro-dot-item {
+  background-color: #B5A89B;
+}
+
+.metro-dot-item.active {
+  background-color: var(--metro-dot-active) !important;
+  box-shadow: 0 0 10px var(--metro-dot-active) !important;
+  transform: scale(1.35);
+}
+
+.metro-dot-item.active-accent {
+  background-color: #F59E0B !important;
+  box-shadow: 0 0 12px #F59E0B !important;
+  transform: scale(1.45);
+}
+
+.metro-kbd {
+  background-color: var(--metro-kbd-bg) !important;
+  border: 1px solid var(--metro-kbd-border) !important;
+  color: var(--metro-kbd-text) !important;
+}
+
+.metro-bpm-sub {
+  color: var(--metro-bpm-sub) !important;
+}
+
+/* Custom Range Slider */
+input[type="range"].metro-slider {
+  -webkit-appearance: none;
+  appearance: none;
+  background: var(--neutral-subtle);
+  border: 1px solid var(--neutral-border);
+  height: 10px;
+  border-radius: 9999px;
+  outline: none;
+}
+
+input[type="range"].metro-slider::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 24px;
+  height: 24px;
+  border-radius: 9999px;
+  background: var(--success-solid);
+  border: 3px solid #FFFFFF;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.25);
+  cursor: pointer;
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
+}
+
+[data-theme="light"] input[type="range"].metro-slider::-webkit-slider-thumb {
+  background: #047857;
+  border: 3px solid #FFFFFF;
+  box-shadow: 0 2px 8px rgba(4, 120, 87, 0.35);
+}
+
+input[type="range"].metro-slider::-webkit-slider-thumb:hover {
+  transform: scale(1.15);
+}
+
 
 

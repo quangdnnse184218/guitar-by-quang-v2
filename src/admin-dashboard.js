@@ -187,7 +187,9 @@ function renderSongsTable() {
     const isFree = song.is_free ?? song.isFree ?? false
     const isFeatured = song.is_featured ?? song.isFeatured ?? false
     const level = song.level_num ?? song.levelNum ?? 5
-    const priceText = isFree ? '<span class="px-2 py-0.5 rounded-full bg-emerald-500/15 text-emerald-600 dark:text-emerald-400 font-bold text-[10px]">FREE</span>' : (song.price ? `<span class="font-mono font-bold text-accent-primary">${song.price.toLocaleString('vi-VN')}đ</span>` : 'Có phí')
+    const priceText = isFree 
+      ? '<span class="px-2.5 py-1 rounded-full badge-semantic-success font-bold font-mono text-xs">FREE</span>' 
+      : (song.price ? `<span class="font-mono tabular-nums font-bold text-rose-600 dark:text-rose-400 text-xs">${song.price.toLocaleString('vi-VN')}đ</span>` : '<span class="text-xs text-rose-600 dark:text-rose-400 font-bold">Có phí</span>')
     const currentOrder = song.order || (idx + 1)
     const isFirst = idx === 0
     const isLast = idx === filtered.length - 1
@@ -204,12 +206,12 @@ function renderSongsTable() {
               value="${currentOrder}" 
               id="order-input-song-${song.id}" 
               onkeydown="if(event.key==='Enter') window.handleSaveSongPosition('${song.id}')"
-              class="w-11 text-center py-1 bg-glass-bg border border-glass-border rounded-lg font-mono font-bold text-xs text-text-primary focus:border-accent-primary focus:outline-none shadow-xs" 
+              class="w-11 text-center py-1 bg-glass-bg border border-glass-border rounded-lg font-mono tabular-nums font-bold text-xs text-text-primary focus:border-accent-primary focus:outline-none shadow-xs" 
               title="Nhập số thứ tự vị trí mong muốn rồi bấm Lưu hoặc nhấn Enter"
             />
             <button 
               onclick="window.handleSaveSongPosition('${song.id}')" 
-              class="px-2 py-1 rounded-lg bg-warm-gradient hover:brightness-105 text-white font-bold text-[10px] transition-all shadow-xs cursor-pointer active:scale-95"
+              class="px-2.5 py-1 rounded-lg bg-warm-gradient hover:brightness-105 text-white font-bold text-xs transition-all shadow-xs cursor-pointer active:scale-95"
               title="Lưu vị trí mới: Bài này sẽ chèn vào vị trí trên, các bài khác tự động dời">
               Lưu
             </button>
@@ -218,13 +220,13 @@ function renderSongsTable() {
                 onclick="window.handleMoveSong('${song.id}', 'up')" 
                 ${isFirst ? 'disabled class="p-0.5 rounded text-text-muted/30 cursor-not-allowed"' : 'class="p-0.5 rounded hover:bg-glass-bg text-text-primary hover:text-accent-primary transition-colors cursor-pointer"'} 
                 title="Di chuyển lên 1 bậc">
-                <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 15l7-7 7 7"/></svg>
+                <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 15l7-7 7 7"/></svg>
               </button>
               <button 
                 onclick="window.handleMoveSong('${song.id}', 'down')" 
                 ${isLast ? 'disabled class="p-0.5 rounded text-text-muted/30 cursor-not-allowed"' : 'class="p-0.5 rounded hover:bg-glass-bg text-text-primary hover:text-accent-primary transition-colors cursor-pointer"'} 
                 title="Di chuyển xuống 1 bậc">
-                <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M19 9l-7 7-7-7"/></svg>
+                <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M19 9l-7 7-7-7"/></svg>
               </button>
             </div>
           </div>
@@ -233,26 +235,26 @@ function renderSongsTable() {
         <td class="py-3.5 px-4 font-bold text-text-primary">
           <div class="flex flex-col">
             <span class="text-sm font-extrabold">${song.title}</span>
-            <span class="text-[11px] text-text-muted font-medium">${song.singer || 'Guitar By Quang'}</span>
+            <span class="text-xs text-text-muted font-medium">${song.singer || 'Guitar By Quang'}</span>
           </div>
         </td>
         <td class="py-3.5 px-3">
-          <span class="px-2 py-0.5 rounded-md bg-black/5 dark:bg-white/5 text-[10px] font-bold text-text-muted">${song.category || 'Fingerstyle'}</span>
+          <span class="px-2.5 py-1 rounded-lg bg-black/5 dark:bg-white/5 text-xs font-bold text-text-muted">${song.category || 'Fingerstyle'}</span>
         </td>
-        <td class="py-3.5 px-3 font-mono font-bold text-accent-primary">${level}/10</td>
-        <td class="py-3.5 px-3 text-text-muted text-[11px]">
+        <td class="py-3.5 px-3 font-mono tabular-nums font-bold text-accent-primary text-xs">${level}/10</td>
+        <td class="py-3.5 px-3 text-text-muted text-xs font-medium">
           ${song.tuning || 'Standard'} / C:${song.capo ?? 0}
         </td>
         <td class="py-3.5 px-3">${priceText}</td>
         <td class="py-3.5 px-3">
-          ${isFeatured ? '<span class="text-amber-500 font-bold text-sm">★ Ghim</span>' : '<span class="text-text-muted/40">—</span>'}
+          ${isFeatured ? '<span class="badge-semantic-warning px-2 py-0.5 rounded-full font-bold text-xs">★ Ghim</span>' : '<span class="text-text-muted/40 text-xs">—</span>'}
         </td>
         <td class="py-3.5 px-4 text-right">
           <div class="flex items-center justify-end gap-2">
-            <button onclick="window.editSong('${song.id}')" class="px-2.5 py-1 rounded-lg bg-glass-bg hover:bg-glass-bg-hover text-accent-primary font-bold text-[11px] border border-glass-border transition-colors cursor-pointer">
+            <button onclick="window.editSong('${song.id}')" class="px-3 py-1.5 rounded-lg bg-glass-bg hover:bg-glass-bg-hover text-accent-primary font-bold text-xs border border-glass-border transition-colors cursor-pointer">
               Sửa
             </button>
-            <button onclick="window.deleteSong('${song.id}', '${song.title.replace(/'/g, "\\'")}')" class="px-2.5 py-1 rounded-lg bg-rose-500/10 hover:bg-rose-500/20 text-rose-600 dark:text-rose-400 font-bold text-[11px] border border-rose-500/30 transition-colors cursor-pointer">
+            <button onclick="window.deleteSong('${song.id}', '${song.title.replace(/'/g, "\\'")}')" class="px-3 py-1.5 rounded-lg bg-rose-500/10 hover:bg-rose-500/20 text-rose-600 dark:text-rose-400 font-bold text-xs border border-rose-500/30 transition-colors cursor-pointer">
               Xóa
             </button>
           </div>
@@ -462,12 +464,12 @@ function renderGearsTable() {
               value="${currentOrder}" 
               id="order-input-gear-${gear.id}" 
               onkeydown="if(event.key==='Enter') window.handleSaveGearPosition('${gear.id}')"
-              class="w-11 text-center py-1 bg-glass-bg border border-glass-border rounded-lg font-mono font-bold text-xs text-text-primary focus:border-accent-primary focus:outline-none shadow-xs" 
+              class="w-11 text-center py-1 bg-glass-bg border border-glass-border rounded-lg font-mono tabular-nums font-bold text-xs text-text-primary focus:border-accent-primary focus:outline-none shadow-xs" 
               title="Nhập số thứ tự vị trí mong muốn rồi bấm Lưu hoặc nhấn Enter"
             />
             <button 
               onclick="window.handleSaveGearPosition('${gear.id}')" 
-              class="px-2 py-1 rounded-lg bg-warm-gradient hover:brightness-105 text-white font-bold text-[10px] transition-all shadow-xs cursor-pointer active:scale-95"
+              class="px-2.5 py-1 rounded-lg bg-warm-gradient hover:brightness-105 text-white font-bold text-xs transition-all shadow-xs cursor-pointer active:scale-95"
               title="Lưu vị trí mới">
               Lưu
             </button>
@@ -476,13 +478,13 @@ function renderGearsTable() {
                 onclick="window.handleMoveGear('${gear.id}', 'up')" 
                 ${isFirst ? 'disabled class="p-0.5 rounded text-text-muted/30 cursor-not-allowed"' : 'class="p-0.5 rounded hover:bg-glass-bg text-text-primary hover:text-accent-primary transition-colors cursor-pointer"'} 
                 title="Di chuyển lên 1 bậc">
-                <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 15l7-7 7 7"/></svg>
+                <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 15l7-7 7 7"/></svg>
               </button>
               <button 
                 onclick="window.handleMoveGear('${gear.id}', 'down')" 
                 ${isLast ? 'disabled class="p-0.5 rounded text-text-muted/30 cursor-not-allowed"' : 'class="p-0.5 rounded hover:bg-glass-bg text-text-primary hover:text-accent-primary transition-colors cursor-pointer"'} 
                 title="Di chuyển xuống 1 bậc">
-                <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M19 9l-7 7-7-7"/></svg>
+                <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M19 9l-7 7-7-7"/></svg>
               </button>
             </div>
           </div>
@@ -495,16 +497,16 @@ function renderGearsTable() {
           </div>
         </td>
         <td class="py-3.5 px-3">
-          <span class="px-2 py-0.5 rounded-md bg-black/5 dark:bg-white/5 text-[10px] font-bold text-text-muted">${category}</span>
+          <span class="px-2.5 py-1 rounded-lg bg-black/5 dark:bg-white/5 text-xs font-bold text-text-muted">${category}</span>
         </td>
-        <td class="py-3.5 px-3 text-text-muted text-[11px] max-w-xs truncate">${description}</td>
-        <td class="py-3.5 px-3 font-mono font-bold text-text-primary text-xs">${price}</td>
+        <td class="py-3.5 px-3 text-text-muted text-xs font-medium max-w-xs truncate">${description}</td>
+        <td class="py-3.5 px-3 font-mono tabular-nums font-bold text-text-primary text-xs">${price}</td>
         <td class="py-3.5 px-4 text-right">
           <div class="flex items-center justify-end gap-2">
-            <button onclick="window.editGear('${gear.id}')" class="px-2.5 py-1 rounded-lg bg-glass-bg hover:bg-glass-bg-hover text-accent-primary font-bold text-[11px] border border-glass-border transition-colors cursor-pointer">
+            <button onclick="window.editGear('${gear.id}')" class="px-3 py-1.5 rounded-lg bg-glass-bg hover:bg-glass-bg-hover text-accent-primary font-bold text-xs border border-glass-border transition-colors cursor-pointer">
               Sửa
             </button>
-            <button onclick="window.deleteGear('${gear.id}', '${name.replace(/'/g, "\\'")}')" class="px-2.5 py-1 rounded-lg bg-rose-500/10 hover:bg-rose-500/20 text-rose-600 dark:text-rose-400 font-bold text-[11px] border border-rose-500/30 transition-colors cursor-pointer">
+            <button onclick="window.deleteGear('${gear.id}', '${name.replace(/'/g, "\\'")}')" class="px-3 py-1.5 rounded-lg bg-rose-500/10 hover:bg-rose-500/20 text-rose-600 dark:text-rose-400 font-bold text-xs border border-rose-500/30 transition-colors cursor-pointer">
               Xóa
             </button>
           </div>
