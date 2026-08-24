@@ -8,7 +8,7 @@ import { supabase } from './lib/supabase.js'
 import { initThemeToggle } from './theme-toggle.js'
 import { initPasswordToggles } from './common.js'
 import { fetchAllSongs, saveSong, removeSong, reorderAllSongs, extractYoutubeId } from './lib/songs-service.js'
-import { fetchAllGears, DEFAULT_GEARS, saveGear, removeGear, reorderAllGears } from './lib/gears-service.js'
+import { fetchAllGears, DEFAULT_GEARS, saveGear, removeGear, reorderAllGears, normalizeImagePath } from './lib/gears-service.js'
 
 // If redirected here with a recovery token, immediately move to admin-reset-password.html
 if (window.location.hash.includes('type=recovery') || window.location.search.includes('type=recovery')) {
@@ -859,7 +859,7 @@ window.editGear = function(id) {
   document.getElementById('gear-price').value = gear.footer_text || gear.price || gear.footerText || ''
   document.getElementById('gear-description').value = gear.description || ''
   document.getElementById('gear-link').value = gear.buy_url || gear.link || gear.buyUrl || ''
-  document.getElementById('gear-image').value = gear.image || gear.image_url || ''
+  document.getElementById('gear-image').value = normalizeImagePath(gear.image || gear.image_url || '')
 
   if (gearModalTitle) gearModalTitle.textContent = `Sửa Gear: ${gear.name || gear.title}`
   toggleModal(gearModal, true)
@@ -891,6 +891,9 @@ if (gearForm) {
       return
     }
 
+    const rawImage = document.getElementById('gear-image').value.trim()
+    const cleanImage = normalizeImagePath(rawImage)
+
     const payload = {
       title: nameVal,
       name: nameVal,
@@ -900,8 +903,8 @@ if (gearForm) {
       description: document.getElementById('gear-description').value.trim() || '',
       buy_url: document.getElementById('gear-link').value.trim() || '',
       link: document.getElementById('gear-link').value.trim() || '',
-      image: document.getElementById('gear-image').value.trim() || 'assets/avatar.jpg',
-      image_url: document.getElementById('gear-image').value.trim() || 'assets/avatar.jpg',
+      image: cleanImage,
+      image_url: cleanImage,
       buy_text: 'Mua ngay'
     }
 
