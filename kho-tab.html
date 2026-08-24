@@ -714,6 +714,40 @@
     </div>
   </div>
 
+  <!-- MODAL: IMAGE PREVIEW MODAL (FOR QR & GEARS) -->
+  <div id="image-preview-modal" role="dialog" aria-modal="true" aria-labelledby="image-modal-title"
+    class="fixed inset-0 z-[9999] flex items-center justify-center p-4 bg-black/85 backdrop-blur-md opacity-0 pointer-events-none transition-opacity duration-300 hidden">
+    <div
+      class="modal-dialog relative w-full max-w-xl glass-card rounded-3xl p-5 sm:p-6 shadow-2xl border border-glass-border scale-95 transition-transform duration-300"
+      tabindex="-1">
+
+      <button id="close-image-modal"
+        class="absolute top-4 right-4 w-9 h-9 rounded-full bg-glass-bg hover:bg-glass-bg-hover text-text-muted hover:text-text-primary border border-glass-border flex items-center justify-center transition-all z-10 cursor-pointer shadow-sm active:scale-95"
+        aria-label="Đóng ảnh">
+        <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"></path>
+        </svg>
+      </button>
+
+      <div class="space-y-4">
+        <div
+          class="w-full aspect-[4/3] sm:aspect-[16/11] rounded-2xl bg-white/95 flex items-center justify-center p-4 border border-glass-border shadow-inner overflow-hidden">
+          <img id="image-modal-img" src="" alt="Ảnh phóng to" class="w-full h-full object-contain" />
+        </div>
+
+        <div class="space-y-1 pr-6">
+          <h3 id="image-modal-title" class="text-lg sm:text-xl font-extrabold text-text-primary">
+            Tên món đồ
+          </h3>
+          <p id="image-modal-caption" class="text-xs sm:text-sm text-text-muted font-medium leading-relaxed">
+            Mô tả chi tiết.
+          </p>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
   <!-- TOAST NOTIFICATION -->
   <div id="toast-notification"
     class="fixed top-6 right-6 z-[9999] max-w-md px-5 py-4 rounded-2xl shadow-[0_20px_50px_rgba(0,0,0,0.5)] flex items-center gap-3.5 transform -translate-y-4 opacity-0 transition-all duration-300 pointer-events-none border-2"
