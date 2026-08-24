@@ -8,7 +8,7 @@
 
 import { renderAmbientBlobs, renderMusicNotes, initNavbarShrink, initMobileMenu } from './common.js'
 import { initThemeToggle } from './theme-toggle.js'
-import { fetchFeaturedSongs, extractYoutubeId } from './lib/songs-service.js'
+import { fetchFeaturedSongs, extractYoutubeId, normalizeVideoPath } from './lib/songs-service.js'
 import { fetchAllGears } from './lib/gears-service.js'
 import { applyScrollReveal } from './animations/scroll-reveal.js'
 import { isFavorite, isCompleted, toggleFavorite, toggleCompleted } from './lib/local-storage-service.js'
@@ -529,7 +529,7 @@ window.openVideoDemoModal = function openVideoDemoModal(title, videoSrc) {
       iframeEl.src = ''
       iframeEl.classList.add('hidden')
     }
-    const cleanSrc = videoSrc.startsWith('http') || videoSrc.startsWith('/') ? videoSrc : '/' + videoSrc
+    const cleanSrc = normalizeVideoPath(videoSrc)
     videoEl.src = cleanSrc
     videoEl.classList.remove('hidden')
     videoEl.load()

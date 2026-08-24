@@ -1,6 +1,6 @@
 import { renderAmbientBlobs, renderMusicNotes, initNavbarShrink, initMobileMenu } from './common.js'
 import { initThemeToggle } from './theme-toggle.js'
-import { fetchAllSongs, extractYoutubeId } from './lib/songs-service.js'
+import { fetchAllSongs, extractYoutubeId, normalizeVideoPath } from './lib/songs-service.js'
 import { applyScrollReveal } from './animations/scroll-reveal.js'
 import { isFavorite, isCompleted, toggleFavorite, toggleCompleted } from './lib/local-storage-service.js'
 import { supabase } from './lib/supabase.js'
@@ -431,7 +431,7 @@ window.openVideoDemoModal = function openVideoDemoModal(title, videoSrc) {
       iframeEl.src = ''
       iframeEl.classList.add('hidden')
     }
-    const cleanSrc = videoSrc.startsWith('http') || videoSrc.startsWith('/') ? videoSrc : '/' + videoSrc
+    const cleanSrc = normalizeVideoPath(videoSrc)
     videoEl.src = cleanSrc
     videoEl.classList.remove('hidden')
     videoEl.load()

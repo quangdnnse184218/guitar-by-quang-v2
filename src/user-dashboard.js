@@ -7,7 +7,7 @@
 import { supabase } from './lib/supabase.js'
 import { initNavbarShrink, initMobileMenu } from './common.js'
 import { initThemeToggle } from './theme-toggle.js'
-import { fetchAllSongs, extractYoutubeId } from './lib/songs-service.js'
+import { fetchAllSongs, extractYoutubeId, normalizeVideoPath } from './lib/songs-service.js'
 import { fetchAllGears, DEFAULT_GEARS } from './lib/gears-service.js'
 
 // If redirected here with a recovery token, immediately move to reset-password.html
@@ -1001,10 +1001,7 @@ window.openVideoDemoModal = function openVideoDemoModal(title, videoSrc) {
       iframeEl.src = ''
       iframeEl.classList.add('hidden')
     }
-    let cleanSrc = videoSrc
-    if (cleanSrc && !cleanSrc.startsWith('/') && !cleanSrc.startsWith('http')) {
-      cleanSrc = '/' + cleanSrc
-    }
+    const cleanSrc = normalizeVideoPath(videoSrc)
     videoEl.src = cleanSrc
     videoEl.classList.remove('hidden')
     videoEl.currentTime = 0

@@ -384,6 +384,48 @@ export function extractYoutubeId(urlOrId) {
   return ''
 }
 
+export function normalizeVideoPath(urlOrPath) {
+  if (!urlOrPath || typeof urlOrPath !== 'string') return ''
+  const trimmed = urlOrPath.trim()
+
+  const ytId = extractYoutubeId(trimmed)
+  if (ytId) {
+    return `https://youtu.be/${ytId}`
+  }
+
+  if (trimmed.startsWith('http://') || trimmed.startsWith('https://') || trimmed.startsWith('data:')) {
+    return trimmed
+  }
+
+  let clean = trimmed.replace(/\\/g, '/')
+
+  const publicIdx = clean.toLowerCase().indexOf('/public/')
+  if (publicIdx !== -1) {
+    clean = clean.substring(publicIdx + '/public'.length)
+  } else {
+    const pubIdx2 = clean.toLowerCase().indexOf('public/')
+    if (pubIdx2 !== -1) {
+      clean = clean.substring(pubIdx2 + 'public'.length)
+    }
+  }
+
+  if (/^[a-zA-Z]:\//.test(clean)) {
+    const assetsIdx = clean.toLowerCase().indexOf('/assets/')
+    if (assetsIdx !== -1) {
+      clean = clean.substring(assetsIdx)
+    } else {
+      const parts = clean.split('/')
+      clean = '/assets/' + parts[parts.length - 1]
+    }
+  }
+
+  if (!clean.startsWith('/')) {
+    clean = '/' + clean
+  }
+
+  return clean
+}
+
 const VALID_SONG_COLUMNS = [
   'id', 'title', 'singer', 'category', 'level', 'level_num', 'is_free',
   'price', 'price_formatted', 'discount_note', 'tuning',
@@ -394,6 +436,14 @@ const VALID_SONG_COLUMNS = [
 
 function sanitizeSongPayload(payload) {
   const clean = {}
+
+  if (payload.video_demo) payload.video_demo = normalizeVideoPath(payload.video_demo)
+  if (payload.demo_video_url) payload.demo_video_url = normalizeVideoPath(payload.demo_video_url)
+  if (payload.is_free && payload.target_url) {
+    const ytId = extractYoutubeId(payload.target_url)
+    if (ytId) payload.target_url = `https://youtu.be/${ytId}`
+  }
+
   for (const key of VALID_SONG_COLUMNS) {
     if (payload[key] !== undefined) {
       clean[key] = payload[key]
