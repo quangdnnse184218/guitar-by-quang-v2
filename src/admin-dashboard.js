@@ -302,36 +302,39 @@ function renderSongsTable() {
     const isLast = idx === filtered.length - 1
 
     return `
-      <tr class="hover:bg-black/5 dark:hover:bg-white/5 transition-colors" data-id="${song.id}">
+      <tr class="hover:bg-black/5 dark:hover:bg-white/5 transition-colors admin-song-card-row" data-id="${song.id}">
         <!-- Vị Trí & Di Chuyển -->
-        <td data-label="Vị Trí & Thứ Tự" class="py-3 px-3 text-center">
-          <div class="inline-flex items-center gap-1.5 p-1 rounded-xl bg-black/5 dark:bg-white/5 border border-glass-border">
-            <input 
-              type="number" 
-              min="1" 
-              max="${songsList.length}" 
-              value="${currentOrder}" 
-              id="order-input-song-${song.id}" 
-              onkeydown="if(event.key==='Enter') window.handleSaveSongPosition('${song.id}')"
-              class="w-11 text-center py-1 bg-glass-bg border border-glass-border rounded-lg font-mono tabular-nums font-bold text-xs text-text-primary focus:border-accent-primary focus:outline-none shadow-xs" 
-              title="Nhập số thứ tự vị trí mong muốn rồi bấm Lưu hoặc nhấn Enter"
-            />
-            <button 
-              onclick="window.handleSaveSongPosition('${song.id}')" 
-              class="px-2.5 py-1 rounded-lg bg-warm-gradient hover:brightness-105 text-white font-bold text-xs transition-all shadow-xs cursor-pointer active:scale-95"
-              title="Lưu vị trí mới: Bài này sẽ chèn vào vị trí trên, các bài khác tự động dời">
-              Lưu
-            </button>
-            <div class="flex flex-col gap-0.5">
+        <td data-label="Vị Trí & Thứ Tự" class="py-3 px-3 text-center song-col-order">
+          <div class="inline-flex items-center gap-1 sm:gap-1.5 p-1 rounded-xl bg-black/5 dark:bg-white/5 border border-glass-border w-full sm:w-auto justify-between sm:justify-center">
+            <div class="flex items-center gap-1">
+              <span class="text-[10px] font-mono font-extrabold text-accent-primary sm:hidden">#</span>
+              <input 
+                type="number" 
+                min="1" 
+                max="${songsList.length}" 
+                value="${currentOrder}" 
+                id="order-input-song-${song.id}" 
+                onkeydown="if(event.key==='Enter') window.handleSaveSongPosition('${song.id}')"
+                class="w-9 sm:w-11 text-center py-0.5 sm:py-1 bg-glass-bg border border-glass-border rounded-lg font-mono tabular-nums font-bold text-[11px] sm:text-xs text-text-primary focus:border-accent-primary focus:outline-none shadow-xs" 
+                title="Nhập số thứ tự vị trí mong muốn rồi bấm Lưu hoặc nhấn Enter"
+              />
+              <button 
+                onclick="window.handleSaveSongPosition('${song.id}')" 
+                class="px-2 sm:px-2.5 py-0.5 sm:py-1 rounded-lg bg-warm-gradient hover:brightness-105 text-white font-bold text-[11px] sm:text-xs transition-all shadow-xs cursor-pointer active:scale-95"
+                title="Lưu vị trí mới: Bài này sẽ chèn vào vị trí trên, các bài khác tự động dời">
+                Lưu
+              </button>
+            </div>
+            <div class="flex sm:flex-col gap-0.5">
               <button 
                 onclick="window.handleMoveSong('${song.id}', 'up')" 
-                ${isFirst ? 'disabled class="p-0.5 rounded text-text-muted/30 cursor-not-allowed"' : 'class="p-0.5 rounded hover:bg-glass-bg text-text-primary hover:text-accent-primary transition-colors cursor-pointer"'} 
+                ${isFirst ? 'disabled class="p-1 sm:p-0.5 rounded text-text-muted/30 cursor-not-allowed"' : 'class="p-1 sm:p-0.5 rounded hover:bg-glass-bg text-text-primary hover:text-accent-primary transition-colors cursor-pointer"'} 
                 title="Di chuyển lên 1 bậc">
                 <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 15l7-7 7 7"/></svg>
               </button>
               <button 
                 onclick="window.handleMoveSong('${song.id}', 'down')" 
-                ${isLast ? 'disabled class="p-0.5 rounded text-text-muted/30 cursor-not-allowed"' : 'class="p-0.5 rounded hover:bg-glass-bg text-text-primary hover:text-accent-primary transition-colors cursor-pointer"'} 
+                ${isLast ? 'disabled class="p-1 sm:p-0.5 rounded text-text-muted/30 cursor-not-allowed"' : 'class="p-1 sm:p-0.5 rounded hover:bg-glass-bg text-text-primary hover:text-accent-primary transition-colors cursor-pointer"'} 
                 title="Di chuyển xuống 1 bậc">
                 <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M19 9l-7 7-7-7"/></svg>
               </button>
@@ -339,29 +342,29 @@ function renderSongsTable() {
           </div>
         </td>
 
-        <td data-label="Bài Hát" class="py-3.5 px-4 font-bold text-text-primary">
-          <div class="flex flex-col text-right sm:text-left">
-            <span class="text-sm font-extrabold">${song.title}</span>
-            <span class="text-xs text-text-muted font-medium">${song.singer || 'Guitar By Quang'}</span>
+        <td data-label="Bài Hát" class="py-3.5 px-4 font-bold text-text-primary song-col-title">
+          <div class="flex flex-col text-left">
+            <span class="text-xs sm:text-sm font-extrabold line-clamp-2 leading-snug">${song.title}</span>
+            <span class="text-[10px] sm:text-xs text-text-muted font-medium mt-0.5">${song.singer || 'Guitar By Quang'}</span>
           </div>
         </td>
-        <td data-label="Thể Loại" class="py-3.5 px-3">
+        <td data-label="Thể Loại" class="py-3.5 px-3 song-col-category">
           <span class="px-2.5 py-1 rounded-lg bg-black/5 dark:bg-white/5 text-xs font-bold text-text-muted">${song.category || 'Fingerstyle'}</span>
         </td>
-        <td data-label="Độ Khó" class="py-3.5 px-3 font-mono tabular-nums font-bold text-accent-primary text-xs">${level}/10</td>
-        <td data-label="Tuning / Capo" class="py-3.5 px-3 text-text-muted text-xs font-medium">
+        <td data-label="Độ Khó" class="py-3.5 px-3 font-mono tabular-nums font-bold text-accent-primary text-xs song-col-level">${level}/10</td>
+        <td data-label="Tuning / Capo" class="py-3.5 px-3 text-text-muted text-xs font-medium song-col-tuning">
           ${song.tuning || 'Standard'} / C:${song.capo ?? 0}
         </td>
-        <td data-label="Loại / Giá" class="py-3.5 px-3">${priceText}</td>
-        <td data-label="Nổi Bật" class="py-3.5 px-3">
-          ${isFeatured ? '<span class="badge-semantic-warning px-2 py-0.5 rounded-full font-bold text-xs">★ Ghim</span>' : '<span class="text-text-muted/40 text-xs">—</span>'}
+        <td data-label="Loại / Giá" class="py-3.5 px-3 song-col-price">${priceText}</td>
+        <td data-label="Nổi Bật" class="py-3.5 px-3 song-col-featured">
+          ${isFeatured ? '<span class="badge-semantic-warning px-2 py-0.5 rounded-full font-bold text-xs">★ Ghim</span>' : '<span class="text-text-muted/40 text-xs hidden md:inline">—</span>'}
         </td>
-        <td data-label="Thao Tác" class="py-3.5 px-4 text-right">
-          <div class="flex items-center justify-end gap-2">
-            <button onclick="window.editSong('${song.id}')" class="px-3 py-1.5 rounded-lg bg-glass-bg hover:bg-glass-bg-hover text-accent-primary font-bold text-xs border border-glass-border transition-colors cursor-pointer">
+        <td data-label="Thao Tác" class="py-3.5 px-4 text-right song-col-actions">
+          <div class="flex items-center justify-end gap-1.5 sm:gap-2 w-full">
+            <button onclick="window.editSong('${song.id}')" class="flex-1 sm:flex-initial py-1.5 px-3 rounded-lg sm:rounded-xl bg-warm-gradient hover:brightness-105 text-white font-bold text-xs transition-all shadow-xs text-center cursor-pointer active:scale-95">
               Sửa
             </button>
-            <button onclick="window.deleteSong('${song.id}', '${song.title.replace(/'/g, "\\'")}')" class="px-3 py-1.5 rounded-lg bg-rose-500/10 hover:bg-rose-500/20 text-rose-600 dark:text-rose-400 font-bold text-xs border border-rose-500/30 transition-colors cursor-pointer">
+            <button onclick="window.deleteSong('${song.id}', '${song.title.replace(/'/g, "\\'")}')" class="flex-1 sm:flex-initial py-1.5 px-2.5 rounded-lg sm:rounded-xl bg-rose-500/10 hover:bg-rose-500/20 text-rose-600 dark:text-rose-400 font-bold text-xs border border-rose-500/30 transition-colors text-center cursor-pointer active:scale-95">
               Xóa
             </button>
           </div>
