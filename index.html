@@ -330,30 +330,22 @@
               âm hằng ngày.</p>
           </div>
 
-          <!-- 2-col Grid on Mobile / Flex-Wrap Centered Grid on Desktop -->
+          <!-- 4-col Grid on Desktop / 2-col on Mobile -->
           <div id="gear-container"
-            class="grid grid-cols-2 sm:grid-cols-3 md:flex md:flex-wrap md:justify-center gap-3 sm:gap-4 md:gap-5 lg:gap-6 w-full">
+            class="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-4 gap-3.5 sm:gap-4 md:gap-5 lg:gap-6 w-full">
             <!-- Skeletons: Populated by JS -->
-            <div
-              class="w-full md:w-[230px] lg:w-[245px] xl:w-[235px] rounded-2xl sm:rounded-3xl bg-glass-bg animate-pulse aspect-square border border-glass-border">
-            </div>
-            <div
-              class="w-full md:w-[230px] lg:w-[245px] xl:w-[235px] rounded-2xl sm:rounded-3xl bg-glass-bg animate-pulse aspect-square border border-glass-border">
-            </div>
-            <div
-              class="w-full md:w-[230px] lg:w-[245px] xl:w-[235px] rounded-2xl sm:rounded-3xl bg-glass-bg animate-pulse aspect-square border border-glass-border">
-            </div>
-            <div
-              class="w-full md:w-[230px] lg:w-[245px] xl:w-[235px] rounded-2xl sm:rounded-3xl bg-glass-bg animate-pulse aspect-square border border-glass-border">
-            </div>
+            <div class="w-full rounded-2xl sm:rounded-3xl bg-glass-bg animate-pulse aspect-square border border-glass-border"></div>
+            <div class="w-full rounded-2xl sm:rounded-3xl bg-glass-bg animate-pulse aspect-square border border-glass-border"></div>
+            <div class="w-full rounded-2xl sm:rounded-3xl bg-glass-bg animate-pulse aspect-square border border-glass-border"></div>
+            <div class="w-full rounded-2xl sm:rounded-3xl bg-glass-bg animate-pulse aspect-square border border-glass-border"></div>
           </div>
 
-          <!-- Nút Xem thêm phụ kiện trên Mobile -->
-          <div id="gear-show-more-wrap" class="mt-6 text-center md:hidden hidden">
+          <!-- Nút Xem thêm phụ kiện -->
+          <div id="gear-show-more-wrap" class="mt-8 text-center hidden">
             <button id="gear-show-more-btn"
-              class="inline-flex items-center gap-2 px-6 py-2.5 rounded-full bg-glass-bg hover:bg-glass-bg-hover text-text-primary text-xs font-bold border border-glass-border shadow-sm active:scale-95 transition-all cursor-pointer">
+              class="inline-flex items-center gap-2 px-7 py-3 rounded-full bg-glass-bg hover:bg-glass-bg-hover text-text-primary text-xs sm:text-sm font-bold border border-glass-border shadow-md hover:border-accent-primary/50 active:scale-95 transition-all cursor-pointer">
               <span id="gear-show-more-text">Xem thêm phụ kiện</span>
-              <svg id="gear-show-more-icon" class="w-3.5 h-3.5 transition-transform duration-300" fill="none"
+              <svg id="gear-show-more-icon" class="w-4 h-4 text-accent-primary transition-transform duration-300" fill="none"
                 stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M19 9l-7 7-7-7"></path>
               </svg>

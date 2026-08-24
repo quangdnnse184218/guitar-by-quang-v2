@@ -210,8 +210,21 @@
             </p>
           </div>
 
-          <div id="gears-grid" class="flex flex-wrap justify-center gap-5 sm:gap-6">
+          <!-- 4-col Grid on Desktop / 2-col on Mobile -->
+          <div id="gears-grid" class="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-4 gap-3.5 sm:gap-4 md:gap-5 lg:gap-6 w-full">
             <!-- Populated dynamically via gears-service -->
+          </div>
+
+          <!-- Nút Xem thêm phụ kiện -->
+          <div id="gears-show-more-wrap" class="mt-8 text-center hidden">
+            <button id="gears-show-more-btn"
+              class="inline-flex items-center gap-2 px-7 py-3 rounded-full bg-glass-bg hover:bg-glass-bg-hover text-text-primary text-xs sm:text-sm font-bold border border-glass-border shadow-md hover:border-accent-primary/50 active:scale-95 transition-all cursor-pointer">
+              <span id="gears-show-more-text">Xem thêm phụ kiện</span>
+              <svg id="gears-show-more-icon" class="w-4 h-4 text-accent-primary transition-transform duration-300" fill="none"
+                stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M19 9l-7 7-7-7"></path>
+              </svg>
+            </button>
           </div>
         </div>
 
