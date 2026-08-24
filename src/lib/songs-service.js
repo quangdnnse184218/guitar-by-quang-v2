@@ -431,7 +431,7 @@ const VALID_SONG_COLUMNS = [
   'price', 'price_formatted', 'discount_note', 'tuning',
   'duration', 'description', 'has_demo', 'video_demo', 'demo_video_url',
   'youtube_id', 'tab_url', 'target_url', 'pdf_url', 'thumbnail_bg',
-  'button_type', 'button_text', 'capo', 'tempo', 'order', 'is_featured', 'created_at'
+  'button_type', 'button_text', 'capo', 'tempo', 'order', 'is_featured', 'is_audio_only', 'created_at'
 ]
 
 function sanitizeSongPayload(payload) {

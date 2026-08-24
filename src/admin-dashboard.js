@@ -484,6 +484,8 @@ window.openAddSongModal = function(type = 'free') {
     document.getElementById('song-thumbnail-bg').value = 'from-[#C1602F] to-[#6E3B1F]'
     if (songModalTitle) songModalTitle.textContent = '💎 Thêm Video Tab Có Phí Mới (Mua Tab)'
   }
+  const isAudioOnlyEl = document.getElementById('song-is-audio-only')
+  if (isAudioOnlyEl) isAudioOnlyEl.checked = false
   toggleModal(songModal, true)
 }
 
@@ -521,6 +523,8 @@ window.editSong = function(id) {
   document.getElementById('song-description').value = song.description || ''
   document.getElementById('song-thumbnail-bg').value = song.thumbnail_bg || song.thumbnailBg || (isSongFree ? 'from-[#D8C4AC] to-[#647A6C]' : 'from-[#C1602F] to-[#6E3B1F]')
   document.getElementById('song-is-featured').checked = Boolean(song.is_featured ?? song.isFeatured)
+  const isAudioOnlyEl = document.getElementById('song-is-audio-only')
+  if (isAudioOnlyEl) isAudioOnlyEl.checked = Boolean(song.is_audio_only ?? song.isAudioOnly)
 
   if (isSongFree) {
     const rawTarget = song.target_url || song.tab_url || (song.youtube_id?.length === 11 ? `https://youtu.be/${song.youtube_id}` : song.youtube_id) || song.video_demo || ''
@@ -579,6 +583,7 @@ if (songForm) {
     const thumbnailBgVal = document.getElementById('song-thumbnail-bg').value || (isFree ? 'from-[#D8C4AC] to-[#647A6C]' : 'from-[#C1602F] to-[#6E3B1F]')
     const descriptionVal = document.getElementById('song-description').value.trim()
     const isFeatured = document.getElementById('song-is-featured').checked
+    const isAudioOnly = Boolean(document.getElementById('song-is-audio-only')?.checked)
 
     let payload = {}
 
@@ -606,6 +611,7 @@ if (songForm) {
         priceFormatted: 'Miễn phí',
         discount_note: null,
         has_demo: hasDemo,
+        is_audio_only: isAudioOnly,
         video_demo: cleanTarget || null,
         demo_video_url: cleanTarget || null,
         youtube_id: ytId || null,
@@ -647,6 +653,7 @@ if (songForm) {
         priceFormatted: priceFormatted,
         discount_note: discountNoteVal,
         has_demo: hasDemo,
+        is_audio_only: isAudioOnly,
         video_demo: cleanDemo || null,
         demo_video_url: cleanDemo || null,
         youtube_id: ytId || null,

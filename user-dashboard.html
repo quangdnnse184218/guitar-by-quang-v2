@@ -1044,6 +1044,23 @@
           <h3 id="video-demo-title" class="text-xl sm:text-2xl font-extrabold text-text-primary">Tên bài hát</h3>
         </div>
         <div class="relative overflow-hidden rounded-2xl aspect-video bg-black/90 shadow-lg border border-glass-border">
+          <!-- Audio Only Masking Cover -->
+          <div id="demo-modal-audio-cover" class="absolute inset-0 z-20 flex flex-col items-center justify-center bg-gradient-to-br from-[#1c1815] via-[#111622] to-[#161c2e] p-6 text-center backdrop-blur-md hidden pointer-events-none">
+            <div class="relative mb-3 flex items-center justify-center">
+              <div class="w-16 h-16 sm:w-20 sm:h-20 rounded-full bg-gradient-to-tr from-amber-600 to-amber-400 p-1 shadow-2xl shadow-amber-500/30 animate-[spin_6s_linear_infinite]">
+                <div class="w-full h-full rounded-full bg-[#151A27] flex items-center justify-center border-2 border-white/20">
+                  <span class="text-2xl sm:text-3xl">🎸</span>
+                </div>
+              </div>
+              <div class="absolute -inset-2 rounded-full border border-amber-500/30 animate-ping opacity-30"></div>
+            </div>
+            <div class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-amber-500/15 border border-amber-500/30 text-amber-400 text-xs font-bold mb-2 shadow-xs">
+              <span>🎧</span>
+              <span>Chế Độ Chỉ Nghe Âm Thanh (Audio Demo)</span>
+            </div>
+            <p class="text-[11px] sm:text-xs text-text-muted max-w-sm">Hình ảnh video được che để bảo mật thế tay bấm đàn. Âm thanh demo vẫn phát trọn vẹn chất lượng cao.</p>
+          </div>
+
           <iframe id="demo-modal-iframe" class="w-full h-full aspect-video rounded-2xl hidden" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
           <video id="demo-modal-video" controls playsinline class="w-full h-full aspect-video rounded-2xl object-cover hidden">
             <source src="" type="video/mp4">

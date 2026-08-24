@@ -524,11 +524,18 @@
             <textarea id="song-description" rows="2" placeholder="Ghi chú kỹ thuật nổi bật (slap, hammer-on, thế tay, nhịp bass...)" class="w-full px-3.5 py-2.5 rounded-xl bg-white dark:bg-white/5 border border-neutral-300 dark:border-glass-border text-xs text-text-primary focus:outline-none focus:border-accent-primary resize-none"></textarea>
           </div>
 
-          <div class="flex items-center gap-6 pt-2">
-            <label class="flex items-center gap-2 cursor-pointer text-xs font-bold text-text-primary">
-              <input type="checkbox" id="song-is-featured" class="w-4 h-4 rounded text-amber-500 accent-amber-500" />
-              <span>Ghim nổi bật Trang Chủ (Featured Top 4)</span>
-            </label>
+          <div class="space-y-2 pt-2">
+            <div class="flex flex-col sm:flex-row items-start sm:items-center gap-4">
+              <label class="flex items-center gap-2 cursor-pointer text-xs font-bold text-text-primary select-none">
+                <input type="checkbox" id="song-is-featured" class="w-4 h-4 rounded text-amber-500 accent-amber-500" />
+                <span>Ghim nổi bật Trang Chủ (Featured Top 4)</span>
+              </label>
+              <label class="flex items-center gap-2 cursor-pointer text-xs font-bold text-amber-700 dark:text-amber-400 select-none">
+                <input type="checkbox" id="song-is-audio-only" class="w-4 h-4 rounded text-amber-500 accent-amber-500" />
+                <span>🎧 Che video chỉ nghe âm thanh (Chế độ Audio Demo)</span>
+              </label>
+            </div>
+            <p class="text-[11px] text-text-muted">Khi bật tính năng này: Khách vẫn nghe được âm thanh demo nhưng video hình ảnh sẽ được che lại để bảo mật thế tay đàn.</p>
           </div>
 
           <div class="pt-4 border-t border-glass-border flex justify-end gap-3">

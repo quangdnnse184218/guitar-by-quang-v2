@@ -161,17 +161,17 @@ function renderSongCard(tab, index, extraClass = '') {
     </div>
   `
 
+  const isAudioOnly = Boolean(tab.is_audio_only ?? tab.isAudioOnly)
   let artworkCenterHtml = ''
   const demoUrl = videoDemo || tab.demo_video_url || tab.youtube_id || ''
   if (hasDemo && demoUrl) {
+    const playText = isAudioOnly ? 'Nghe Audio Demo' : 'Xem Video Demo'
     artworkCenterHtml = `
-      <div class="my-auto text-center flex flex-col items-center justify-center py-0.5" onclick="event.stopPropagation(); window.openVideoDemoModal('${tab.title.replace(/'/g, "\\'")}', '${demoUrl.replace(/\\/g, '/').replace(/'/g, "\\'")}')">
-        <button class="w-7 h-7 sm:w-10 sm:h-10 rounded-full bg-white text-[#0B0E1A] flex items-center justify-center shadow-lg transform group-hover:scale-110 transition-transform cursor-pointer" aria-label="Xem video demo bài hát">
-          <svg class="w-3.5 h-3.5 sm:w-4.5 sm:h-4.5 fill-current ml-0.5 text-accent-primary" viewBox="0 0 24 24">
-            <path d="M8 5v14l11-7z"/>
-          </svg>
+      <div class="my-auto text-center flex flex-col items-center justify-center py-0.5" onclick="event.stopPropagation(); window.openVideoDemoModal('${tab.title.replace(/'/g, "\\'")}', '${demoUrl.replace(/\\/g, '/').replace(/'/g, "\\'")}', ${isAudioOnly})">
+        <button class="w-7 h-7 sm:w-10 sm:h-10 rounded-full bg-white text-[#0B0E1A] flex items-center justify-center shadow-lg transform group-hover:scale-110 transition-transform cursor-pointer" aria-label="${playText}">
+          ${isAudioOnly ? '<span class="text-sm sm:text-base">🎧</span>' : '<svg class="w-3.5 h-3.5 sm:w-4.5 sm:h-4.5 fill-current ml-0.5 text-accent-primary" viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>'}
         </button>
-        <span class="text-[8px] sm:text-[10px] font-bold mt-1 text-white/95 tracking-wide bg-black/60 px-2 py-0.5 rounded-full backdrop-blur-xs leading-none whitespace-nowrap">Xem Video Demo</span>
+        <span class="text-[8px] sm:text-[10px] font-bold mt-1 text-white/95 tracking-wide bg-black/60 px-2 py-0.5 rounded-full backdrop-blur-xs leading-none whitespace-nowrap">${playText}</span>
       </div>
     `
   } else {
@@ -408,13 +408,22 @@ export function toggleModal(modalId, show) {
 
 window.toggleModal = toggleModal
 
-window.openVideoDemoModal = function openVideoDemoModal(title, videoSrc) {
+window.openVideoDemoModal = function openVideoDemoModal(title, videoSrc, isAudioOnly = false) {
   if (!title || !videoSrc) return
   const titleEl = document.getElementById('video-demo-title')
   const videoEl = document.getElementById('demo-modal-video')
   const iframeEl = document.getElementById('demo-modal-iframe')
+  const audioCoverEl = document.getElementById('demo-modal-audio-cover')
 
   if (titleEl) titleEl.textContent = title
+
+  if (audioCoverEl) {
+    if (isAudioOnly) {
+      audioCoverEl.classList.remove('hidden')
+    } else {
+      audioCoverEl.classList.add('hidden')
+    }
+  }
 
   const ytId = extractYoutubeId(videoSrc)
 

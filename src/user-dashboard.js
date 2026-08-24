@@ -519,13 +519,11 @@ function renderOverviewFeatured() {
             </div>
 
             <!-- Center Play Demo Button -->
-            <div class="my-auto text-center flex flex-col items-center justify-center py-0.5" onclick="event.stopPropagation(); window.openVideoDemoModal('${escapeHtml(song.title)}', '${videoDemoUrl}')">
+            <div class="my-auto text-center flex flex-col items-center justify-center py-0.5" onclick="event.stopPropagation(); window.openVideoDemoModal('${escapeHtml(song.title)}', '${videoDemoUrl}', ${Boolean(song.is_audio_only ?? song.isAudioOnly)})">
               <div class="w-7 h-7 sm:w-10 sm:h-10 rounded-full bg-white text-[#9a4b24] flex items-center justify-center shadow-lg transform group-hover:scale-110 transition-transform">
-                <svg class="w-3.5 h-3.5 sm:w-4.5 sm:h-4.5 fill-current ml-0.5 text-accent-primary" viewBox="0 0 24 24">
-                  <path d="M8 5v14l11-7z"/>
-                </svg>
+                ${(song.is_audio_only ?? song.isAudioOnly) ? '<span class="text-sm sm:text-base">🎧</span>' : '<svg class="w-3.5 h-3.5 sm:w-4.5 sm:h-4.5 fill-current ml-0.5 text-accent-primary" viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>'}
               </div>
-              <span class="text-[8px] sm:text-[10px] font-bold mt-1 text-white/95 tracking-wide bg-black/60 px-2 py-0.5 rounded-full backdrop-blur-xs leading-none whitespace-nowrap">Xem Video Demo</span>
+              <span class="text-[8px] sm:text-[10px] font-bold mt-1 text-white/95 tracking-wide bg-black/60 px-2 py-0.5 rounded-full backdrop-blur-xs leading-none whitespace-nowrap">${(song.is_audio_only ?? song.isAudioOnly) ? 'Nghe Audio Demo' : 'Xem Video Demo'}</span>
             </div>
 
             <div class="flex justify-between items-end text-xs text-white/95 font-semibold">
@@ -980,13 +978,22 @@ window.openFreeTabModal = function openFreeTabModal(tabId) {
   toggleModal('free-tab-modal', true)
 }
 
-window.openVideoDemoModal = function openVideoDemoModal(title, videoSrc) {
+window.openVideoDemoModal = function openVideoDemoModal(title, videoSrc, isAudioOnly = false) {
   if (!title || !videoSrc) return
   const titleEl = document.getElementById('video-demo-title')
   const videoEl = document.getElementById('demo-modal-video')
   const iframeEl = document.getElementById('demo-modal-iframe')
+  const audioCoverEl = document.getElementById('demo-modal-audio-cover')
 
   if (titleEl) titleEl.textContent = title
+
+  if (audioCoverEl) {
+    if (isAudioOnly) {
+      audioCoverEl.classList.remove('hidden')
+    } else {
+      audioCoverEl.classList.add('hidden')
+    }
+  }
 
   const ytId = extractYoutubeId(videoSrc)
 
