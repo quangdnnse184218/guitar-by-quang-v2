@@ -293,10 +293,13 @@ function enrichSongsWithOverrides(songs) {
   const overrides = getSongOverrides()
   return songs.map(s => {
     const ov = overrides[s.id] || {}
+    const audioDemo = ov.audio_demo || ov.demo_audio_url || ov.audio_url || s.audio_demo || s.demo_audio_url || s.audio_url || null
     return {
       ...s,
       ...ov,
-      is_audio_only: (ov.is_audio_only !== undefined) ? ov.is_audio_only : Boolean(s.is_audio_only ?? s.isAudioOnly)
+      audio_demo: audioDemo,
+      demo_audio_url: audioDemo,
+      audio_url: audioDemo
     }
   })
 }
@@ -464,12 +467,51 @@ export function normalizeVideoPath(urlOrPath) {
   return clean
 }
 
+export function normalizeAudioPath(urlOrPath) {
+  if (!urlOrPath || typeof urlOrPath !== 'string') return ''
+  const trimmed = urlOrPath.trim().replace(/^["']+|["']+$/g, '').trim()
+  if (!trimmed) return ''
+
+  if (trimmed.startsWith('http://') || trimmed.startsWith('https://') || trimmed.startsWith('data:') || trimmed.startsWith('blob:')) {
+    return trimmed
+  }
+
+  let clean = trimmed.replace(/\\/g, '/')
+
+  const publicIdx = clean.toLowerCase().indexOf('/public/')
+  if (publicIdx !== -1) {
+    clean = clean.substring(publicIdx + '/public'.length)
+  } else {
+    const pubIdx2 = clean.toLowerCase().indexOf('public/')
+    if (pubIdx2 !== -1) {
+      clean = clean.substring(pubIdx2 + 'public'.length)
+    }
+  }
+
+  if (/^[a-zA-Z]:\//.test(clean)) {
+    const assetsIdx = clean.toLowerCase().indexOf('/assets/')
+    if (assetsIdx !== -1) {
+      clean = clean.substring(assetsIdx)
+    } else {
+      const parts = clean.split('/')
+      clean = '/assets/' + parts[parts.length - 1]
+    }
+  }
+
+  if (!clean.startsWith('/')) {
+    clean = '/' + clean
+  }
+
+  return clean
+}
+
 const VALID_SONG_COLUMNS = [
   'id', 'title', 'singer', 'category', 'level', 'level_num', 'is_free',
   'price', 'price_formatted', 'discount_note', 'tuning',
   'duration', 'description', 'has_demo', 'video_demo', 'demo_video_url',
+  'audio_demo', 'demo_audio_url', 'audio_url',
   'youtube_id', 'tab_url', 'target_url', 'pdf_url', 'thumbnail_bg',
-  'button_type', 'button_text', 'capo', 'tempo', 'order', 'is_featured', 'is_audio_only', 'created_at'
+  'button_type', 'button_text', 'capo', 'tempo', 'order', 'is_featured', 'created_at'
 ]
 
 function sanitizeSongPayload(payload) {
@@ -477,6 +519,10 @@ function sanitizeSongPayload(payload) {
 
   if (payload.video_demo) payload.video_demo = normalizeVideoPath(payload.video_demo)
   if (payload.demo_video_url) payload.demo_video_url = normalizeVideoPath(payload.demo_video_url)
+  if (payload.audio_demo) payload.audio_demo = normalizeAudioPath(payload.audio_demo)
+  if (payload.demo_audio_url) payload.demo_audio_url = normalizeAudioPath(payload.demo_audio_url)
+  if (payload.audio_url) payload.audio_url = normalizeAudioPath(payload.audio_url)
+
   if (payload.is_free && payload.target_url) {
     const ytId = extractYoutubeId(payload.target_url)
     if (ytId) payload.target_url = `https://youtu.be/${ytId}`
@@ -490,13 +536,32 @@ function sanitizeSongPayload(payload) {
   return clean
 }
 
+function extractMissingColumn(errMsg) {
+  if (!errMsg || typeof errMsg !== 'string') return null
+  const m1 = errMsg.match(/column "([^"]+)" of relation "songs" does not exist/i)
+  if (m1) return m1[1]
+  const m2 = errMsg.match(/Could not find the '([^']+)' column/i)
+  if (m2) return m2[1]
+  const m3 = errMsg.match(/column "([^"]+)" does not exist/i)
+  if (m3) return m3[1]
+  const m4 = errMsg.match(/column [a-zA-Z0-9_]+\.([a-zA-Z0-9_]+) does not exist/i)
+  if (m4) return m4[1]
+  const m5 = errMsg.match(/'([^']+)' column of 'songs'/i)
+  if (m5) return m5[1]
+  const m6 = errMsg.match(/Could not find the column '([^']+)'/i)
+  if (m6) return m6[1]
+  const m7 = errMsg.match(/"([^"]+)" column of "songs"/i)
+  if (m7) return m7[1]
+  return null
+}
+
 /**
  * Helper to write to Supabase with automatic retry when non-existent columns are encountered
  */
 async function writeSongToSupabase(payload, isEdit, songId) {
   let attemptPayload = { ...payload }
 
-  for (let attempt = 0; attempt < 8; attempt++) {
+  for (let attempt = 0; attempt < 35; attempt++) {
     try {
       if (isEdit && songId) {
         const { data, error } = await supabase
@@ -506,16 +571,24 @@ async function writeSongToSupabase(payload, isEdit, songId) {
           .select()
 
         if (!error) {
+          // If update succeeded but matched 0 rows, try inserting instead
+          if (Array.isArray(data) && data.length === 0) {
+            const { data: insData, error: insError } = await supabase
+              .from('songs')
+              .insert([attemptPayload])
+              .select()
+            if (!insError) {
+              return { data: (insData && insData[0]) || attemptPayload, error: null }
+            }
+          }
           return { data: (data && data[0]) || attemptPayload, error: null }
         }
 
         console.warn(`[songs-service] Update attempt ${attempt + 1} warning:`, error.message)
 
-        // Check if error is due to an unknown column
-        const colMatch = error.message?.match(/column "([^"]+)" of relation "songs" does not exist/i) ||
-                         error.message?.match(/Could not find the '([^']+)' column/i)
-        if (colMatch && colMatch[1] && attemptPayload[colMatch[1]] !== undefined) {
-          delete attemptPayload[colMatch[1]]
+        const missingCol = extractMissingColumn(error.message)
+        if (missingCol && attemptPayload[missingCol] !== undefined) {
+          delete attemptPayload[missingCol]
           continue
         }
         return { data: null, error }
@@ -531,10 +604,9 @@ async function writeSongToSupabase(payload, isEdit, songId) {
 
         console.warn(`[songs-service] Insert attempt ${attempt + 1} warning:`, error.message)
 
-        const colMatch = error.message?.match(/column "([^"]+)" of relation "songs" does not exist/i) ||
-                         error.message?.match(/Could not find the '([^']+)' column/i)
-        if (colMatch && colMatch[1] && attemptPayload[colMatch[1]] !== undefined) {
-          delete attemptPayload[colMatch[1]]
+        const missingCol = extractMissingColumn(error.message)
+        if (missingCol && attemptPayload[missingCol] !== undefined) {
+          delete attemptPayload[missingCol]
           continue
         }
         return { data: null, error }
@@ -545,7 +617,7 @@ async function writeSongToSupabase(payload, isEdit, songId) {
     }
   }
 
-  return { data: null, error: new Error('Đã thử nhiều lần nhưng không thể ghi vào bảng songs.') }
+  return { data: null, error: new Error('Không thể tự động điều chỉnh các cột với Supabase sau 35 lần thử.') }
 }
 
 /**
@@ -564,23 +636,39 @@ export async function saveSong(payload, isEdit = false, songId = null) {
   }
   cleanPayload.created_at = cleanPayload.created_at || new Date().toISOString()
 
-  // 1. Write to Supabase first
-  const { data: savedRecord, error: supabaseError } = await writeSongToSupabase(cleanPayload, isEdit, songId)
+  // 1. Write to Supabase
+  let supabaseSuccess = false
+  let supabaseWarning = null
+  let savedRecord = null
 
-  if (supabaseError) {
-    console.error('[songs-service] Không thể lưu vào Supabase:', supabaseError.message || supabaseError)
-    return {
-      success: false,
-      supabaseSaved: false,
-      error: supabaseError.message || 'Lỗi không xác định khi lưu vào Supabase. Vui lòng kiểm tra quyền (RLS) của bảng songs.'
+  try {
+    const res = await writeSongToSupabase(cleanPayload, isEdit, songId)
+    if (!res.error) {
+      supabaseSuccess = true
+      savedRecord = res.data
+    } else {
+      supabaseWarning = res.error?.message || 'Không thể đồng bộ trực tiếp lên Supabase'
+      console.warn('[songs-service] Cảnh báo lưu Supabase:', supabaseWarning)
     }
+  } catch (err) {
+    supabaseWarning = err?.message || 'Lỗi mạng khi gọi Supabase'
   }
 
-  // 2. Only sync to LocalStorage when Supabase write succeeds
-  if (payload.is_audio_only !== undefined) {
-    setSongOverride(targetId, { is_audio_only: Boolean(payload.is_audio_only) })
+  // 2. Luôn đồng bộ vào LocalStorage & Song Overrides để không bao giờ làm mất dữ liệu của admin
+  if (payload.audio_demo !== undefined || payload.demo_audio_url !== undefined || payload.audio_url !== undefined) {
+    const aUrl = payload.audio_demo || payload.demo_audio_url || payload.audio_url || null
+    setSongOverride(targetId, { audio_demo: aUrl, demo_audio_url: aUrl, audio_url: aUrl })
   }
-  const fullRecord = { ...payload, ...(savedRecord || {}), id: targetId, is_audio_only: Boolean(payload.is_audio_only ?? savedRecord?.is_audio_only) }
+  
+  if (payload.video_demo !== undefined || payload.demo_video_url !== undefined) {
+    const vUrl = payload.video_demo || payload.demo_video_url || null
+    setSongOverride(targetId, { video_demo: vUrl, demo_video_url: vUrl })
+  }
+
+  if (payload.capo !== undefined) setSongOverride(targetId, { capo: payload.capo })
+  if (payload.discount_note !== undefined) setSongOverride(targetId, { discount_note: payload.discount_note })
+
+  const fullRecord = { ...payload, ...(savedRecord || {}), id: targetId }
   if (isEdit && songId) {
     const idx = all.findIndex(s => String(s.id) === String(songId))
     if (idx !== -1) {
@@ -597,7 +685,8 @@ export async function saveSong(payload, isEdit = false, songId = null) {
   return {
     success: true,
     savedLocally: true,
-    supabaseSaved: true,
+    supabaseSaved: supabaseSuccess,
+    warning: supabaseWarning,
     record: fullRecord
   }
 }

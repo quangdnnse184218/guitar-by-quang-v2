@@ -6,7 +6,7 @@
 
 import { initNavbarShrink, initMobileMenu } from './common.js'
 import { initThemeToggle } from './theme-toggle.js'
-import { fetchAllSongs, extractYoutubeId, normalizeVideoPath } from './lib/songs-service.js'
+import { fetchAllSongs, extractYoutubeId, normalizeVideoPath, normalizeAudioPath } from './lib/songs-service.js'
 import {
   getFavoriteIds,
   getCompletedIds,
@@ -69,29 +69,26 @@ const toastNotification = document.getElementById('toast-notification')
 const toastMessage = document.getElementById('toast-message')
 let toastTimer = null
 
-export function showToast(msg, type = 'success') {
+function showToast(msg, type = 'success') {
   if (!toastNotification || !toastMessage) return
-  if (toastTimer) clearTimeout(toastTimer)
   
-  const toastIcon = document.getElementById('toast-icon')
+  toastMessage.textContent = msg
+  toastNotification.className = 'fixed top-6 right-6 z-[9999] max-w-md px-5 py-4 rounded-2xl shadow-[0_20px_50px_rgba(0,0,0,0.5)] flex items-center gap-3.5 transform transition-all duration-300 pointer-events-auto border-2'
   
-  // Clean message: strip leading checkmarks/crosses to avoid duplication
-  const cleanMsg = msg.replace(/^[✓✕❌⟳•\s]+/, '').trim()
-  toastMessage.textContent = cleanMsg || msg
+  if (type === 'success') {
+    toastNotification.classList.add('bg-[#151A27]/95', 'border-accent-primary/50', 'text-white', 'toast-visible')
+  } else {
+    toastNotification.classList.add('bg-[#151A27]/95', 'border-rose-500/50', 'text-white', 'toast-visible')
+  }
 
-  // Reset and apply dedicated toast class
-  toastNotification.className = `toast-${type} toast-visible`
-
-  if (toastIcon) {
-    if (type === 'error') {
-      toastIcon.textContent = '✕'
-      toastIcon.className = ''
-    } else if (type === 'info') {
-      toastIcon.textContent = '⟳'
-      toastIcon.className = 'animate-spin'
+  const iconEl = document.getElementById('toast-icon')
+  if (iconEl) {
+    if (type === 'success') {
+      iconEl.className = 'w-8 h-8 rounded-full flex items-center justify-center flex-shrink-0 text-sm font-extrabold shadow-md bg-accent-primary text-white'
+      iconEl.textContent = '✓'
     } else {
-      toastIcon.textContent = '✓'
-      toastIcon.className = ''
+      iconEl.className = 'w-8 h-8 rounded-full flex items-center justify-center flex-shrink-0 text-sm font-extrabold shadow-md bg-rose-500 text-white'
+      iconEl.textContent = '✕'
     }
   }
   
@@ -127,6 +124,11 @@ function toggleModal(modalId, show = true) {
     }
     const video = modal.querySelector('video')
     if (video) video.pause()
+    const audio = modal.querySelector('audio')
+    if (audio) {
+      audio.pause()
+      audio.currentTime = 0
+    }
   }
 }
 
@@ -158,41 +160,60 @@ window.openDemoModal = function(songId) {
   const videoSource = document.getElementById('demo-video-source')
   const videoPlayer = document.getElementById('demo-video-player')
   const iframeEl = document.getElementById('demo-modal-iframe')
-  const audioCoverEl = document.getElementById('demo-modal-audio-cover')
-
-  const isAudioOnly = Boolean(song.is_audio_only ?? song.isAudioOnly)
-  if (titleEl) titleEl.textContent = `${song.title || 'Demo'} — ${isAudioOnly ? 'Audio Fingerstyle' : 'Video Fingerstyle'}`
-
-  if (audioCoverEl) {
-    if (isAudioOnly) {
-      audioCoverEl.classList.remove('hidden')
-    } else {
-      audioCoverEl.classList.add('hidden')
-    }
-  }
+  const audioContainer = document.getElementById('demo-modal-audio-container')
+  const audioEl = document.getElementById('demo-modal-audio')
 
   const videoSrc = song.demo_video_url || song.video_demo || song.youtube_id || ''
-  const ytId = extractYoutubeId(videoSrc)
+  const audioSrc = song.audio_demo || song.demo_audio_url || song.audio_url || ''
 
-  if (ytId && iframeEl) {
-    iframeEl.src = `https://www.youtube.com/embed/${ytId}?autoplay=1`
-    iframeEl.classList.remove('hidden')
-    if (videoPlayer) {
-      videoPlayer.pause?.()
-      videoPlayer.classList.add('hidden')
-    }
-  } else if (videoPlayer && videoSource) {
+  if (titleEl) titleEl.textContent = song.title || 'Demo'
+
+  if (audioSrc && !videoSrc && audioEl && audioContainer) {
     if (iframeEl) {
       iframeEl.src = ''
       iframeEl.classList.add('hidden')
     }
-    const cleanSrc = normalizeVideoPath(videoSrc)
+    if (videoPlayer) {
+      videoPlayer.pause?.()
+      videoPlayer.classList.add('hidden')
+    }
+    const cleanSrc = normalizeAudioPath(audioSrc)
     const encodedSrc = cleanSrc.startsWith('http') ? cleanSrc : encodeURI(cleanSrc)
-    videoSource.src = encodedSrc || '/assets/demo.mp4'
-    videoPlayer.src = encodedSrc || '/assets/demo.mp4'
-    videoPlayer.classList.remove('hidden')
-    videoPlayer.load()
-    videoPlayer.play().catch(() => {})
+    audioEl.src = encodedSrc
+    audioContainer.classList.remove('hidden')
+    audioEl.currentTime = 0
+    audioEl.load()
+    audioEl.play().catch(() => {})
+  } else {
+    if (audioContainer && audioEl) {
+      audioEl.pause?.()
+      audioEl.src = ''
+      audioContainer.classList.add('hidden')
+    }
+
+    const ytId = extractYoutubeId(videoSrc)
+
+    if (ytId && iframeEl) {
+      iframeEl.src = `https://www.youtube.com/embed/${ytId}?autoplay=1`
+      iframeEl.classList.remove('hidden')
+      if (videoPlayer) {
+        videoPlayer.pause?.()
+        videoPlayer.classList.add('hidden')
+      }
+    } else if (videoPlayer && videoSource) {
+      if (iframeEl) {
+        iframeEl.src = ''
+        iframeEl.classList.add('hidden')
+      }
+      const cleanSrc = normalizeVideoPath(videoSrc)
+      const encodedSrc = cleanSrc.startsWith('http') ? cleanSrc : encodeURI(cleanSrc)
+      videoSource.src = encodedSrc || '/assets/demo.mp4'
+      videoPlayer.src = encodedSrc || '/assets/demo.mp4'
+      videoPlayer.classList.remove('hidden')
+      videoPlayer.currentTime = 0
+      videoPlayer.load()
+      videoPlayer.play().catch(() => {})
+    }
   }
 
   toggleModal('video-demo-modal', true)

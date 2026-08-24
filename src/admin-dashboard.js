@@ -7,7 +7,7 @@
 import { supabase } from './lib/supabase.js'
 import { initThemeToggle } from './theme-toggle.js'
 import { initPasswordToggles } from './common.js'
-import { fetchAllSongs, saveSong, removeSong, reorderAllSongs, extractYoutubeId, normalizeVideoPath } from './lib/songs-service.js'
+import { fetchAllSongs, saveSong, removeSong, reorderAllSongs, extractYoutubeId, normalizeVideoPath, normalizeAudioPath } from './lib/songs-service.js'
 import { fetchAllGears, DEFAULT_GEARS, saveGear, removeGear, reorderAllGears, normalizeImagePath } from './lib/gears-service.js'
 
 // If redirected here with a recovery token, immediately move to admin-reset-password.html
@@ -472,6 +472,7 @@ window.openAddSongModal = function(type = 'free') {
     document.getElementById('song-tuning').value = 'Standard'
     document.getElementById('song-capo').value = '0'
     document.getElementById('song-duration').value = '03:15'
+    document.getElementById('song-free-audio-url').value = ''
     document.getElementById('song-thumbnail-bg').value = 'from-[#D8C4AC] to-[#647A6C]'
     if (songModalTitle) songModalTitle.textContent = '🎁 Thêm Tab Miễn Phí Mới (Free Tab)'
   } else {
@@ -481,11 +482,10 @@ window.openAddSongModal = function(type = 'free') {
     document.getElementById('song-duration').value = '03:40'
     document.getElementById('song-paid-price').value = '239k'
     document.getElementById('song-paid-discount').value = 'HSSV: 179k'
+    document.getElementById('song-paid-audio-url').value = ''
     document.getElementById('song-thumbnail-bg').value = 'from-[#C1602F] to-[#6E3B1F]'
     if (songModalTitle) songModalTitle.textContent = '💎 Thêm Video Tab Có Phí Mới (Mua Tab)'
   }
-  const isAudioOnlyEl = document.getElementById('song-is-audio-only')
-  if (isAudioOnlyEl) isAudioOnlyEl.checked = false
   toggleModal(songModal, true)
 }
 
@@ -523,17 +523,19 @@ window.editSong = function(id) {
   document.getElementById('song-description').value = song.description || ''
   document.getElementById('song-thumbnail-bg').value = song.thumbnail_bg || song.thumbnailBg || (isSongFree ? 'from-[#D8C4AC] to-[#647A6C]' : 'from-[#C1602F] to-[#6E3B1F]')
   document.getElementById('song-is-featured').checked = Boolean(song.is_featured ?? song.isFeatured)
-  const isAudioOnlyEl = document.getElementById('song-is-audio-only')
-  if (isAudioOnlyEl) isAudioOnlyEl.checked = Boolean(song.is_audio_only ?? song.isAudioOnly)
+
+  const audioDemoVal = song.audio_demo || song.demo_audio_url || song.audio_url || ''
 
   if (isSongFree) {
     const rawTarget = song.target_url || song.tab_url || (song.youtube_id?.length === 11 ? `https://youtu.be/${song.youtube_id}` : song.youtube_id) || song.video_demo || ''
     document.getElementById('song-free-target-url').value = rawTarget
+    document.getElementById('song-free-audio-url').value = audioDemoVal
     document.getElementById('song-free-pdf-url').value = song.pdf_url || song.pdfUrl || ''
   } else {
     document.getElementById('song-paid-price').value = song.price_formatted || song.priceFormatted || (song.price ? formatCompactPrice(song.price) : '239k')
     document.getElementById('song-paid-discount').value = song.discount_note || song.discountNote || 'HSSV: 179k'
     document.getElementById('song-paid-demo-url').value = song.demo_video_url || song.video_demo || song.videoDemo || (song.youtube_id?.length === 11 ? `https://youtu.be/${song.youtube_id}` : song.youtube_id) || ''
+    document.getElementById('song-paid-audio-url').value = audioDemoVal
     document.getElementById('song-paid-drive-url').value = song.tab_url || song.target_url || song.targetUrl || song.tabUrl || ''
   }
 
@@ -559,6 +561,7 @@ window.deleteSong = async function(id, title) {
   }
 }
 
+// Handler Submit Song Modal Form
 if (songForm) {
   songForm.addEventListener('submit', async (e) => {
     e.preventDefault()
@@ -570,7 +573,8 @@ if (songForm) {
 
     const titleVal = document.getElementById('song-title').value.trim()
     if (!titleVal) {
-      showToast('❌ Vui lòng nhập Tên Bài Hát!', 'error')
+      showToast('⚠️ Vui lòng nhập Tên Bài Hát!', 'warning')
+      document.getElementById('song-title').focus()
       return
     }
 
@@ -583,17 +587,18 @@ if (songForm) {
     const thumbnailBgVal = document.getElementById('song-thumbnail-bg').value || (isFree ? 'from-[#D8C4AC] to-[#647A6C]' : 'from-[#C1602F] to-[#6E3B1F]')
     const descriptionVal = document.getElementById('song-description').value.trim()
     const isFeatured = document.getElementById('song-is-featured').checked
-    const isAudioOnly = Boolean(document.getElementById('song-is-audio-only')?.checked)
 
     let payload = {}
 
     if (isFree) {
       const freeTargetUrl = document.getElementById('song-free-target-url').value.trim()
+      const freeAudioUrl = document.getElementById('song-free-audio-url').value.trim()
       const freePdfUrl = document.getElementById('song-free-pdf-url').value.trim()
 
       const ytId = freeTargetUrl ? extractYoutubeId(freeTargetUrl) : null
       const cleanTarget = freeTargetUrl ? normalizeVideoPath(freeTargetUrl) : ''
-      const hasDemo = Boolean(ytId || (cleanTarget && cleanTarget.toLowerCase().includes('.mp4')))
+      const cleanAudio = freeAudioUrl ? normalizeAudioPath(freeAudioUrl) : ''
+      const hasDemo = Boolean(ytId || (cleanTarget && cleanTarget.toLowerCase().includes('.mp4')) || cleanAudio)
 
       payload = {
         title: titleVal,
@@ -604,16 +609,18 @@ if (songForm) {
         tuning: tuningVal,
         capo: capoVal,
         duration: durationVal,
-        description: descriptionVal || (singerVal ? `Ca sĩ / Tác giả: ${singerVal}. Bản tab miễn phí kèm video hướng dẫn từ Guitar By Quang.` : 'Bản tab guitar fingerstyle miễn phí kèm video hướng dẫn.'),
+        description: descriptionVal || (singerVal ? `Ca sĩ / Tác giả: ${singerVal}. Bản tab miễn phí kèm video/audio hướng dẫn từ Guitar By Quang.` : 'Bản tab guitar fingerstyle miễn phí kèm hướng dẫn.'),
         is_free: true,
         price: 0,
         price_formatted: 'Miễn phí',
         priceFormatted: 'Miễn phí',
         discount_note: null,
         has_demo: hasDemo,
-        is_audio_only: isAudioOnly,
         video_demo: cleanTarget || null,
         demo_video_url: cleanTarget || null,
+        audio_demo: cleanAudio || null,
+        demo_audio_url: cleanAudio || null,
+        audio_url: cleanAudio || null,
         youtube_id: ytId || null,
         target_url: cleanTarget || '',
         tab_url: cleanTarget || '',
@@ -630,12 +637,14 @@ if (songForm) {
       const priceVal = numericPrice < 1000 && numericPrice > 0 ? numericPrice * 1000 : numericPrice
       const discountNoteVal = document.getElementById('song-paid-discount').value.trim() || 'HSSV: 179k'
       const demoUrlVal = document.getElementById('song-paid-demo-url').value.trim()
+      const paidAudioUrl = document.getElementById('song-paid-audio-url').value.trim()
       const driveUrlVal = document.getElementById('song-paid-drive-url').value.trim()
 
       const ytId = demoUrlVal ? extractYoutubeId(demoUrlVal) : null
       const cleanDemo = demoUrlVal ? normalizeVideoPath(demoUrlVal) : ''
+      const cleanAudio = paidAudioUrl ? normalizeAudioPath(paidAudioUrl) : ''
       const cleanDrive = driveUrlVal ? driveUrlVal.trim() : ''
-      const hasDemo = Boolean(ytId || (cleanDemo && (cleanDemo.toLowerCase().includes('.mp4') || cleanDemo.startsWith('http') || cleanDemo.startsWith('/'))))
+      const hasDemo = Boolean(ytId || (cleanDemo && (cleanDemo.toLowerCase().includes('.mp4') || cleanDemo.startsWith('http') || cleanDemo.startsWith('/'))) || cleanAudio)
 
       payload = {
         title: titleVal,
@@ -653,9 +662,11 @@ if (songForm) {
         priceFormatted: priceFormatted,
         discount_note: discountNoteVal,
         has_demo: hasDemo,
-        is_audio_only: isAudioOnly,
         video_demo: cleanDemo || null,
         demo_video_url: cleanDemo || null,
+        audio_demo: cleanAudio || null,
+        demo_audio_url: cleanAudio || null,
+        audio_url: cleanAudio || null,
         youtube_id: ytId || null,
         target_url: cleanDrive || '',
         tab_url: cleanDrive || '',
