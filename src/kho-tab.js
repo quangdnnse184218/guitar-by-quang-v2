@@ -1,6 +1,6 @@
 import { renderAmbientBlobs, renderMusicNotes, initNavbarShrink, initMobileMenu } from './common.js'
 import { initThemeToggle } from './theme-toggle.js'
-import { fetchAllSongs, extractYoutubeId, normalizeVideoPath } from './lib/songs-service.js'
+import { fetchAllSongs, extractYoutubeId, normalizeVideoPath, normalizeAudioPath } from './lib/songs-service.js'
 import { applyScrollReveal } from './animations/scroll-reveal.js'
 import { isFavorite, isCompleted, toggleFavorite, toggleCompleted } from './lib/local-storage-service.js'
 import { supabase } from './lib/supabase.js'
@@ -147,11 +147,23 @@ function renderSongCard(tab, index, extraClass = '') {
   }
 
   // 2. PAID CARD
-  const rawPrice = tab.price_formatted || tab.priceFormatted || tab.price || '239k'
-  const priceFormatted = formatCompactPrice(rawPrice)
-  const discountNote = formatCompactDiscount(tab.discount_note || tab.discountNote)
-  const hasDemo = tab.has_demo ?? tab.hasDemo ?? false
-  const videoDemo = tab.video_demo || tab.videoDemo || ''
+  const favActive = isFavorite(tab.id)
+  const compActive = isCompleted(tab.id)
+
+  const priceFormatted = tab.price_formatted || tab.priceFormatted || '239k'
+  const discountNote = tab.discount_note || tab.discountNote || ''
+  const cardTypeClass = isFree ? 'card-free' : 'card-paid'
+  const tuning = tab.tuning || 'Standard'
+  const duration = tab.duration || '03:40'
+  const capoText = (tab.capo !== undefined && tab.capo !== null && tab.capo !== '' && tab.capo !== 0 && tab.capo !== '0') ? `Capo ${tab.capo}` : 'Không kẹp'
+  
+  const videoDemo = tab.demo_video_url || tab.video_demo || tab.videoDemo || tab.youtube_id || ''
+  const audioDemo = tab.audio_demo || tab.demo_audio_url || tab.audio_url || ''
+  
+  const normalizedVideo = videoDemo ? normalizeVideoPath(videoDemo) : ''
+  const normalizedAudio = audioDemo ? normalizeAudioPath(audioDemo) : ''
+  
+  const hasDemo = Boolean(normalizedVideo || normalizedAudio)
   const thumbnailBg = tab.thumbnail_bg || tab.thumbnailBg || 'from-[#C1602F] to-[#6E3B1F]'
 
   const badgeHtml = `
@@ -161,17 +173,23 @@ function renderSongCard(tab, index, extraClass = '') {
     </div>
   `
 
-  const isAudioOnly = Boolean(tab.is_audio_only ?? tab.isAudioOnly)
   let artworkCenterHtml = ''
-  const demoUrl = videoDemo || tab.demo_video_url || tab.youtube_id || ''
-  if (hasDemo && demoUrl) {
-    const playText = isAudioOnly ? 'Nghe Audio Demo' : 'Xem Video Demo'
+  if (normalizedVideo) {
     artworkCenterHtml = `
-      <div class="my-auto text-center flex flex-col items-center justify-center py-0.5" onclick="event.stopPropagation(); window.openVideoDemoModal('${tab.title.replace(/'/g, "\\'")}', '${demoUrl.replace(/\\/g, '/').replace(/'/g, "\\'")}', ${isAudioOnly})">
-        <button class="w-7 h-7 sm:w-10 sm:h-10 rounded-full bg-white text-[#0B0E1A] flex items-center justify-center shadow-lg transform group-hover:scale-110 transition-transform cursor-pointer" aria-label="${playText}">
-          ${isAudioOnly ? '<span class="text-sm sm:text-base">🎧</span>' : '<svg class="w-3.5 h-3.5 sm:w-4.5 sm:h-4.5 fill-current ml-0.5 text-accent-primary" viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>'}
+      <div class="my-auto text-center flex flex-col items-center justify-center py-0.5" onclick="event.stopPropagation(); window.openVideoDemoModal('${tab.title.replace(/'/g, "\\'")}', '${normalizedVideo.replace(/'/g, "\\'")}', false)">
+        <button class="w-7 h-7 sm:w-10 sm:h-10 rounded-full bg-white text-[#0B0E1A] flex items-center justify-center shadow-lg transform group-hover:scale-110 transition-transform cursor-pointer" aria-label="Xem Video Demo">
+          <svg class="w-3.5 h-3.5 sm:w-4.5 sm:h-4.5 fill-current ml-0.5 text-accent-primary" viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
         </button>
-        <span class="text-[8px] sm:text-[10px] font-bold mt-1 text-white/95 tracking-wide bg-black/60 px-2 py-0.5 rounded-full backdrop-blur-xs leading-none whitespace-nowrap">${playText}</span>
+        <span class="text-[8px] sm:text-[10px] font-bold mt-1 text-white/95 tracking-wide bg-black/60 px-2 py-0.5 rounded-full backdrop-blur-xs leading-none whitespace-nowrap">Xem Video Demo</span>
+      </div>
+    `
+  } else if (normalizedAudio) {
+    artworkCenterHtml = `
+      <div class="my-auto text-center flex flex-col items-center justify-center py-0.5" onclick="event.stopPropagation(); window.openVideoDemoModal('${tab.title.replace(/'/g, "\\'")}', '${normalizedAudio.replace(/'/g, "\\'")}', true)">
+        <button class="w-7 h-7 sm:w-10 sm:h-10 rounded-full bg-white text-[#0B0E1A] flex items-center justify-center shadow-lg transform group-hover:scale-110 transition-transform cursor-pointer" aria-label="Nghe Audio Demo">
+          <span class="text-sm sm:text-base">🎧</span>
+        </button>
+        <span class="text-[8px] sm:text-[10px] font-bold mt-1 text-white/95 tracking-wide bg-black/60 px-2 py-0.5 rounded-full backdrop-blur-xs leading-none whitespace-nowrap">Nghe Audio Demo</span>
       </div>
     `
   } else {
@@ -186,7 +204,7 @@ function renderSongCard(tab, index, extraClass = '') {
   }
 
   return `
-    <div onclick="window.openCheckoutModal('${tab.id}')" class="song-card glass-card card-interactive p-2.5 sm:p-4 rounded-2xl sm:rounded-3xl border border-glass-border flex flex-col justify-between space-y-2.5 sm:space-y-3.5 group cursor-pointer ${extraClass}" data-id="${tab.id}">
+    <div onclick="window.openCheckoutModal('${tab.id}')" class="song-card glass-card card-interactive p-2.5 sm:p-4 rounded-2xl sm:rounded-3xl border border-glass-border flex flex-col justify-between space-y-2.5 sm:space-y-3.5 group cursor-pointer ${cardTypeClass} ${extraClass}" data-id="${tab.id}">
       <div class="space-y-2 sm:space-y-3">
         <div class="relative overflow-hidden rounded-xl sm:rounded-2xl aspect-[4/3] sm:aspect-[16/10] bg-gradient-to-br ${thumbnailBg} p-2 sm:p-3.5 flex flex-col justify-between text-white shadow-inner group-hover:scale-[1.02] transition-transform duration-500 ease-out">
           <div class="flex justify-between items-start text-xs uppercase font-bold tracking-wider">
@@ -390,6 +408,10 @@ export function toggleModal(modalId, show) {
     })
   } else {
     modal.querySelectorAll('video').forEach(v => v.pause())
+    modal.querySelectorAll('audio').forEach(a => {
+      a.pause()
+      a.currentTime = 0
+    })
     const iframe = modal.querySelector('iframe')
     if (iframe) iframe.src = ''
 
@@ -408,46 +430,67 @@ export function toggleModal(modalId, show) {
 
 window.toggleModal = toggleModal
 
-window.openVideoDemoModal = function openVideoDemoModal(title, videoSrc, isAudioOnly = false) {
-  if (!title || !videoSrc) return
+window.openVideoDemoModal = function openVideoDemoModal(title, mediaSrc, isAudio = false) {
+  if (!title || !mediaSrc) return
   const titleEl = document.getElementById('video-demo-title')
   const videoEl = document.getElementById('demo-modal-video')
   const iframeEl = document.getElementById('demo-modal-iframe')
-  const audioCoverEl = document.getElementById('demo-modal-audio-cover')
+  const audioContainer = document.getElementById('demo-modal-audio-container')
+  const audioEl = document.getElementById('demo-modal-audio')
 
   if (titleEl) titleEl.textContent = title
 
-  if (audioCoverEl) {
-    if (isAudioOnly) {
-      audioCoverEl.classList.remove('hidden')
-    } else {
-      audioCoverEl.classList.add('hidden')
+  const isAudioFile = isAudio || /\.(mp3|wav|ogg|m4a|aac)(\?.*)?$/i.test(mediaSrc)
+
+  if (isAudioFile && audioEl && audioContainer) {
+    if (iframeEl) {
+      iframeEl.src = ''
+      iframeEl.classList.add('hidden')
     }
-  }
-
-  const ytId = extractYoutubeId(videoSrc)
-
-  if (ytId && iframeEl) {
-    iframeEl.src = `https://www.youtube.com/embed/${ytId}?autoplay=1`
-    iframeEl.classList.remove('hidden')
     if (videoEl) {
       videoEl.pause?.()
       videoEl.src = ''
       videoEl.classList.add('hidden')
     }
-  } else if (videoEl) {
-    if (iframeEl) {
-      iframeEl.src = ''
-      iframeEl.classList.add('hidden')
-    }
-    const cleanSrc = normalizeVideoPath(videoSrc)
+    const cleanSrc = normalizeAudioPath(mediaSrc)
     const encodedSrc = cleanSrc.startsWith('http') ? cleanSrc : encodeURI(cleanSrc)
-    videoEl.src = encodedSrc
-    const sourceEl = videoEl.querySelector('source')
-    if (sourceEl) sourceEl.src = encodedSrc
-    videoEl.classList.remove('hidden')
-    videoEl.load()
-    videoEl.play().catch(() => {})
+    audioEl.src = encodedSrc
+    audioContainer.classList.remove('hidden')
+    audioEl.currentTime = 0
+    audioEl.load()
+    audioEl.play().catch(() => {})
+  } else {
+    if (audioContainer && audioEl) {
+      audioEl.pause?.()
+      audioEl.src = ''
+      audioContainer.classList.add('hidden')
+    }
+
+    const ytId = extractYoutubeId(mediaSrc)
+
+    if (ytId && iframeEl) {
+      iframeEl.src = `https://www.youtube.com/embed/${ytId}?autoplay=1`
+      iframeEl.classList.remove('hidden')
+      if (videoEl) {
+        videoEl.pause?.()
+        videoEl.src = ''
+        videoEl.classList.add('hidden')
+      }
+    } else if (videoEl) {
+      if (iframeEl) {
+        iframeEl.src = ''
+        iframeEl.classList.add('hidden')
+      }
+      const cleanSrc = normalizeVideoPath(mediaSrc)
+      const encodedSrc = cleanSrc.startsWith('http') ? cleanSrc : encodeURI(cleanSrc)
+      videoEl.src = encodedSrc
+      const sourceEl = videoEl.querySelector('source')
+      if (sourceEl) sourceEl.src = encodedSrc
+      videoEl.classList.remove('hidden')
+      videoEl.currentTime = 0
+      videoEl.load()
+      videoEl.play().catch(() => {})
+    }
   }
 
   toggleModal('video-demo-modal', true)
@@ -496,6 +539,8 @@ window.openCheckoutModal = async function openCheckoutModal(tabId) {
   const videoEl = document.getElementById('checkout-modal-video')
   const videoSrcEl = document.getElementById('checkout-modal-video-source')
   const videoContainer = document.getElementById('checkout-modal-video-container')
+  const audioEl = document.getElementById('checkout-modal-audio')
+  const audioContainer = document.getElementById('checkout-modal-audio-container')
 
   if (titleEl) titleEl.textContent = tab.title
   if (metaEl) metaEl.textContent = `Tuning: ${tab.tuning || 'Standard'} • Bản Video Tab chạy nốt đồng bộ với âm thanh đàn mộc thật và nhịp gõ`
@@ -521,24 +566,11 @@ window.openCheckoutModal = async function openCheckoutModal(tabId) {
   activeCheckoutSyntax = `VIDEOTAB ${cleanSongCode}`
   if (syntaxEl) syntaxEl.textContent = activeCheckoutSyntax
 
-  const hasDemo = tab.has_demo ?? tab.hasDemo ?? false
   const videoDemo = tab.demo_video_url || tab.video_demo || tab.videoDemo || tab.youtube_id || ''
-  const isAudioOnly = Boolean(tab.is_audio_only ?? tab.isAudioOnly)
-  const checkoutAudioCover = document.getElementById('checkout-modal-audio-cover')
-  const checkoutBadgeText = document.getElementById('checkout-modal-video-badge-text')
-
-  if (checkoutAudioCover) {
-    if (isAudioOnly) {
-      checkoutAudioCover.classList.remove('hidden')
-      if (checkoutBadgeText) checkoutBadgeText.textContent = 'Audio Demo • Chỉ Nghe Âm Thanh'
-    } else {
-      checkoutAudioCover.classList.add('hidden')
-      if (checkoutBadgeText) checkoutBadgeText.textContent = 'Video Demo • Xem trước'
-    }
-  }
+  const audioDemo = tab.audio_demo || tab.demo_audio_url || tab.audio_url || ''
 
   if (videoEl && videoContainer) {
-    if (hasDemo && videoDemo) {
+    if (videoDemo) {
       const cleanVideo = normalizeVideoPath(videoDemo)
       const encodedVideo = cleanVideo.startsWith('http') ? cleanVideo : encodeURI(cleanVideo)
       videoEl.src = encodedVideo
@@ -546,7 +578,21 @@ window.openCheckoutModal = async function openCheckoutModal(tabId) {
       videoEl.load()
       videoContainer.classList.remove('hidden')
     } else {
+      videoEl.src = ''
       videoContainer.classList.add('hidden')
+    }
+  }
+
+  if (audioEl && audioContainer) {
+    if (audioDemo) {
+      const cleanAudio = normalizeAudioPath(audioDemo)
+      const encodedAudio = cleanAudio.startsWith('http') ? cleanAudio : encodeURI(cleanAudio)
+      audioEl.src = encodedAudio
+      audioEl.load()
+      audioContainer.classList.remove('hidden')
+    } else {
+      audioEl.src = ''
+      audioContainer.classList.add('hidden')
     }
   }
 

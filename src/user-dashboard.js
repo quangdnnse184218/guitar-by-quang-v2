@@ -7,7 +7,7 @@
 import { supabase } from './lib/supabase.js'
 import { initNavbarShrink, initMobileMenu } from './common.js'
 import { initThemeToggle } from './theme-toggle.js'
-import { fetchAllSongs, extractYoutubeId, normalizeVideoPath } from './lib/songs-service.js'
+import { fetchAllSongs, extractYoutubeId, normalizeVideoPath, normalizeAudioPath } from './lib/songs-service.js'
 import { fetchAllGears, DEFAULT_GEARS } from './lib/gears-service.js'
 
 // If redirected here with a recovery token, immediately move to reset-password.html
@@ -519,12 +519,28 @@ function renderOverviewFeatured() {
             </div>
 
             <!-- Center Play Demo Button -->
-            <div class="my-auto text-center flex flex-col items-center justify-center py-0.5" onclick="event.stopPropagation(); window.openVideoDemoModal('${escapeHtml(song.title)}', '${videoDemoUrl}', ${Boolean(song.is_audio_only ?? song.isAudioOnly)})">
+            ${videoDemoUrl ? `
+            <div class="my-auto text-center flex flex-col items-center justify-center py-0.5" onclick="event.stopPropagation(); window.openVideoDemoModal('${escapeHtml(song.title)}', '${videoDemoUrl}', false)">
               <div class="w-7 h-7 sm:w-10 sm:h-10 rounded-full bg-white text-[#9a4b24] flex items-center justify-center shadow-lg transform group-hover:scale-110 transition-transform">
-                ${(song.is_audio_only ?? song.isAudioOnly) ? '<span class="text-sm sm:text-base">🎧</span>' : '<svg class="w-3.5 h-3.5 sm:w-4.5 sm:h-4.5 fill-current ml-0.5 text-accent-primary" viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>'}
+                <svg class="w-3.5 h-3.5 sm:w-4.5 sm:h-4.5 fill-current ml-0.5 text-accent-primary" viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
               </div>
-              <span class="text-[8px] sm:text-[10px] font-bold mt-1 text-white/95 tracking-wide bg-black/60 px-2 py-0.5 rounded-full backdrop-blur-xs leading-none whitespace-nowrap">${(song.is_audio_only ?? song.isAudioOnly) ? 'Nghe Audio Demo' : 'Xem Video Demo'}</span>
+              <span class="text-[8px] sm:text-[10px] font-bold mt-1 text-white/95 tracking-wide bg-black/60 px-2 py-0.5 rounded-full backdrop-blur-xs leading-none whitespace-nowrap">Xem Video Demo</span>
             </div>
+            ` : (song.audio_demo || song.demo_audio_url || song.audio_url) ? `
+            <div class="my-auto text-center flex flex-col items-center justify-center py-0.5" onclick="event.stopPropagation(); window.openVideoDemoModal('${escapeHtml(song.title)}', '${escapeHtml(song.audio_demo || song.demo_audio_url || song.audio_url)}', true)">
+              <div class="w-7 h-7 sm:w-10 sm:h-10 rounded-full bg-white text-[#9a4b24] flex items-center justify-center shadow-lg transform group-hover:scale-110 transition-transform">
+                <span class="text-sm sm:text-base">🎧</span>
+              </div>
+              <span class="text-[8px] sm:text-[10px] font-bold mt-1 text-white/95 tracking-wide bg-black/60 px-2 py-0.5 rounded-full backdrop-blur-xs leading-none whitespace-nowrap">Nghe Audio Demo</span>
+            </div>
+            ` : `
+            <div class="my-auto text-center flex flex-col items-center justify-center opacity-80 py-0.5">
+              <div class="w-6 h-6 sm:w-8 sm:h-8 rounded-full bg-black/30 flex items-center justify-center text-xs sm:text-sm shadow-sm">
+                🎸
+              </div>
+              <span class="text-[8px] sm:text-[10px] font-bold mt-0.5 text-white/80 tracking-wide">Acoustic Tab</span>
+            </div>
+            `}
 
             <div class="flex justify-between items-end text-xs text-white/95 font-semibold">
               <span class="font-mono tabular-nums text-[9px] sm:text-[11px]">${song.duration || '03:40'}</span>
@@ -762,6 +778,10 @@ export function toggleModal(modalId, show) {
     })
   } else {
     modal.querySelectorAll('video').forEach(v => v.pause())
+    modal.querySelectorAll('audio').forEach(a => {
+      a.pause()
+      a.currentTime = 0
+    })
     const iframe = modal.querySelector('iframe')
     if (iframe) iframe.src = ''
 
@@ -841,6 +861,8 @@ window.openCheckoutModal = function openCheckoutModal(tabId) {
   const videoEl = document.getElementById('checkout-modal-video')
   const videoSrcEl = document.getElementById('checkout-modal-video-source')
   const videoContainer = document.getElementById('checkout-modal-video-container')
+  const audioEl = document.getElementById('checkout-modal-audio')
+  const audioContainer = document.getElementById('checkout-modal-audio-container')
 
   if (titleEl) titleEl.textContent = tab.title
   if (metaEl) metaEl.textContent = `Tuning: ${tab.tuning || 'Standard'} • Bản Video Tab chạy nốt đồng bộ với âm thanh đàn mộc thật và nhịp gõ`
@@ -867,19 +889,7 @@ window.openCheckoutModal = function openCheckoutModal(tabId) {
   if (syntaxEl) syntaxEl.textContent = activeCheckoutSyntax
 
   const videoDemo = tab.video_demo_url || tab.demo_video_url || tab.video_demo || tab.videoDemo || tab.youtube_id || ''
-  const isAudioOnly = Boolean(tab.is_audio_only ?? tab.isAudioOnly)
-  const checkoutAudioCover = document.getElementById('checkout-modal-audio-cover')
-  const checkoutBadgeText = document.getElementById('checkout-modal-video-badge-text')
-
-  if (checkoutAudioCover) {
-    if (isAudioOnly) {
-      checkoutAudioCover.classList.remove('hidden')
-      if (checkoutBadgeText) checkoutBadgeText.textContent = 'Audio Demo • Chỉ Nghe Âm Thanh'
-    } else {
-      checkoutAudioCover.classList.add('hidden')
-      if (checkoutBadgeText) checkoutBadgeText.textContent = 'Video Demo • Xem trước'
-    }
-  }
+  const audioDemo = tab.audio_demo || tab.demo_audio_url || tab.audio_url || ''
 
   if (videoEl && videoContainer) {
     if (videoDemo) {
@@ -890,7 +900,21 @@ window.openCheckoutModal = function openCheckoutModal(tabId) {
       videoEl.load()
       videoContainer.classList.remove('hidden')
     } else {
+      videoEl.src = ''
       videoContainer.classList.add('hidden')
+    }
+  }
+
+  if (audioEl && audioContainer) {
+    if (audioDemo) {
+      const cleanAudio = normalizeAudioPath(audioDemo)
+      const encodedAudio = cleanAudio.startsWith('http') ? cleanAudio : encodeURI(cleanAudio)
+      audioEl.src = encodedAudio
+      audioEl.load()
+      audioContainer.classList.remove('hidden')
+    } else {
+      audioEl.src = ''
+      audioContainer.classList.add('hidden')
     }
   }
 
@@ -992,47 +1016,67 @@ window.openFreeTabModal = function openFreeTabModal(tabId) {
   toggleModal('free-tab-modal', true)
 }
 
-window.openVideoDemoModal = function openVideoDemoModal(title, videoSrc, isAudioOnly = false) {
-  if (!title || !videoSrc) return
+window.openVideoDemoModal = function openVideoDemoModal(title, mediaSrc, isAudio = false) {
+  if (!title || !mediaSrc) return
   const titleEl = document.getElementById('video-demo-title')
   const videoEl = document.getElementById('demo-modal-video')
   const iframeEl = document.getElementById('demo-modal-iframe')
-  const audioCoverEl = document.getElementById('demo-modal-audio-cover')
+  const audioContainer = document.getElementById('demo-modal-audio-container')
+  const audioEl = document.getElementById('demo-modal-audio')
 
   if (titleEl) titleEl.textContent = title
 
-  if (audioCoverEl) {
-    if (isAudioOnly) {
-      audioCoverEl.classList.remove('hidden')
-    } else {
-      audioCoverEl.classList.add('hidden')
+  const isAudioFile = isAudio || /\.(mp3|wav|ogg|m4a|aac)(\?.*)?$/i.test(mediaSrc)
+
+  if (isAudioFile && audioEl && audioContainer) {
+    if (iframeEl) {
+      iframeEl.src = ''
+      iframeEl.classList.add('hidden')
     }
-  }
-
-  const ytId = extractYoutubeId(videoSrc)
-
-  if (ytId && iframeEl) {
-    iframeEl.src = `https://www.youtube.com/embed/${ytId}?autoplay=1`
-    iframeEl.classList.remove('hidden')
     if (videoEl) {
       videoEl.pause?.()
       videoEl.src = ''
       videoEl.classList.add('hidden')
     }
-  } else if (videoEl) {
-    if (iframeEl) {
-      iframeEl.src = ''
-      iframeEl.classList.add('hidden')
-    }
-    const cleanSrc = normalizeVideoPath(videoSrc)
+    const cleanSrc = normalizeAudioPath(mediaSrc)
     const encodedSrc = cleanSrc.startsWith('http') ? cleanSrc : encodeURI(cleanSrc)
-    videoEl.src = encodedSrc
-    const sourceEl = videoEl.querySelector('source')
-    if (sourceEl) sourceEl.src = encodedSrc
-    videoEl.classList.remove('hidden')
-    videoEl.currentTime = 0
-    videoEl.load()
-    videoEl.play().catch(e => console.warn('Auto play demo video error:', e))
+    audioEl.src = encodedSrc
+    audioContainer.classList.remove('hidden')
+    audioEl.currentTime = 0
+    audioEl.load()
+    audioEl.play().catch(() => {})
+  } else {
+    if (audioContainer && audioEl) {
+      audioEl.pause?.()
+      audioEl.src = ''
+      audioContainer.classList.add('hidden')
+    }
+
+    const ytId = extractYoutubeId(mediaSrc)
+
+    if (ytId && iframeEl) {
+      iframeEl.src = `https://www.youtube.com/embed/${ytId}?autoplay=1`
+      iframeEl.classList.remove('hidden')
+      if (videoEl) {
+        videoEl.pause?.()
+        videoEl.src = ''
+        videoEl.classList.add('hidden')
+      }
+    } else if (videoEl) {
+      if (iframeEl) {
+        iframeEl.src = ''
+        iframeEl.classList.add('hidden')
+      }
+      const cleanSrc = normalizeVideoPath(mediaSrc)
+      const encodedSrc = cleanSrc.startsWith('http') ? cleanSrc : encodeURI(cleanSrc)
+      videoEl.src = encodedSrc
+      const sourceEl = videoEl.querySelector('source')
+      if (sourceEl) sourceEl.src = encodedSrc
+      videoEl.classList.remove('hidden')
+      videoEl.currentTime = 0
+      videoEl.load()
+      videoEl.play().catch(e => console.warn('Auto play demo video error:', e))
+    }
   }
 
   toggleModal('video-demo-modal', true)

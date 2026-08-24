@@ -460,8 +460,14 @@
 
             <div class="space-y-1">
               <label class="text-xs font-bold text-text-primary">Link Video Xem Tab (YouTube / TikTok / Google Drive / Tùy chọn)</label>
-              <input type="text" id="song-free-target-url" placeholder="https://youtu.be/... hoặc https://www.youtube.com/watch?v=..." class="w-full px-3.5 py-2.5 rounded-xl bg-white dark:bg-white/5 border border-neutral-300 dark:border-glass-border text-xs text-text-primary focus:outline-none focus:border-emerald-500" />
+              <input type="text" id="song-free-target-url" placeholder="https://youtu.be/... hoặc /assets/demo.mp4" class="w-full px-3.5 py-2.5 rounded-xl bg-white dark:bg-white/5 border border-neutral-300 dark:border-glass-border text-xs text-text-primary focus:outline-none focus:border-emerald-500" />
               <p class="text-[11px] text-text-muted">Hỗ trợ dán link YouTube (được nhúng video tự động), TikTok hoặc Google Drive (có thể để trống).</p>
+            </div>
+
+            <div class="space-y-1">
+              <label class="text-xs font-bold text-text-primary">Âm Thanh Demo (File MP3 / Audio trên máy hoặc Link / Tùy chọn)</label>
+              <input type="text" id="song-free-audio-url" placeholder="/assets/demo.mp3 hoặc link online (chấp nhận cả dấu ngoặc kép)" class="w-full px-3.5 py-2.5 rounded-xl bg-white dark:bg-white/5 border border-neutral-300 dark:border-glass-border text-xs text-text-primary focus:outline-none focus:border-emerald-500" />
+              <p class="text-[11px] text-text-muted">Nhập đường dẫn file MP3/Audio trên máy (VD: <code class="bg-black/5 dark:bg-white/10 px-1 py-0.5 rounded font-mono">/assets/tenbai.mp3</code>) hoặc link audio online. Tự động xử lý bỏ dấu ngoặc kép.</p>
             </div>
 
             <div class="space-y-1">
@@ -491,7 +497,13 @@
             <div class="space-y-1">
               <label class="text-xs font-bold text-text-primary">Link Video Demo Xem Trước (YouTube hoặc MP4 / Tùy chọn)</label>
               <input type="text" id="song-paid-demo-url" placeholder="https://youtu.be/... hoặc /assets/demo.mp4" class="w-full px-3.5 py-2.5 rounded-xl bg-white dark:bg-white/5 border border-neutral-300 dark:border-glass-border text-xs text-text-primary focus:outline-none focus:border-rose-500" />
-              <p class="text-[11px] text-text-muted">Dán link YouTube hoặc video MP4 local <code class="bg-black/5 dark:bg-white/10 px-1 py-0.5 rounded font-mono">/assets/tenvideo.mp4</code> (có thể để trống).</p>
+              <p class="text-[11px] text-text-muted">Dán link YouTube hoặc video MP4 local <code class="bg-black/5 dark:bg-white/10 px-1 py-0.5 rounded font-mono">/assets/tenvideo.mp4</code> (có thể để trống, chấp nhận cả dấu ngoặc kép).</p>
+            </div>
+
+            <div class="space-y-1">
+              <label class="text-xs font-bold text-text-primary">Âm Thanh Demo (File MP3 / Audio trên máy hoặc Link / Tùy chọn)</label>
+              <input type="text" id="song-paid-audio-url" placeholder="/assets/demo.mp3 hoặc link online (chấp nhận cả dấu ngoặc kép)" class="w-full px-3.5 py-2.5 rounded-xl bg-white dark:bg-white/5 border border-neutral-300 dark:border-glass-border text-xs text-text-primary focus:outline-none focus:border-rose-500" />
+              <p class="text-[11px] text-text-muted">Nhập đường dẫn file MP3/Audio trên máy (VD: <code class="bg-black/5 dark:bg-white/10 px-1 py-0.5 rounded font-mono">/assets/tenbai.mp3</code>) hoặc link audio online. Tự động xử lý bỏ dấu ngoặc kép.</p>
             </div>
 
             <div class="space-y-1">
@@ -525,17 +537,12 @@
           </div>
 
           <div class="space-y-2 pt-2">
-            <div class="flex flex-col sm:flex-row items-start sm:items-center gap-4">
+            <div class="flex items-center gap-4">
               <label class="flex items-center gap-2 cursor-pointer text-xs font-bold text-text-primary select-none">
                 <input type="checkbox" id="song-is-featured" class="w-4 h-4 rounded text-amber-500 accent-amber-500" />
                 <span>Ghim nổi bật Trang Chủ (Featured Top 4)</span>
               </label>
-              <label class="flex items-center gap-2 cursor-pointer text-xs font-bold text-amber-700 dark:text-amber-400 select-none">
-                <input type="checkbox" id="song-is-audio-only" class="w-4 h-4 rounded text-amber-500 accent-amber-500" />
-                <span>🎧 Che video chỉ nghe âm thanh (Chế độ Audio Demo)</span>
-              </label>
             </div>
-            <p class="text-[11px] text-text-muted">Khi bật tính năng này: Khách vẫn nghe được âm thanh demo nhưng video hình ảnh sẽ được che lại để bảo mật thế tay đàn.</p>
           </div>
 
           <div class="pt-4 border-t border-glass-border flex justify-end gap-3">
