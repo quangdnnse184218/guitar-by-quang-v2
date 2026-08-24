@@ -1361,81 +1361,181 @@ input[type="range"].metro-slider::-webkit-slider-thumb:hover {
     gap: 6px !important;
   }
 
-  /* 2. CÁC BẢNG DỮ LIỆU KHÁC (GEARS, USERS) */
-  #section-gears table.admin-responsive-table,
-  #section-users table.admin-responsive-table {
-    display: block !important;
-    width: 100% !important;
+  /* 2. CHUYÊN BIỆT CHO PHẦN QUẢN LÝ BỘ ĐỒ NGHỀ (BỐ CỤC 1 HÀNG 2 THẺ) */
+  #section-gears .overflow-x-auto {
+    overflow: visible !important;
   }
 
-  #section-gears table.admin-responsive-table thead,
-  #section-users table.admin-responsive-table thead {
+  #section-gears table.admin-responsive-table {
+    display: block !important;
+    width: 100% !important;
+    border: none !important;
+    background: transparent !important;
+  }
+
+  #section-gears table.admin-responsive-table thead {
     display: none !important;
   }
 
-  #section-gears table.admin-responsive-table tbody,
-  #section-users table.admin-responsive-table tbody {
-    display: block !important;
+  #section-gears #admin-gears-tbody {
+    display: grid !important;
+    grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+    gap: 10px !important;
     width: 100% !important;
   }
 
-  #section-gears table.admin-responsive-table tbody tr,
-  #section-users table.admin-responsive-table tbody tr {
+  #section-gears #admin-gears-tbody tr.admin-gear-card-row {
     display: flex !important;
     flex-direction: column !important;
+    justify-content: space-between !important;
     gap: 8px !important;
-    padding: 14px !important;
-    margin-bottom: 12px !important;
+    padding: 10px !important;
+    margin-bottom: 0 !important;
     border-radius: 18px !important;
     background: var(--glass-bg, #151A27) !important;
     border: 1px solid var(--glass-border, rgba(255, 255, 255, 0.09)) !important;
     box-shadow: 0 4px 14px rgba(0, 0, 0, 0.08) !important;
+    position: relative !important;
+    box-sizing: border-box !important;
   }
 
-  #section-gears table.admin-responsive-table tbody tr:last-child,
-  #section-users table.admin-responsive-table tbody tr:last-child {
-    margin-bottom: 0 !important;
+  /* Ẩn các cột rườm rà trên thẻ gear */
+  #section-gears .gear-col-category,
+  #section-gears .gear-col-desc,
+  #section-gears .gear-col-price {
+    display: none !important;
   }
 
-  #section-gears table.admin-responsive-table tbody td,
-  #section-users table.admin-responsive-table tbody td {
+  #section-gears #admin-gears-tbody td::before {
+    display: none !important;
+  }
+
+  #section-gears .gear-col-order {
     display: flex !important;
     align-items: center !important;
     justify-content: space-between !important;
-    gap: 12px !important;
-    padding: 4px 0 !important;
-    border: none !important;
     width: 100% !important;
+    padding: 0 0 6px 0 !important;
+    border: none !important;
+    border-bottom: 1px dashed rgba(255, 255, 255, 0.08) !important;
+  }
+
+  [data-theme="light"] #section-gears .gear-col-order {
+    border-bottom: 1px dashed rgba(0, 0, 0, 0.08) !important;
+  }
+
+  #section-gears .gear-col-title {
+    display: block !important;
+    width: 100% !important;
+    padding: 2px 0 !important;
+    border: none !important;
+  }
+
+  #section-gears .gear-col-actions {
+    display: flex !important;
+    width: 100% !important;
+    padding: 6px 0 0 0 !important;
+    border: none !important;
+    border-top: 1px dashed rgba(255, 255, 255, 0.08) !important;
+    margin-top: auto !important;
+  }
+
+  [data-theme="light"] #section-gears .gear-col-actions {
+    border-top: 1px dashed rgba(0, 0, 0, 0.08) !important;
+  }
+
+  #section-gears .gear-col-actions .flex {
+    width: 100% !important;
+    display: flex !important;
+    gap: 6px !important;
+  }
+
+  /* 3. CHUYÊN BIỆT CHO PHẦN QUẢN LÝ USER (CARD DỌC GỌN GÀNG 100% KHÔNG TRÀN) */
+  #section-users .overflow-x-auto {
+    overflow: visible !important;
+  }
+
+  #section-users table.admin-responsive-table {
+    display: block !important;
+    width: 100% !important;
+    border: none !important;
+    background: transparent !important;
+  }
+
+  #section-users table.admin-responsive-table thead {
+    display: none !important;
+  }
+
+  #section-users #users-tbody {
+    display: flex !important;
+    flex-direction: column !important;
+    gap: 12px !important;
+    width: 100% !important;
+  }
+
+  #section-users #users-tbody tr.admin-user-card-row {
+    display: flex !important;
+    flex-direction: column !important;
+    gap: 8px !important;
+    padding: 12px !important;
+    margin-bottom: 0 !important;
+    border-radius: 18px !important;
+    background: var(--glass-bg, #151A27) !important;
+    border: 1px solid var(--glass-border, rgba(255, 255, 255, 0.09)) !important;
+    box-shadow: 0 4px 14px rgba(0, 0, 0, 0.08) !important;
+    box-sizing: border-box !important;
+    width: 100% !important;
+  }
+
+  #section-users #users-tbody td::before {
+    display: none !important;
+  }
+
+  #section-users .user-col-role {
+    display: none !important; /* Đã được tích hợp trực tiếp vào góc profile header */
+  }
+
+  #section-users .user-col-profile {
+    display: flex !important;
+    width: 100% !important;
+    padding: 0 0 8px 0 !important;
+    border: none !important;
+    border-bottom: 1px dashed rgba(255, 255, 255, 0.08) !important;
+  }
+
+  [data-theme="light"] #section-users .user-col-profile {
+    border-bottom: 1px dashed rgba(0, 0, 0, 0.08) !important;
+  }
+
+  #section-users .user-col-uuid,
+  #section-users .user-col-stats,
+  #section-users .user-col-date {
+    display: flex !important;
+    align-items: center !important;
+    justify-content: space-between !important;
+    width: 100% !important;
+    padding: 2px 0 !important;
+    border: none !important;
     font-size: 12px !important;
   }
 
-  #section-gears table.admin-responsive-table tbody td:not(:last-child),
-  #section-users table.admin-responsive-table tbody td:not(:last-child) {
-    border-bottom: 1px dashed rgba(255, 255, 255, 0.06) !important;
-    padding-bottom: 8px !important;
+  #section-users .user-col-actions {
+    display: flex !important;
+    width: 100% !important;
+    padding: 8px 0 0 0 !important;
+    border: none !important;
+    border-top: 1px dashed rgba(255, 255, 255, 0.08) !important;
+    margin-top: 4px !important;
   }
 
-  [data-theme="light"] #section-gears table.admin-responsive-table tbody td:not(:last-child),
-  [data-theme="light"] #section-users table.admin-responsive-table tbody td:not(:last-child) {
-    border-bottom: 1px dashed rgba(0, 0, 0, 0.06) !important;
+  [data-theme="light"] #section-users .user-col-actions {
+    border-top: 1px dashed rgba(0, 0, 0, 0.08) !important;
   }
 
-  #section-gears table.admin-responsive-table tbody td::before,
-  #section-users table.admin-responsive-table tbody td::before {
-    content: attr(data-label);
-    font-weight: 700 !important;
-    font-size: 11px !important;
-    text-transform: uppercase !important;
-    letter-spacing: 0.04em !important;
-    color: var(--text-muted, #94A3B8) !important;
-    flex-shrink: 0 !important;
-    text-align: left !important;
-    margin-right: auto !important;
-  }
-
-  #section-gears table.admin-responsive-table tbody td:not([data-label])::before,
-  #section-users table.admin-responsive-table tbody td:not([data-label])::before {
-    display: none !important;
+  #section-users .user-col-actions .flex {
+    width: 100% !important;
+    display: flex !important;
+    gap: 8px !important;
   }
 }
 
