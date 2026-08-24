@@ -177,7 +177,9 @@ window.openDemoModal = function(songId) {
       iframeEl.classList.add('hidden')
     }
     const cleanSrc = normalizeVideoPath(videoSrc)
-    videoSource.src = cleanSrc || '/assets/demo.mp4'
+    const encodedSrc = cleanSrc.startsWith('http') ? cleanSrc : encodeURI(cleanSrc)
+    videoSource.src = encodedSrc || '/assets/demo.mp4'
+    videoPlayer.src = encodedSrc || '/assets/demo.mp4'
     videoPlayer.classList.remove('hidden')
     videoPlayer.load()
     videoPlayer.play().catch(() => {})
