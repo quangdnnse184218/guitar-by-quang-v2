@@ -8,6 +8,7 @@
    DESIGN TOKENS — DARK MODE (DEFAULT — ELEVATED CARDS, CLEAN SLATE TEXT)
    ============================================================================== */
 :root {
+  color-scheme: dark;
   --bg-base: #0B0E14;
   --sec-hero-bg: #0B0E14;
   --sec-about-bg: #111520;
@@ -89,6 +90,7 @@
    DESIGN TOKENS — LIGHT MODE (WARM ORGANIC ACOUSTIC PALETTE — HIGH CONTRAST)
    ============================================================================== */
 [data-theme="light"] {
+  color-scheme: light;
   --bg-base: #F7F2EA;
   --sec-hero-bg: #F7F2EA;
   --sec-about-bg: #EFE8DC;
@@ -196,6 +198,38 @@ h1, h2, h3, h4, h5, h6 {
 .numeric-mono {
   font-family: 'JetBrains Mono', ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace !important;
   font-variant-numeric: tabular-nums;
+}
+
+/* ==============================================================================
+   FORM CONTROLS & NATIVE SELECT / OPTION THEMING
+   ============================================================================== */
+select {
+  color-scheme: dark;
+}
+
+[data-theme="light"] select {
+  color-scheme: light;
+}
+
+select option {
+  background-color: #151A27 !important;
+  color: #F8FAFC !important;
+  padding: 8px 12px;
+}
+
+[data-theme="light"] select option {
+  background-color: #FFFFFF !important;
+  color: #1A1F2C !important;
+}
+
+select optgroup {
+  background-color: #111520 !important;
+  color: #94A3B8 !important;
+}
+
+[data-theme="light"] select optgroup {
+  background-color: #F7F2EA !important;
+  color: #64748B !important;
 }
 
 /* Consistent Type Scale */
