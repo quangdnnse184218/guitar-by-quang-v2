@@ -158,8 +158,18 @@ window.openDemoModal = function(songId) {
   const videoSource = document.getElementById('demo-video-source')
   const videoPlayer = document.getElementById('demo-video-player')
   const iframeEl = document.getElementById('demo-modal-iframe')
+  const audioCoverEl = document.getElementById('demo-modal-audio-cover')
 
-  if (titleEl) titleEl.textContent = `${song.title || 'Video Demo'} — Tab Fingerstyle`
+  const isAudioOnly = Boolean(song.is_audio_only ?? song.isAudioOnly)
+  if (titleEl) titleEl.textContent = `${song.title || 'Demo'} — ${isAudioOnly ? 'Audio Fingerstyle' : 'Video Fingerstyle'}`
+
+  if (audioCoverEl) {
+    if (isAudioOnly) {
+      audioCoverEl.classList.remove('hidden')
+    } else {
+      audioCoverEl.classList.add('hidden')
+    }
+  }
 
   const videoSrc = song.demo_video_url || song.video_demo || song.youtube_id || ''
   const ytId = extractYoutubeId(videoSrc)
