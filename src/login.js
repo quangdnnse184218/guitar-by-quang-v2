@@ -218,28 +218,35 @@ document.addEventListener('DOMContentLoaded', () => {
 
       if (error) throw error
 
-      let targetUrl = '/user-dashboard.html'
-      try {
-        const { data: profile } = await supabase
-          .from('profiles')
-          .select('role')
-          .eq('id', data.user.id)
-          .single()
+      if (data?.session && data?.user) {
+        // Kiểm tra quyền: CHẶN TÀI KHOẢN ADMIN KHÔNG CHO ĐĂNG NHẬP Ở CỔNG THÀNH VIÊN
+        try {
+          const { data: profile } = await supabase
+            .from('profiles')
+            .select('role')
+            .eq('id', data.user.id)
+            .single()
 
-        const isAdmin = profile?.role === 'admin'
-
-        if (isAdmin) {
-          targetUrl = '/admin-dashboard.html'
+          if (profile?.role === 'admin') {
+            await supabase.auth.signOut()
+            showAlert('Tài khoản này là Quản Trị Viên (Admin). Vui lòng đăng nhập tại Cổng Quản Trị dành riêng cho Admin (admin-login.html).')
+            setLoading(false)
+            return
+          }
+        } catch (profErr) {
+          console.warn('Could not fetch profile role:', profErr)
         }
-      } catch (profErr) {
-        console.warn('Could not fetch profile role:', profErr)
-      }
 
-      showAlert('Đăng nhập thành công! Đang chuyển hướng...', true)
-      
-      setTimeout(() => {
-        window.location.href = targetUrl
-      }, 800)
+        const params = new URLSearchParams(window.location.search)
+        const redirectParam = params.get('redirect')
+        const targetUrl = (redirectParam && redirectParam.startsWith('/')) ? redirectParam : '/user-dashboard.html'
+
+        showAlert('Đăng nhập thành công! Đang chuyển hướng...', true)
+        
+        setTimeout(() => {
+          window.location.href = targetUrl
+        }, 800)
+      }
 
     } catch (error) {
       console.error('Lỗi đăng nhập:', error)
