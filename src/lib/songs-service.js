@@ -403,58 +403,92 @@ function sanitizeSongPayload(payload) {
 }
 
 /**
+ * Helper to write to Supabase with automatic retry when non-existent columns are encountered
+ */
+async function writeSongToSupabase(payload, isEdit, songId) {
+  let attemptPayload = { ...payload }
+
+  for (let attempt = 0; attempt < 8; attempt++) {
+    try {
+      if (isEdit && songId) {
+        const { data, error } = await supabase
+          .from('songs')
+          .update(attemptPayload)
+          .eq('id', songId)
+          .select()
+
+        if (!error) {
+          return { data: (data && data[0]) || attemptPayload, error: null }
+        }
+
+        console.warn(`[songs-service] Update attempt ${attempt + 1} warning:`, error.message)
+
+        // Check if error is due to an unknown column
+        const colMatch = error.message?.match(/column "([^"]+)" of relation "songs" does not exist/i) ||
+                         error.message?.match(/Could not find the '([^']+)' column/i)
+        if (colMatch && colMatch[1] && attemptPayload[colMatch[1]] !== undefined) {
+          delete attemptPayload[colMatch[1]]
+          continue
+        }
+        return { data: null, error }
+      } else {
+        const { data, error } = await supabase
+          .from('songs')
+          .insert([attemptPayload])
+          .select()
+
+        if (!error) {
+          return { data: (data && data[0]) || attemptPayload, error: null }
+        }
+
+        console.warn(`[songs-service] Insert attempt ${attempt + 1} warning:`, error.message)
+
+        const colMatch = error.message?.match(/column "([^"]+)" of relation "songs" does not exist/i) ||
+                         error.message?.match(/Could not find the '([^']+)' column/i)
+        if (colMatch && colMatch[1] && attemptPayload[colMatch[1]] !== undefined) {
+          delete attemptPayload[colMatch[1]]
+          continue
+        }
+        return { data: null, error }
+      }
+    } catch (err) {
+      console.error('[songs-service] Exception writing to Supabase:', err)
+      return { data: null, error: err }
+    }
+  }
+
+  return { data: null, error: new Error('Đã thử nhiều lần nhưng không thể ghi vào bảng songs.') }
+}
+
+/**
  * Save (Insert or Update) a song with full Supabase & LocalStorage sync
  */
 export async function saveSong(payload, isEdit = false, songId = null) {
   const all = getLocalSongs()
-  let savedRecord = null
-  let supabaseError = null
 
   // Ensure ID is generated for new records
   const targetId = songId || payload.id || `tab-${Date.now()}`
   payload.id = targetId
 
   const cleanPayload = sanitizeSongPayload(payload)
+  if (!isEdit && !cleanPayload.order) {
+    cleanPayload.order = all.length + 1
+  }
+  cleanPayload.created_at = cleanPayload.created_at || new Date().toISOString()
 
-  // 1. Try Supabase write
-  try {
-    if (isEdit && songId) {
-      const { data, error } = await supabase
-        .from('songs')
-        .update(cleanPayload)
-        .eq('id', songId)
-        .select()
-        
-      if (error) {
-        supabaseError = error
-        console.error('[songs-service] Supabase update error:', error.message)
-      } else if (data && data.length > 0) {
-        savedRecord = data[0]
-      }
-    } else {
-      if (!cleanPayload.order) {
-        cleanPayload.order = all.length + 1
-      }
-      cleanPayload.created_at = cleanPayload.created_at || new Date().toISOString()
-      
-      const { data, error } = await supabase
-        .from('songs')
-        .insert([cleanPayload])
-        .select()
-        
-      if (error) {
-        supabaseError = error
-        console.error('[songs-service] Supabase insert error:', error.message)
-      } else if (data && data.length > 0) {
-        savedRecord = data[0]
-      }
+  // 1. Write to Supabase first
+  const { data: savedRecord, error: supabaseError } = await writeSongToSupabase(cleanPayload, isEdit, songId)
+
+  if (supabaseError) {
+    console.error('[songs-service] Không thể lưu vào Supabase:', supabaseError.message || supabaseError)
+    return {
+      success: false,
+      supabaseSaved: false,
+      error: supabaseError.message || 'Lỗi không xác định khi lưu vào Supabase. Vui lòng kiểm tra quyền (RLS) của bảng songs.'
     }
-  } catch (e) {
-    supabaseError = e
-    console.error('[songs-service] Supabase exception:', e.message)
   }
 
-  // 2. Sync to LocalStorage (Always persists so user never loses data)
+  // 2. Only sync to LocalStorage when Supabase write succeeds
   const fullRecord = { ...payload, ...(savedRecord || {}), id: targetId }
   if (isEdit && songId) {
     const idx = all.findIndex(s => String(s.id) === String(songId))
@@ -468,16 +502,6 @@ export async function saveSong(payload, isEdit = false, songId = null) {
   }
 
   setLocalSongs(all)
-
-  if (supabaseError) {
-    return {
-      success: true, // Local cache updated
-      savedLocally: true,
-      supabaseSaved: false,
-      record: fullRecord,
-      warning: supabaseError.message
-    }
-  }
 
   return {
     success: true,

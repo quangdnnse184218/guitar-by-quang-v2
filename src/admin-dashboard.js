@@ -675,7 +675,7 @@ if (songForm) {
         toggleModal(songModal, false)
         await loadSongs()
       } else {
-        showToast(`❌ Lưu thất bại: ${res.warning || 'Không thể lưu bài hát'}`, 'error')
+        showToast(`❌ Lưu thất bại: ${res.error || res.warning || 'Không thể lưu bài hát vào Supabase'}`, 'error')
       }
     } catch (err) {
       showToast(`❌ Lỗi khi lưu bài hát: ${err.message}`, 'error')
