@@ -138,7 +138,23 @@ document.addEventListener('DOMContentLoaded', () => {
       setForgotLoading(true)
 
       try {
-        // Gửi yêu cầu reset password qua Supabase Auth
+        // 1. Kiểm tra email có tồn tại trong hệ thống (bảng profiles) không
+        try {
+          const { data: matchedProfiles, error: profileErr } = await supabase
+            .from('profiles')
+            .select('id, email')
+            .ilike('email', email)
+            .limit(1)
+
+          if (!profileErr && Array.isArray(matchedProfiles) && matchedProfiles.length === 0) {
+            setForgotLoading(false)
+            return showForgotAlert(`Gửi thất bại: Email "${email}" không tồn tại trong hệ thống. Vui lòng kiểm tra lại hoặc tạo tài khoản mới.`)
+          }
+        } catch (checkErr) {
+          console.warn('[login] Profile check note:', checkErr)
+        }
+
+        // 2. Gửi yêu cầu reset password qua Supabase Auth
         const redirectTo = `${window.location.origin}/reset-password.html`
         const { data, error } = await supabase.auth.resetPasswordForEmail(email, {
           redirectTo

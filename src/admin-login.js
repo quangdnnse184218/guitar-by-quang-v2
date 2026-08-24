@@ -127,7 +127,29 @@ if (forgotForm) {
     setForgotLoading(true)
 
     try {
-      // Gửi yêu cầu reset password qua Supabase Auth
+      // 1. Kiểm tra email có tồn tại trong danh sách Admin (bảng profiles) không
+      try {
+        const { data: matchedProfiles, error: profileErr } = await supabase
+          .from('profiles')
+          .select('id, email, role')
+          .ilike('email', email)
+          .limit(1)
+
+        if (!profileErr && Array.isArray(matchedProfiles)) {
+          if (matchedProfiles.length === 0) {
+            setForgotLoading(false)
+            return showForgotAlert(`Gửi thất bại: Email "${email}" không tồn tại trong hệ thống. Vui lòng kiểm tra lại.`)
+          }
+          if (matchedProfiles[0]?.role !== 'admin') {
+            setForgotLoading(false)
+            return showForgotAlert(`Gửi thất bại: Email "${email}" không có quyền Quản trị viên.`)
+          }
+        }
+      } catch (checkErr) {
+        console.warn('[admin-login] Profile check note:', checkErr)
+      }
+
+      // 2. Gửi yêu cầu reset password qua Supabase Auth
       const redirectTo = `${window.location.origin}/admin-reset-password.html`
       const { data, error } = await supabase.auth.resetPasswordForEmail(email, {
         redirectTo
