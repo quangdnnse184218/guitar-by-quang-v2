@@ -1,6 +1,9 @@
 import { supabase } from './lib/supabase.js'
+import { initThemeToggle } from './theme-toggle.js'
 
 document.addEventListener('DOMContentLoaded', () => {
+  initThemeToggle()
+
   const form = document.getElementById('register-form')
   const emailInput = document.getElementById('register-email')
   const passwordInput = document.getElementById('register-password')

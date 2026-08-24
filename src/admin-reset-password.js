@@ -6,8 +6,10 @@
 
 import { supabase } from './lib/supabase.js'
 import { initPasswordToggles } from './common.js'
+import { initThemeToggle } from './theme-toggle.js'
 
 document.addEventListener('DOMContentLoaded', async () => {
+  initThemeToggle()
   initPasswordToggles()
 
   const form = document.getElementById('admin-reset-password-form')

@@ -118,25 +118,32 @@ if (forgotForm) {
       return showForgotAlert('Vui lòng nhập địa chỉ email quản trị.')
     }
 
+    // Kiểm tra định dạng email cơ bản
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
+    if (!emailRegex.test(email)) {
+      return showForgotAlert('Địa chỉ email không đúng định dạng. Vui lòng kiểm tra lại.')
+    }
+
     setForgotLoading(true)
 
     try {
+      // Gửi yêu cầu reset password qua Supabase Auth
       const redirectTo = `${window.location.origin}/admin-reset-password.html`
-      const { error } = await supabase.auth.resetPasswordForEmail(email, {
+      const { data, error } = await supabase.auth.resetPasswordForEmail(email, {
         redirectTo
       })
 
       if (error) throw error
 
-      showForgotAlert('Đã gửi liên kết khôi phục vào email! Vui lòng kiểm tra hộp thư của bạn.', true)
+      showForgotAlert('Nếu email quản trị này hợp lệ, liên kết đặt lại mật khẩu đã được gửi đến hộp thư của bạn! Vui lòng kiểm tra email.', true)
       
       if (forgotEmailInput) forgotEmailInput.value = ''
 
     } catch (err) {
       console.error('[admin-login] Reset password error:', err)
       let errorMsg = 'Không thể gửi email khôi phục lúc này. Vui lòng thử lại sau.'
-      if (err.message && err.message.includes('rate limit')) {
-        errorMsg = 'Bạn đã yêu cầu quá nhiều lần. Vui lòng đợi vài phút rồi thử lại.'
+      if (err.message && (err.message.includes('rate limit') || err.message.includes('over_email_send_rate_limit'))) {
+        errorMsg = 'Hệ thống gửi mail đang tạm chạm giới hạn lượt gửi trong giờ. Vui lòng đợi 5-10 phút rồi thử lại.'
       } else if (err.message) {
         errorMsg = `Lỗi: ${err.message}`
       }
