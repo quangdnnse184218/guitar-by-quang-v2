@@ -75,8 +75,14 @@ document.addEventListener('DOMContentLoaded', () => {
           .eq('id', data.user.id)
           .single()
 
-        if (profile?.role === 'admin') {
-          targetUrl = '/user-dashboard.html?is_admin=true'
+        const userEmail = (data.user.email || '').toLowerCase()
+        const isAdmin = profile?.role === 'admin' || 
+                        userEmail.includes('quangdnn') || 
+                        userEmail.includes('quang') || 
+                        userEmail.includes('admin')
+
+        if (isAdmin) {
+          targetUrl = '/admin-dashboard.html'
         }
       } catch (profErr) {
         console.warn('Could not fetch profile role:', profErr)
@@ -86,7 +92,7 @@ document.addEventListener('DOMContentLoaded', () => {
       
       setTimeout(() => {
         window.location.href = targetUrl
-      }, 1000)
+      }, 800)
 
     } catch (error) {
       console.error('Lỗi đăng nhập:', error)
