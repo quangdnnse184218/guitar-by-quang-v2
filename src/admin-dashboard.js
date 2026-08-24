@@ -7,7 +7,7 @@
 import { supabase } from './lib/supabase.js'
 import { initThemeToggle } from './theme-toggle.js'
 import { initPasswordToggles } from './common.js'
-import { fetchAllSongs, saveSong, removeSong, reorderAllSongs, extractYoutubeId } from './lib/songs-service.js'
+import { fetchAllSongs, saveSong, removeSong, reorderAllSongs, extractYoutubeId, normalizeVideoPath } from './lib/songs-service.js'
 import { fetchAllGears, DEFAULT_GEARS, saveGear, removeGear, reorderAllGears, normalizeImagePath } from './lib/gears-service.js'
 
 // If redirected here with a recovery token, immediately move to admin-reset-password.html
@@ -608,12 +608,12 @@ if (songForm) {
         price_formatted: 'Miễn phí',
         priceFormatted: 'Miễn phí',
         discount_note: null,
-        has_demo: Boolean(ytId || freeTargetUrl.endsWith('.mp4')),
-        video_demo: ytId ? `https://youtu.be/${ytId}` : freeTargetUrl,
-        demo_video_url: ytId ? `https://youtu.be/${ytId}` : freeTargetUrl,
+        has_demo: Boolean(ytId || freeTargetUrl.toLowerCase().includes('.mp4')),
+        video_demo: normalizeVideoPath(freeTargetUrl),
+        demo_video_url: normalizeVideoPath(freeTargetUrl),
         youtube_id: ytId || null,
-        target_url: freeTargetUrl,
-        tab_url: freeTargetUrl,
+        target_url: normalizeVideoPath(freeTargetUrl),
+        tab_url: normalizeVideoPath(freeTargetUrl),
         pdf_url: freePdfUrl || null,
         thumbnail_bg: thumbnailBgVal,
         button_type: 'link',
@@ -635,6 +635,7 @@ if (songForm) {
       }
 
       const ytId = extractYoutubeId(demoUrlVal)
+      const cleanDemo = normalizeVideoPath(demoUrlVal)
 
       payload = {
         title: titleVal,
@@ -652,8 +653,8 @@ if (songForm) {
         priceFormatted: priceFormatted,
         discount_note: discountNoteVal,
         has_demo: true,
-        video_demo: ytId ? `https://youtu.be/${ytId}` : demoUrlVal,
-        demo_video_url: ytId ? `https://youtu.be/${ytId}` : demoUrlVal,
+        video_demo: cleanDemo,
+        demo_video_url: cleanDemo,
         youtube_id: ytId || null,
         target_url: driveUrlVal || '',
         tab_url: driveUrlVal || '',
