@@ -199,8 +199,12 @@
             <span id="modal-tab-price" class="text-xl font-extrabold text-accent-primary">239.000đ</span>
           </div>
           <div class="flex flex-col items-center justify-center">
-            <div class="w-52 h-52 bg-white p-3 rounded-2xl border border-glass-border flex items-center justify-center shadow-md flex-shrink-0">
-              <img id="modal-qr-img" src="/assets/qr.jpg" alt="Mã QR Chuyển Khoản TpBank" class="w-full h-full object-contain" />
+            <div class="relative group/qr w-52 h-52 bg-white p-3 rounded-2xl border border-glass-border flex flex-col items-center justify-center shadow-md flex-shrink-0 cursor-zoom-in overflow-hidden" onclick="window.openImageModal('/assets/qr.jpg', 'Mã QR Chuyển Khoản TpBank (03970202801)', 'Quét mã QR bằng App Ngân hàng bất kỳ để nhận bản Video Tab và hỗ trợ 1-1 qua Zalo.')">
+              <img id="modal-qr-img" src="/assets/qr.jpg" alt="Mã QR Chuyển Khoản TpBank" class="w-full h-full object-contain group-hover/qr:scale-105 transition-transform duration-200" />
+              <div class="absolute inset-0 bg-black/65 opacity-0 group-hover/qr:opacity-100 transition-opacity flex flex-col items-center justify-center gap-1 text-white text-[10px] sm:text-[11px] font-bold rounded-2xl backdrop-blur-xs p-2 text-center pointer-events-none">
+                <svg class="w-4 h-4 text-accent-primary" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0zM10 7v6m3-3H7" /></svg>
+                <span>Ấn để phóng to</span>
+              </div>
             </div>
             <span class="text-[11px] font-bold text-text-muted mt-2">Quét mã QR bằng App Ngân hàng bất kỳ</span>
           </div>
@@ -228,9 +232,9 @@
 
     <!-- MODAL: VIDEO DEMO -->
     <div id="video-demo-modal" role="dialog" aria-modal="true" aria-labelledby="modal-video-title" class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/75 backdrop-blur-sm opacity-0 pointer-events-none transition-opacity duration-300">
-      <div class="modal-dialog relative w-full max-w-2xl glass-card rounded-3xl p-5 sm:p-7 shadow-2xl border border-glass-border max-h-[90vh] overflow-y-auto scale-95 transition-transform duration-300" tabindex="-1">
-        <button id="close-video-modal" class="absolute top-4 right-4 p-2 rounded-full text-text-muted hover:text-text-primary hover:bg-glass-bg-hover transition-colors z-10 cursor-pointer" aria-label="Đóng video demo">
-          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+      <div class="modal-dialog relative w-full max-w-2xl glass-card rounded-3xl p-5 sm:p-6 shadow-2xl border border-glass-border scale-95 transition-transform duration-300">
+        <button id="close-video-modal" class="absolute top-4 right-4 w-9 h-9 rounded-full bg-glass-bg hover:bg-glass-bg-hover text-text-muted hover:text-text-primary border border-glass-border flex items-center justify-center transition-all z-10 cursor-pointer shadow-sm active:scale-95" aria-label="Đóng video">
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"></path></svg>
         </button>
         <div class="space-y-1 mb-4 pr-10">
           <span class="text-xs font-mono font-bold uppercase tracking-wider text-accent-primary">Video Demo</span>
@@ -257,6 +261,40 @@
             Đóng video
           </button>
         </div>
+      </div>
+    </div>
+
+    <!-- MODAL: IMAGE PREVIEW MODAL (FOR QR & GEARS) -->
+    <div id="image-preview-modal" role="dialog" aria-modal="true" aria-labelledby="image-modal-title"
+      class="fixed inset-0 z-[9999] flex items-center justify-center p-4 bg-black/85 backdrop-blur-md opacity-0 pointer-events-none transition-opacity duration-300 hidden">
+      <div
+        class="modal-dialog relative w-full max-w-xl glass-card rounded-3xl p-5 sm:p-6 shadow-2xl border border-glass-border scale-95 transition-transform duration-300"
+        tabindex="-1">
+
+        <button id="close-image-modal"
+          class="absolute top-4 right-4 w-9 h-9 rounded-full bg-glass-bg hover:bg-glass-bg-hover text-text-muted hover:text-text-primary border border-glass-border flex items-center justify-center transition-all z-10 cursor-pointer shadow-sm active:scale-95"
+          aria-label="Đóng ảnh">
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"></path>
+          </svg>
+        </button>
+
+        <div class="space-y-4">
+          <div
+            class="w-full aspect-[4/3] sm:aspect-[16/11] rounded-2xl bg-white/95 flex items-center justify-center p-4 border border-glass-border shadow-inner overflow-hidden">
+            <img id="image-modal-img" src="" alt="Ảnh phóng to" class="w-full h-full object-contain" />
+          </div>
+
+          <div class="space-y-1 pr-6">
+            <h3 id="image-modal-title" class="text-lg sm:text-xl font-extrabold text-text-primary">
+              Tên món đồ
+            </h3>
+            <p id="image-modal-caption" class="text-xs sm:text-sm text-text-muted font-medium leading-relaxed">
+              Mô tả chi tiết.
+            </p>
+          </div>
+        </div>
+
       </div>
     </div>
 

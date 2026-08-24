@@ -219,6 +219,16 @@ window.openDemoModal = function(songId) {
   toggleModal('video-demo-modal', true)
 }
 
+window.openImageModal = function openImageModal(src, title, caption) {
+  const imgEl = document.getElementById('image-modal-img')
+  const titleEl = document.getElementById('image-modal-title')
+  const captionEl = document.getElementById('image-modal-caption')
+  if (imgEl && src) imgEl.src = src
+  if (titleEl && title) titleEl.textContent = title
+  if (captionEl && caption) captionEl.textContent = caption
+  toggleModal('image-preview-modal', true)
+}
+
 window.handleToggleFavorite = function(e, songId) {
   e.stopPropagation()
   const isNowFav = toggleFavorite(songId)
@@ -466,8 +476,11 @@ async function initMyTabs() {
   if (closeVideoModal) closeVideoModal.addEventListener('click', () => toggleModal('video-demo-modal', false))
   if (closeVideoModalBtn) closeVideoModalBtn.addEventListener('click', () => toggleModal('video-demo-modal', false))
 
+  const closeImageModal = document.getElementById('close-image-modal')
+  if (closeImageModal) closeImageModal.addEventListener('click', () => toggleModal('image-preview-modal', false))
+
   // Close modals on overlay click or Escape
-  ;['checkout-modal', 'video-demo-modal'].forEach(id => {
+  ;['checkout-modal', 'video-demo-modal', 'image-preview-modal'].forEach(id => {
     const el = document.getElementById(id)
     if (el) {
       el.addEventListener('click', (e) => {
@@ -478,7 +491,7 @@ async function initMyTabs() {
 
   document.addEventListener('keydown', (e) => {
     if (e.key === 'Escape') {
-      ;['checkout-modal', 'video-demo-modal'].forEach(id => toggleModal(id, false))
+      ;['checkout-modal', 'video-demo-modal', 'image-preview-modal'].forEach(id => toggleModal(id, false))
     }
   })
 }
