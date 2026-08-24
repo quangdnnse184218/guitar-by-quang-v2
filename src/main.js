@@ -610,15 +610,25 @@ window.openCheckoutModal = async function openCheckoutModal(tabId) {
   const tab = featuredSongs.find(t => t.id === tabId)
   if (!tab) return
 
+  // Gate Check for paid cards: MUST BE LOGGED IN
   try {
     const { data: { session } } = await supabase.auth.getSession()
-    if (!session) {
-      activePendingTabId = tabId
+    if (!session || !session.user) {
+      const loginBtn = document.getElementById('auth-required-login-btn')
+      if (loginBtn) {
+        loginBtn.href = `/login.html?redirect=${encodeURIComponent(window.location.pathname + window.location.search)}`
+      }
       toggleModal('auth-required-modal', true)
       return
     }
   } catch (e) {
     console.warn('Auth check error in openCheckoutModal:', e)
+    const loginBtn = document.getElementById('auth-required-login-btn')
+    if (loginBtn) {
+      loginBtn.href = `/login.html?redirect=${encodeURIComponent(window.location.pathname + window.location.search)}`
+    }
+    toggleModal('auth-required-modal', true)
+    return
   }
 
   const titleEl = document.getElementById('modal-tab-title')
