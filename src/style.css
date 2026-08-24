@@ -282,6 +282,8 @@ header, footer, nav, .ambient-blob {
   border: 1px solid var(--glass-border);
   border-radius: 20px;
   box-shadow: 0 10px 30px -5px rgba(0, 0, 0, 0.4), 0 0 0 1px rgba(255, 255, 255, 0.04);
+  transform: translateZ(0);
+  backface-visibility: hidden;
 }
 
 [data-theme="light"] .glass-card {
@@ -294,10 +296,12 @@ header, footer, nav, .ambient-blob {
 .card-interactive {
   position: relative;
   overflow: hidden;
-  transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1),
-              background-color 0.3s ease,
-              border-color 0.3s ease,
-              box-shadow 0.3s ease;
+  transform: translateZ(0);
+  backface-visibility: hidden;
+  transition: transform 0.25s cubic-bezier(0.16, 1, 0.3, 1),
+              background-color 0.25s ease,
+              border-color 0.25s ease,
+              box-shadow 0.25s ease;
 }
 
 /* Card Light Sweep Shimmer Effect on Hover */
@@ -499,7 +503,7 @@ header, footer, nav, .ambient-blob {
 }
 
 /* ==============================================================================
-   AMBIENT FLOATING BLOBS
+   AMBIENT BACKGROUND GLOW (GPU ACCELERATED — ZERO JANK)
    ============================================================================== */
 .ambient-blobs-container {
   position: fixed;
@@ -507,78 +511,23 @@ header, footer, nav, .ambient-blob {
   overflow: hidden;
   pointer-events: none;
   z-index: -1;
+  contain: strict;
+  transform: translateZ(0);
+  background: 
+    radial-gradient(circle 500px at 10% 0%, rgba(232, 122, 48, 0.12) 0%, transparent 70%),
+    radial-gradient(circle 600px at 90% 100%, rgba(194, 65, 12, 0.10) 0%, transparent 70%),
+    radial-gradient(circle 450px at 50% 50%, rgba(232, 122, 48, 0.05) 0%, transparent 70%);
+}
+
+[data-theme="light"] .ambient-blobs-container {
+  background: 
+    radial-gradient(circle 500px at 10% 0%, rgba(245, 162, 93, 0.14) 0%, transparent 70%),
+    radial-gradient(circle 600px at 90% 100%, rgba(234, 88, 12, 0.10) 0%, transparent 70%),
+    radial-gradient(circle 450px at 50% 50%, rgba(211, 95, 29, 0.06) 0%, transparent 70%);
 }
 
 .ambient-blob {
-  position: absolute;
-  border-radius: 9999px;
-  filter: blur(120px);
-  will-change: transform;
-}
-
-.blob-amber {
-  background-color: var(--blob-amber);
-  opacity: 0.42;
-  width: 450px;
-  height: 450px;
-  top: -120px;
-  left: -120px;
-  animation: floatAmber 18s ease-in-out infinite alternate;
-}
-
-.blob-violet {
-  background-color: var(--blob-violet);
-  opacity: 0.48;
-  width: 520px;
-  height: 520px;
-  bottom: -140px;
-  right: -120px;
-  animation: floatViolet 22s ease-in-out infinite alternate;
-}
-
-.blob-rose {
-  background-color: var(--blob-rose);
-  opacity: 0.38;
-  width: 400px;
-  height: 400px;
-  top: 45%;
-  left: 40%;
-  transform: translate(-50%, -50%);
-  animation: floatRose 20s ease-in-out infinite alternate;
-}
-
-/* Reduced opacity for light mode to prevent visual clutter */
-[data-theme="light"] .blob-amber {
-  opacity: 0.25;
-  filter: blur(140px);
-}
-
-[data-theme="light"] .blob-violet {
-  opacity: 0.25;
-  filter: blur(140px);
-}
-
-[data-theme="light"] .blob-rose {
-  opacity: 0.22;
-  filter: blur(140px);
-}
-
-@keyframes floatAmber {
-  0% { transform: translate(0, 0) scale(1); }
-  50% { transform: translate(120px, 90px) scale(1.12); }
-  100% { transform: translate(50px, 150px) scale(0.95); }
-}
-
-@keyframes floatViolet {
-  0% { transform: translate(0, 0) scale(1); }
-  50% { transform: translate(-110px, -100px) scale(1.1); }
-  100% { transform: translate(-60px, -160px) scale(0.9); }
-}
-
-@keyframes floatRose {
-  0% { transform: translate(-50%, -50%) scale(1); }
-  50% { transform: translate(-30%, -60%) scale(1.15); }
-  100% { transform: translate(-70%, -40%) scale(0.9); }
+  display: none;
 }
 
 /* ==============================================================================

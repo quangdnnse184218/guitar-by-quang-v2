@@ -11,14 +11,18 @@ export function applyScrollReveal(selector, options = {}) {
   if (els.length === 0) return
 
   els.forEach((el) => {
+    if (el.dataset.revealed === 'true') return
+    el.dataset.revealed = 'true'
+
     gsap.from(el, {
       opacity: 0,
-      y: 12,
-      duration: 0.3,
+      y: 10,
+      duration: 0.25,
       ease: 'power2.out',
+      clearProps: 'transform,opacity',
       scrollTrigger: { 
         trigger: el, 
-        start: 'top 95%',
+        start: 'top 98%',
         once: true
       },
       ...options
