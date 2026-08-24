@@ -386,7 +386,7 @@ export function extractYoutubeId(urlOrId) {
 
 export function normalizeVideoPath(urlOrPath) {
   if (!urlOrPath || typeof urlOrPath !== 'string') return ''
-  const trimmed = urlOrPath.trim()
+  const trimmed = urlOrPath.trim().replace(/^["']+|["']+$/g, '').trim()
 
   const ytId = extractYoutubeId(trimmed)
   if (ytId) {
