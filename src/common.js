@@ -189,11 +189,7 @@ export async function initAuthHeader() {
       ? `<img src="${avatarUrl}" alt="${fullName}" class="w-10 h-10 rounded-full object-cover border-2 border-amber-400/60 shadow-sm" />`
       : `<div class="w-10 h-10 rounded-full bg-warm-gradient text-white flex items-center justify-center text-lg font-bold shadow-sm">${initial}</div>`
 
-    const userEmail = (user.email || '').toLowerCase()
-    const isAdmin = role === 'admin' || 
-                    userEmail.includes('quangdnn') || 
-                    userEmail.includes('quang') || 
-                    userEmail.includes('admin')
+    const isAdmin = role === 'admin'
 
     const targetDashboardUrl = isAdmin ? '/admin-dashboard.html' : '/user-dashboard.html'
     const targetDashboardLabel = 'Trang Của Tôi'

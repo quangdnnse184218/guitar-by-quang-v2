@@ -207,11 +207,7 @@ async function checkAuth() {
       .eq('id', session.user.id)
       .single()
 
-    const userEmail = (session.user.email || '').toLowerCase()
-    const isAdmin = profile?.role === 'admin' || 
-                    userEmail.includes('quangdnn') || 
-                    userEmail.includes('quang') || 
-                    userEmail.includes('admin')
+    const isAdmin = profile?.role === 'admin'
 
     if (!isAdmin) {
       await supabase.auth.signOut()

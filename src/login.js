@@ -210,11 +210,7 @@ document.addEventListener('DOMContentLoaded', () => {
           .eq('id', data.user.id)
           .single()
 
-        const userEmail = (data.user.email || '').toLowerCase()
-        const isAdmin = profile?.role === 'admin' || 
-                        userEmail.includes('quangdnn') || 
-                        userEmail.includes('quang') || 
-                        userEmail.includes('admin')
+        const isAdmin = profile?.role === 'admin'
 
         if (isAdmin) {
           targetUrl = '/admin-dashboard.html'
