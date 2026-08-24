@@ -530,7 +530,10 @@ window.openVideoDemoModal = function openVideoDemoModal(title, videoSrc) {
       iframeEl.classList.add('hidden')
     }
     const cleanSrc = normalizeVideoPath(videoSrc)
-    videoEl.src = cleanSrc
+    const encodedSrc = cleanSrc.startsWith('http') ? cleanSrc : encodeURI(cleanSrc)
+    videoEl.src = encodedSrc
+    const sourceEl = videoEl.querySelector('source')
+    if (sourceEl) sourceEl.src = encodedSrc
     videoEl.classList.remove('hidden')
     videoEl.load()
     videoEl.play().catch(() => {})
