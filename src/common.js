@@ -347,10 +347,10 @@ export async function initAuthHeader() {
       if (mainNavContainer) {
         mobileLoggedInNav = document.createElement('div')
         mobileLoggedInNav.id = 'mobile-logged-in-nav'
-        mobileLoggedInNav.className = 'md:hidden flex flex-col pt-1.5 mt-1.5 border-t border-glass-border/60 text-xs font-bold text-text-muted'
+        mobileLoggedInNav.className = 'md:hidden flex flex-col pt-1 mt-0.5 text-xs font-bold text-text-muted'
         mobileLoggedInNav.innerHTML = `
           <!-- Hàng 2: Trang chủ, Trang của tôi, Kho Video Tab -->
-          <div class="grid grid-cols-3 text-center py-1 gap-1 border-b border-glass-border/30">
+          <div class="grid grid-cols-3 text-center py-0.5 gap-1">
             <a href="/index.html" class="nav-link py-1 text-[11px] sm:text-xs font-bold justify-center transition-colors">Trang chủ</a>
             <a href="/user-dashboard.html" class="nav-link py-1 text-[11px] sm:text-xs font-bold justify-center transition-colors flex items-center gap-0.5">
               <span>Trang Của Tôi</span>
@@ -358,10 +358,10 @@ export async function initAuthHeader() {
             <a href="/kho-tab.html" class="nav-link py-1 text-[11px] sm:text-xs font-bold justify-center transition-colors">Kho Video Tab</a>
           </div>
           <!-- Hàng 3: Công Cụ, Hỏi đáp, Liên hệ -->
-          <div class="grid grid-cols-3 text-center py-1 gap-1">
+          <div class="grid grid-cols-3 text-center py-0.5 gap-1">
             <a href="/index.html#tools" class="nav-link py-1 text-[11px] sm:text-xs font-bold justify-center transition-colors">Công Cụ</a>
-            <a href="/index.html#faq" class="nav-link py-1 text-[11px] sm:text-xs font-bold justify-center transition-colors">Hỏi đáp</a>
-            <a href="/index.html#contact" class="nav-link py-1 text-[11px] sm:text-xs font-bold justify-center transition-colors">Liên hệ</a>
+            <a href="#faq" class="nav-link py-1 text-[11px] sm:text-xs font-bold justify-center transition-colors">Hỏi đáp</a>
+            <a href="#contact" class="nav-link py-1 text-[11px] sm:text-xs font-bold justify-center transition-colors">Liên hệ</a>
           </div>
         `
         mainNavContainer.appendChild(mobileLoggedInNav)
@@ -374,6 +374,39 @@ export async function initAuthHeader() {
     // Refresh active navigation link highlights after header update
     initNavActiveSpy()
   }
+}
+
+/**
+ * Mobile Auto-Hide Header on Scroll Down & Reveal on Scroll Up
+ */
+export function initMobileHeaderScroll() {
+  const mainNav = document.getElementById('main-nav')
+  if (!mainNav) return
+
+  let lastScrollY = window.scrollY
+  let ticking = false
+
+  window.addEventListener('scroll', () => {
+    if (!ticking) {
+      window.requestAnimationFrame(() => {
+        const currentScrollY = window.scrollY
+        if (window.innerWidth < 768) {
+          if (currentScrollY > lastScrollY && currentScrollY > 60) {
+            // Scrolling down -> hide header
+            mainNav.classList.add('-translate-y-full')
+          } else if (currentScrollY < lastScrollY) {
+            // Scrolling up -> show header
+            mainNav.classList.remove('-translate-y-full')
+          }
+        } else {
+          mainNav.classList.remove('-translate-y-full')
+        }
+        lastScrollY = Math.max(0, currentScrollY)
+        ticking = false
+      })
+      ticking = true
+    }
+  }, { passive: true })
 }
 
 /**
@@ -393,7 +426,7 @@ export function initNavActiveSpy() {
   function getLinkKey(href) {
     if (!href) return ''
     if (href.includes('kho-tab')) return 'kho-tab'
-    if (href.includes('user-dashboard')) return 'dashboard'
+    if (href.includes('user-dashboard') && !href.includes('#')) return 'dashboard'
     if (href.includes('#tools') || href.includes('cong-cu') || href.includes('metronome')) return 'tools'
     if (href.includes('#faq') || href.includes('faq')) return 'faq'
     if (href.includes('#contact') || href.includes('contact')) return 'contact'
@@ -420,33 +453,61 @@ export function initNavActiveSpy() {
       const linkKey = getLinkKey(link.getAttribute('href'))
       if (linkKey === key) {
         link.classList.add('text-accent-primary', 'font-bold')
+        link.classList.remove('text-text-primary')
       } else {
         link.classList.remove('text-accent-primary', 'font-bold')
+        link.classList.add('text-text-primary')
       }
     })
   }
 
-  function resolveCurrentKey() {
-    const path = window.location.pathname
-    const hash = window.location.hash
+  function getActiveSectionOnPage() {
+    // Check if scrolled near bottom of page (for footer/contact)
+    const isNearBottom = (window.innerHeight + window.scrollY) >= (document.documentElement.scrollHeight - 150)
+    if (isNearBottom) {
+      const contactEl = document.getElementById('contact')
+      if (contactEl) return 'contact'
+    }
 
+    const sections = [
+      { id: 'contact', key: 'contact' },
+      { id: 'faq', key: 'faq' },
+      { id: 'tools', key: 'tools' },
+      { id: 'gear', key: 'tools' },
+      { id: 'featured', key: 'home' },
+      { id: 'about', key: 'home' },
+      { id: 'hero', key: 'home' }
+    ]
+
+    const scrollY = window.scrollY + 200
+
+    for (const s of sections) {
+      const el = document.getElementById(s.id)
+      if (el) {
+        const top = el.offsetTop
+        const height = el.offsetHeight
+        if (scrollY >= top && scrollY < top + height) {
+          return s.key
+        }
+      }
+    }
+
+    // Default base page key when near top
+    const path = window.location.pathname
     if (path.includes('kho-tab')) return 'kho-tab'
     if (path.includes('user-dashboard')) return 'dashboard'
     if (path.includes('cong-cu') || path.includes('metronome')) return 'tools'
-
-    // Home or index.html
-    if (hash === '#tools') return 'tools'
-    if (hash === '#faq') return 'faq'
-    if (hash === '#contact') return 'contact'
     return 'home'
   }
 
-  // Set on load
-  setActiveKey(resolveCurrentKey())
+  function updateSpy() {
+    setActiveKey(getActiveSectionOnPage())
+  }
 
-  // Listen to hashchange
+  window.addEventListener('scroll', updateSpy, { passive: true })
+  window.addEventListener('resize', updateSpy, { passive: true })
   window.addEventListener('hashchange', () => {
-    setActiveKey(resolveCurrentKey())
+    setTimeout(updateSpy, 50)
   })
 
   // Listen to clicks on nav links
@@ -456,7 +517,7 @@ export function initNavActiveSpy() {
     const href = targetLink.getAttribute('href')
     if (!href) return
 
-    if (targetLink.classList.contains('nav-link') || targetLink.closest('#desktop-nav') || targetLink.closest('#mobile-menu-drawer')) {
+    if (targetLink.classList.contains('nav-link') || targetLink.closest('#desktop-nav') || targetLink.closest('#mobile-menu-drawer') || targetLink.closest('#mobile-logged-in-nav')) {
       const key = getLinkKey(href)
       if (key) {
         setActiveKey(key)
@@ -464,39 +525,13 @@ export function initNavActiveSpy() {
     }
   })
 
-  // ScrollSpy for sections on index.html
-  const sections = [
-    { id: 'hero', key: 'home' },
-    { id: 'about', key: 'home' },
-    { id: 'featured', key: 'home' },
-    { id: 'tools', key: 'tools' },
-    { id: 'faq', key: 'faq' },
-    { id: 'contact', key: 'contact' }
-  ]
-
-  const sectionElements = sections.map(s => ({ el: document.getElementById(s.id), key: s.key })).filter(s => s.el !== null)
-
-  if (sectionElements.length > 0) {
-    const observer = new IntersectionObserver((entries) => {
-      const visibleEntries = entries.filter(e => e.isIntersecting)
-      if (visibleEntries.length > 0) {
-        visibleEntries.sort((a, b) => a.boundingClientRect.top - b.boundingClientRect.top)
-        const matched = sectionElements.find(s => s.el === visibleEntries[0].target)
-        if (matched) {
-          setActiveKey(matched.key)
-        }
-      }
-    }, {
-      rootMargin: '-10% 0px -50% 0px',
-      threshold: [0, 0.2, 0.5]
-    })
-
-    sectionElements.forEach(s => observer.observe(s.el))
-  }
+  updateSpy()
 }
 
 document.addEventListener("DOMContentLoaded", () => {
   initAuthHeader()
   initNavActiveSpy()
+  initMobileHeaderScroll()
 })
 initNavActiveSpy()
+initMobileHeaderScroll()

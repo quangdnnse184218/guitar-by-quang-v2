@@ -279,21 +279,19 @@ export function renderGears(gears) {
       <div class="w-full glass-card card-interactive rounded-2xl sm:rounded-3xl p-3.5 sm:p-4 shadow-sm hover:shadow-xl hover:border-accent-primary/50 border border-glass-border transition-all duration-300 flex flex-col justify-between group overflow-hidden ${extraClass}">
         <div class="space-y-2.5 sm:space-y-3">
           <!-- Khung ảnh vuông 1:1 -->
-          <div onclick="window.openImageModal('${imagePath}', '${cleanTitle}', '${cleanDesc}')" class="w-full aspect-square rounded-xl sm:rounded-2xl bg-white/95 dark:bg-white/[0.05] flex items-center justify-center p-3 sm:p-4 border border-glass-border shadow-inner overflow-hidden group/img relative cursor-zoom-in group-hover:scale-[1.02] transition-transform duration-300" title="Click để phóng to ảnh">
-            <span class="absolute top-2 left-2 px-2 py-0.5 rounded-md bg-black/60 dark:bg-black/80 text-accent-primary backdrop-blur-md text-[9px] sm:text-[10px] font-mono font-bold uppercase tracking-wider shadow-xs z-10">
-              ${gear.category || 'PHỤ KIỆN'}
-            </span>
+          <div onclick="window.openImageModal('${imagePath}', '${cleanTitle}', '${cleanDesc}')" class="w-full aspect-square rounded-xl sm:rounded-2xl bg-white/95 dark:bg-white/[0.06] flex items-center justify-center p-2.5 sm:p-3.5 border border-glass-border shadow-inner overflow-hidden group/img relative cursor-zoom-in group-hover:scale-[1.02] transition-transform duration-300" title="Click để phóng to ảnh">
             <img src="${imagePath}" alt="${cleanTitle}" class="w-full h-full object-contain filter drop-shadow-xs transition-transform duration-300 group-hover/img:scale-105" onerror="this.src='/assets/clover.jpg'" />
-            <div class="absolute bottom-2 right-2 p-1.5 rounded-lg bg-black/70 text-white opacity-0 group-hover/img:opacity-100 transition-opacity backdrop-blur-sm shadow-sm pointer-events-none">
-              <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0zM10 7v6m3-3H7"/></svg>
+            <div class="absolute bottom-1.5 right-1.5 sm:bottom-2 sm:right-2 p-1 sm:p-1.5 rounded-lg bg-black/70 text-white opacity-0 group-hover/img:opacity-100 transition-opacity backdrop-blur-sm shadow-sm pointer-events-none">
+              <svg class="w-3 h-3 sm:w-3.5 sm:h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0zM10 7v6m3-3H7"/></svg>
             </div>
           </div>
-          <div class="space-y-1">
-            <h4 class="text-xs sm:text-sm font-extrabold text-text-primary group-hover:text-accent-primary transition-colors leading-snug line-clamp-1" title="${cleanTitle}">${gear.title || gear.name}</h4>
-            <p class="text-[11px] sm:text-xs text-text-muted font-normal leading-relaxed line-clamp-2" title="${cleanDesc}">${gear.description || ''}</p>
+          <div>
+            <span class="text-[9px] sm:text-[10px] font-extrabold font-mono tracking-widest text-accent-primary uppercase block mb-1">${gear.category || 'PHỤ KIỆN'}</span>
+            <h4 class="text-xs sm:text-base font-bold text-text-primary group-hover:text-accent-primary transition-colors leading-snug line-clamp-1" title="${cleanTitle}">${gear.title || gear.name}</h4>
+            <p class="text-[11px] sm:text-xs text-text-muted font-medium leading-relaxed mt-1 line-clamp-2" title="${cleanDesc}">${gear.description || ''}</p>
           </div>
         </div>
-        <div class="pt-2.5 mt-2.5 border-t border-glass-border/70">
+        <div class="pt-2.5 mt-2.5 border-t border-glass-border">
           ${buyButtonHtml}
         </div>
       </div>

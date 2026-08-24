@@ -18,7 +18,7 @@
     <div class="grain-overlay" aria-hidden="true"></div>
 
     <!-- Header Navigation Bar -->
-    <header id="main-nav" class="fixed top-0 left-0 right-0 z-40 bg-glass-bg backdrop-blur-xl border-b border-glass-border shadow-xs transition-all duration-300 py-2.5 sm:py-3.5">
+    <header id="main-nav" class="fixed top-0 left-0 right-0 z-40 bg-glass-bg backdrop-blur-xl border-b border-glass-border shadow-xs transition-transform duration-300 py-2 sm:py-3.5">
       <div class="max-w-7xl mx-auto px-3 sm:px-6 md:px-8">
         <div class="flex items-center justify-between gap-2">
           <!-- Logo & Avatar Brand -->
@@ -45,8 +45,8 @@
             </a>
             <a href="/kho-tab.html" class="nav-link hover:text-text-primary py-1 transition-colors">Kho Video Tab</a>
             <a href="/index.html#tools" class="nav-link hover:text-text-primary py-1 transition-colors">Công Cụ</a>
-            <a href="/index.html#faq" class="nav-link hover:text-text-primary py-1 transition-colors">Hỏi đáp</a>
-            <a href="/index.html#contact" class="nav-link hover:text-text-primary py-1 transition-colors">Liên hệ</a>
+            <a href="#faq" class="nav-link hover:text-text-primary py-1 transition-colors">Hỏi đáp</a>
+            <a href="#contact" class="nav-link hover:text-text-primary py-1 transition-colors">Liên hệ</a>
           </nav>
 
           <!-- Header Actions: User Profile Dropdown + Theme Toggle -->
@@ -114,7 +114,7 @@
           <a href="/index.html#tools"
             class="px-4 py-3 rounded-2xl hover:bg-glass-bg-hover text-text-primary transition-colors">Công Cụ</a>
           <a href="#faq" class="px-4 py-3 rounded-2xl hover:bg-glass-bg-hover text-text-primary transition-colors">Hỏi đáp</a>
-          <a href="/index.html#contact"
+          <a href="#contact"
             class="px-4 py-3 rounded-2xl hover:bg-glass-bg-hover text-text-primary transition-colors">Liên hệ</a>
         </nav>
 
@@ -128,8 +128,8 @@
     </div>
 
     <!-- Main Content -->
-    <main class="pt-28 pb-20 flex-grow">
-      <div class="max-w-6xl mx-auto px-4 sm:px-6 space-y-8">
+    <main class="pt-32 sm:pt-28 pb-20 flex-grow">
+      <div class="max-w-6xl mx-auto px-4 sm:px-6 space-y-6 sm:space-y-8">
         
         <!-- Admin Notice Banner (If logged in as Admin) -->
         <div id="admin-notice-banner" class="hidden p-4 rounded-3xl bg-purple-500/15 border border-purple-500/30 flex flex-col sm:flex-row items-center justify-between gap-3 shadow-lg">
@@ -146,130 +146,71 @@
         </div>
 
         <!-- Member Hero Banner with Gold Luxury Details -->
-        <div class="relative overflow-hidden rounded-3xl glass-card p-6 sm:p-8 border border-amber-500/30 shadow-2xl bg-gradient-to-br from-amber-500/5 via-transparent to-accent-primary/5">
+        <div class="relative overflow-hidden rounded-2xl sm:rounded-3xl glass-card p-4 sm:p-6 md:p-8 border border-amber-500/30 shadow-xl bg-gradient-to-br from-amber-500/5 via-transparent to-accent-primary/5">
           <div class="absolute -right-10 -bottom-10 w-48 h-48 bg-accent-primary/10 rounded-full blur-3xl pointer-events-none"></div>
           
-          <div class="relative z-10 flex flex-col md:flex-row md:items-center justify-between gap-6">
-            <div class="flex items-center gap-4 sm:gap-5">
+          <div class="relative z-10 flex flex-col md:flex-row md:items-center justify-between gap-4 sm:gap-6">
+            <div class="flex items-center gap-3.5 sm:gap-5">
               <!-- Avatar Display -->
               <div class="relative flex-shrink-0">
-                <div id="user-avatar-container" class="w-16 h-16 sm:w-20 sm:h-20 rounded-3xl bg-warm-gradient text-white flex items-center justify-center text-2xl sm:text-3xl font-black shadow-lg border-2 border-amber-400/80 overflow-hidden">
+                <div id="user-avatar-container" class="w-13 h-13 sm:w-20 sm:h-20 rounded-2xl sm:rounded-3xl bg-warm-gradient text-white flex items-center justify-center text-xl sm:text-3xl font-black shadow-md border-2 border-amber-400/80 overflow-hidden">
                   <span id="user-avatar-initial">U</span>
                   <img id="user-avatar-img" src="" alt="Avatar" class="w-full h-full object-cover hidden" />
                 </div>
-                <span class="absolute -bottom-1 -right-1 w-6 h-6 rounded-full bg-amber-400 text-black flex items-center justify-center text-xs shadow-md" title="Thành viên VIP">
-                  👑
-                </span>
               </div>
 
               <!-- Greeting & Info -->
-              <div class="space-y-1">
-                <h1 class="text-2xl sm:text-3xl font-black text-text-primary tracking-tight flex items-center gap-2">
+              <div class="space-y-0.5 sm:space-y-1">
+                <h1 class="text-xl sm:text-3xl font-black text-text-primary tracking-tight">
                   <span>Xin chào, </span>
                   <span id="user-display-name" class="text-accent-primary">...</span>
                 </h1>
-                <p id="user-email-display" class="text-xs text-text-muted font-mono font-medium">...</p>
+                <p id="user-email-display" class="text-[11px] sm:text-xs text-text-muted font-mono font-medium">...</p>
               </div>
             </div>
 
-            <!-- Quick Stats Pills -->
-            <div class="grid grid-cols-2 sm:grid-cols-3 gap-3 w-full md:w-auto">
-              <div class="p-3.5 sm:p-4 rounded-2xl glass-card border border-glass-border hover:border-amber-400/50 hover:shadow-lg transition-all text-center group">
-                <span class="text-lg block mb-0.5 group-hover:scale-110 transition-transform">❤️</span>
-                <span class="text-[10px] font-bold text-text-muted uppercase block">Yêu Thích</span>
-                <span id="stat-fav-count" class="text-base sm:text-lg font-mono font-extrabold text-accent-primary">0</span>
+            <!-- Quick Stats Pills (Compact & Clean) -->
+            <div class="grid grid-cols-3 gap-2 sm:gap-3 w-full md:w-auto">
+              <div class="p-2 sm:p-3.5 md:p-4 rounded-xl sm:rounded-2xl glass-card border border-glass-border hover:border-amber-400/50 hover:shadow-md transition-all text-center">
+                <span class="text-[9px] sm:text-[10px] font-bold text-text-muted uppercase block">Yêu Thích</span>
+                <span id="stat-fav-count" class="text-sm sm:text-lg font-mono font-extrabold text-accent-primary block mt-0.5">0</span>
               </div>
 
-              <div class="p-3.5 sm:p-4 rounded-2xl glass-card border border-glass-border hover:border-amber-400/50 hover:shadow-lg transition-all text-center group">
-                <span class="text-lg block mb-0.5 group-hover:scale-110 transition-transform">⚡</span>
-                <span class="text-[10px] font-bold text-text-muted uppercase block">Đã Mua</span>
-                <span id="stat-purchased-count" class="text-base sm:text-lg font-mono font-extrabold text-amber-500">0</span>
+              <div class="p-2 sm:p-3.5 md:p-4 rounded-xl sm:rounded-2xl glass-card border border-glass-border hover:border-amber-400/50 hover:shadow-md transition-all text-center">
+                <span class="text-[9px] sm:text-[10px] font-bold text-text-muted uppercase block">Đã Mua</span>
+                <span id="stat-purchased-count" class="text-sm sm:text-lg font-mono font-extrabold text-amber-500 block mt-0.5">0</span>
               </div>
 
-              <div class="col-span-2 sm:col-span-1 p-3.5 sm:p-4 rounded-2xl glass-card border border-glass-border hover:border-amber-400/50 hover:shadow-lg transition-all text-center group">
-                <span class="text-lg block mb-0.5 group-hover:scale-110 transition-transform">📅</span>
-                <span class="text-[10px] font-bold text-text-muted uppercase block">Tham Gia</span>
-                <span id="stat-join-date" class="text-xs font-mono font-bold text-text-primary block mt-1">...</span>
+              <div class="p-2 sm:p-3.5 md:p-4 rounded-xl sm:rounded-2xl glass-card border border-glass-border hover:border-amber-400/50 hover:shadow-md transition-all text-center">
+                <span class="text-[9px] sm:text-[10px] font-bold text-text-muted uppercase block">Tham Gia</span>
+                <span id="stat-join-date" class="text-[10px] sm:text-xs font-mono font-bold text-text-primary block mt-0.5 truncate">...</span>
               </div>
             </div>
           </div>
         </div>
 
-        <!-- Navigation Tabs Bar -->
-        <div id="dashboard-tab-bar" class="glass-card p-2 rounded-3xl border border-glass-border flex items-center gap-2 overflow-x-auto no-scrollbar">
-          <button id="nav-tab-overview" class="dashboard-tab-btn flex-1 min-w-[120px] py-3 px-4 rounded-2xl text-xs font-extrabold transition-all cursor-pointer bg-warm-gradient text-white shadow-md flex items-center justify-center gap-2">
-            <span>🌟</span>
+        <!-- Navigation Tabs Bar (Full Width, No Horizontal Scroll) -->
+        <div id="dashboard-tab-bar" class="glass-card p-1.5 sm:p-2 rounded-2xl sm:rounded-3xl border border-glass-border grid grid-cols-3 gap-1.5 sm:gap-2 w-full">
+          <button id="nav-tab-overview" class="dashboard-tab-btn w-full py-2.5 sm:py-3 px-2 sm:px-4 rounded-xl sm:rounded-2xl text-[11px] sm:text-xs font-extrabold transition-all cursor-pointer bg-warm-gradient text-white shadow-md text-center">
             <span>Tổng Quan</span>
           </button>
-          <button id="nav-tab-favorites" class="dashboard-tab-btn flex-1 min-w-[120px] py-3 px-4 rounded-2xl text-xs font-bold transition-all cursor-pointer text-text-muted hover:text-text-primary hover:bg-black/5 dark:hover:bg-white/5 flex items-center justify-center gap-2">
-            <span>❤️</span>
-            <span>Tab Yêu Thích (<span id="tab-fav-counter">0</span>)</span>
-          <button id="nav-tab-purchases" class="dashboard-tab-btn flex-1 min-w-[120px] py-3 px-4 rounded-2xl text-xs font-bold transition-all cursor-pointer text-text-muted hover:text-text-primary hover:bg-black/5 dark:hover:bg-white/5 flex items-center justify-center gap-2">
-            <span>⚡</span>
-            <span>Tab Đã Mua (<span id="tab-purchased-counter">0</span>)</span>
+          <button id="nav-tab-favorites" class="dashboard-tab-btn w-full py-2.5 sm:py-3 px-2 sm:px-4 rounded-xl sm:rounded-2xl text-[11px] sm:text-xs font-bold transition-all cursor-pointer text-text-muted hover:text-text-primary hover:bg-black/5 dark:hover:bg-white/5 text-center">
+            <span>Yêu Thích (<span id="tab-fav-counter">0</span>)</span>
+          </button>
+          <button id="nav-tab-purchases" class="dashboard-tab-btn w-full py-2.5 sm:py-3 px-2 sm:px-4 rounded-xl sm:rounded-2xl text-[11px] sm:text-xs font-bold transition-all cursor-pointer text-text-muted hover:text-text-primary hover:bg-black/5 dark:hover:bg-white/5 text-center">
+            <span>Đã Mua (<span id="tab-purchased-counter">0</span>)</span>
           </button>
         </div>
 
-        <!-- TAB CONTENT 1: TỔNG QUAN (OVERVIEW TOP CARDS) -->
-        <section id="section-overview" class="space-y-6">
-          <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-            <!-- Left Card: Quick Start & Tools -->
-            <div class="glass-card rounded-3xl p-6 border border-glass-border shadow-xl space-y-4 hover:border-amber-400/40 transition-all">
-              <div class="flex items-center justify-between pb-3 border-b border-glass-border">
-                <h3 class="text-base font-extrabold text-text-primary flex items-center gap-2">
-                  <span>🎸</span>
-                  <span>Công Cụ Luyện Tập Nhanh</span>
-                </h3>
-                <span class="text-xs text-accent-primary font-bold">Miễn phí cho Thành viên</span>
-              </div>
-              <p class="text-xs text-text-muted leading-relaxed font-medium">
-                Tận dụng các bộ công cụ chuẩn xác đã được tích hợp sẵn để nâng cao khả năng nghe nhịp và bấm hợp âm mỗi ngày.
-              </p>
-              <div class="grid grid-cols-2 gap-3 pt-2">
-                <a href="/metronome.html" class="p-3.5 rounded-2xl bg-black/5 dark:bg-white/5 hover:bg-accent-primary/15 border border-glass-border hover:border-accent-primary/50 text-left transition-all group">
-                  <span class="text-xl block mb-1">⏱️</span>
-                  <span class="text-xs font-bold text-text-primary group-hover:text-accent-primary block">Metronome Chuẩn</span>
-                  <span class="text-[10px] text-text-muted">Zero Drift Web Audio</span>
-                </a>
-                <a href="/cong-cu.html" class="p-3.5 rounded-2xl bg-black/5 dark:bg-white/5 hover:bg-accent-primary/15 border border-glass-border hover:border-accent-primary/50 text-left transition-all group">
-                  <span class="text-xl block mb-1">🎛️</span>
-                  <span class="text-xs font-bold text-text-primary group-hover:text-accent-primary block">Gear & Dụng Cụ</span>
-                  <span class="text-[10px] text-text-muted">Đồ nghề Quang tin dùng</span>
-                </a>
-              </div>
-            </div>
-
-            <!-- Right Card: Kho Tab Recommendations -->
-            <div class="glass-card rounded-3xl p-6 border border-glass-border shadow-xl space-y-4 hover:border-amber-400/40 transition-all">
-              <div class="flex items-center justify-between pb-3 border-b border-glass-border">
-                <h3 class="text-base font-extrabold text-text-primary flex items-center gap-2">
-                  <span>🎼</span>
-                  <span>Khám Phá Video Tab Mới</span>
-                </h3>
-                <a href="/kho-tab.html" class="text-xs text-accent-primary font-bold hover:underline">
-                  Xem tất cả →
-                </a>
-              </div>
-              <p class="text-xs text-text-muted leading-relaxed font-medium">
-                Hàng trăm bản Video Tab Fingerstyle độc quyền chạy nốt theo thời gian thực và âm thanh đàn mộc thật.
-              </p>
-              <div class="pt-2">
-                <a href="/kho-tab.html" class="w-full py-3 rounded-2xl bg-warm-gradient text-white font-extrabold text-xs text-center flex items-center justify-center gap-2 shadow-glow hover:brightness-105 transition-all">
-                  <span>Mở Kho Video Tab Ngay</span>
-                  <span>🚀</span>
-                </a>
-              </div>
-            </div>
-          </div>
-        </section>
+        <!-- TAB CONTENT 1: TỔNG QUAN -->
+        <section id="section-overview" class="hidden"></section>
 
         <!-- TAB CONTENT 2: TAB YÊU THÍCH (FAVORITES) -->
         <section id="section-favorites" class="space-y-6 hidden">
           <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-2 border-b border-glass-border">
             <div>
-              <h2 class="text-xl sm:text-2xl font-extrabold text-text-primary flex items-center gap-2">
-                <span>❤️</span>
-                <span>Danh Sách Tab Yêu Thích Của Tôi</span>
+              <h2 class="text-lg sm:text-2xl font-extrabold text-text-primary">
+                Danh Sách Tab Yêu Thích Của Tôi
               </h2>
               <p class="text-xs text-text-muted font-medium mt-0.5">
                 Các bài hát bạn đã lưu lại để theo dõi và luyện tập dần.
@@ -288,15 +229,6 @@
               </select>
             </div>
           </div>
-          
-          <div class="flex items-center gap-3">
-            <a href="/metronome.html" class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-accent-primary/10 text-accent-primary hover:bg-accent-primary/20 text-[11px] font-bold transition-colors">
-              <span>⏱️</span> Máy Gõ Nhịp
-            </a>
-            <a href="/faq.html" class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-black/5 dark:bg-white/5 hover:bg-black/10 dark:hover:bg-white/10 text-text-primary text-[11px] font-bold transition-colors">
-              <span>❓</span> Hướng dẫn (FAQ)
-            </a>
-          </div>
 
           <!-- Favorites Grid Container -->
           <div id="favorites-grid" class="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-5 lg:gap-6">
@@ -308,9 +240,8 @@
         <section id="section-purchases" class="space-y-6 hidden">
           <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-2 border-b border-glass-border">
             <div>
-              <h2 class="text-xl sm:text-2xl font-extrabold text-text-primary flex items-center gap-2">
-                <span>⚡</span>
-                <span>Tab Bạn Đã Sở Hữu Bản Quyền</span>
+              <h2 class="text-lg sm:text-2xl font-extrabold text-text-primary">
+                Tab Bạn Đã Sở Hữu Bản Quyền
               </h2>
               <p class="text-xs text-text-muted font-medium mt-0.5">
                 Tải về hoặc xem lại bất cứ lúc nào không giới hạn thời gian và không cần thanh toán lại.
@@ -328,15 +259,6 @@
                 <option value="paid">Có phí</option>
               </select>
             </div>
-          </div>
-          
-          <div class="flex items-center gap-3">
-            <a href="/metronome.html" class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-accent-primary/10 text-accent-primary hover:bg-accent-primary/20 text-[11px] font-bold transition-colors">
-              <span>⏱️</span> Máy Gõ Nhịp
-            </a>
-            <a href="/faq.html" class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-black/5 dark:bg-white/5 hover:bg-black/10 dark:hover:bg-white/10 text-text-primary text-[11px] font-bold transition-colors">
-              <span>❓</span> Hướng dẫn (FAQ)
-            </a>
           </div>
 
           <!-- Purchases Grid Container -->
@@ -1168,12 +1090,12 @@
     <!-- ====================================================================
          FOOTER (EXACTLY MATCHING GUEST LANDING PAGE)
          ==================================================================== -->
-    <footer class="footer-section mt-20 pt-10 pb-6 border-t border-glass-border">
+    <footer id="contact" class="footer-section mt-20 pt-10 pb-6 border-t border-glass-border">
       <div class="max-w-7xl mx-auto px-6">
         <div class="grid grid-cols-1 md:grid-cols-12 gap-8 sm:gap-10 pb-6">
 
-          <!-- Cột 1: Logo + Tagline + Mô tả (md:col-span-5) -->
-          <div class="md:col-span-5 space-y-3 text-left">
+          <!-- Cột 1: Logo + Tagline + Mô tả (md:col-span-7) -->
+          <div class="md:col-span-7 space-y-3 text-left">
             <a href="/"
               class="inline-flex items-center gap-2.5 text-xl font-extrabold text-text-primary hover:text-accent-primary transition-colors group">
               <span
@@ -1186,68 +1108,19 @@
               <p class="text-xs font-bold text-accent-primary uppercase tracking-wider">
                 fingerstyle diary • Nhật Quang
               </p>
-              <p class="text-xs text-text-muted leading-relaxed font-medium max-w-sm">
+              <p class="text-xs text-text-muted leading-relaxed font-medium max-w-md">
                 Nơi chia sẻ video tab guitar fingerstyle, tài liệu học đàn và công cụ hỗ trợ luyện tập chuẩn xác, chất
                 lượng cao dành cho cộng đồng yêu guitar.
               </p>
             </div>
           </div>
 
-          <!-- Cột 2: Liên kết nhanh (md:col-span-4) -->
-          <div class="md:col-span-4 space-y-3 text-left">
-            <h4 class="text-xs font-mono font-bold uppercase tracking-wider text-text-primary">
-              Liên Kết Nhanh
-            </h4>
-            <ul class="space-y-2 text-xs font-semibold text-text-muted">
-              <li>
-                <a href="/index.html"
-                  class="hover:text-accent-primary transition-colors inline-flex items-center gap-1.5 group">
-                  <span class="text-accent-primary font-bold group-hover:translate-x-0.5 transition-transform">›</span>
-                  <span>Trang chủ</span>
-                </a>
-              </li>
-              <li>
-                <a href="/user-dashboard.html"
-                  class="hover:text-accent-primary transition-colors inline-flex items-center gap-1.5 group">
-                  <span class="text-accent-primary font-bold group-hover:translate-x-0.5 transition-transform">›</span>
-                  <span>Trang Của Tôi</span>
-                </a>
-              </li>
-              <li>
-                <a href="/kho-tab.html"
-                  class="hover:text-accent-primary transition-colors inline-flex items-center gap-1.5 group">
-                  <span class="text-accent-primary font-bold group-hover:translate-x-0.5 transition-transform">›</span>
-                  <span>Kho Video Tab</span>
-                </a>
-              </li>
-              <li>
-                <a href="/index.html#tools"
-                  class="hover:text-accent-primary transition-colors inline-flex items-center gap-1.5 group">
-                  <span class="text-accent-primary font-bold group-hover:translate-x-0.5 transition-transform">›</span>
-                  <span>Công Cụ Hỗ Trợ</span>
-                </a>
-              </li>
-              <li>
-                <a href="#faq" class="hover:text-accent-primary transition-colors inline-flex items-center gap-1.5 group">
-                  <span class="text-accent-primary font-bold group-hover:translate-x-0.5 transition-transform">›</span>
-                  <span>Hỏi đáp thường gặp</span>
-                </a>
-              </li>
-              <li>
-                <a href="/index.html#contact" class="hover:text-accent-primary transition-colors inline-flex items-center gap-1.5 group">
-                  <span class="text-accent-primary font-bold group-hover:translate-x-0.5 transition-transform">›</span>
-                  <span>Liên hệ</span>
-                </a>
-              </li>
-            </ul>
-          </div>
-
-          <!-- Cột 3: Kết nối mạng xã hội (md:col-span-3) -->
-          <div class="md:col-span-3 space-y-3 text-left">
+          <!-- Cột 2: Kết nối mạng xã hội (md:col-span-5) -->
+          <div class="md:col-span-5 space-y-3 text-left md:text-right">
             <h4 class="text-xs font-mono font-bold uppercase tracking-wider text-text-primary">
               Kết Nối & Giao Lưu
             </h4>
-            <div class="flex flex-col gap-2.5">
+            <div class="flex flex-col md:items-end gap-2.5">
               <a href="https://www.tiktok.com/@quangdnn104" target="_blank" rel="noopener noreferrer"
                 class="inline-flex items-center gap-2.5 px-3.5 py-2 rounded-xl bg-glass-bg border border-glass-border hover:border-accent-primary text-xs font-bold text-text-primary hover:text-accent-primary transition-all shadow-xs group">
                 <span

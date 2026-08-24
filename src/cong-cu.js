@@ -126,18 +126,16 @@ async function renderGears() {
       <div class="w-full glass-card card-interactive rounded-2xl sm:rounded-3xl p-3.5 sm:p-4 shadow-sm hover:shadow-xl hover:border-accent-primary/50 border border-glass-border transition-all duration-300 flex flex-col justify-between group overflow-hidden ${extraClass}">
         <div class="space-y-2.5 sm:space-y-3">
           <!-- Khung ảnh vuông 1:1 -->
-          <div class="w-full aspect-square rounded-xl sm:rounded-2xl bg-white/95 dark:bg-white/[0.05] flex items-center justify-center p-3 sm:p-4 border border-glass-border shadow-inner overflow-hidden group/img relative">
-            <span class="absolute top-2 left-2 px-2 py-0.5 rounded-md bg-black/60 dark:bg-black/80 text-accent-primary backdrop-blur-md text-[9px] sm:text-[10px] font-mono font-bold uppercase tracking-wider shadow-xs z-10">
-              ${gear.category || 'PHỤ KIỆN'}
-            </span>
+          <div class="w-full aspect-square rounded-xl sm:rounded-2xl bg-white/95 dark:bg-white/[0.06] flex items-center justify-center p-2.5 sm:p-3.5 border border-glass-border shadow-inner overflow-hidden group/img relative">
             <img src="${imagePath}" alt="${cleanTitle}" class="w-full h-full object-contain filter drop-shadow-xs transition-transform duration-300 group-hover/img:scale-105" onerror="this.src='/assets/clover.jpg'" />
           </div>
-          <div class="space-y-1">
-            <h4 class="text-xs sm:text-sm font-extrabold text-text-primary group-hover:text-accent-primary transition-colors leading-snug line-clamp-1" title="${cleanTitle}">${cleanTitle}</h4>
-            <p class="text-[11px] sm:text-xs text-text-muted font-normal leading-relaxed line-clamp-2" title="${cleanDesc}">${gear.description || ''}</p>
+          <div>
+            <span class="text-[9px] sm:text-[10px] font-extrabold font-mono tracking-widest text-accent-primary uppercase block mb-1">${gear.category || 'PHỤ KIỆN'}</span>
+            <h4 class="text-xs sm:text-base font-bold text-text-primary group-hover:text-accent-primary transition-colors leading-snug line-clamp-1" title="${cleanTitle}">${cleanTitle}</h4>
+            <p class="text-[11px] sm:text-xs text-text-muted font-medium leading-relaxed mt-1 line-clamp-2" title="${cleanDesc}">${gear.description || ''}</p>
           </div>
         </div>
-        <div class="pt-2.5 mt-2.5 border-t border-glass-border/70">
+        <div class="pt-2.5 mt-2.5 border-t border-glass-border">
           ${buyButtonHtml}
         </div>
       </div>
