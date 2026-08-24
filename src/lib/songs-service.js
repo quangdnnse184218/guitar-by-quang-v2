@@ -395,8 +395,7 @@ export async function fetchSongById(id) {
     const ov = overrides[data.id] || {}
     return {
       ...data,
-      ...ov,
-      is_audio_only: (ov.is_audio_only !== undefined) ? ov.is_audio_only : Boolean(data.is_audio_only ?? data.isAudioOnly)
+      ...ov
     }
   } catch (err) {
     console.error(`[songs-service] Ngoại lệ khi tải bài hát ${id}:`, err.message, err)
