@@ -142,13 +142,15 @@ document.addEventListener('DOMContentLoaded', () => {
         try {
           const { data: matchedProfiles, error: profileErr } = await supabase
             .from('profiles')
-            .select('id, email')
+            .select('id, email, role')
             .ilike('email', email)
             .limit(1)
 
-          if (!profileErr && Array.isArray(matchedProfiles) && matchedProfiles.length === 0) {
-            setForgotLoading(false)
-            return showForgotAlert(`Gửi thất bại: Email "${email}" không tồn tại trong hệ thống. Vui lòng kiểm tra lại hoặc tạo tài khoản mới.`)
+          if (!profileErr && Array.isArray(matchedProfiles)) {
+            if (matchedProfiles.length === 0 || matchedProfiles[0]?.role === 'admin') {
+              setForgotLoading(false)
+              return showForgotAlert(`Gửi thất bại: Email "${email}" không tồn tại trong hệ thống. Vui lòng kiểm tra lại hoặc tạo tài khoản mới.`)
+            }
           }
         } catch (checkErr) {
           console.warn('[login] Profile check note:', checkErr)
@@ -229,7 +231,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
           if (profile?.role === 'admin') {
             await supabase.auth.signOut()
-            showAlert('Tài khoản này là Quản Trị Viên (Admin). Vui lòng đăng nhập tại Cổng Quản Trị dành riêng cho Admin (admin-login.html).')
+            showAlert('Tài khoản không tồn tại. Vui lòng kiểm tra lại email hoặc đăng ký tài khoản mới.')
             setLoading(false)
             return
           }
