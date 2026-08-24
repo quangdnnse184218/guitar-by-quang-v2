@@ -621,6 +621,20 @@ window.openCheckoutModal = async function openCheckoutModal(tabId) {
 
   const hasDemo = tab.has_demo ?? tab.hasDemo ?? false
   const videoDemo = tab.demo_video_url || tab.video_demo || tab.videoDemo || tab.youtube_id || ''
+  const isAudioOnly = Boolean(tab.is_audio_only ?? tab.isAudioOnly)
+  const checkoutAudioCover = document.getElementById('checkout-modal-audio-cover')
+  const checkoutBadgeText = document.getElementById('checkout-modal-video-badge-text')
+
+  if (checkoutAudioCover) {
+    if (isAudioOnly) {
+      checkoutAudioCover.classList.remove('hidden')
+      if (checkoutBadgeText) checkoutBadgeText.textContent = 'Audio Demo • Chỉ Nghe Âm Thanh'
+    } else {
+      checkoutAudioCover.classList.add('hidden')
+      if (checkoutBadgeText) checkoutBadgeText.textContent = 'Video Demo • Xem trước'
+    }
+  }
+
   if (videoEl && videoContainer) {
     if (hasDemo && videoDemo) {
       const cleanVideo = normalizeVideoPath(videoDemo)
