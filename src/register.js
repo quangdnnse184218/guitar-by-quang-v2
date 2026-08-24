@@ -112,6 +112,41 @@ document.addEventListener('DOMContentLoaded', () => {
     setLoading(true)
 
     try {
+      // 5. Kiểm tra trùng Tên hiển thị (DisplayName) trong bảng profiles
+      try {
+        const { data: existingNameProfiles } = await supabase
+          .from('profiles')
+          .select('id')
+          .ilike('full_name', displayName)
+          .limit(1)
+
+        if (existingNameProfiles && existingNameProfiles.length > 0) {
+          setLoading(false)
+          nameInput?.focus()
+          return showAlert(`Tên hiển thị "${displayName}" đã có người sử dụng. Vui lòng chọn một tên khác.`)
+        }
+      } catch (checkNameErr) {
+        console.warn('Lưu ý kiểm tra tên trùng:', checkNameErr)
+      }
+
+      // 6. Kiểm tra trùng Email trong bảng profiles
+      try {
+        const { data: existingEmailProfiles } = await supabase
+          .from('profiles')
+          .select('id')
+          .ilike('email', email)
+          .limit(1)
+
+        if (existingEmailProfiles && existingEmailProfiles.length > 0) {
+          setLoading(false)
+          emailInput?.focus()
+          return showAlert(`Email "${email}" đã được đăng ký. Vui lòng chọn email khác hoặc bấm Đăng nhập.`)
+        }
+      } catch (checkEmailErr) {
+        console.warn('Lưu ý kiểm tra email trùng:', checkEmailErr)
+      }
+
+      // 7. Thực hiện đăng ký tài khoản qua Supabase Auth
       const { data, error } = await supabase.auth.signUp({
         email,
         password,
@@ -125,6 +160,13 @@ document.addEventListener('DOMContentLoaded', () => {
       })
 
       if (error) throw error
+
+      // Nếu email đã tồn tại trong Supabase Auth (khi bật tính năng bảo mật, Supabase trả về user với identities = [])
+      if (data?.user && Array.isArray(data.user.identities) && data.user.identities.length === 0) {
+        setLoading(false)
+        emailInput?.focus()
+        return showAlert(`Email "${email}" đã được đăng ký từ trước. Vui lòng sử dụng email khác hoặc bấm Đăng nhập.`)
+      }
 
       // Tự động ghi bản ghi vào bảng 'profiles'
       if (data?.user) {
@@ -159,8 +201,8 @@ document.addEventListener('DOMContentLoaded', () => {
       const msgLower = (error?.message || '').toLowerCase()
       let errorMsg = error?.message || 'Đã có lỗi xảy ra. Vui lòng thử lại sau.'
 
-      if (msgLower.includes('already registered') || msgLower.includes('user already exists') || msgLower.includes('email already in use')) {
-        errorMsg = 'Email này đã được đăng ký. Vui lòng sử dụng email khác hoặc bấm Đăng nhập.'
+      if (msgLower.includes('already registered') || msgLower.includes('user already exists') || msgLower.includes('email already in use') || msgLower.includes('duplicate')) {
+        errorMsg = `Email "${email}" đã được đăng ký. Vui lòng sử dụng email khác hoặc bấm Đăng nhập.`
       } else if (msgLower.includes('password') && (msgLower.includes('least') || msgLower.includes('short') || msgLower.includes('weak'))) {
         errorMsg = 'Mật khẩu chưa đủ độ dài (tối thiểu 6 ký tự). Vui lòng thử mật khẩu khác.'
       } else if (msgLower.includes('rate limit') || msgLower.includes('too many requests') || msgLower.includes('over_email_send_rate_limit')) {

@@ -10,6 +10,10 @@ import { initThemeToggle } from './theme-toggle.js'
 import { fetchAllSongs } from './lib/songs-service.js'
 import { fetchAllGears, DEFAULT_GEARS } from './lib/gears-service.js'
 
+// If redirected here with a recovery token, immediately move to reset-password.html
+if (window.location.hash.includes('type=recovery') || window.location.search.includes('type=recovery')) {
+  window.location.replace('/reset-password.html' + (window.location.hash || window.location.search))
+}
 
 initNavbarShrink()
 initMobileMenu()

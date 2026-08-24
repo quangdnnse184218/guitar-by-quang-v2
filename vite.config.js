@@ -15,6 +15,8 @@ export default defineConfig({
         register: resolve(import.meta.dirname, 'register.html'),
         login: resolve(import.meta.dirname, 'login.html'),
         userDashboard: resolve(import.meta.dirname, 'user-dashboard.html'),
+        resetPassword: resolve(import.meta.dirname, 'reset-password.html'),
+        adminResetPassword: resolve(import.meta.dirname, 'admin-reset-password.html'),
       }
     }
   }

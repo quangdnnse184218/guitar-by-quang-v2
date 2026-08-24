@@ -1,7 +1,32 @@
-/**
- * Shared utility functions across all pages
- */
 import { supabase } from './lib/supabase.js'
+
+/**
+ * Universal Password Recovery Intercept:
+ * If the user clicks a recovery link from Supabase email and lands on ANY page,
+ * immediately redirect them to the dedicated reset password page.
+ */
+;(function checkPasswordRecoveryIntercept() {
+  const hash = window.location.hash || ''
+  const search = window.location.search || ''
+  const isRecovery = hash.includes('type=recovery') || search.includes('type=recovery')
+  const pathname = window.location.pathname
+
+  if (isRecovery && !pathname.includes('reset-password')) {
+    const isAdmin = pathname.includes('admin') || hash.includes('role=admin') || search.includes('role=admin')
+    const targetUrl = isAdmin ? '/admin-reset-password.html' : '/reset-password.html'
+    window.location.replace(`${targetUrl}${hash || search}`)
+    return
+  }
+
+  // Also listen for Supabase PASSWORD_RECOVERY auth event
+  supabase.auth.onAuthStateChange((event) => {
+    if (event === 'PASSWORD_RECOVERY' && !window.location.pathname.includes('reset-password')) {
+      const isAdmin = window.location.pathname.includes('admin') || window.location.hash.includes('admin')
+      const targetUrl = isAdmin ? '/admin-reset-password.html' : '/reset-password.html'
+      window.location.replace(`${targetUrl}${window.location.hash}`)
+    }
+  })
+})()
 
 /**
  * Renders the 3 ambient floating blurred blobs in the background.
