@@ -732,36 +732,39 @@ function renderGearsTable() {
     const description = gear.description || 'Chưa có mô tả'
 
     return `
-      <tr class="hover:bg-black/5 dark:hover:bg-white/5 transition-colors" data-id="${gear.id}">
+      <tr class="hover:bg-black/5 dark:hover:bg-white/5 transition-colors admin-gear-card-row" data-id="${gear.id}">
         <!-- Vị Trí & Di Chuyển -->
-        <td data-label="Vị Trí" class="py-3 px-3 text-center">
-          <div class="inline-flex items-center gap-1.5 p-1 rounded-xl bg-black/5 dark:bg-white/5 border border-glass-border">
-            <input 
-              type="number" 
-              min="1" 
-              max="${gearsList.length}" 
-              value="${currentOrder}" 
-              id="order-input-gear-${gear.id}" 
-              onkeydown="if(event.key==='Enter') window.handleSaveGearPosition('${gear.id}')"
-              class="w-11 text-center py-1 bg-glass-bg border border-glass-border rounded-lg font-mono tabular-nums font-bold text-xs text-text-primary focus:border-accent-primary focus:outline-none shadow-xs" 
-              title="Nhập số thứ tự vị trí mong muốn rồi bấm Lưu hoặc nhấn Enter"
-            />
-            <button 
-              onclick="window.handleSaveGearPosition('${gear.id}')" 
-              class="px-2.5 py-1 rounded-lg bg-warm-gradient hover:brightness-105 text-white font-bold text-xs transition-all shadow-xs cursor-pointer active:scale-95"
-              title="Lưu vị trí mới">
-              Lưu
-            </button>
-            <div class="flex flex-col gap-0.5">
+        <td data-label="Vị Trí" class="py-3 px-3 text-center gear-col-order">
+          <div class="inline-flex items-center gap-1 sm:gap-1.5 p-1 rounded-xl bg-black/5 dark:bg-white/5 border border-glass-border w-full sm:w-auto justify-between sm:justify-center">
+            <div class="flex items-center gap-1">
+              <span class="text-[10px] font-mono font-extrabold text-accent-primary sm:hidden">#</span>
+              <input 
+                type="number" 
+                min="1" 
+                max="${gearsList.length}" 
+                value="${currentOrder}" 
+                id="order-input-gear-${gear.id}" 
+                onkeydown="if(event.key==='Enter') window.handleSaveGearPosition('${gear.id}')"
+                class="w-9 sm:w-11 text-center py-0.5 sm:py-1 bg-glass-bg border border-glass-border rounded-lg font-mono tabular-nums font-bold text-[11px] sm:text-xs text-text-primary focus:border-accent-primary focus:outline-none shadow-xs" 
+                title="Nhập số thứ tự vị trí mong muốn rồi bấm Lưu hoặc nhấn Enter"
+              />
+              <button 
+                onclick="window.handleSaveGearPosition('${gear.id}')" 
+                class="px-2 sm:px-2.5 py-0.5 sm:py-1 rounded-lg bg-warm-gradient hover:brightness-105 text-white font-bold text-[11px] sm:text-xs transition-all shadow-xs cursor-pointer active:scale-95"
+                title="Lưu vị trí mới">
+                Lưu
+              </button>
+            </div>
+            <div class="flex sm:flex-col gap-0.5">
               <button 
                 onclick="window.handleMoveGear('${gear.id}', 'up')" 
-                ${isFirst ? 'disabled class="p-0.5 rounded text-text-muted/30 cursor-not-allowed"' : 'class="p-0.5 rounded hover:bg-glass-bg text-text-primary hover:text-accent-primary transition-colors cursor-pointer"'} 
+                ${isFirst ? 'disabled class="p-1 sm:p-0.5 rounded text-text-muted/30 cursor-not-allowed"' : 'class="p-1 sm:p-0.5 rounded hover:bg-glass-bg text-text-primary hover:text-accent-primary transition-colors cursor-pointer"'} 
                 title="Di chuyển lên 1 bậc">
                 <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 15l7-7 7 7"/></svg>
               </button>
               <button 
                 onclick="window.handleMoveGear('${gear.id}', 'down')" 
-                ${isLast ? 'disabled class="p-0.5 rounded text-text-muted/30 cursor-not-allowed"' : 'class="p-0.5 rounded hover:bg-glass-bg text-text-primary hover:text-accent-primary transition-colors cursor-pointer"'} 
+                ${isLast ? 'disabled class="p-1 sm:p-0.5 rounded text-text-muted/30 cursor-not-allowed"' : 'class="p-1 sm:p-0.5 rounded hover:bg-glass-bg text-text-primary hover:text-accent-primary transition-colors cursor-pointer"'} 
                 title="Di chuyển xuống 1 bậc">
                 <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M19 9l-7 7-7-7"/></svg>
               </button>
@@ -769,23 +772,26 @@ function renderGearsTable() {
           </div>
         </td>
 
-        <td data-label="Ảnh & Tên Thiết Bị" class="py-3.5 px-4 font-bold text-text-primary">
-          <div class="flex items-center gap-3 justify-end sm:justify-start">
-            <img src="${image}" alt="${name}" class="w-10 h-10 rounded-xl object-cover bg-black/5 border border-glass-border flex-shrink-0" onerror="this.src='/assets/avatar.jpg'" />
-            <span class="text-sm font-extrabold">${name}</span>
+        <td data-label="Ảnh & Tên Thiết Bị" class="py-3.5 px-4 font-bold text-text-primary gear-col-title">
+          <div class="flex flex-col sm:flex-row items-start sm:items-center gap-2.5">
+            <img src="${image}" alt="${name}" class="w-full sm:w-10 aspect-video sm:aspect-square sm:h-10 rounded-xl object-cover bg-black/5 border border-glass-border flex-shrink-0" onerror="this.src='/assets/avatar.jpg'" />
+            <div class="flex flex-col text-left">
+              <span class="text-xs sm:text-sm font-extrabold line-clamp-2 leading-snug">${name}</span>
+              <span class="text-[10px] sm:text-xs text-accent-primary font-bold mt-0.5 sm:hidden font-mono">${price}</span>
+            </div>
           </div>
         </td>
-        <td data-label="Phân Loại" class="py-3.5 px-3">
+        <td data-label="Phân Loại" class="py-3.5 px-3 gear-col-category">
           <span class="px-2.5 py-1 rounded-lg bg-black/5 dark:bg-white/5 text-xs font-bold text-text-muted">${category}</span>
         </td>
-        <td data-label="Mô Tả Ngắn" class="py-3.5 px-3 text-text-muted text-xs font-medium max-w-xs truncate">${description}</td>
-        <td data-label="Giá Hiển Thị" class="py-3.5 px-3 font-mono tabular-nums font-bold text-text-primary text-xs">${price}</td>
-        <td data-label="Thao Tác" class="py-3.5 px-4 text-right">
-          <div class="flex items-center justify-end gap-2">
-            <button onclick="window.editGear('${gear.id}')" class="px-3 py-1.5 rounded-lg bg-glass-bg hover:bg-glass-bg-hover text-accent-primary font-bold text-xs border border-glass-border transition-colors cursor-pointer">
+        <td data-label="Mô Tả Ngắn" class="py-3.5 px-3 text-text-muted text-xs font-medium max-w-xs truncate gear-col-desc">${description}</td>
+        <td data-label="Giá Hiển Thị" class="py-3.5 px-3 font-mono tabular-nums font-bold text-text-primary text-xs gear-col-price">${price}</td>
+        <td data-label="Thao Tác" class="py-3.5 px-4 text-right gear-col-actions">
+          <div class="flex items-center justify-end gap-1.5 sm:gap-2 w-full">
+            <button onclick="window.editGear('${gear.id}')" class="flex-1 sm:flex-initial py-1.5 px-3 rounded-lg sm:rounded-xl bg-warm-gradient hover:brightness-105 text-white font-bold text-xs transition-all shadow-xs text-center cursor-pointer active:scale-95">
               Sửa
             </button>
-            <button onclick="window.deleteGear('${gear.id}', '${name.replace(/'/g, "\\'")}')" class="px-3 py-1.5 rounded-lg bg-rose-500/10 hover:bg-rose-500/20 text-rose-600 dark:text-rose-400 font-bold text-xs border border-rose-500/30 transition-colors cursor-pointer">
+            <button onclick="window.deleteGear('${gear.id}', '${name.replace(/'/g, "\\'")}')" class="flex-1 sm:flex-initial py-1.5 px-2.5 rounded-lg sm:rounded-xl bg-rose-500/10 hover:bg-rose-500/20 text-rose-600 dark:text-rose-400 font-bold text-xs border border-rose-500/30 transition-colors text-center cursor-pointer active:scale-95">
               Xóa
             </button>
           </div>
@@ -1006,56 +1012,71 @@ function renderUsersTable() {
       : uuidStr
 
     const tr = document.createElement('tr')
-    tr.className = 'hover:bg-black/5 dark:hover:bg-white/5 transition-colors border-b border-glass-border/50 last:border-0'
+    tr.className = 'hover:bg-black/5 dark:hover:bg-white/5 transition-colors border-b border-glass-border/50 last:border-0 admin-user-card-row'
     tr.innerHTML = `
-      <td data-label="Thành viên" class="p-4">
-        <div class="flex items-center gap-3 justify-end sm:justify-start">
-          <img src="${u.avatar_url || 'https://ui-avatars.com/api/?name=' + encodeURIComponent(u.full_name || u.email || 'User') + '&background=random'}" alt="Avatar" class="w-9 h-9 rounded-xl border border-glass-border object-cover bg-glass-bg flex-shrink-0">
-          <div class="text-right sm:text-left">
-            <div class="text-sm font-bold text-text-primary flex items-center justify-end sm:justify-start gap-1.5">
-              <span>${escapeHtml(u.full_name || 'Khách Vãng Lai')}</span>
+      <td data-label="Thành viên" class="p-3 sm:p-4 user-col-profile">
+        <div class="flex items-center gap-3 w-full">
+          <img src="${u.avatar_url || 'https://ui-avatars.com/api/?name=' + encodeURIComponent(u.full_name || u.email || 'User') + '&background=random'}" alt="Avatar" class="w-10 h-10 rounded-xl border border-glass-border object-cover bg-glass-bg flex-shrink-0">
+          <div class="flex-1 min-w-0 text-left">
+            <div class="text-xs sm:text-sm font-bold text-text-primary flex items-center gap-1.5 flex-wrap">
+              <span class="truncate max-w-[140px] sm:max-w-none">${escapeHtml(u.full_name || 'Khách Vãng Lai')}</span>
               ${isSelf ? '<span class="text-[10px] text-accent-primary font-bold">(Bạn)</span>' : ''}
+              <div class="sm:hidden ml-auto">${roleBadge}</div>
             </div>
-            <div class="text-xs text-text-muted font-medium">${escapeHtml(u.email || 'Chưa cập nhật email')}</div>
+            <div class="text-[11px] sm:text-xs text-text-muted font-medium truncate">${escapeHtml(u.email || 'Chưa cập nhật email')}</div>
           </div>
         </div>
       </td>
-      <td data-label="Mã User (UUID)" class="p-4">
-        <div class="flex items-center justify-end sm:justify-start gap-1.5">
-          <span class="font-mono text-xs text-accent-primary bg-black/5 dark:bg-white/5 px-2 py-1 rounded-lg border border-glass-border cursor-help" title="${escapeHtml(uuidStr)}">
-            ${shortUuid}
-          </span>
-          <button onclick="copyUserId('${escapeHtml(uuidStr)}')" class="p-1.5 rounded-lg bg-glass-bg border border-glass-border hover:bg-glass-bg-hover hover:border-accent-primary text-text-muted hover:text-accent-primary transition-all cursor-pointer" title="Copy đầy đủ UUID để cấp quyền">
-            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"/></svg>
-          </button>
+      <td data-label="Mã User (UUID)" class="p-3 sm:p-4 user-col-uuid">
+        <div class="flex items-center justify-between sm:justify-start gap-1.5 w-full">
+          <span class="text-[11px] font-bold text-text-muted sm:hidden">Mã UUID:</span>
+          <div class="flex items-center gap-1.5">
+            <span class="font-mono text-[11px] sm:text-xs text-accent-primary bg-black/5 dark:bg-white/5 px-2 py-0.5 sm:py-1 rounded-lg border border-glass-border cursor-help" title="${escapeHtml(uuidStr)}">
+              ${shortUuid}
+            </span>
+            <button onclick="copyUserId('${escapeHtml(uuidStr)}')" class="p-1 sm:p-1.5 rounded-lg bg-glass-bg border border-glass-border hover:bg-glass-bg-hover hover:border-accent-primary text-text-muted hover:text-accent-primary transition-all cursor-pointer" title="Copy UUID">
+              <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"/></svg>
+            </button>
+          </div>
         </div>
       </td>
-      <td data-label="Vai trò" class="p-4 text-center sm:text-center">
+      <td data-label="Vai trò" class="p-3 sm:p-4 text-center user-col-role">
         ${roleBadge}
       </td>
-      <td data-label="Đã mua" class="p-4 text-center sm:text-center">
-        <span class="text-xs font-mono font-bold ${u.purchases_count > 0 ? 'text-amber-500 bg-amber-500/10 px-2 py-0.5 rounded-md border border-amber-500/20' : 'text-text-muted'}">
-          ${u.purchases_count || 0}
-        </span>
+      <td data-label="Đã mua" class="p-3 sm:p-4 text-center user-col-stats">
+        <div class="flex items-center justify-between sm:justify-center w-full">
+          <span class="text-[11px] font-bold text-text-muted sm:hidden">Hoạt động:</span>
+          <div class="flex items-center gap-2">
+            <span class="text-xs font-mono font-bold ${u.purchases_count > 0 ? 'text-amber-500 bg-amber-500/10 px-2 py-0.5 rounded-md border border-amber-500/20' : 'text-text-muted'}" title="Đã mua">
+              🛒 ${u.purchases_count || 0} bài
+            </span>
+            <span class="text-xs font-mono font-bold ${u.favorites_count > 0 ? 'text-rose-500 bg-rose-500/10 px-2 py-0.5 rounded-md border border-rose-500/20' : 'text-text-muted'}" title="Yêu thích">
+              ❤️ ${u.favorites_count || 0}
+            </span>
+          </div>
+        </div>
       </td>
-      <td data-label="Yêu thích" class="p-4 text-center sm:text-center">
+      <td data-label="Yêu thích" class="p-3 sm:p-4 text-center user-col-favorites hidden sm:table-cell">
         <span class="text-xs font-mono font-bold ${u.favorites_count > 0 ? 'text-rose-500 bg-rose-500/10 px-2 py-0.5 rounded-md border border-rose-500/20' : 'text-text-muted'}">
           ${u.favorites_count || 0}
         </span>
       </td>
-      <td data-label="Ngày đăng ký" class="p-4 text-[11px] text-text-muted font-medium">
-        ${u.created_at ? new Date(u.created_at).toLocaleDateString('vi-VN') : '—'}
+      <td data-label="Ngày đăng ký" class="p-3 sm:p-4 text-[11px] text-text-muted font-medium user-col-date">
+        <div class="flex items-center justify-between sm:justify-start w-full">
+          <span class="text-[11px] font-bold text-text-muted sm:hidden">Đăng ký:</span>
+          <span>${u.created_at ? new Date(u.created_at).toLocaleDateString('vi-VN') : '—'}</span>
+        </div>
       </td>
-      <td data-label="Thao tác" class="p-4 text-right">
-        <div class="flex items-center justify-end gap-1.5">
-          <button onclick="selectUserForGrant('${escapeHtml(uuidStr)}')" class="px-2.5 py-1 rounded-lg bg-accent-primary/10 hover:bg-accent-primary/20 text-accent-primary text-[11px] font-bold transition-colors cursor-pointer" title="Cấp quyền tab cho user này">
+      <td data-label="Thao tác" class="p-3 sm:p-4 text-right user-col-actions">
+        <div class="flex items-center justify-end gap-1.5 w-full">
+          <button onclick="selectUserForGrant('${escapeHtml(uuidStr)}')" class="flex-1 sm:flex-initial py-1.5 px-3 rounded-lg sm:rounded-xl bg-warm-gradient hover:brightness-105 text-white text-xs font-bold transition-all shadow-xs text-center cursor-pointer active:scale-95" title="Cấp quyền tab cho user này">
             Cấp quyền
           </button>
           ${isSelf 
-            ? `<button disabled class="p-2 rounded-lg bg-black/5 dark:bg-white/5 text-text-muted opacity-30 cursor-not-allowed" title="Không thể xoá tài khoản của chính mình">
+            ? `<button disabled class="p-2 rounded-lg sm:rounded-xl bg-black/5 dark:bg-white/5 text-text-muted opacity-30 cursor-not-allowed" title="Không thể xoá tài khoản của chính mình">
                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg>
                </button>`
-            : `<button onclick="confirmDeleteUser('${escapeHtml(uuidStr)}', '${escapeHtml(u.full_name || 'Khách')}', '${escapeHtml(u.email || '')}')" class="p-2 rounded-lg bg-rose-500/10 border border-rose-500/20 hover:bg-rose-500/20 text-rose-600 transition-all cursor-pointer" title="Xoá vĩnh viễn tài khoản">
+            : `<button onclick="confirmDeleteUser('${escapeHtml(uuidStr)}', '${escapeHtml(u.full_name || 'Khách')}', '${escapeHtml(u.email || '')}')" class="p-2 rounded-lg sm:rounded-xl bg-rose-500/10 border border-rose-500/20 hover:bg-rose-500/20 text-rose-600 transition-all cursor-pointer active:scale-95" title="Xoá vĩnh viễn tài khoản">
                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg>
                </button>`
           }
