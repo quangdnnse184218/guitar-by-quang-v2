@@ -812,12 +812,29 @@
             <div
               class="relative overflow-hidden rounded-2xl aspect-video bg-black shadow-lg border border-glass-border group/video">
               <!-- Badge góc trên video player -->
-              <div class="absolute top-3 left-3 z-10 pointer-events-none">
+              <div class="absolute top-3 left-3 z-30 pointer-events-none">
                 <span
                   class="px-2.5 py-1 rounded-full text-[10px] font-extrabold uppercase tracking-wide bg-black/80 text-white/95 border border-white/20 backdrop-blur-md shadow-sm flex items-center gap-1.5">
                   <span class="w-2 h-2 rounded-full bg-accent-primary animate-pulse"></span>
-                  <span>Video Demo • Xem trước</span>
+                  <span id="checkout-modal-video-badge-text">Video Demo • Xem trước</span>
                 </span>
+              </div>
+
+              <!-- Audio Only Masking Cover for Checkout Modal -->
+              <div id="checkout-modal-audio-cover" class="absolute inset-0 z-20 flex flex-col items-center justify-center bg-gradient-to-br from-[#1c1815] via-[#111622] to-[#161c2e] p-6 text-center backdrop-blur-md hidden pointer-events-none">
+                <div class="relative mb-3 flex items-center justify-center">
+                  <div class="w-16 h-16 sm:w-20 sm:h-20 rounded-full bg-gradient-to-tr from-amber-600 to-amber-400 p-1 shadow-2xl shadow-amber-500/30 animate-[spin_6s_linear_infinite]">
+                    <div class="w-full h-full rounded-full bg-[#151A27] flex items-center justify-center border-2 border-white/20">
+                      <span class="text-2xl sm:text-3xl">🎸</span>
+                    </div>
+                  </div>
+                  <div class="absolute -inset-2 rounded-full border border-amber-500/30 animate-ping opacity-30"></div>
+                </div>
+                <div class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-amber-500/15 border border-amber-500/30 text-amber-400 text-xs font-bold mb-2 shadow-xs">
+                  <span>🎧</span>
+                  <span>Chế Độ Chỉ Nghe Âm Thanh (Audio Demo)</span>
+                </div>
+                <p class="text-[11px] sm:text-xs text-text-muted max-w-xs">Hình ảnh video được che lại để bảo mật thế tay bấm đàn. Âm thanh demo vẫn phát trọn vẹn chất lượng cao.</p>
               </div>
 
               <video id="checkout-modal-video" controls playsinline
