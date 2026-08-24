@@ -129,10 +129,10 @@ document.addEventListener('DOMContentLoaded', () => {
         return showForgotAlert('Vui lòng nhập địa chỉ email của bạn.')
       }
 
-      // Kiểm tra định dạng email cơ bản
-      const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
+      // Kiểm tra định dạng email chuẩn
+      const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/
       if (!emailRegex.test(email)) {
-        return showForgotAlert('Địa chỉ email không đúng định dạng. Vui lòng kiểm tra lại.')
+        return showForgotAlert('Gửi thất bại: Địa chỉ email không đúng định dạng hoặc sai tên email. Vui lòng kiểm tra lại.')
       }
 
       setForgotLoading(true)
@@ -146,17 +146,19 @@ document.addEventListener('DOMContentLoaded', () => {
 
         if (error) throw error
 
-        showForgotAlert('Nếu email này đã đăng ký trong hệ thống, liên kết đặt lại mật khẩu đã được gửi đến hộp thư của bạn! Vui lòng kiểm tra Hộp thư đến (kể cả thư mục Spam/Rác/Quảng cáo).', true)
+        showForgotAlert('Đã gửi liên kết khôi phục vào email thành công! Vui lòng kiểm tra Hộp thư đến (kể cả thư mục Spam/Rác/Quảng cáo).', true)
         
         if (forgotEmailInput) forgotEmailInput.value = ''
 
       } catch (err) {
         console.error('[login] Reset password error:', err)
-        let errorMsg = 'Không thể gửi email khôi phục lúc này. Vui lòng thử lại sau.'
+        let errorMsg = 'Gửi thất bại: Không thể gửi email khôi phục lúc này. Vui lòng thử lại sau.'
         if (err.message && (err.message.includes('rate limit') || err.message.includes('over_email_send_rate_limit'))) {
-          errorMsg = 'Hệ thống gửi mail đang tạm chạm giới hạn lượt gửi trong giờ. Vui lòng đợi 5-10 phút rồi thử lại.'
+          errorMsg = 'Gửi thất bại: Đã vượt quá số lượt gửi email trong 1 giờ. Vui lòng đợi 5-10 phút rồi thử lại.'
+        } else if (err.message && (err.message.includes('User not found') || err.message.includes('not found') || err.message.includes('invalid'))) {
+          errorMsg = 'Gửi thất bại: Email này không tồn tại trong hệ thống hoặc không đúng. Vui lòng kiểm tra lại.'
         } else if (err.message) {
-          errorMsg = `Lỗi: ${err.message}`
+          errorMsg = `Gửi thất bại: ${err.message}`
         }
         showForgotAlert(errorMsg)
       } finally {
