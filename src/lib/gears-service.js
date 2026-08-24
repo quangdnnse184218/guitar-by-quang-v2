@@ -104,6 +104,44 @@ export async function fetchAllGears() {
   }
 }
 
+export function normalizeImagePath(rawPath) {
+  if (!rawPath || typeof rawPath !== 'string') return '/assets/avatar.jpg'
+  let clean = rawPath.trim().replace(/\\/g, '/')
+
+  // If it's a full web URL or data URL, return directly
+  if (clean.startsWith('http://') || clean.startsWith('https://') || clean.startsWith('data:')) {
+    return clean
+  }
+
+  // Remove public prefix if user entered full path containing /public/
+  const publicIdx = clean.toLowerCase().indexOf('/public/')
+  if (publicIdx !== -1) {
+    clean = clean.substring(publicIdx + '/public'.length)
+  } else {
+    const pubIdx2 = clean.toLowerCase().indexOf('public/')
+    if (pubIdx2 !== -1) {
+      clean = clean.substring(pubIdx2 + 'public'.length)
+    }
+  }
+
+  // Handle Windows drive paths like D:/...
+  if (/^[a-zA-Z]:\//.test(clean)) {
+    const assetsIdx = clean.toLowerCase().indexOf('/assets/')
+    if (assetsIdx !== -1) {
+      clean = clean.substring(assetsIdx)
+    } else {
+      const parts = clean.split('/')
+      clean = '/assets/' + parts[parts.length - 1]
+    }
+  }
+
+  if (!clean.startsWith('/')) {
+    clean = '/' + clean
+  }
+
+  return clean
+}
+
 const VALID_GEAR_COLUMNS = [
   'id', 'category', 'title', 'image', 'description',
   'buy_url', 'buy_text', 'footer_text', 'order', 'created_at'
@@ -114,7 +152,7 @@ function sanitizeGearPayload(payload) {
   
   // Normalization mappings
   const rawTitle = payload.title || payload.name || ''
-  const rawImage = payload.image || payload.image_url || 'assets/avatar.jpg'
+  const rawImage = normalizeImagePath(payload.image || payload.image_url || 'assets/avatar.jpg')
   const rawBuyUrl = payload.buy_url || payload.link || payload.buyUrl || ''
   const rawFooter = payload.footer_text || payload.price || ''
   const rawBuyText = payload.buy_text || payload.buyText || 'Mua ngay'
@@ -122,9 +160,13 @@ function sanitizeGearPayload(payload) {
   const normalized = {
     ...payload,
     title: rawTitle,
+    name: rawTitle,
     image: rawImage,
+    image_url: rawImage,
     buy_url: rawBuyUrl,
+    link: rawBuyUrl,
     footer_text: rawFooter,
+    price: rawFooter,
     buy_text: rawBuyText
   }
 
@@ -134,6 +176,52 @@ function sanitizeGearPayload(payload) {
     }
   }
   return clean
+}
+
+async function writeGearToSupabase(payload, isEdit, gearId) {
+  let attemptPayload = { ...payload }
+
+  for (let attempt = 0; attempt < 8; attempt++) {
+    try {
+      if (isEdit && gearId) {
+        const { data, error } = await supabase
+          .from('gears')
+          .update(attemptPayload)
+          .eq('id', gearId)
+          .select()
+
+        if (!error) return { data: (data && data[0]) || attemptPayload, error: null }
+
+        console.warn(`[gears-service] Update attempt ${attempt + 1} warning:`, error.message)
+        const colMatch = error.message?.match(/column "([^"]+)" of relation "gears" does not exist/i) ||
+                         error.message?.match(/Could not find the '([^']+)' column/i)
+        if (colMatch && colMatch[1] && attemptPayload[colMatch[1]] !== undefined) {
+          delete attemptPayload[colMatch[1]]
+          continue
+        }
+        return { data: null, error }
+      } else {
+        const { data, error } = await supabase
+          .from('gears')
+          .insert([attemptPayload])
+          .select()
+
+        if (!error) return { data: (data && data[0]) || attemptPayload, error: null }
+
+        console.warn(`[gears-service] Insert attempt ${attempt + 1} warning:`, error.message)
+        const colMatch = error.message?.match(/column "([^"]+)" of relation "gears" does not exist/i) ||
+                         error.message?.match(/Could not find the '([^']+)' column/i)
+        if (colMatch && colMatch[1] && attemptPayload[colMatch[1]] !== undefined) {
+          delete attemptPayload[colMatch[1]]
+          continue
+        }
+        return { data: null, error }
+      }
+    } catch (err) {
+      return { data: null, error: err }
+    }
+  }
+  return { data: null, error: new Error('Không thể lưu vào bảng gears trên Supabase.') }
 }
 
 /**
@@ -147,51 +235,26 @@ export async function saveGear(payload, isEdit = false, gearId = null) {
   }
   if (!all || all.length === 0) all = [...DEFAULT_GEARS]
 
-  let savedRecord = null
-  let supabaseError = null
-
   // Ensure ID is set
   const targetId = gearId || payload.id || `gear-${Date.now()}`
   payload.id = targetId
 
   const cleanPayload = sanitizeGearPayload(payload)
+  if (!isEdit && !cleanPayload.order) {
+    cleanPayload.order = all.length + 1
+  }
+  cleanPayload.created_at = cleanPayload.created_at || new Date().toISOString()
 
-  // 1. Try Supabase write
-  try {
-    if (isEdit && gearId) {
-      const { data, error } = await supabase
-        .from('gears')
-        .update(cleanPayload)
-        .eq('id', gearId)
-        .select()
-        
-      if (error) {
-        supabaseError = error
-        console.error('[gears-service] Supabase update error:', error.message)
-      } else if (data && data.length > 0) {
-        savedRecord = data[0]
-      }
-    } else {
-      if (!cleanPayload.order) {
-        cleanPayload.order = all.length + 1
-      }
-      cleanPayload.created_at = cleanPayload.created_at || new Date().toISOString()
+  // 1. Write to Supabase first
+  const { data: savedRecord, error: supabaseError } = await writeGearToSupabase(cleanPayload, isEdit, gearId)
 
-      const { data, error } = await supabase
-        .from('gears')
-        .insert([cleanPayload])
-        .select()
-        
-      if (error) {
-        supabaseError = error
-        console.error('[gears-service] Supabase insert error:', error.message)
-      } else if (data && data.length > 0) {
-        savedRecord = data[0]
-      }
+  if (supabaseError) {
+    console.error('[gears-service] Không thể lưu vào Supabase:', supabaseError.message || supabaseError)
+    return {
+      success: false,
+      supabaseSaved: false,
+      error: supabaseError.message || 'Lỗi không xác định khi lưu vào Supabase.'
     }
-  } catch (e) {
-    supabaseError = e
-    console.error('[gears-service] Supabase exception:', e.message)
   }
 
   // 2. Sync to LocalStorage
@@ -208,16 +271,6 @@ export async function saveGear(payload, isEdit = false, gearId = null) {
   }
 
   localStorage.setItem('gbq_gears', JSON.stringify(all))
-
-  if (supabaseError) {
-    return {
-      success: true,
-      savedLocally: true,
-      supabaseSaved: false,
-      record: fullRecord,
-      warning: supabaseError.message
-    }
-  }
 
   return {
     success: true,

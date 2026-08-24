@@ -65,7 +65,6 @@ const statFeaturedSongs = document.getElementById('stat-featured-songs')
 // Gears DOM
 const adminGearsTbody = document.getElementById('admin-gears-tbody')
 const addGearBtn = document.getElementById('add-gear-btn')
-const resetGearsBtn = document.getElementById('reset-gears-btn')
 const gearModal = document.getElementById('gear-modal')
 const closeGearModal = document.getElementById('close-gear-modal')
 const cancelGearModalBtn = document.getElementById('cancel-gear-modal-btn')
@@ -699,7 +698,7 @@ function renderGearsTable() {
     adminGearsTbody.innerHTML = `
       <tr>
         <td colspan="6" class="py-8 text-center text-text-muted">
-          Chưa có gear nào trong danh sách. Bấm "Nạp 4 Món Mẫu" để khởi tạo nhé!
+          Chưa có món đồ nghề nào trong danh sách. Bấm "+ Thêm Gear Mới" để thêm nhé!
         </td>
       </tr>
     `
@@ -1291,35 +1290,6 @@ async function initDashboard() {
   // Open Add Modals
   if (addSongBtn) addSongBtn.addEventListener('click', window.openAddSongModal)
   if (addGearBtn) addGearBtn.addEventListener('click', window.openAddGearModal)
-
-  // Reset / Populate Sample Gears Button
-  if (resetGearsBtn) {
-    resetGearsBtn.addEventListener('click', async () => {
-      if (!confirm('Bạn có muốn nạp lại 4 món đồ nghề mẫu (Clover 914c, AKG Ara, Elixir Bronze, Guitar Pro 8) không?')) return
-      showToast('Đang nạp 4 món đồ nghề mẫu...')
-      
-      try {
-        for (const item of DEFAULT_GEARS) {
-          const payload = {
-            name: item.name || item.title,
-            category: item.category,
-            price: item.price,
-            description: item.description,
-            link: item.link || item.buyUrl || item.buy_url,
-            image_url: item.image_url || item.image,
-            order: item.order
-          }
-          await supabase.from('gears').upsert([payload])
-        }
-      } catch (e) {
-        console.warn('Upsert gear warning:', e)
-      }
-      
-      localStorage.setItem('gbq_gears', JSON.stringify(DEFAULT_GEARS))
-      showToast('✓ Đã nạp thành công 4 món đồ nghề mẫu!')
-      await loadGears()
-    })
-  }
 
   // Close Modals
   if (closeSongModal) closeSongModal.addEventListener('click', () => toggleModal(songModal, false))
