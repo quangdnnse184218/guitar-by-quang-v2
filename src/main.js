@@ -611,11 +611,13 @@ window.openCheckoutModal = async function openCheckoutModal(tabId) {
   if (syntaxEl) syntaxEl.textContent = activeCheckoutSyntax
 
   const hasDemo = tab.has_demo ?? tab.hasDemo ?? false
-  const videoDemo = tab.video_demo || tab.videoDemo || ''
-  if (videoEl && videoSrcEl && videoContainer) {
+  const videoDemo = tab.demo_video_url || tab.video_demo || tab.videoDemo || tab.youtube_id || ''
+  if (videoEl && videoContainer) {
     if (hasDemo && videoDemo) {
-      const cleanVideo = videoDemo.startsWith('/') ? videoDemo : '/' + videoDemo
-      videoSrcEl.src = cleanVideo
+      const cleanVideo = normalizeVideoPath(videoDemo)
+      const encodedVideo = cleanVideo.startsWith('http') ? cleanVideo : encodeURI(cleanVideo)
+      videoEl.src = encodedVideo
+      if (videoSrcEl) videoSrcEl.src = encodedVideo
       videoEl.load()
       videoContainer.classList.remove('hidden')
     } else {

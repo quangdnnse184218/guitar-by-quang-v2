@@ -868,11 +868,13 @@ window.openCheckoutModal = function openCheckoutModal(tabId) {
   activeCheckoutSyntax = `VIDEOTAB ${cleanSongCode}`
   if (syntaxEl) syntaxEl.textContent = activeCheckoutSyntax
 
-  const videoDemo = tab.video_demo_url || tab.video_demo || tab.videoDemo || ''
-  if (videoEl && videoSrcEl && videoContainer) {
+  const videoDemo = tab.video_demo_url || tab.demo_video_url || tab.video_demo || tab.videoDemo || tab.youtube_id || ''
+  if (videoEl && videoContainer) {
     if (videoDemo) {
-      const cleanVideo = videoDemo.startsWith('/') ? videoDemo : '/' + videoDemo
-      videoSrcEl.src = cleanVideo
+      const cleanVideo = normalizeVideoPath(videoDemo)
+      const encodedVideo = cleanVideo.startsWith('http') ? cleanVideo : encodeURI(cleanVideo)
+      videoEl.src = encodedVideo
+      if (videoSrcEl) videoSrcEl.src = encodedVideo
       videoEl.load()
       videoContainer.classList.remove('hidden')
     } else {
