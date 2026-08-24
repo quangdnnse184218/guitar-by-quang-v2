@@ -1249,21 +1249,138 @@ input[type="range"].metro-slider::-webkit-slider-thumb:hover {
    ADMIN DASHBOARD RESPONSIVE CARD TABLES (MOBILE < 768px)
    ============================================================================== */
 @media (max-width: 767.98px) {
-  table.admin-responsive-table {
-    display: block !important;
-    width: 100% !important;
+  /* 1. CHUYÊN BIỆT CHO PHẦN QUẢN LÝ BÀI HÁT (BỐ CỤC 1 HÀNG 2 THẺ NHƯ KHO TAB) */
+  #section-songs .overflow-x-auto {
+    overflow: visible !important;
   }
 
-  table.admin-responsive-table thead {
+  #section-songs table.admin-responsive-table {
+    display: block !important;
+    width: 100% !important;
+    border: none !important;
+    background: transparent !important;
+  }
+
+  #section-songs table.admin-responsive-table thead {
     display: none !important;
   }
 
-  table.admin-responsive-table tbody {
+  #section-songs #admin-songs-tbody {
+    display: grid !important;
+    grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+    gap: 10px !important;
+    width: 100% !important;
+  }
+
+  #section-songs #admin-songs-tbody tr.admin-song-card-row {
+    display: flex !important;
+    flex-direction: column !important;
+    justify-content: space-between !important;
+    gap: 8px !important;
+    padding: 10px !important;
+    margin-bottom: 0 !important;
+    border-radius: 18px !important;
+    background: var(--glass-bg, #151A27) !important;
+    border: 1px solid var(--glass-border, rgba(255, 255, 255, 0.09)) !important;
+    box-shadow: 0 4px 14px rgba(0, 0, 0, 0.08) !important;
+    position: relative !important;
+    box-sizing: border-box !important;
+  }
+
+  /* Bỏ đi các mục thể loại, độ khó, tuning/capo, loại/giá trên mobile theo yêu cầu */
+  #section-songs .song-col-category,
+  #section-songs .song-col-level,
+  #section-songs .song-col-tuning,
+  #section-songs .song-col-price {
+    display: none !important;
+  }
+
+  /* Bỏ nhãn pseudo ::before để thẻ sạch sẽ và hiện đại như thẻ Kho Tab */
+  #section-songs #admin-songs-tbody td::before {
+    display: none !important;
+  }
+
+  /* Phần Vị trí & Di chuyển */
+  #section-songs .song-col-order {
+    display: flex !important;
+    align-items: center !important;
+    justify-content: space-between !important;
+    width: 100% !important;
+    padding: 0 0 6px 0 !important;
+    border: none !important;
+    border-bottom: 1px dashed rgba(255, 255, 255, 0.08) !important;
+  }
+
+  [data-theme="light"] #section-songs .song-col-order {
+    border-bottom: 1px dashed rgba(0, 0, 0, 0.08) !important;
+  }
+
+  #section-songs .song-col-order .inline-flex {
+    width: 100% !important;
+    padding: 2px !important;
+  }
+
+  /* Phần Tiêu đề Bài Hát */
+  #section-songs .song-col-title {
+    display: block !important;
+    width: 100% !important;
+    padding: 2px 0 !important;
+    border: none !important;
+    text-align: left !important;
+  }
+
+  #section-songs .song-col-title .flex {
+    text-align: left !important;
+    align-items: flex-start !important;
+  }
+
+  /* Ghim Nổi Bật */
+  #section-songs .song-col-featured {
+    display: flex !important;
+    padding: 0 !important;
+    border: none !important;
+  }
+
+  /* Nút Thao Tác (Sửa & Xóa) */
+  #section-songs .song-col-actions {
+    display: flex !important;
+    width: 100% !important;
+    padding: 6px 0 0 0 !important;
+    border: none !important;
+    border-top: 1px dashed rgba(255, 255, 255, 0.08) !important;
+    margin-top: auto !important;
+  }
+
+  [data-theme="light"] #section-songs .song-col-actions {
+    border-top: 1px dashed rgba(0, 0, 0, 0.08) !important;
+  }
+
+  #section-songs .song-col-actions .flex {
+    width: 100% !important;
+    display: flex !important;
+    gap: 6px !important;
+  }
+
+  /* 2. CÁC BẢNG DỮ LIỆU KHÁC (GEARS, USERS) */
+  #section-gears table.admin-responsive-table,
+  #section-users table.admin-responsive-table {
     display: block !important;
     width: 100% !important;
   }
 
-  table.admin-responsive-table tbody tr {
+  #section-gears table.admin-responsive-table thead,
+  #section-users table.admin-responsive-table thead {
+    display: none !important;
+  }
+
+  #section-gears table.admin-responsive-table tbody,
+  #section-users table.admin-responsive-table tbody {
+    display: block !important;
+    width: 100% !important;
+  }
+
+  #section-gears table.admin-responsive-table tbody tr,
+  #section-users table.admin-responsive-table tbody tr {
     display: flex !important;
     flex-direction: column !important;
     gap: 8px !important;
@@ -1275,11 +1392,13 @@ input[type="range"].metro-slider::-webkit-slider-thumb:hover {
     box-shadow: 0 4px 14px rgba(0, 0, 0, 0.08) !important;
   }
 
-  table.admin-responsive-table tbody tr:last-child {
+  #section-gears table.admin-responsive-table tbody tr:last-child,
+  #section-users table.admin-responsive-table tbody tr:last-child {
     margin-bottom: 0 !important;
   }
 
-  table.admin-responsive-table tbody td {
+  #section-gears table.admin-responsive-table tbody td,
+  #section-users table.admin-responsive-table tbody td {
     display: flex !important;
     align-items: center !important;
     justify-content: space-between !important;
@@ -1290,16 +1409,19 @@ input[type="range"].metro-slider::-webkit-slider-thumb:hover {
     font-size: 12px !important;
   }
 
-  table.admin-responsive-table tbody td:not(:last-child) {
+  #section-gears table.admin-responsive-table tbody td:not(:last-child),
+  #section-users table.admin-responsive-table tbody td:not(:last-child) {
     border-bottom: 1px dashed rgba(255, 255, 255, 0.06) !important;
     padding-bottom: 8px !important;
   }
 
-  [data-theme="light"] table.admin-responsive-table tbody td:not(:last-child) {
+  [data-theme="light"] #section-gears table.admin-responsive-table tbody td:not(:last-child),
+  [data-theme="light"] #section-users table.admin-responsive-table tbody td:not(:last-child) {
     border-bottom: 1px dashed rgba(0, 0, 0, 0.06) !important;
   }
 
-  table.admin-responsive-table tbody td::before {
+  #section-gears table.admin-responsive-table tbody td::before,
+  #section-users table.admin-responsive-table tbody td::before {
     content: attr(data-label);
     font-weight: 700 !important;
     font-size: 11px !important;
@@ -1311,25 +1433,9 @@ input[type="range"].metro-slider::-webkit-slider-thumb:hover {
     margin-right: auto !important;
   }
 
-  table.admin-responsive-table tbody td:not([data-label])::before {
+  #section-gears table.admin-responsive-table tbody td:not([data-label])::before,
+  #section-users table.admin-responsive-table tbody td:not([data-label])::before {
     display: none !important;
-  }
-
-  table.admin-responsive-table tbody td:not([data-label]) {
-    justify-content: center !important;
-    text-align: center !important;
-    padding: 16px 0 !important;
-  }
-
-  table.admin-responsive-table tbody td > * {
-    max-width: 70% !important;
-  }
-
-  table.admin-responsive-table tbody td[data-label="Thao Tác"] > *,
-  table.admin-responsive-table tbody td[data-label="Thao tác"] > *,
-  table.admin-responsive-table tbody td[data-label="Vị Trí & Thứ Tự"] > *,
-  table.admin-responsive-table tbody td[data-label="Vị Trí"] > * {
-    max-width: 100% !important;
   }
 }
 
