@@ -960,7 +960,6 @@ input[type="range"].metro-slider::-webkit-slider-thumb {
   border: 3px solid #FFFFFF;
   box-shadow: 0 2px 8px rgba(4, 120, 87, 0.35);
 }
-
 input[type="range"].metro-slider::-webkit-slider-thumb:hover {
   transform: scale(1.15);
 }
@@ -1153,4 +1152,60 @@ input[type="range"].metro-slider::-webkit-slider-thumb:hover {
 
 #user-header-dropdown-wrap.open #user-header-dropdown-arrow {
   transform: rotate(180deg) !important;
+}
+
+/* ==============================================================================
+   FORM INPUT AUTO-SCROLL MARGIN (MOBILE KEYBOARD VISIBILITY)
+   ============================================================================== */
+input, textarea, select {
+  scroll-margin-top: 100px !important;
+  scroll-margin-bottom: 120px !important;
+}
+
+/* ==============================================================================
+   UNIVERSAL PASSWORD TOGGLE BUTTON (MOBILE & DESKTOP)
+   ============================================================================== */
+[data-toggle-password] {
+  position: absolute !important;
+  right: 8px !important;
+  top: 50% !important;
+  transform: translateY(-50%) !important;
+  z-index: 30 !important;
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  width: 38px !important;
+  height: 38px !important;
+  padding: 8px !important;
+  border-radius: 12px !important;
+  background: transparent !important;
+  border: none !important;
+  outline: none !important;
+  cursor: pointer !important;
+  pointer-events: auto !important;
+  -webkit-tap-highlight-color: transparent !important;
+  color: var(--text-muted, #94A3B8) !important;
+  transition: color 0.15s ease, transform 0.1s ease !important;
+}
+
+[data-toggle-password]:hover,
+[data-toggle-password]:focus-visible {
+  color: var(--text-primary, #FFFFFF) !important;
+}
+
+[data-toggle-password]:active {
+  transform: translateY(-50%) scale(0.92) !important;
+  color: var(--accent-primary, #E2B144) !important;
+}
+
+[data-toggle-password] svg {
+  width: 20px !important;
+  height: 20px !important;
+  display: block !important;
+  pointer-events: none !important;
+  flex-shrink: 0 !important;
+}
+
+[data-toggle-password] svg.hidden {
+  display: none !important;
 }

@@ -571,34 +571,86 @@ export function initNavActiveSpy() {
 }
 
 /**
- * Universal Password Toggle Helper
+ * Universal Mobile Virtual Keyboard Auto-Scroll Helper
+ * Keeps focused inputs visible above the mobile keyboard
+ */
+export function initMobileKeyboardScroll() {
+  if (window._gbq_keyboard_scroll_initialized) return
+  window._gbq_keyboard_scroll_initialized = true
+
+  function scrollIntoVisibleArea(el) {
+    if (!el || !(el instanceof HTMLElement)) return
+    
+    // Immediate gentle scroll
+    setTimeout(() => {
+      el.scrollIntoView({
+        behavior: 'smooth',
+        block: 'center',
+        inline: 'nearest'
+      })
+    }, 150)
+
+    // Keyboard animation sync scroll (~300-400ms on iOS/Android)
+    setTimeout(() => {
+      el.scrollIntoView({
+        behavior: 'smooth',
+        block: 'center',
+        inline: 'nearest'
+      })
+    }, 350)
+  }
+
+  // Listen to focus on all inputs/textareas
+  document.addEventListener('focusin', (e) => {
+    const target = e.target
+    if (target && (target.tagName === 'INPUT' || target.tagName === 'TEXTAREA' || target.tagName === 'SELECT')) {
+      scrollIntoVisibleArea(target)
+    }
+  }, { passive: true })
+
+  // Handle virtual viewport resize when keyboard opens or closes
+  if (window.visualViewport) {
+    window.visualViewport.addEventListener('resize', () => {
+      const active = document.activeElement
+      if (active && (active.tagName === 'INPUT' || active.tagName === 'TEXTAREA' || active.tagName === 'SELECT')) {
+        scrollIntoVisibleArea(active)
+      }
+    }, { passive: true })
+  }
+}
+
+/**
+ * Universal Password Toggle Helper (with Global Event Delegation)
  */
 export function initPasswordToggles() {
-  document.querySelectorAll('[data-toggle-password]').forEach(btn => {
-    if (btn.dataset.toggleInit) return
-    btn.dataset.toggleInit = 'true'
+  if (window._gbq_password_toggles_initialized) return
+  window._gbq_password_toggles_initialized = true
+
+  document.addEventListener('click', (e) => {
+    const btn = e.target.closest('[data-toggle-password]')
+    if (!btn) return
+
+    e.preventDefault()
+    e.stopPropagation()
 
     const targetId = btn.getAttribute('data-toggle-password')
-    const input = document.getElementById(targetId) || btn.parentElement?.querySelector('input')
+    const input = (targetId ? document.getElementById(targetId) : null) || btn.parentElement?.querySelector('input')
     if (!input) return
 
-    btn.addEventListener('click', (e) => {
-      e.preventDefault()
-      e.stopPropagation()
-      const isPassword = input.type === 'password'
-      input.type = isPassword ? 'text' : 'password'
+    const isPassword = input.type === 'password'
+    input.type = isPassword ? 'text' : 'password'
 
-      const eyeOpen = btn.querySelector('.eye-open')
-      const eyeClosed = btn.querySelector('.eye-closed')
+    const eyeOpen = btn.querySelector('.eye-open')
+    const eyeClosed = btn.querySelector('.eye-closed')
 
-      if (eyeOpen && eyeClosed) {
-        eyeOpen.classList.toggle('hidden', isPassword)
-        eyeClosed.classList.toggle('hidden', !isPassword)
-      }
+    if (eyeOpen && eyeClosed) {
+      eyeOpen.classList.toggle('hidden', isPassword)
+      eyeClosed.classList.toggle('hidden', !isPassword)
+    }
 
-      btn.setAttribute('aria-label', isPassword ? 'Ẩn mật khẩu' : 'Hiện mật khẩu')
-      btn.setAttribute('title', isPassword ? 'Ẩn mật khẩu' : 'Hiện mật khẩu')
-    })
+    const label = isPassword ? 'Ẩn mật khẩu' : 'Hiện mật khẩu'
+    btn.setAttribute('aria-label', label)
+    btn.setAttribute('title', label)
   })
 }
 
@@ -607,8 +659,10 @@ document.addEventListener("DOMContentLoaded", () => {
   initNavActiveSpy()
   initMobileHeaderScroll()
   initPasswordToggles()
+  initMobileKeyboardScroll()
 })
 initNavActiveSpy()
 initMobileHeaderScroll()
 initPasswordToggles()
+initMobileKeyboardScroll()
 
