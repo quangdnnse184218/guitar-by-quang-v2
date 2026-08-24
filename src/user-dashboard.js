@@ -7,7 +7,7 @@
 import { supabase } from './lib/supabase.js'
 import { initNavbarShrink, initMobileMenu } from './common.js'
 import { initThemeToggle } from './theme-toggle.js'
-import { fetchAllSongs } from './lib/songs-service.js'
+import { fetchAllSongs, extractYoutubeId } from './lib/songs-service.js'
 import { fetchAllGears, DEFAULT_GEARS } from './lib/gears-service.js'
 
 // If redirected here with a recovery token, immediately move to reset-password.html
@@ -980,19 +980,38 @@ window.openFreeTabModal = function openFreeTabModal(tabId) {
 
 window.openVideoDemoModal = function openVideoDemoModal(title, videoSrc) {
   if (!title || !videoSrc) return
-  let cleanSrc = videoSrc
-  if (cleanSrc && !cleanSrc.startsWith('/') && !cleanSrc.startsWith('http')) {
-    cleanSrc = '/' + cleanSrc
-  }
   const titleEl = document.getElementById('video-demo-title')
   const videoEl = document.getElementById('demo-modal-video')
+  const iframeEl = document.getElementById('demo-modal-iframe')
+
   if (titleEl) titleEl.textContent = title
-  if (videoEl) {
+
+  const ytId = extractYoutubeId(videoSrc)
+
+  if (ytId && iframeEl) {
+    iframeEl.src = `https://www.youtube.com/embed/${ytId}?autoplay=1`
+    iframeEl.classList.remove('hidden')
+    if (videoEl) {
+      videoEl.pause?.()
+      videoEl.src = ''
+      videoEl.classList.add('hidden')
+    }
+  } else if (videoEl) {
+    if (iframeEl) {
+      iframeEl.src = ''
+      iframeEl.classList.add('hidden')
+    }
+    let cleanSrc = videoSrc
+    if (cleanSrc && !cleanSrc.startsWith('/') && !cleanSrc.startsWith('http')) {
+      cleanSrc = '/' + cleanSrc
+    }
     videoEl.src = cleanSrc
+    videoEl.classList.remove('hidden')
     videoEl.currentTime = 0
     videoEl.load()
     videoEl.play().catch(e => console.warn('Auto play demo video error:', e))
   }
+
   toggleModal('video-demo-modal', true)
 }
 

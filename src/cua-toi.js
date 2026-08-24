@@ -6,7 +6,7 @@
 
 import { initNavbarShrink, initMobileMenu } from './common.js'
 import { initThemeToggle } from './theme-toggle.js'
-import { fetchAllSongs } from './lib/songs-service.js'
+import { fetchAllSongs, extractYoutubeId } from './lib/songs-service.js'
 import {
   getFavoriteIds,
   getCompletedIds,
@@ -157,10 +157,28 @@ window.openDemoModal = function(songId) {
   const titleEl = document.getElementById('modal-video-title')
   const videoSource = document.getElementById('demo-video-source')
   const videoPlayer = document.getElementById('demo-video-player')
+  const iframeEl = document.getElementById('demo-modal-iframe')
 
   if (titleEl) titleEl.textContent = `${song.title || 'Video Demo'} — Tab Fingerstyle`
-  if (videoSource && videoPlayer) {
-    videoSource.src = song.demo_video_url || song.demoVideoUrl || '/assets/demo.mp4'
+
+  const videoSrc = song.demo_video_url || song.video_demo || song.youtube_id || ''
+  const ytId = extractYoutubeId(videoSrc)
+
+  if (ytId && iframeEl) {
+    iframeEl.src = `https://www.youtube.com/embed/${ytId}?autoplay=1`
+    iframeEl.classList.remove('hidden')
+    if (videoPlayer) {
+      videoPlayer.pause?.()
+      videoPlayer.classList.add('hidden')
+    }
+  } else if (videoPlayer && videoSource) {
+    if (iframeEl) {
+      iframeEl.src = ''
+      iframeEl.classList.add('hidden')
+    }
+    const cleanSrc = videoSrc.startsWith('http') || videoSrc.startsWith('/') ? videoSrc : '/' + videoSrc
+    videoSource.src = cleanSrc || '/assets/demo.mp4'
+    videoPlayer.classList.remove('hidden')
     videoPlayer.load()
     videoPlayer.play().catch(() => {})
   }

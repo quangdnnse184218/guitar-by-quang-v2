@@ -364,12 +364,32 @@ export async function fetchSongById(id) {
   }
 }
 
+export function extractYoutubeId(urlOrId) {
+  if (!urlOrId || typeof urlOrId !== 'string') return ''
+  const trimmed = urlOrId.trim()
+  if (/^[a-zA-Z0-9_-]{11}$/.test(trimmed)) return trimmed
+  
+  const matchBe = trimmed.match(/youtu\.be\/([a-zA-Z0-9_-]{11})/)
+  if (matchBe) return matchBe[1]
+
+  const matchWatch = trimmed.match(/[?&]v=([a-zA-Z0-9_-]{11})/)
+  if (matchWatch) return matchWatch[1]
+
+  const matchEmbed = trimmed.match(/youtube\.com\/embed\/([a-zA-Z0-9_-]{11})/)
+  if (matchEmbed) return matchEmbed[1]
+
+  const matchShorts = trimmed.match(/youtube\.com\/shorts\/([a-zA-Z0-9_-]{11})/)
+  if (matchShorts) return matchShorts[1]
+
+  return ''
+}
+
 const VALID_SONG_COLUMNS = [
-  'id', 'title', 'category', 'level', 'level_num', 'is_free',
+  'id', 'title', 'singer', 'category', 'level', 'level_num', 'is_free',
   'price', 'price_formatted', 'discount_note', 'tuning',
-  'duration', 'description', 'has_demo', 'video_demo',
-  'button_type', 'button_text', 'target_url', 'thumbnail_bg',
-  'capo', 'tempo', 'order', 'created_at'
+  'duration', 'description', 'has_demo', 'video_demo', 'demo_video_url',
+  'youtube_id', 'tab_url', 'target_url', 'pdf_url', 'thumbnail_bg',
+  'button_type', 'button_text', 'capo', 'tempo', 'order', 'is_featured', 'created_at'
 ]
 
 function sanitizeSongPayload(payload) {

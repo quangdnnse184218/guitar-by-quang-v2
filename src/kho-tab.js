@@ -1,6 +1,6 @@
 import { renderAmbientBlobs, renderMusicNotes, initNavbarShrink, initMobileMenu } from './common.js'
 import { initThemeToggle } from './theme-toggle.js'
-import { fetchAllSongs } from './lib/songs-service.js'
+import { fetchAllSongs, extractYoutubeId } from './lib/songs-service.js'
 import { applyScrollReveal } from './animations/scroll-reveal.js'
 import { isFavorite, isCompleted, toggleFavorite, toggleCompleted } from './lib/local-storage-service.js'
 import { supabase } from './lib/supabase.js'
@@ -162,10 +162,10 @@ function renderSongCard(tab, index, extraClass = '') {
   `
 
   let artworkCenterHtml = ''
-  if (hasDemo && videoDemo) {
-    const cleanVideoDemo = videoDemo.startsWith('/') ? videoDemo : '/' + videoDemo
+  const demoUrl = videoDemo || tab.demo_video_url || tab.youtube_id || ''
+  if (hasDemo && demoUrl) {
     artworkCenterHtml = `
-      <div class="my-auto text-center flex flex-col items-center justify-center py-0.5" onclick="event.stopPropagation(); window.openVideoDemoModal('${tab.title.replace(/'/g, "\\'")}', '${cleanVideoDemo}')">
+      <div class="my-auto text-center flex flex-col items-center justify-center py-0.5" onclick="event.stopPropagation(); window.openVideoDemoModal('${tab.title.replace(/'/g, "\\'")}', '${demoUrl.replace(/'/g, "\\'")}')">
         <button class="w-7 h-7 sm:w-10 sm:h-10 rounded-full bg-white text-[#0B0E1A] flex items-center justify-center shadow-lg transform group-hover:scale-110 transition-transform cursor-pointer" aria-label="Xem video demo bài hát">
           <svg class="w-3.5 h-3.5 sm:w-4.5 sm:h-4.5 fill-current ml-0.5 text-accent-primary" viewBox="0 0 24 24">
             <path d="M8 5v14l11-7z"/>
@@ -412,12 +412,32 @@ window.openVideoDemoModal = function openVideoDemoModal(title, videoSrc) {
   if (!title || !videoSrc) return
   const titleEl = document.getElementById('video-demo-title')
   const videoEl = document.getElementById('demo-modal-video')
+  const iframeEl = document.getElementById('demo-modal-iframe')
+
   if (titleEl) titleEl.textContent = title
-  if (videoEl) {
-    videoEl.src = videoSrc
+
+  const ytId = extractYoutubeId(videoSrc)
+
+  if (ytId && iframeEl) {
+    iframeEl.src = `https://www.youtube.com/embed/${ytId}?autoplay=1`
+    iframeEl.classList.remove('hidden')
+    if (videoEl) {
+      videoEl.pause?.()
+      videoEl.src = ''
+      videoEl.classList.add('hidden')
+    }
+  } else if (videoEl) {
+    if (iframeEl) {
+      iframeEl.src = ''
+      iframeEl.classList.add('hidden')
+    }
+    const cleanSrc = videoSrc.startsWith('http') || videoSrc.startsWith('/') ? videoSrc : '/' + videoSrc
+    videoEl.src = cleanSrc
+    videoEl.classList.remove('hidden')
     videoEl.load()
     videoEl.play().catch(() => {})
   }
+
   toggleModal('video-demo-modal', true)
 }
 

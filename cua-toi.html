@@ -236,8 +236,9 @@
           <span class="text-xs font-mono font-bold uppercase tracking-wider text-accent-primary">Video Demo</span>
           <h3 id="modal-video-title" class="text-xl font-extrabold text-text-primary">Xem Thử Đoạn Tab Mẫu</h3>
         </div>
-        <div class="relative overflow-hidden rounded-2xl aspect-video bg-black shadow-inner">
-          <video id="demo-video-player" controls playsinline preload="none" class="w-full h-full object-cover">
+        <div class="relative overflow-hidden rounded-2xl aspect-video bg-black/90 shadow-inner">
+          <iframe id="demo-modal-iframe" class="w-full h-full aspect-video rounded-2xl hidden" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+          <video id="demo-video-player" controls playsinline preload="none" class="w-full h-full object-cover hidden">
             <source id="demo-video-source" src="" type="video/mp4">
             Trình duyệt không hỗ trợ thẻ video.
           </video>

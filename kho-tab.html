@@ -473,7 +473,34 @@
   </div>
 
 
-  <!-- MODAL 2: FREE TAB MODAL --><!-- MODAL 2: FREE TAB MODAL -->
+  <!-- MODAL: QUICK VIDEO DEMO -->
+  <div id="video-demo-modal" role="dialog" aria-modal="true" aria-labelledby="video-demo-title"
+    class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-md opacity-0 pointer-events-none transition-opacity duration-300 hidden">
+    <div
+      class="modal-dialog relative w-full max-w-2xl glass-card rounded-3xl p-5 sm:p-6 shadow-2xl border border-glass-border scale-95 transition-transform duration-300"
+      tabindex="-1">
+      <button id="close-video-demo-modal"
+        class="absolute top-4 right-4 w-9 h-9 rounded-full bg-glass-bg hover:bg-glass-bg-hover text-text-muted hover:text-text-primary border border-glass-border flex items-center justify-center transition-all z-10 cursor-pointer shadow-sm active:scale-95"
+        aria-label="Đóng video">
+        <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"></path>
+        </svg>
+      </button>
+      <div class="space-y-1 mb-4 pr-10">
+        <span class="text-xs font-mono font-bold uppercase tracking-wider text-accent-primary">Video Demo</span>
+        <h3 id="video-demo-title" class="text-xl sm:text-2xl font-extrabold text-text-primary">Tên bài hát</h3>
+      </div>
+      <div class="relative overflow-hidden rounded-2xl aspect-video bg-black/90 shadow-lg border border-glass-border">
+        <iframe id="demo-modal-iframe" class="w-full h-full aspect-video rounded-2xl hidden" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+        <video id="demo-modal-video" controls playsinline class="w-full h-full aspect-video rounded-2xl object-cover hidden">
+          <source src="" type="video/mp4">
+          Trình duyệt không hỗ trợ phát video.
+        </video>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL 2: FREE TAB MODAL -->
   <div id="free-tab-modal" role="dialog" aria-modal="true" aria-labelledby="free-tab-modal-title"
     class="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-4 bg-black/80 backdrop-blur-md opacity-0 pointer-events-none transition-opacity duration-300 hidden">
     <div

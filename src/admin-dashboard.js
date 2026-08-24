@@ -7,7 +7,7 @@
 import { supabase } from './lib/supabase.js'
 import { initThemeToggle } from './theme-toggle.js'
 import { initPasswordToggles } from './common.js'
-import { fetchAllSongs, saveSong, removeSong, reorderAllSongs } from './lib/songs-service.js'
+import { fetchAllSongs, saveSong, removeSong, reorderAllSongs, extractYoutubeId } from './lib/songs-service.js'
 import { fetchAllGears, DEFAULT_GEARS, saveGear, removeGear, reorderAllGears } from './lib/gears-service.js'
 
 // If redirected here with a recovery token, immediately move to admin-reset-password.html
@@ -432,11 +432,59 @@ window.handleMoveSong = async function(songId, direction) {
   }
 }
 
-window.openAddSongModal = function() {
+window.setSongModalType = function(type) {
+  const typeInput = document.getElementById('song-type')
+  const freeBtn = document.getElementById('tab-btn-free')
+  const paidBtn = document.getElementById('tab-btn-paid')
+  const freeFields = document.getElementById('fields-free-song')
+  const paidFields = document.getElementById('fields-paid-song')
+
+  if (typeInput) typeInput.value = type
+
+  if (type === 'free') {
+    if (freeBtn) {
+      freeBtn.className = 'py-2.5 px-3 rounded-xl font-bold text-xs sm:text-sm flex items-center justify-center gap-2 transition-all cursor-pointer bg-emerald-600 text-white shadow-xs'
+    }
+    if (paidBtn) {
+      paidBtn.className = 'py-2.5 px-3 rounded-xl font-bold text-xs sm:text-sm flex items-center justify-center gap-2 transition-all cursor-pointer text-text-muted hover:text-text-primary'
+    }
+    freeFields?.classList.remove('hidden')
+    paidFields?.classList.add('hidden')
+  } else {
+    if (paidBtn) {
+      paidBtn.className = 'py-2.5 px-3 rounded-xl font-bold text-xs sm:text-sm flex items-center justify-center gap-2 transition-all cursor-pointer bg-rose-600 text-white shadow-xs'
+    }
+    if (freeBtn) {
+      freeBtn.className = 'py-2.5 px-3 rounded-xl font-bold text-xs sm:text-sm flex items-center justify-center gap-2 transition-all cursor-pointer text-text-muted hover:text-text-primary'
+    }
+    freeFields?.classList.add('hidden')
+    paidFields?.classList.remove('hidden')
+  }
+}
+
+window.openAddSongModal = function(type = 'free') {
   if (!songForm) return
   songForm.reset()
   document.getElementById('song-id').value = ''
-  if (songModalTitle) songModalTitle.textContent = 'Thêm Bài Hát Mới'
+  window.setSongModalType(type)
+  
+  if (type === 'free') {
+    document.getElementById('song-level').value = '5'
+    document.getElementById('song-tuning').value = 'Standard'
+    document.getElementById('song-capo').value = '0'
+    document.getElementById('song-duration').value = '03:15'
+    document.getElementById('song-thumbnail-bg').value = 'from-[#D8C4AC] to-[#647A6C]'
+    if (songModalTitle) songModalTitle.textContent = '🎁 Thêm Tab Miễn Phí Mới (Free Tab)'
+  } else {
+    document.getElementById('song-level').value = '8'
+    document.getElementById('song-tuning').value = 'Standard'
+    document.getElementById('song-capo').value = '1'
+    document.getElementById('song-duration').value = '03:40'
+    document.getElementById('song-paid-price').value = '239k'
+    document.getElementById('song-paid-discount').value = 'HSSV: 179k'
+    document.getElementById('song-thumbnail-bg').value = 'from-[#C1602F] to-[#6E3B1F]'
+    if (songModalTitle) songModalTitle.textContent = '💎 Thêm Video Tab Có Phí Mới (Mua Tab)'
+  }
   toggleModal(songModal, true)
 }
 
@@ -460,23 +508,37 @@ window.editSong = function(id) {
   const song = songsList.find(s => String(s.id) === String(id))
   if (!song) return
 
-  const isSongFree = Boolean(song.is_free ?? song.isFree)
+  const isSongFree = Boolean(song.is_free ?? song.isFree ?? (Number(song.price) === 0))
+  const songType = isSongFree ? 'free' : 'paid'
 
   document.getElementById('song-id').value = song.id
   document.getElementById('song-title').value = song.title || ''
   document.getElementById('song-singer').value = song.singer || ''
   document.getElementById('song-category').value = song.category || 'Nhạc Việt'
-  document.getElementById('song-level').value = song.level_num ?? song.levelNum ?? 5
+  document.getElementById('song-level').value = song.level_num ?? song.levelNum ?? (isSongFree ? 5 : 8)
   document.getElementById('song-tuning').value = song.tuning || 'Standard'
-  document.getElementById('song-capo').value = song.capo ?? 0
-  document.getElementById('song-youtube-id').value = song.youtube_id || song.youtubeId || ''
-  document.getElementById('song-demo-url').value = song.demo_video_url || song.video_demo || song.videoDemo || song.demoVideoUrl || ''
-  document.getElementById('song-price').value = isSongFree ? '' : (song.price_formatted || song.priceFormatted || (song.price ? formatCompactPrice(song.price) : '239k'))
-  document.getElementById('song-tab-url').value = song.tab_url || song.target_url || song.targetUrl || song.tabUrl || ''
-  document.getElementById('song-is-free').checked = isSongFree
+  document.getElementById('song-capo').value = song.capo ?? (isSongFree ? 0 : 1)
+  document.getElementById('song-duration').value = song.duration || (isSongFree ? '03:15' : '03:40')
+  document.getElementById('song-description').value = song.description || ''
+  document.getElementById('song-thumbnail-bg').value = song.thumbnail_bg || song.thumbnailBg || (isSongFree ? 'from-[#D8C4AC] to-[#647A6C]' : 'from-[#C1602F] to-[#6E3B1F]')
   document.getElementById('song-is-featured').checked = Boolean(song.is_featured ?? song.isFeatured)
 
-  if (songModalTitle) songModalTitle.textContent = `Sửa Bài Hát: ${song.title}`
+  if (isSongFree) {
+    const rawTarget = song.target_url || song.tab_url || (song.youtube_id?.length === 11 ? `https://youtu.be/${song.youtube_id}` : song.youtube_id) || song.video_demo || ''
+    document.getElementById('song-free-target-url').value = rawTarget
+    document.getElementById('song-free-pdf-url').value = song.pdf_url || song.pdfUrl || ''
+  } else {
+    document.getElementById('song-paid-price').value = song.price_formatted || song.priceFormatted || (song.price ? formatCompactPrice(song.price) : '239k')
+    document.getElementById('song-paid-discount').value = song.discount_note || song.discountNote || 'HSSV: 179k'
+    document.getElementById('song-paid-demo-url').value = song.demo_video_url || song.video_demo || song.videoDemo || (song.youtube_id?.length === 11 ? `https://youtu.be/${song.youtube_id}` : song.youtube_id) || ''
+    document.getElementById('song-paid-drive-url').value = song.tab_url || song.target_url || song.targetUrl || song.tabUrl || ''
+  }
+
+  window.setSongModalType(songType)
+
+  if (songModalTitle) {
+    songModalTitle.textContent = `Sửa Bài Hát: ${song.title}`
+  }
   toggleModal(songModal, true)
 }
 
@@ -500,43 +562,108 @@ if (songForm) {
 
     const songId = document.getElementById('song-id').value.trim()
     const isEdit = Boolean(songId)
+    const type = document.getElementById('song-type')?.value || 'free'
+    const isFree = type === 'free'
+
     const titleVal = document.getElementById('song-title').value.trim()
     if (!titleVal) {
       showToast('❌ Vui lòng nhập Tên Bài Hát!', 'error')
       return
     }
 
-    const levelVal = Number(document.getElementById('song-level').value) || 5
-    const isFree = document.getElementById('song-is-free').checked
-    const isFeatured = document.getElementById('song-is-featured').checked
-    const priceRaw = document.getElementById('song-price').value.trim()
-    const priceFormatted = isFree ? 'Miễn phí' : formatCompactPrice(priceRaw || '239k')
-    const numericPrice = Number(priceRaw.replace(/[^0-9]/g, '')) || 0
-    const priceVal = isFree ? 0 : (numericPrice < 1000 && numericPrice > 0 ? numericPrice * 1000 : numericPrice)
-
-    const demoVideoVal = document.getElementById('song-demo-url').value.trim()
-    const tabUrlVal = document.getElementById('song-tab-url').value.trim()
     const singerVal = document.getElementById('song-singer').value.trim()
+    const categoryVal = document.getElementById('song-category').value.trim() || 'Nhạc Việt'
+    const levelVal = Number(document.getElementById('song-level').value) || (isFree ? 5 : 8)
+    const tuningVal = document.getElementById('song-tuning').value.trim() || 'Standard'
+    const capoVal = String(document.getElementById('song-capo').value ?? (isFree ? '0' : '1'))
+    const durationVal = document.getElementById('song-duration').value.trim() || (isFree ? '03:15' : '03:40')
+    const thumbnailBgVal = document.getElementById('song-thumbnail-bg').value || (isFree ? 'from-[#D8C4AC] to-[#647A6C]' : 'from-[#C1602F] to-[#6E3B1F]')
+    const descriptionVal = document.getElementById('song-description').value.trim()
+    const isFeatured = document.getElementById('song-is-featured').checked
 
-    const payload = {
-      title: titleVal,
-      singer: singerVal || 'Guitar By Quang',
-      category: document.getElementById('song-category').value.trim() || 'Nhạc Việt',
-      level_num: levelVal,
-      level: `${levelVal}/10`,
-      tuning: document.getElementById('song-tuning').value.trim() || 'Standard',
-      capo: String(document.getElementById('song-capo').value || '0'),
-      has_demo: Boolean(demoVideoVal),
-      video_demo: demoVideoVal || null,
-      price: priceVal,
-      price_formatted: priceFormatted,
-      priceFormatted: priceFormatted,
-      discount_note: 'HSSV: 179k',
-      target_url: tabUrlVal || '',
-      button_type: isFree ? 'link' : 'buy',
-      button_text: isFree ? (demoVideoVal ? 'Tải video tab' : 'Link xem tab') : 'Mua Video Tab',
-      is_free: isFree,
-      description: singerVal ? `Ca sĩ / Tác giả: ${singerVal}` : ''
+    let payload = {}
+
+    if (isFree) {
+      const freeTargetUrl = document.getElementById('song-free-target-url').value.trim()
+      const freePdfUrl = document.getElementById('song-free-pdf-url').value.trim()
+
+      if (!freeTargetUrl) {
+        showToast('❌ Vui lòng nhập Link Video Xem Tab (YouTube / TikTok / Google Drive)!', 'error')
+        return
+      }
+
+      const ytId = extractYoutubeId(freeTargetUrl)
+
+      payload = {
+        title: titleVal,
+        singer: singerVal || 'Guitar By Quang',
+        category: categoryVal,
+        level_num: levelVal,
+        level: `${levelVal}/10`,
+        tuning: tuningVal,
+        capo: capoVal,
+        duration: durationVal,
+        description: descriptionVal || (singerVal ? `Ca sĩ / Tác giả: ${singerVal}. Bản tab miễn phí kèm video hướng dẫn từ Guitar By Quang.` : 'Bản tab guitar fingerstyle miễn phí kèm video hướng dẫn.'),
+        is_free: true,
+        price: 0,
+        price_formatted: 'Miễn phí',
+        priceFormatted: 'Miễn phí',
+        discount_note: null,
+        has_demo: Boolean(ytId || freeTargetUrl.endsWith('.mp4')),
+        video_demo: ytId ? `https://youtu.be/${ytId}` : freeTargetUrl,
+        demo_video_url: ytId ? `https://youtu.be/${ytId}` : freeTargetUrl,
+        youtube_id: ytId || null,
+        target_url: freeTargetUrl,
+        tab_url: freeTargetUrl,
+        pdf_url: freePdfUrl || null,
+        thumbnail_bg: thumbnailBgVal,
+        button_type: 'link',
+        button_text: 'Link xem tab',
+        is_featured: isFeatured
+      }
+    } else {
+      const priceRaw = document.getElementById('song-paid-price').value.trim() || '239k'
+      const priceFormatted = formatCompactPrice(priceRaw)
+      const numericPrice = Number(priceRaw.replace(/[^0-9]/g, '')) || 239000
+      const priceVal = numericPrice < 1000 && numericPrice > 0 ? numericPrice * 1000 : numericPrice
+      const discountNoteVal = document.getElementById('song-paid-discount').value.trim() || 'HSSV: 179k'
+      const demoUrlVal = document.getElementById('song-paid-demo-url').value.trim()
+      const driveUrlVal = document.getElementById('song-paid-drive-url').value.trim()
+
+      if (!demoUrlVal) {
+        showToast('❌ Vui lòng nhập Link Video Demo xem trước (YouTube hoặc MP4)!', 'error')
+        return
+      }
+
+      const ytId = extractYoutubeId(demoUrlVal)
+
+      payload = {
+        title: titleVal,
+        singer: singerVal || 'Guitar By Quang',
+        category: categoryVal,
+        level_num: levelVal,
+        level: `${levelVal}/10`,
+        tuning: tuningVal,
+        capo: capoVal,
+        duration: durationVal,
+        description: descriptionVal || (singerVal ? `Ca sĩ / Tác giả: ${singerVal}. Fingerstyle nâng cao kèm video chi tiết.` : 'Bản Video Tab độc quyền chất lượng cao từ Guitar By Quang.'),
+        is_free: false,
+        price: priceVal,
+        price_formatted: priceFormatted,
+        priceFormatted: priceFormatted,
+        discount_note: discountNoteVal,
+        has_demo: true,
+        video_demo: ytId ? `https://youtu.be/${ytId}` : demoUrlVal,
+        demo_video_url: ytId ? `https://youtu.be/${ytId}` : demoUrlVal,
+        youtube_id: ytId || null,
+        target_url: driveUrlVal || '',
+        tab_url: driveUrlVal || '',
+        pdf_url: null,
+        thumbnail_bg: thumbnailBgVal,
+        button_type: 'buy',
+        button_text: 'Mua Video Tab',
+        is_featured: isFeatured
+      }
     }
 
     try {

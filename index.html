@@ -1176,8 +1176,9 @@
         <span class="text-xs font-mono font-bold uppercase tracking-wider text-accent-primary">Video Demo</span>
         <h3 id="video-demo-title" class="text-xl sm:text-2xl font-extrabold text-text-primary">Tên bài hát</h3>
       </div>
-      <div class="relative overflow-hidden rounded-2xl aspect-video bg-black/80 shadow-lg border border-glass-border">
-        <video id="demo-modal-video" controls playsinline class="w-full h-full aspect-video rounded-2xl object-cover">
+      <div class="relative overflow-hidden rounded-2xl aspect-video bg-black/90 shadow-lg border border-glass-border">
+        <iframe id="demo-modal-iframe" class="w-full h-full aspect-video rounded-2xl hidden" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+        <video id="demo-modal-video" controls playsinline class="w-full h-full aspect-video rounded-2xl object-cover hidden">
           <source src="" type="video/mp4">
           Trình duyệt không hỗ trợ phát video.
         </video>
