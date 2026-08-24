@@ -26,7 +26,7 @@
     (function () {
       try {
         var saved = localStorage.getItem('gbq_theme');
-        if (saved === 'light' || (!saved && window.matchMedia('(prefers-color-scheme: light)').matches)) {
+        if (saved !== 'dark') {
           document.documentElement.setAttribute('data-theme', 'light');
         }
       } catch (e) { }

@@ -73,12 +73,12 @@ document.addEventListener('DOMContentLoaded', () => {
     // 1. Kiểm tra không được để trống
     if (!displayName) {
       nameInput?.focus()
-      return showAlert('Vui lòng nhập Họ và Tên / Tên hiển thị.')
+      return showAlert('Vui lòng nhập Tên hiển thị.')
     }
 
     if (!email) {
       emailInput?.focus()
-      return showAlert('Vui lòng nhập Địa chỉ Email.')
+      return showAlert('Vui lòng nhập Email.')
     }
 
     // 2. Kiểm tra cú pháp Email chuẩn

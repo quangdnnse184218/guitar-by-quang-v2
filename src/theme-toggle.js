@@ -8,20 +8,16 @@ const STORAGE_KEY = 'gbq_theme'
 const themeListeners = new Set()
 
 /**
- * Lấy theme hiện tại đang lưu hoặc theo system preference
+ * Lấy theme hiện tại đang lưu. Mặc định là 'light'.
  * @returns {'light' | 'dark'}
  */
 export function getPreferredTheme() {
   const saved = localStorage.getItem(STORAGE_KEY)
-  if (saved === 'light' || saved === 'dark') {
-    return saved
+  if (saved === 'dark') {
+    return 'dark'
   }
-  
-  if (window.matchMedia && window.matchMedia('(prefers-color-scheme: light)').matches) {
-    return 'light'
-  }
-  
-  return 'dark'
+  // Mặc định luôn là 'light' theo yêu cầu người dùng
+  return 'light'
 }
 
 /**
@@ -100,14 +96,4 @@ export function initThemeToggle() {
   }
 
   attachButtons()
-
-  // Lắng nghe sự thay đổi của hệ điều hành nếu người dùng chưa chọn thủ công
-  if (window.matchMedia) {
-    const mediaQuery = window.matchMedia('(prefers-color-scheme: light)')
-    mediaQuery.addEventListener('change', (e) => {
-      if (!localStorage.getItem(STORAGE_KEY)) {
-        applyTheme(e.matches ? 'light' : 'dark', false)
-      }
-    })
-  }
 }
