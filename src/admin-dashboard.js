@@ -6,10 +6,12 @@
 
 import { supabase } from './lib/supabase.js'
 import { initThemeToggle } from './theme-toggle.js'
+import { initPasswordToggles } from './common.js'
 import { fetchAllSongs, saveSong, removeSong, reorderAllSongs } from './lib/songs-service.js'
 import { fetchAllGears, DEFAULT_GEARS, saveGear, removeGear, reorderAllGears } from './lib/gears-service.js'
 
 initThemeToggle()
+initPasswordToggles()
 
 // ==========================================================================
 // STATE
@@ -302,7 +304,7 @@ function renderSongsTable() {
     return `
       <tr class="hover:bg-black/5 dark:hover:bg-white/5 transition-colors" data-id="${song.id}">
         <!-- Vị Trí & Di Chuyển -->
-        <td class="py-3 px-3 text-center">
+        <td data-label="Vị Trí & Thứ Tự" class="py-3 px-3 text-center">
           <div class="inline-flex items-center gap-1.5 p-1 rounded-xl bg-black/5 dark:bg-white/5 border border-glass-border">
             <input 
               type="number" 
@@ -337,24 +339,24 @@ function renderSongsTable() {
           </div>
         </td>
 
-        <td class="py-3.5 px-4 font-bold text-text-primary">
-          <div class="flex flex-col">
+        <td data-label="Bài Hát" class="py-3.5 px-4 font-bold text-text-primary">
+          <div class="flex flex-col text-right sm:text-left">
             <span class="text-sm font-extrabold">${song.title}</span>
             <span class="text-xs text-text-muted font-medium">${song.singer || 'Guitar By Quang'}</span>
           </div>
         </td>
-        <td class="py-3.5 px-3">
+        <td data-label="Thể Loại" class="py-3.5 px-3">
           <span class="px-2.5 py-1 rounded-lg bg-black/5 dark:bg-white/5 text-xs font-bold text-text-muted">${song.category || 'Fingerstyle'}</span>
         </td>
-        <td class="py-3.5 px-3 font-mono tabular-nums font-bold text-accent-primary text-xs">${level}/10</td>
-        <td class="py-3.5 px-3 text-text-muted text-xs font-medium">
+        <td data-label="Độ Khó" class="py-3.5 px-3 font-mono tabular-nums font-bold text-accent-primary text-xs">${level}/10</td>
+        <td data-label="Tuning / Capo" class="py-3.5 px-3 text-text-muted text-xs font-medium">
           ${song.tuning || 'Standard'} / C:${song.capo ?? 0}
         </td>
-        <td class="py-3.5 px-3">${priceText}</td>
-        <td class="py-3.5 px-3">
+        <td data-label="Loại / Giá" class="py-3.5 px-3">${priceText}</td>
+        <td data-label="Nổi Bật" class="py-3.5 px-3">
           ${isFeatured ? '<span class="badge-semantic-warning px-2 py-0.5 rounded-full font-bold text-xs">★ Ghim</span>' : '<span class="text-text-muted/40 text-xs">—</span>'}
         </td>
-        <td class="py-3.5 px-4 text-right">
+        <td data-label="Thao Tác" class="py-3.5 px-4 text-right">
           <div class="flex items-center justify-end gap-2">
             <button onclick="window.editSong('${song.id}')" class="px-3 py-1.5 rounded-lg bg-glass-bg hover:bg-glass-bg-hover text-accent-primary font-bold text-xs border border-glass-border transition-colors cursor-pointer">
               Sửa
@@ -589,7 +591,7 @@ function renderGearsTable() {
     return `
       <tr class="hover:bg-black/5 dark:hover:bg-white/5 transition-colors" data-id="${gear.id}">
         <!-- Vị Trí & Di Chuyển -->
-        <td class="py-3 px-3 text-center">
+        <td data-label="Vị Trí" class="py-3 px-3 text-center">
           <div class="inline-flex items-center gap-1.5 p-1 rounded-xl bg-black/5 dark:bg-white/5 border border-glass-border">
             <input 
               type="number" 
@@ -624,18 +626,18 @@ function renderGearsTable() {
           </div>
         </td>
 
-        <td class="py-3.5 px-4 font-bold text-text-primary">
-          <div class="flex items-center gap-3">
+        <td data-label="Ảnh & Tên Thiết Bị" class="py-3.5 px-4 font-bold text-text-primary">
+          <div class="flex items-center gap-3 justify-end sm:justify-start">
             <img src="${image}" alt="${name}" class="w-10 h-10 rounded-xl object-cover bg-black/5 border border-glass-border flex-shrink-0" onerror="this.src='/assets/avatar.jpg'" />
             <span class="text-sm font-extrabold">${name}</span>
           </div>
         </td>
-        <td class="py-3.5 px-3">
+        <td data-label="Phân Loại" class="py-3.5 px-3">
           <span class="px-2.5 py-1 rounded-lg bg-black/5 dark:bg-white/5 text-xs font-bold text-text-muted">${category}</span>
         </td>
-        <td class="py-3.5 px-3 text-text-muted text-xs font-medium max-w-xs truncate">${description}</td>
-        <td class="py-3.5 px-3 font-mono tabular-nums font-bold text-text-primary text-xs">${price}</td>
-        <td class="py-3.5 px-4 text-right">
+        <td data-label="Mô Tả Ngắn" class="py-3.5 px-3 text-text-muted text-xs font-medium max-w-xs truncate">${description}</td>
+        <td data-label="Giá Hiển Thị" class="py-3.5 px-3 font-mono tabular-nums font-bold text-text-primary text-xs">${price}</td>
+        <td data-label="Thao Tác" class="py-3.5 px-4 text-right">
           <div class="flex items-center justify-end gap-2">
             <button onclick="window.editGear('${gear.id}')" class="px-3 py-1.5 rounded-lg bg-glass-bg hover:bg-glass-bg-hover text-accent-primary font-bold text-xs border border-glass-border transition-colors cursor-pointer">
               Sửa
@@ -860,11 +862,11 @@ function renderUsersTable() {
     const tr = document.createElement('tr')
     tr.className = 'hover:bg-black/5 dark:hover:bg-white/5 transition-colors border-b border-glass-border/50 last:border-0'
     tr.innerHTML = `
-      <td class="p-4">
-        <div class="flex items-center gap-3">
+      <td data-label="Thành viên" class="p-4">
+        <div class="flex items-center gap-3 justify-end sm:justify-start">
           <img src="${u.avatar_url || 'https://ui-avatars.com/api/?name=' + encodeURIComponent(u.full_name || u.email || 'User') + '&background=random'}" alt="Avatar" class="w-9 h-9 rounded-xl border border-glass-border object-cover bg-glass-bg flex-shrink-0">
-          <div>
-            <div class="text-sm font-bold text-text-primary flex items-center gap-1.5">
+          <div class="text-right sm:text-left">
+            <div class="text-sm font-bold text-text-primary flex items-center justify-end sm:justify-start gap-1.5">
               <span>${escapeHtml(u.full_name || 'Khách Vãng Lai')}</span>
               ${isSelf ? '<span class="text-[10px] text-accent-primary font-bold">(Bạn)</span>' : ''}
             </div>
@@ -872,8 +874,8 @@ function renderUsersTable() {
           </div>
         </div>
       </td>
-      <td class="p-4">
-        <div class="flex items-center gap-1.5">
+      <td data-label="Mã User (UUID)" class="p-4">
+        <div class="flex items-center justify-end sm:justify-start gap-1.5">
           <span class="font-mono text-xs text-accent-primary bg-black/5 dark:bg-white/5 px-2 py-1 rounded-lg border border-glass-border cursor-help" title="${escapeHtml(uuidStr)}">
             ${shortUuid}
           </span>
@@ -882,23 +884,23 @@ function renderUsersTable() {
           </button>
         </div>
       </td>
-      <td class="p-4 text-center">
+      <td data-label="Vai trò" class="p-4 text-center sm:text-center">
         ${roleBadge}
       </td>
-      <td class="p-4 text-center">
+      <td data-label="Đã mua" class="p-4 text-center sm:text-center">
         <span class="text-xs font-mono font-bold ${u.purchases_count > 0 ? 'text-amber-500 bg-amber-500/10 px-2 py-0.5 rounded-md border border-amber-500/20' : 'text-text-muted'}">
           ${u.purchases_count || 0}
         </span>
       </td>
-      <td class="p-4 text-center">
+      <td data-label="Yêu thích" class="p-4 text-center sm:text-center">
         <span class="text-xs font-mono font-bold ${u.favorites_count > 0 ? 'text-rose-500 bg-rose-500/10 px-2 py-0.5 rounded-md border border-rose-500/20' : 'text-text-muted'}">
           ${u.favorites_count || 0}
         </span>
       </td>
-      <td class="p-4 text-[11px] text-text-muted font-medium hidden sm:table-cell">
+      <td data-label="Ngày đăng ký" class="p-4 text-[11px] text-text-muted font-medium">
         ${u.created_at ? new Date(u.created_at).toLocaleDateString('vi-VN') : '—'}
       </td>
-      <td class="p-4 text-right">
+      <td data-label="Thao tác" class="p-4 text-right">
         <div class="flex items-center justify-end gap-1.5">
           <button onclick="selectUserForGrant('${escapeHtml(uuidStr)}')" class="px-2.5 py-1 rounded-lg bg-accent-primary/10 hover:bg-accent-primary/20 text-accent-primary text-[11px] font-bold transition-colors cursor-pointer" title="Cấp quyền tab cho user này">
             Cấp quyền
@@ -1028,14 +1030,14 @@ function renderRecentGrants() {
     const tr = document.createElement('tr')
     tr.className = 'hover:bg-black/5 dark:hover:bg-white/5 transition-colors border-b border-glass-border/40 last:border-0'
     tr.innerHTML = `
-      <td class="p-3">
-        <div class="font-bold text-text-primary">${escapeHtml(r.user_name || 'Học viên')}</div>
-        <div class="text-[10px] text-text-muted font-mono">${escapeHtml(r.user_email || r.user_id)}</div>
+      <td data-label="Thành viên" class="p-3">
+        <div class="font-bold text-text-primary text-right sm:text-left">${escapeHtml(r.user_name || 'Học viên')}</div>
+        <div class="text-[10px] text-text-muted font-mono text-right sm:text-left">${escapeHtml(r.user_email || r.user_id)}</div>
       </td>
-      <td class="p-3">
+      <td data-label="Bài hát đã mở" class="p-3">
         <span class="font-bold text-accent-primary">${escapeHtml(r.song_title || r.song_id)}</span>
       </td>
-      <td class="p-3 text-right text-[11px] text-text-muted font-mono">
+      <td data-label="Thời gian" class="p-3 text-right text-[11px] text-text-muted font-mono">
         ${r.purchased_at ? new Date(r.purchased_at).toLocaleString('vi-VN', { hour: '2-digit', minute: '2-digit', day: '2-digit', month: '2-digit' }) : '—'}
       </td>
     `
@@ -1123,14 +1125,14 @@ async function initDashboard() {
     })
   }
 
-  // Tab Switcher
   // Tab Switcher Helper
   function switchTab(tabId) {
     activeTab = tabId
     
-    // Default inactive classes
-    const inactiveClass = 'px-4 py-2 rounded-xl text-xs font-bold transition-all cursor-pointer text-text-muted hover:text-text-primary'
-    const activeClass = 'px-4 py-2 rounded-xl text-xs font-bold transition-all cursor-pointer bg-warm-gradient text-white shadow-xs'
+    // Default inactive and active classes supporting 2x2 grid on mobile and flex on desktop
+    const baseClass = 'px-3 sm:px-4 py-2.5 sm:py-2 rounded-xl text-xs font-bold transition-all cursor-pointer flex items-center justify-center gap-1.5 text-center'
+    const inactiveClass = `${baseClass} text-text-muted hover:text-text-primary`
+    const activeClass = `${baseClass} bg-warm-gradient text-white shadow-xs`
     
     if (tabNavSongs) tabNavSongs.className = tabId === 'songs' ? activeClass : inactiveClass
     if (tabNavGears) tabNavGears.className = tabId === 'gears' ? activeClass : inactiveClass
@@ -1150,6 +1152,8 @@ async function initDashboard() {
       loadRecentGrants()
     }
   }
+
+  window.switchTab = switchTab
 
   if (tabNavSongs) tabNavSongs.addEventListener('click', () => switchTab('songs'))
   if (tabNavGears) tabNavGears.addEventListener('click', () => switchTab('gears'))
@@ -1255,18 +1259,6 @@ async function initDashboard() {
 
   if (cancelChangePasswordBtn) {
     cancelChangePasswordBtn.addEventListener('click', () => toggleModal(changePasswordModal, false))
-  }
-
-  if (toggleNewPasswordVisibility && adminNewPassword) {
-    toggleNewPasswordVisibility.addEventListener('click', () => {
-      adminNewPassword.type = adminNewPassword.type === 'password' ? 'text' : 'password'
-    })
-  }
-
-  if (toggleConfirmPasswordVisibility && adminConfirmPassword) {
-    toggleConfirmPasswordVisibility.addEventListener('click', () => {
-      adminConfirmPassword.type = adminConfirmPassword.type === 'password' ? 'text' : 'password'
-    })
   }
 
   if (changePasswordForm) {

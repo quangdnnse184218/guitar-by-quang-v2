@@ -18,21 +18,21 @@
     <div class="grain-overlay" aria-hidden="true"></div>
 
     <!-- Top Admin Header -->
-    <header class="sticky top-0 z-40 bg-bg-base/95 backdrop-blur-md border-b border-glass-border px-4 sm:px-8 py-3.5 flex items-center justify-between shadow-xs">
-      <div class="flex items-center gap-3">
-        <div class="w-9 h-9 rounded-xl bg-warm-gradient text-white flex items-center justify-center font-black text-base shadow-sm">
+    <header class="sticky top-0 z-40 bg-bg-base/95 backdrop-blur-md border-b border-glass-border px-3.5 sm:px-8 py-3 flex items-center justify-between shadow-xs">
+      <div class="flex items-center gap-2.5 sm:gap-3 min-w-0">
+        <div class="w-8 h-8 sm:w-9 sm:h-9 rounded-xl bg-warm-gradient text-white flex items-center justify-center font-black text-sm sm:text-base shadow-sm flex-shrink-0">
           🎸
         </div>
-        <div>
-          <div class="flex items-center gap-2">
-            <span class="font-extrabold text-text-primary text-base tracking-tight">Guitar By Quang</span>
-            <span class="px-2 py-0.5 rounded-md bg-accent-primary/15 text-accent-primary text-[10px] font-black uppercase tracking-wider border border-accent-primary/30">ADMIN</span>
+        <div class="min-w-0">
+          <div class="flex items-center gap-1.5 sm:gap-2">
+            <span class="font-extrabold text-text-primary text-sm sm:text-base tracking-tight truncate">Guitar By Quang</span>
+            <span class="px-1.5 py-0.5 rounded-md bg-accent-primary/15 text-accent-primary text-[9px] sm:text-[10px] font-black uppercase tracking-wider border border-accent-primary/30 flex-shrink-0">ADMIN</span>
           </div>
           <span id="admin-user-email" class="text-xs text-text-muted font-mono font-semibold hidden sm:inline-block">Đang tải phiên...</span>
         </div>
       </div>
 
-      <div class="flex items-center gap-2 sm:gap-3">
+      <div class="flex items-center gap-1.5 sm:gap-3 flex-shrink-0">
         <!-- Theme Toggle Button -->
         <button id="theme-toggle-btn" aria-label="Chuyển đổi giao diện Sáng / Tối" title="Chuyển đổi giao diện" class="p-2 rounded-xl bg-glass-bg hover:bg-glass-bg-hover text-text-primary border border-glass-border flex items-center justify-center transition-colors cursor-pointer">
           <svg class="sun-icon w-4 h-4 text-accent-primary" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -44,16 +44,18 @@
           </svg>
         </button>
 
-        <button id="open-change-password-btn" class="px-3.5 py-1.5 rounded-full bg-glass-bg hover:bg-glass-bg-hover text-text-primary border border-glass-border text-xs font-bold transition-colors flex items-center gap-1.5 cursor-pointer shadow-xs" title="Đổi mật khẩu tài khoản Admin">
-          <span>🔒 Đổi mật khẩu</span>
+        <button id="open-change-password-btn" class="p-2 sm:px-3.5 sm:py-1.5 rounded-full bg-glass-bg hover:bg-glass-bg-hover text-text-primary border border-glass-border text-xs font-bold transition-colors flex items-center gap-1.5 cursor-pointer shadow-xs" title="Đổi mật khẩu tài khoản Admin" aria-label="Đổi mật khẩu">
+          <span class="text-xs">🔒</span>
+          <span class="hidden sm:inline">Đổi mật khẩu</span>
         </button>
-        <a href="/" class="px-3.5 py-1.5 rounded-full bg-glass-bg hover:bg-glass-bg-hover text-text-primary border border-glass-border text-xs font-bold transition-colors flex items-center gap-1.5 shadow-xs">
-          <span>Xem Website</span>
-          <svg class="w-3.5 h-3.5 text-text-muted" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"/></svg>
+        <a href="/" class="p-2 sm:px-3.5 sm:py-1.5 rounded-full bg-glass-bg hover:bg-glass-bg-hover text-text-primary border border-glass-border text-xs font-bold transition-colors flex items-center gap-1.5 shadow-xs" title="Xem Website chính" aria-label="Xem Website">
+          <svg class="w-4 h-4 text-accent-primary sm:hidden" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"/></svg>
+          <span class="hidden sm:inline">Xem Website</span>
+          <svg class="w-3.5 h-3.5 text-text-muted hidden sm:inline" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"/></svg>
         </a>
-        <button id="logout-btn" class="px-3.5 py-1.5 rounded-full bg-rose-500/10 hover:bg-rose-500/20 text-rose-600 dark:text-rose-400 border border-rose-500/30 text-xs font-bold transition-colors flex items-center gap-1.5 cursor-pointer shadow-xs">
-          <span>Đăng xuất</span>
-          <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"/></svg>
+        <button id="logout-btn" class="p-2 sm:px-3.5 sm:py-1.5 rounded-full bg-rose-500/10 hover:bg-rose-500/20 text-rose-600 dark:text-rose-400 border border-rose-500/30 text-xs font-bold transition-colors flex items-center gap-1.5 cursor-pointer shadow-xs" title="Đăng xuất khỏi hệ thống" aria-label="Đăng xuất">
+          <svg class="w-4 h-4 sm:w-3.5 sm:h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"/></svg>
+          <span class="hidden sm:inline">Đăng xuất</span>
         </button>
       </div>
     </header>
@@ -69,18 +71,22 @@
         </div>
 
         <!-- Navigation Tabs Switcher -->
-        <div class="inline-flex p-1 rounded-2xl glass-card border border-glass-border shadow-xs flex-wrap">
-          <button type="button" id="tab-nav-songs" class="px-4 py-2 rounded-xl text-xs font-bold transition-all cursor-pointer bg-warm-gradient text-white shadow-xs">
-            🎵 Kho Video Tab
+        <div class="grid grid-cols-2 sm:flex sm:items-center gap-1.5 p-1.5 rounded-2xl glass-card border border-glass-border shadow-xs w-full sm:w-auto">
+          <button type="button" id="tab-nav-songs" class="px-3 sm:px-4 py-2.5 sm:py-2 rounded-xl text-xs font-bold transition-all cursor-pointer bg-warm-gradient text-white shadow-xs flex items-center justify-center gap-1.5 text-center">
+            <span>🎵</span>
+            <span>Kho Video Tab</span>
           </button>
-          <button type="button" id="tab-nav-gears" class="px-4 py-2 rounded-xl text-xs font-bold transition-all cursor-pointer text-text-muted hover:text-text-primary">
-            🛠️ Bộ Đồ Nghề
+          <button type="button" id="tab-nav-gears" class="px-3 sm:px-4 py-2.5 sm:py-2 rounded-xl text-xs font-bold transition-all cursor-pointer text-text-muted hover:text-text-primary flex items-center justify-center gap-1.5 text-center">
+            <span>🛠️</span>
+            <span>Bộ Đồ Nghề</span>
           </button>
-          <button type="button" id="tab-nav-users" class="px-4 py-2 rounded-xl text-xs font-bold transition-all cursor-pointer text-text-muted hover:text-text-primary">
-            👥 Quản Lý User
+          <button type="button" id="tab-nav-users" class="px-3 sm:px-4 py-2.5 sm:py-2 rounded-xl text-xs font-bold transition-all cursor-pointer text-text-muted hover:text-text-primary flex items-center justify-center gap-1.5 text-center">
+            <span>👥</span>
+            <span>Quản Lý User</span>
           </button>
-          <button type="button" id="tab-nav-grant" class="px-4 py-2 rounded-xl text-xs font-bold transition-all cursor-pointer text-text-muted hover:text-text-primary">
-            📋 Quản Lý Đơn Mua
+          <button type="button" id="tab-nav-grant" class="px-3 sm:px-4 py-2.5 sm:py-2 rounded-xl text-xs font-bold transition-all cursor-pointer text-text-muted hover:text-text-primary flex items-center justify-center gap-1.5 text-center">
+            <span>📋</span>
+            <span>Quản Lý Đơn Mua</span>
           </button>
         </div>
       </div>
@@ -167,7 +173,7 @@
         <!-- Songs Data Table / Grid -->
         <div class="glass-card rounded-3xl border border-glass-border overflow-hidden shadow-sm">
           <div class="overflow-x-auto">
-            <table class="w-full text-left text-xs text-text-primary">
+            <table class="w-full text-left text-xs text-text-primary admin-responsive-table">
               <thead class="bg-black/5 dark:bg-white/5 text-[11px] font-mono uppercase tracking-wider text-text-muted border-b border-glass-border">
                 <tr>
                   <th class="py-3.5 px-3 text-center w-36">Vị Trí & Thứ Tự</th>
@@ -219,7 +225,7 @@
         <!-- Gears Data Table -->
         <div class="glass-card rounded-3xl border border-glass-border overflow-hidden shadow-sm">
           <div class="overflow-x-auto">
-            <table class="w-full text-left text-xs text-text-primary">
+            <table class="w-full text-left text-xs text-text-primary admin-responsive-table">
               <thead class="bg-black/5 dark:bg-white/5 text-[11px] font-mono uppercase tracking-wider text-text-muted border-b border-glass-border">
                 <tr>
                   <th class="py-3.5 px-3 text-center w-36">Vị Trí</th>
@@ -272,7 +278,7 @@
 
         <div class="glass-card rounded-2xl border border-glass-border overflow-hidden shadow-sm">
           <div class="overflow-x-auto">
-            <table class="w-full text-left border-collapse">
+            <table class="w-full text-left border-collapse admin-responsive-table">
               <thead>
                 <tr class="bg-black/5 dark:bg-white/5 border-b border-glass-border text-[11px] font-mono uppercase tracking-wider text-text-muted">
                   <th class="p-4">Thành viên</th>
@@ -280,7 +286,7 @@
                   <th class="p-4 text-center">Vai trò</th>
                   <th class="p-4 text-center">Đã mua</th>
                   <th class="p-4 text-center">Yêu thích</th>
-                  <th class="p-4 hidden sm:table-cell">Ngày đăng ký</th>
+                  <th class="p-4">Ngày đăng ký</th>
                   <th class="p-4 text-right">Thao tác</th>
                 </tr>
               </thead>
@@ -362,7 +368,7 @@
               </div>
 
               <div class="overflow-x-auto">
-                <table class="w-full text-left border-collapse">
+                <table class="w-full text-left border-collapse admin-responsive-table">
                   <thead>
                     <tr class="bg-black/5 dark:bg-white/5 border-b border-glass-border text-[10px] font-mono uppercase tracking-wider text-text-muted">
                       <th class="p-3">Thành viên</th>
@@ -559,8 +565,14 @@
             <label class="text-xs font-bold text-text-primary">Mật khẩu mới *</label>
             <div class="relative">
               <input type="password" id="admin-new-password" required minlength="6" placeholder="Tối thiểu 6 ký tự..." class="w-full px-3.5 py-2.5 pr-10 rounded-xl bg-black/5 dark:bg-white/5 border border-glass-border text-xs text-text-primary focus:outline-none focus:border-accent-primary" />
-              <button type="button" id="toggle-new-password-visibility" class="absolute right-2.5 top-1/2 -translate-y-1/2 p-1 text-text-muted hover:text-text-primary transition-colors cursor-pointer text-xs" title="Hiện/Ẩn mật khẩu">
-                👁️
+              <button type="button" id="toggle-new-password-visibility" data-toggle-password="admin-new-password" class="absolute right-2.5 top-1/2 -translate-y-1/2 p-1 text-text-muted hover:text-text-primary transition-colors cursor-pointer text-xs" title="Hiện hoặc ẩn mật khẩu" aria-label="Hiện hoặc ẩn mật khẩu">
+                <svg class="w-4 h-4 eye-open" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                  <path stroke-linecap="round" stroke-linejoin="round" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+                </svg>
+                <svg class="w-4 h-4 eye-closed hidden" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" d="M13.875 18.825A10.05 10.05 0 0112 19c-4.478 0-8.268-2.943-9.543-7a9.97 9.97 0 011.563-3.029m5.858.908a3 3 0 114.243 4.243M9.878 9.878l4.242 4.242M9.88 9.88l-3.29-3.29m7.532 7.532l3.29 3.29M3 3l18 18" />
+                </svg>
               </button>
             </div>
           </div>
@@ -569,8 +581,14 @@
             <label class="text-xs font-bold text-text-primary">Xác nhận mật khẩu mới *</label>
             <div class="relative">
               <input type="password" id="admin-confirm-password" required minlength="6" placeholder="Nhập lại mật khẩu mới..." class="w-full px-3.5 py-2.5 pr-10 rounded-xl bg-black/5 dark:bg-white/5 border border-glass-border text-xs text-text-primary focus:outline-none focus:border-accent-primary" />
-              <button type="button" id="toggle-confirm-password-visibility" class="absolute right-2.5 top-1/2 -translate-y-1/2 p-1 text-text-muted hover:text-text-primary transition-colors cursor-pointer text-xs" title="Hiện/Ẩn mật khẩu">
-                👁️
+              <button type="button" id="toggle-confirm-password-visibility" data-toggle-password="admin-confirm-password" class="absolute right-2.5 top-1/2 -translate-y-1/2 p-1 text-text-muted hover:text-text-primary transition-colors cursor-pointer text-xs" title="Hiện hoặc ẩn mật khẩu" aria-label="Hiện hoặc ẩn mật khẩu">
+                <svg class="w-4 h-4 eye-open" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                  <path stroke-linecap="round" stroke-linejoin="round" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+                </svg>
+                <svg class="w-4 h-4 eye-closed hidden" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" d="M13.875 18.825A10.05 10.05 0 0112 19c-4.478 0-8.268-2.943-9.543-7a9.97 9.97 0 011.563-3.029m5.858.908a3 3 0 114.243 4.243M9.878 9.878l4.242 4.242M9.88 9.88l-3.29-3.29m7.532 7.532l3.29 3.29M3 3l18 18" />
+                </svg>
               </button>
             </div>
           </div>

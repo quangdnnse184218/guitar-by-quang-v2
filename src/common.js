@@ -182,17 +182,17 @@ export async function initAuthHeader() {
       : ''
 
     const userDropdownHtml = `
-      <div class="relative group">
-        <button class="flex items-center gap-2 px-3 py-1.5 sm:px-3.5 sm:py-1.5 rounded-full bg-glass-bg border border-amber-500/40 hover:border-amber-400 shadow-sm hover:shadow-amber-500/10 transition-all cursor-pointer">
+      <div class="relative group" id="user-header-dropdown-wrap">
+        <button id="user-header-dropdown-btn" type="button" aria-expanded="false" aria-haspopup="true" class="flex items-center gap-2 px-3 py-1.5 sm:px-3.5 sm:py-1.5 rounded-full bg-glass-bg border border-amber-500/40 hover:border-amber-400 shadow-sm hover:shadow-amber-500/10 transition-all cursor-pointer">
           ${avatarHtml}
           <div class="flex items-center gap-1.5 text-left">
             <span class="text-xs sm:text-sm font-bold text-text-primary hidden sm:inline-block truncate max-w-[110px]">${fullName}</span>
             <span class="hidden md:inline-block">${roleBadgeHtml}</span>
           </div>
-          <svg class="w-3.5 h-3.5 text-text-muted transition-transform group-hover:rotate-180" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
+          <svg id="user-header-dropdown-arrow" class="w-3.5 h-3.5 text-text-muted transition-transform md:group-hover:rotate-180" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
         </button>
         <!-- Dropdown Menu -->
-        <div class="absolute right-0 mt-2 w-52 rounded-2xl bg-glass-bg backdrop-blur-2xl border border-glass-border shadow-2xl opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 z-50 p-2">
+        <div id="user-header-dropdown-menu" class="absolute right-0 mt-2 w-52 rounded-2xl bg-glass-bg backdrop-blur-2xl border border-glass-border shadow-2xl opacity-0 invisible md:group-hover:opacity-100 md:group-hover:visible transition-all duration-200 z-50 p-2 pointer-events-none md:pointer-events-auto">
           <div class="px-3 py-2 border-b border-glass-border mb-1">
             <p class="text-xs font-bold text-text-primary truncate">${fullName}</p>
             <p class="text-[10px] text-text-muted truncate">${user.email}</p>
@@ -231,6 +231,43 @@ export async function initAuthHeader() {
       desktopContainer.appendChild(userDiv.firstElementChild)
       
       if (themeToggle) desktopContainer.appendChild(themeToggle)
+
+      // Setup click-to-toggle behavior for mobile touch & accessibility
+      const dropdownWrap = desktopContainer.querySelector('#user-header-dropdown-wrap')
+      const dropdownBtn = desktopContainer.querySelector('#user-header-dropdown-btn')
+      const dropdownMenu = desktopContainer.querySelector('#user-header-dropdown-menu')
+
+      if (dropdownBtn && dropdownWrap) {
+        dropdownBtn.addEventListener('click', (e) => {
+          e.stopPropagation()
+          const isOpen = dropdownWrap.classList.toggle('open')
+          dropdownBtn.setAttribute('aria-expanded', isOpen ? 'true' : 'false')
+        })
+
+        // Close dropdown when clicking outside
+        document.addEventListener('click', (e) => {
+          if (dropdownWrap && !dropdownWrap.contains(e.target)) {
+            dropdownWrap.classList.remove('open')
+            dropdownBtn.setAttribute('aria-expanded', 'false')
+          }
+        })
+
+        // Close dropdown on Escape key
+        document.addEventListener('keydown', (e) => {
+          if (e.key === 'Escape' && dropdownWrap.classList.contains('open')) {
+            dropdownWrap.classList.remove('open')
+            dropdownBtn.setAttribute('aria-expanded', 'false')
+          }
+        })
+
+        // Close dropdown when any item inside is clicked
+        dropdownMenu?.querySelectorAll('a, button').forEach(item => {
+          item.addEventListener('click', () => {
+            dropdownWrap.classList.remove('open')
+            dropdownBtn.setAttribute('aria-expanded', 'false')
+          })
+        })
+      }
       
       // Wire up dropdown navigation links for single-page tab switching
       desktopContainer.querySelectorAll('a[href*="user-dashboard.html"]').forEach(link => {
@@ -533,10 +570,45 @@ export function initNavActiveSpy() {
   updateSpy()
 }
 
+/**
+ * Universal Password Toggle Helper
+ */
+export function initPasswordToggles() {
+  document.querySelectorAll('[data-toggle-password]').forEach(btn => {
+    if (btn.dataset.toggleInit) return
+    btn.dataset.toggleInit = 'true'
+
+    const targetId = btn.getAttribute('data-toggle-password')
+    const input = document.getElementById(targetId) || btn.parentElement?.querySelector('input')
+    if (!input) return
+
+    btn.addEventListener('click', (e) => {
+      e.preventDefault()
+      e.stopPropagation()
+      const isPassword = input.type === 'password'
+      input.type = isPassword ? 'text' : 'password'
+
+      const eyeOpen = btn.querySelector('.eye-open')
+      const eyeClosed = btn.querySelector('.eye-closed')
+
+      if (eyeOpen && eyeClosed) {
+        eyeOpen.classList.toggle('hidden', isPassword)
+        eyeClosed.classList.toggle('hidden', !isPassword)
+      }
+
+      btn.setAttribute('aria-label', isPassword ? 'Ẩn mật khẩu' : 'Hiện mật khẩu')
+      btn.setAttribute('title', isPassword ? 'Ẩn mật khẩu' : 'Hiện mật khẩu')
+    })
+  })
+}
+
 document.addEventListener("DOMContentLoaded", () => {
   initAuthHeader()
   initNavActiveSpy()
   initMobileHeaderScroll()
+  initPasswordToggles()
 })
 initNavActiveSpy()
 initMobileHeaderScroll()
+initPasswordToggles()
+

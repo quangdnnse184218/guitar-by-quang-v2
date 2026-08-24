@@ -6,8 +6,10 @@
 
 import { supabase } from './lib/supabase.js'
 import { initThemeToggle } from './theme-toggle.js'
+import { initPasswordToggles } from './common.js'
 
 initThemeToggle()
+initPasswordToggles()
 
 const loginForm = document.getElementById('admin-login-form')
 const emailInput = document.getElementById('admin-email')
