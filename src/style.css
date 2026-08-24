@@ -203,12 +203,26 @@ h1, h2, h3, h4, h5, h6 {
 /* ==============================================================================
    FORM CONTROLS & NATIVE SELECT / OPTION THEMING
    ============================================================================== */
-select {
+select, input, textarea {
   color-scheme: dark;
 }
 
-[data-theme="light"] select {
+[data-theme="light"] select,
+[data-theme="light"] input,
+[data-theme="light"] textarea {
   color-scheme: light;
+}
+
+select {
+  background-color: var(--glass-bg);
+  color: var(--text-primary);
+  border: 1px solid var(--glass-border);
+}
+
+[data-theme="light"] select {
+  background-color: #FFFFFF !important;
+  color: #231C16 !important;
+  border-color: rgba(180, 150, 120, 0.4) !important;
 }
 
 select option {
@@ -219,7 +233,7 @@ select option {
 
 [data-theme="light"] select option {
   background-color: #FFFFFF !important;
-  color: #1A1F2C !important;
+  color: #231C16 !important;
 }
 
 select optgroup {
@@ -229,7 +243,7 @@ select optgroup {
 
 [data-theme="light"] select optgroup {
   background-color: #F7F2EA !important;
-  color: #64748B !important;
+  color: #5C4D40 !important;
 }
 
 /* Consistent Type Scale */
@@ -928,6 +942,200 @@ input[type="range"].metro-slider {
 input[type="range"].metro-slider::-webkit-slider-thumb {
   -webkit-appearance: none;
   appearance: none;
+  display: none;
+}
+.scrollbar-none {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+.skeleton-pulse {
+  background: linear-gradient(
+    90deg,
+    var(--glass-bg) 0%,
+    var(--glass-bg-hover) 50%,
+    var(--glass-bg) 100%
+  );
+  background-size: 200% 100%;
+  animation: skeletonPulse 1.8s infinite ease-in-out;
+}
+
+@keyframes skeletonPulse {
+  0% { background-position: 200% 0; }
+  100% { background-position: -200% 0; }
+}
+
+/* ==============================================================================
+   MODAL DEDICATED THEME CLASSES
+   ============================================================================== */
+.modal-surface {
+  background-color: var(--modal-surface-bg) !important;
+  border: 1px solid var(--modal-surface-border) !important;
+  color: var(--text-primary) !important;
+  box-shadow: 0 25px 60px -15px rgba(0, 0, 0, 0.5) !important;
+}
+
+.modal-inner-card {
+  background-color: var(--modal-card-bg) !important;
+  border: 1px solid var(--modal-card-border) !important;
+}
+
+.badge-free {
+  background-color: var(--badge-free-bg) !important;
+  color: var(--badge-free-text) !important;
+  border: 1px solid var(--badge-free-border) !important;
+}
+
+.badge-paid {
+  background-color: var(--badge-paid-bg) !important;
+  color: var(--badge-paid-text) !important;
+  border: 1px solid var(--badge-paid-border) !important;
+}
+
+.btn-metronome-link {
+  background-color: var(--btn-metronome-bg) !important;
+  color: var(--btn-metronome-text) !important;
+  border: 1px solid var(--btn-metronome-border) !important;
+  transition: all 0.2s ease;
+}
+
+.btn-metronome-link:hover {
+  background-color: var(--btn-metronome-hover) !important;
+}
+
+/* ==============================================================================
+   TAB ORIGIN BADGES ("Tab của Quang" / "Tab sưu tầm")
+   ============================================================================== */
+.badge-origin-quang {
+  background-color: rgba(232, 122, 48, 0.22);
+  color: #FDBA74;
+  border: 1px solid rgba(232, 122, 48, 0.45);
+}
+
+[data-theme="light"] .badge-origin-quang {
+  background-color: #FEF3C7;
+  color: #92400E;
+  border-color: #FDE68A;
+}
+
+.badge-origin-curated {
+  background-color: rgba(148, 163, 184, 0.18);
+  color: #E2E8F0;
+  border: 1px solid rgba(148, 163, 184, 0.35);
+}
+
+/* ==============================================================================
+   SEMANTIC SYSTEM UTILITY CLASSES
+   ============================================================================== */
+.badge-semantic-success {
+  background-color: var(--success-bg) !important;
+  color: var(--success-text) !important;
+  border: 1px solid var(--success-border) !important;
+}
+
+.badge-semantic-danger {
+  background-color: var(--danger-bg) !important;
+  color: var(--danger-text) !important;
+  border: 1px solid var(--danger-border) !important;
+}
+
+.badge-semantic-warning {
+  background-color: var(--warning-bg) !important;
+  color: var(--warning-text) !important;
+  border: 1px solid var(--warning-border) !important;
+}
+
+.badge-semantic-primary {
+  background-color: var(--terracotta-light) !important;
+  color: var(--accent-primary) !important;
+  border: 1px solid rgba(211, 95, 29, 0.3) !important;
+}
+
+/* ==============================================================================
+   METRONOME HIGH-CONTRAST COMPONENT STYLES
+   ============================================================================== */
+.metro-badge {
+  background-color: var(--metro-badge-bg) !important;
+  color: var(--metro-badge-text) !important;
+  border: 1px solid var(--metro-badge-border) !important;
+}
+
+.metro-pulse-box {
+  background-color: var(--neutral-subtle);
+  border: 1px solid var(--neutral-border);
+  box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.08);
+}
+
+.metro-pulse-dot {
+  background-color: var(--metro-pulse-idle-dot);
+  box-shadow: 0 0 4px var(--metro-pulse-idle-dot);
+}
+
+[data-theme="light"] .metro-pulse-dot {
+  background-color: #047857;
+  box-shadow: 0 0 6px rgba(4, 120, 87, 0.4);
+}
+
+.metro-flash-active {
+  background-color: var(--success-solid) !important;
+  box-shadow: 0 0 25px var(--success-solid), inset 0 0 10px rgba(255, 255, 255, 0.4) !important;
+  transform: scale(1.15);
+}
+
+.metro-flash-accent {
+  background-color: #F59E0B !important;
+  box-shadow: 0 0 30px #F59E0B, inset 0 0 12px rgba(255, 255, 255, 0.5) !important;
+  transform: scale(1.22);
+}
+
+.metro-dot-item {
+  width: 8px;
+  height: 8px;
+  border-radius: 9999px;
+  background-color: var(--metro-dot-idle);
+  transition: all 0.08s ease-out;
+}
+
+[data-theme="light"] .metro-dot-item {
+  background-color: #B5A89B;
+}
+
+.metro-dot-item.active {
+  background-color: var(--metro-dot-active) !important;
+  box-shadow: 0 0 10px var(--metro-dot-active) !important;
+  transform: scale(1.35);
+}
+
+.metro-dot-item.active-accent {
+  background-color: #F59E0B !important;
+  box-shadow: 0 0 12px #F59E0B !important;
+  transform: scale(1.45);
+}
+
+.metro-kbd {
+  background-color: var(--metro-kbd-bg) !important;
+  border: 1px solid var(--metro-kbd-border) !important;
+  color: var(--metro-kbd-text) !important;
+}
+
+.metro-bpm-sub {
+  color: var(--metro-bpm-sub) !important;
+}
+
+/* Custom Range Slider */
+input[type="range"].metro-slider {
+  -webkit-appearance: none;
+  appearance: none;
+  background: var(--neutral-subtle);
+  border: 1px solid var(--neutral-border);
+  height: 10px;
+  border-radius: 9999px;
+  outline: none;
+}
+
+input[type="range"].metro-slider::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
   width: 24px;
   height: 24px;
   border-radius: 9999px;
@@ -946,6 +1154,7 @@ input[type="range"].metro-slider::-webkit-slider-thumb {
 input[type="range"].metro-slider::-webkit-slider-thumb:hover {
   transform: scale(1.15);
 }
+
 
 /* ==============================================================================
    TOAST NOTIFICATION SYSTEM (TOP-RIGHT FIXED, HIGH CONTRAST & VIBRANT)

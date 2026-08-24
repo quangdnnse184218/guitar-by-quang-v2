@@ -586,12 +586,9 @@ if (songForm) {
       const freeTargetUrl = document.getElementById('song-free-target-url').value.trim()
       const freePdfUrl = document.getElementById('song-free-pdf-url').value.trim()
 
-      if (!freeTargetUrl) {
-        showToast('❌ Vui lòng nhập Link Video Xem Tab (YouTube / TikTok / Google Drive)!', 'error')
-        return
-      }
-
-      const ytId = extractYoutubeId(freeTargetUrl)
+      const ytId = freeTargetUrl ? extractYoutubeId(freeTargetUrl) : null
+      const cleanTarget = freeTargetUrl ? normalizeVideoPath(freeTargetUrl) : ''
+      const hasDemo = Boolean(ytId || (cleanTarget && cleanTarget.toLowerCase().includes('.mp4')))
 
       payload = {
         title: titleVal,
@@ -608,12 +605,12 @@ if (songForm) {
         price_formatted: 'Miễn phí',
         priceFormatted: 'Miễn phí',
         discount_note: null,
-        has_demo: Boolean(ytId || freeTargetUrl.toLowerCase().includes('.mp4')),
-        video_demo: normalizeVideoPath(freeTargetUrl),
-        demo_video_url: normalizeVideoPath(freeTargetUrl),
+        has_demo: hasDemo,
+        video_demo: cleanTarget || null,
+        demo_video_url: cleanTarget || null,
         youtube_id: ytId || null,
-        target_url: normalizeVideoPath(freeTargetUrl),
-        tab_url: normalizeVideoPath(freeTargetUrl),
+        target_url: cleanTarget || '',
+        tab_url: cleanTarget || '',
         pdf_url: freePdfUrl || null,
         thumbnail_bg: thumbnailBgVal,
         button_type: 'link',
@@ -629,13 +626,10 @@ if (songForm) {
       const demoUrlVal = document.getElementById('song-paid-demo-url').value.trim()
       const driveUrlVal = document.getElementById('song-paid-drive-url').value.trim()
 
-      if (!demoUrlVal) {
-        showToast('❌ Vui lòng nhập Link Video Demo xem trước (YouTube hoặc MP4)!', 'error')
-        return
-      }
-
-      const ytId = extractYoutubeId(demoUrlVal)
-      const cleanDemo = normalizeVideoPath(demoUrlVal)
+      const ytId = demoUrlVal ? extractYoutubeId(demoUrlVal) : null
+      const cleanDemo = demoUrlVal ? normalizeVideoPath(demoUrlVal) : ''
+      const cleanDrive = driveUrlVal ? driveUrlVal.trim() : ''
+      const hasDemo = Boolean(ytId || (cleanDemo && (cleanDemo.toLowerCase().includes('.mp4') || cleanDemo.startsWith('http') || cleanDemo.startsWith('/'))))
 
       payload = {
         title: titleVal,
@@ -652,12 +646,12 @@ if (songForm) {
         price_formatted: priceFormatted,
         priceFormatted: priceFormatted,
         discount_note: discountNoteVal,
-        has_demo: true,
-        video_demo: cleanDemo,
-        demo_video_url: cleanDemo,
+        has_demo: hasDemo,
+        video_demo: cleanDemo || null,
+        demo_video_url: cleanDemo || null,
         youtube_id: ytId || null,
-        target_url: driveUrlVal || '',
-        tab_url: driveUrlVal || '',
+        target_url: cleanDrive || '',
+        tab_url: cleanDrive || '',
         pdf_url: null,
         thumbnail_bg: thumbnailBgVal,
         button_type: 'buy',

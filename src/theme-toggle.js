@@ -30,8 +30,10 @@ export function applyTheme(theme, persist = true) {
   
   if (theme === 'light') {
     root.setAttribute('data-theme', 'light')
+    root.classList.remove('dark')
   } else {
     root.removeAttribute('data-theme')
+    root.classList.add('dark')
   }
 
   if (persist) {

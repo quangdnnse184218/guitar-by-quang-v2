@@ -424,30 +424,30 @@
           <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div class="space-y-1">
               <label class="text-xs font-bold text-text-primary">Tên Bài Hát *</label>
-              <input type="text" id="song-title" required placeholder="VD: Nàng Thơ, Âm thầm bên em..." class="w-full px-3.5 py-2.5 rounded-xl bg-black/5 dark:bg-white/5 border border-glass-border text-xs text-text-primary focus:outline-none focus:border-accent-primary" />
+              <input type="text" id="song-title" required placeholder="VD: Nàng Thơ, Âm thầm bên em..." class="w-full px-3.5 py-2.5 rounded-xl bg-white dark:bg-white/5 border border-neutral-300 dark:border-glass-border text-xs text-text-primary focus:outline-none focus:border-accent-primary" />
             </div>
             <div class="space-y-1">
               <label class="text-xs font-bold text-text-primary">Ca Sĩ / Tác Giả</label>
-              <input type="text" id="song-singer" placeholder="VD: Sơn Tùng M-TP, Hoàng Dũng..." class="w-full px-3.5 py-2.5 rounded-xl bg-black/5 dark:bg-white/5 border border-glass-border text-xs text-text-primary focus:outline-none focus:border-accent-primary" />
+              <input type="text" id="song-singer" placeholder="VD: Sơn Tùng M-TP, Hoàng Dũng..." class="w-full px-3.5 py-2.5 rounded-xl bg-white dark:bg-white/5 border border-neutral-300 dark:border-glass-border text-xs text-text-primary focus:outline-none focus:border-accent-primary" />
             </div>
           </div>
 
           <div class="grid grid-cols-2 sm:grid-cols-4 gap-3">
             <div class="space-y-1">
               <label class="text-xs font-bold text-text-primary">Thể Loại</label>
-              <input type="text" id="song-category" placeholder="Nhạc Việt" class="w-full px-3 py-2 rounded-xl bg-black/5 dark:bg-white/5 border border-glass-border text-xs text-text-primary focus:outline-none focus:border-accent-primary" />
+              <input type="text" id="song-category" placeholder="Nhạc Việt" class="w-full px-3 py-2 rounded-xl bg-white dark:bg-white/5 border border-neutral-300 dark:border-glass-border text-xs text-text-primary focus:outline-none focus:border-accent-primary" />
             </div>
             <div class="space-y-1">
               <label class="text-xs font-bold text-text-primary">Độ Khó (1-10)</label>
-              <input type="number" id="song-level" min="1" max="10" step="0.5" value="5" class="w-full px-3 py-2 rounded-xl bg-black/5 dark:bg-white/5 border border-glass-border text-xs text-text-primary focus:outline-none focus:border-accent-primary" />
+              <input type="number" id="song-level" min="1" max="10" step="0.5" value="5" class="w-full px-3 py-2 rounded-xl bg-white dark:bg-white/5 border border-neutral-300 dark:border-glass-border text-xs text-text-primary focus:outline-none focus:border-accent-primary" />
             </div>
             <div class="space-y-1">
               <label class="text-xs font-bold text-text-primary">Tuning</label>
-              <input type="text" id="song-tuning" placeholder="Standard" class="w-full px-3 py-2 rounded-xl bg-black/5 dark:bg-white/5 border border-glass-border text-xs text-text-primary focus:outline-none focus:border-accent-primary" />
+              <input type="text" id="song-tuning" placeholder="Standard" class="w-full px-3 py-2 rounded-xl bg-white dark:bg-white/5 border border-neutral-300 dark:border-glass-border text-xs text-text-primary focus:outline-none focus:border-accent-primary" />
             </div>
             <div class="space-y-1">
               <label class="text-xs font-bold text-text-primary">Capo (Ngăn)</label>
-              <input type="number" id="song-capo" min="0" max="12" value="0" class="w-full px-3 py-2 rounded-xl bg-black/5 dark:bg-white/5 border border-glass-border text-xs text-text-primary focus:outline-none focus:border-accent-primary" />
+              <input type="number" id="song-capo" min="0" max="12" value="0" class="w-full px-3 py-2 rounded-xl bg-white dark:bg-white/5 border border-neutral-300 dark:border-glass-border text-xs text-text-primary focus:outline-none focus:border-accent-primary" />
             </div>
           </div>
 
@@ -459,14 +459,14 @@
             </div>
 
             <div class="space-y-1">
-              <label class="text-xs font-bold text-text-primary">Link Video Xem Tab (YouTube / TikTok / Google Drive) *</label>
-              <input type="text" id="song-free-target-url" placeholder="https://youtu.be/... hoặc https://www.youtube.com/watch?v=..." class="w-full px-3.5 py-2.5 rounded-xl bg-black/5 dark:bg-white/5 border border-glass-border text-xs text-text-primary focus:outline-none focus:border-emerald-500" />
-              <p class="text-[11px] text-text-muted">Hỗ trợ dán link YouTube (được nhúng video tự động), TikTok hoặc Google Drive.</p>
+              <label class="text-xs font-bold text-text-primary">Link Video Xem Tab (YouTube / TikTok / Google Drive / Tùy chọn)</label>
+              <input type="text" id="song-free-target-url" placeholder="https://youtu.be/... hoặc https://www.youtube.com/watch?v=..." class="w-full px-3.5 py-2.5 rounded-xl bg-white dark:bg-white/5 border border-neutral-300 dark:border-glass-border text-xs text-text-primary focus:outline-none focus:border-emerald-500" />
+              <p class="text-[11px] text-text-muted">Hỗ trợ dán link YouTube (được nhúng video tự động), TikTok hoặc Google Drive (có thể để trống).</p>
             </div>
 
             <div class="space-y-1">
               <label class="text-xs font-bold text-text-primary">Link Tải File PDF Tab (Tùy chọn)</label>
-              <input type="text" id="song-free-pdf-url" placeholder="https://drive.google.com/... (Link tải PDF nếu có)" class="w-full px-3.5 py-2.5 rounded-xl bg-black/5 dark:bg-white/5 border border-glass-border text-xs text-text-primary focus:outline-none focus:border-emerald-500" />
+              <input type="text" id="song-free-pdf-url" placeholder="https://drive.google.com/... (Link tải PDF nếu có)" class="w-full px-3.5 py-2.5 rounded-xl bg-white dark:bg-white/5 border border-neutral-300 dark:border-glass-border text-xs text-text-primary focus:outline-none focus:border-emerald-500" />
             </div>
           </div>
 
@@ -479,49 +479,49 @@
 
             <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <div class="space-y-1">
-                <label class="text-xs font-bold text-text-primary">Giá Bán *</label>
-                <input type="text" id="song-paid-price" placeholder="239k (hoặc 239000)" value="239k" class="w-full px-3.5 py-2.5 rounded-xl bg-black/5 dark:bg-white/5 border border-glass-border text-xs text-text-primary focus:outline-none focus:border-rose-500" />
+                <label class="text-xs font-bold text-text-primary">Giá Bán</label>
+                <input type="text" id="song-paid-price" placeholder="239k (hoặc 239000)" value="239k" class="w-full px-3.5 py-2.5 rounded-xl bg-white dark:bg-white/5 border border-neutral-300 dark:border-glass-border text-xs text-text-primary focus:outline-none focus:border-rose-500" />
               </div>
               <div class="space-y-1">
                 <label class="text-xs font-bold text-text-primary">Ghi Chú Giảm Giá</label>
-                <input type="text" id="song-paid-discount" placeholder="HSSV: 179k" value="HSSV: 179k" class="w-full px-3.5 py-2.5 rounded-xl bg-black/5 dark:bg-white/5 border border-glass-border text-xs text-text-primary focus:outline-none focus:border-rose-500" />
+                <input type="text" id="song-paid-discount" placeholder="HSSV: 179k" value="HSSV: 179k" class="w-full px-3.5 py-2.5 rounded-xl bg-white dark:bg-white/5 border border-neutral-300 dark:border-glass-border text-xs text-text-primary focus:outline-none focus:border-rose-500" />
               </div>
             </div>
 
             <div class="space-y-1">
-              <label class="text-xs font-bold text-text-primary">Link Video Demo Xem Trước (YouTube hoặc MP4) *</label>
-              <input type="text" id="song-paid-demo-url" placeholder="https://youtu.be/... hoặc /assets/demo.mp4" class="w-full px-3.5 py-2.5 rounded-xl bg-black/5 dark:bg-white/5 border border-glass-border text-xs text-text-primary focus:outline-none focus:border-rose-500" />
-              <p class="text-[11px] text-text-muted">Dán link YouTube (khuyên dùng) hoặc đường dẫn file video MP4 như <code class="bg-black/5 dark:bg-white/10 px-1 py-0.5 rounded font-mono">/assets/tenvideo.mp4</code> để khách bấm xem thử trên thẻ.</p>
+              <label class="text-xs font-bold text-text-primary">Link Video Demo Xem Trước (YouTube hoặc MP4 / Tùy chọn)</label>
+              <input type="text" id="song-paid-demo-url" placeholder="https://youtu.be/... hoặc /assets/demo.mp4" class="w-full px-3.5 py-2.5 rounded-xl bg-white dark:bg-white/5 border border-neutral-300 dark:border-glass-border text-xs text-text-primary focus:outline-none focus:border-rose-500" />
+              <p class="text-[11px] text-text-muted">Dán link YouTube hoặc video MP4 local <code class="bg-black/5 dark:bg-white/10 px-1 py-0.5 rounded font-mono">/assets/tenvideo.mp4</code> (có thể để trống).</p>
             </div>
 
             <div class="space-y-1">
-              <label class="text-xs font-bold text-text-primary">Link Google Drive Trọn Bộ (Bản quyền khi mua) *</label>
-              <input type="text" id="song-paid-drive-url" placeholder="https://drive.google.com/drive/folders/..." class="w-full px-3.5 py-2.5 rounded-xl bg-black/5 dark:bg-white/5 border border-glass-border text-xs text-text-primary focus:outline-none focus:border-rose-500" />
-              <p class="text-[11px] text-text-muted">Link Google Drive chứa file Guitar Pro, PDF, Video HD sẽ tự động cấp cho người mua sau khi duyệt đơn.</p>
+              <label class="text-xs font-bold text-text-primary">Link Google Drive Trọn Bộ (Tùy chọn)</label>
+              <input type="text" id="song-paid-drive-url" placeholder="https://drive.google.com/drive/folders/..." class="w-full px-3.5 py-2.5 rounded-xl bg-white dark:bg-white/5 border border-neutral-300 dark:border-glass-border text-xs text-text-primary focus:outline-none focus:border-rose-500" />
+              <p class="text-[11px] text-text-muted">Link Google Drive chứa file Guitar Pro, PDF, Video HD cấp cho người mua sau khi duyệt đơn (có thể để trống).</p>
             </div>
           </div>
 
           <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div class="space-y-1">
               <label class="text-xs font-bold text-text-primary">Thời Lượng (mm:ss)</label>
-              <input type="text" id="song-duration" placeholder="03:45" value="03:30" class="w-full px-3.5 py-2.5 rounded-xl bg-black/5 dark:bg-white/5 border border-glass-border text-xs text-text-primary focus:outline-none focus:border-accent-primary" />
+              <input type="text" id="song-duration" placeholder="03:45" value="03:30" class="w-full px-3.5 py-2.5 rounded-xl bg-white dark:bg-white/5 border border-neutral-300 dark:border-glass-border text-xs text-text-primary focus:outline-none focus:border-accent-primary" />
             </div>
             <div class="space-y-1">
               <label class="text-xs font-bold text-text-primary">Màu Nền Thumbnail Gradient</label>
-              <select id="song-thumbnail-bg" class="w-full px-3.5 py-2.5 rounded-xl bg-black/5 dark:bg-[#151A27] border border-glass-border text-xs text-text-primary focus:outline-none focus:border-accent-primary">
-                <option class="bg-white text-slate-900 dark:bg-[#151A27] dark:text-slate-100" value="from-[#C1602F] to-[#6E3B1F]">Cam Nâu Ấm (Classic Signature)</option>
-                <option class="bg-white text-slate-900 dark:bg-[#151A27] dark:text-slate-100" value="from-[#D8C4AC] to-[#647A6C]">Be Xanh Rêu (Rustic Sage)</option>
-                <option class="bg-white text-slate-900 dark:bg-[#151A27] dark:text-slate-100" value="from-[#C9AE92] to-[#8C6E8A]">Cát Tím Vintage (Vintage Rose)</option>
-                <option class="bg-white text-slate-900 dark:bg-[#151A27] dark:text-slate-100" value="from-[#D9C3A0] to-[#6B5B95]">Vàng Be Tím Đậm (Sunset Gold)</option>
-                <option class="bg-white text-slate-900 dark:bg-[#151A27] dark:text-slate-100" value="from-[#B49C82] to-[#4F5D75]">Nâu Xám Hiện Đại (Modern Slate)</option>
-                <option class="bg-white text-slate-900 dark:bg-[#151A27] dark:text-slate-100" value="from-[#8D99AE] to-[#2B2D42]">Xám Đen Sang Trọng (Midnight Navy)</option>
+              <select id="song-thumbnail-bg" class="w-full px-3.5 py-2.5 rounded-xl bg-white dark:bg-[#151A27] border border-neutral-300 dark:border-glass-border text-xs text-text-primary focus:outline-none focus:border-accent-primary cursor-pointer shadow-xs">
+                <option value="from-[#C1602F] to-[#6E3B1F]">Cam Nâu Ấm (Classic Signature)</option>
+                <option value="from-[#D8C4AC] to-[#647A6C]">Be Xanh Rêu (Rustic Sage)</option>
+                <option value="from-[#C9AE92] to-[#8C6E8A]">Cát Tím Vintage (Vintage Rose)</option>
+                <option value="from-[#D9C3A0] to-[#6B5B95]">Vàng Be Tím Đậm (Sunset Gold)</option>
+                <option value="from-[#B49C82] to-[#4F5D75]">Nâu Xám Hiện Đại (Modern Slate)</option>
+                <option value="from-[#8D99AE] to-[#2B2D42]">Xám Đen Sang Trọng (Midnight Navy)</option>
               </select>
             </div>
           </div>
 
           <div class="space-y-1">
             <label class="text-xs font-bold text-text-primary">Mô Tả / Hướng Dẫn Kỹ Thuật (Fingerstyle tips)</label>
-            <textarea id="song-description" rows="2" placeholder="Ghi chú kỹ thuật nổi bật (slap, hammer-on, thế tay, nhịp bass...)" class="w-full px-3.5 py-2.5 rounded-xl bg-black/5 dark:bg-white/5 border border-glass-border text-xs text-text-primary focus:outline-none focus:border-accent-primary resize-none"></textarea>
+            <textarea id="song-description" rows="2" placeholder="Ghi chú kỹ thuật nổi bật (slap, hammer-on, thế tay, nhịp bass...)" class="w-full px-3.5 py-2.5 rounded-xl bg-white dark:bg-white/5 border border-neutral-300 dark:border-glass-border text-xs text-text-primary focus:outline-none focus:border-accent-primary resize-none"></textarea>
           </div>
 
           <div class="flex items-center gap-6 pt-2">
@@ -558,33 +558,33 @@
           
           <div class="space-y-1">
             <label class="text-xs font-bold text-text-primary">Tên Thiết Bị / Phụ Kiện *</label>
-            <input type="text" id="gear-name" required placeholder="VD: Capo Guitar G7th" class="w-full px-3.5 py-2.5 rounded-xl bg-black/5 dark:bg-white/5 border border-glass-border text-xs text-text-primary focus:outline-none focus:border-accent-primary" />
+            <input type="text" id="gear-name" required placeholder="VD: Capo Guitar G7th" class="w-full px-3.5 py-2.5 rounded-xl bg-white dark:bg-white/5 border border-neutral-300 dark:border-glass-border text-xs text-text-primary focus:outline-none focus:border-accent-primary" />
           </div>
 
           <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div class="space-y-1">
               <label class="text-xs font-bold text-text-primary">Phân Loại</label>
-              <input type="text" id="gear-category" placeholder="Phụ kiện" class="w-full px-3.5 py-2.5 rounded-xl bg-black/5 dark:bg-white/5 border border-glass-border text-xs text-text-primary focus:outline-none focus:border-accent-primary" />
+              <input type="text" id="gear-category" placeholder="Phụ kiện" class="w-full px-3.5 py-2.5 rounded-xl bg-white dark:bg-white/5 border border-neutral-300 dark:border-glass-border text-xs text-text-primary focus:outline-none focus:border-accent-primary" />
             </div>
             <div class="space-y-1">
               <label class="text-xs font-bold text-text-primary">Giá Hiển Thị</label>
-              <input type="text" id="gear-price" placeholder="850.000đ" class="w-full px-3.5 py-2.5 rounded-xl bg-black/5 dark:bg-white/5 border border-glass-border text-xs text-text-primary focus:outline-none focus:border-accent-primary" />
+              <input type="text" id="gear-price" placeholder="850.000đ" class="w-full px-3.5 py-2.5 rounded-xl bg-white dark:bg-white/5 border border-neutral-300 dark:border-glass-border text-xs text-text-primary focus:outline-none focus:border-accent-primary" />
             </div>
           </div>
 
           <div class="space-y-1">
             <label class="text-xs font-bold text-text-primary">Mô Tả Ngắn</label>
-            <textarea id="gear-description" rows="3" placeholder="Mô tả chất lượng, tính năng nổi bật..." class="w-full px-3.5 py-2.5 rounded-xl bg-black/5 dark:bg-white/5 border border-glass-border text-xs text-text-primary focus:outline-none focus:border-accent-primary resize-none"></textarea>
+            <textarea id="gear-description" rows="3" placeholder="Mô tả chất lượng, tính năng nổi bật..." class="w-full px-3.5 py-2.5 rounded-xl bg-white dark:bg-white/5 border border-neutral-300 dark:border-glass-border text-xs text-text-primary focus:outline-none focus:border-accent-primary resize-none"></textarea>
           </div>
 
           <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div class="space-y-1">
               <label class="text-xs font-bold text-text-primary">Link Mua / Tư Vấn</label>
-              <input type="text" id="gear-link" placeholder="https://zalo.me/..." class="w-full px-3.5 py-2.5 rounded-xl bg-black/5 dark:bg-white/5 border border-glass-border text-xs text-text-primary focus:outline-none focus:border-accent-primary" />
+              <input type="text" id="gear-link" placeholder="https://zalo.me/..." class="w-full px-3.5 py-2.5 rounded-xl bg-white dark:bg-white/5 border border-neutral-300 dark:border-glass-border text-xs text-text-primary focus:outline-none focus:border-accent-primary" />
             </div>
             <div class="space-y-1">
               <label class="text-xs font-bold text-text-primary">Đường Dẫn Ảnh</label>
-              <input type="text" id="gear-image" placeholder="/assets/capo2.jpg hoặc https://..." class="w-full px-3.5 py-2.5 rounded-xl bg-black/5 dark:bg-white/5 border border-glass-border text-xs text-text-primary focus:outline-none focus:border-accent-primary" />
+              <input type="text" id="gear-image" placeholder="/assets/capo2.jpg hoặc https://..." class="w-full px-3.5 py-2.5 rounded-xl bg-white dark:bg-white/5 border border-neutral-300 dark:border-glass-border text-xs text-text-primary focus:outline-none focus:border-accent-primary" />
               <p class="text-[11px] text-text-muted">Nhập đường dẫn web như <code class="bg-black/5 dark:bg-white/10 px-1 py-0.5 rounded font-mono">/assets/capo2.jpg</code> hoặc link ảnh online.</p>
             </div>
           </div>
