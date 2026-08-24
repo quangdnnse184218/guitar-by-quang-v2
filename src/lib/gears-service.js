@@ -106,7 +106,7 @@ export async function fetchAllGears() {
 
 export function normalizeImagePath(rawPath) {
   if (!rawPath || typeof rawPath !== 'string') return '/assets/avatar.jpg'
-  let clean = rawPath.trim().replace(/\\/g, '/')
+  let clean = rawPath.trim().replace(/^["']+|["']+$/g, '').trim().replace(/\\/g, '/')
 
   // If it's a full web URL or data URL, return directly
   if (clean.startsWith('http://') || clean.startsWith('https://') || clean.startsWith('data:')) {
