@@ -63,20 +63,26 @@ export function initNavbarShrink() {
   const navbar = document.getElementById('main-nav')
   if (!navbar) return
 
+  let ticking = false
   const onScroll = () => {
-    if (window.scrollY > 60) {
-      navbar.classList.add('py-3', 'shadow-lg', 'border-b', 'border-glass-border')
-      navbar.classList.remove('py-4', 'py-5')
-      navbar.style.backgroundColor = 'var(--header-bg)'
-    } else {
-      navbar.classList.add('py-4', 'border-b', 'border-glass-border')
-      navbar.classList.remove('py-3', 'shadow-lg')
-      navbar.style.backgroundColor = ''
+    if (!ticking) {
+      window.requestAnimationFrame(() => {
+        if (window.scrollY > 60) {
+          navbar.classList.add('py-3', 'shadow-lg', 'border-b', 'border-glass-border')
+          navbar.classList.remove('py-4', 'py-5')
+          navbar.style.backgroundColor = 'var(--header-bg)'
+        } else {
+          navbar.classList.add('py-4', 'border-b', 'border-glass-border')
+          navbar.classList.remove('py-3', 'shadow-lg')
+          navbar.style.backgroundColor = ''
+        }
+        ticking = false
+      })
+      ticking = true
     }
   }
 
   window.addEventListener('scroll', onScroll, { passive: true })
-  // Trigger once on init
   onScroll()
 }
 
