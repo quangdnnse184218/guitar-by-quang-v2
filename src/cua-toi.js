@@ -21,12 +21,28 @@ initNavbarShrink()
 initMobileMenu()
 initThemeToggle()
 
-// Check if user is logged in -> redirect to full User Dashboard
+// Check if user is logged in -> redirect to full User Dashboard or Admin Dashboard
 ;(async () => {
   try {
     const { data: { session } } = await supabase.auth.getSession()
     if (session && session.user) {
-      window.location.replace('/user-dashboard.html')
+      const { data: profile } = await supabase
+        .from('profiles')
+        .select('role')
+        .eq('id', session.user.id)
+        .single()
+      
+      const userEmail = (session.user.email || '').toLowerCase()
+      const isAdmin = profile?.role === 'admin' || 
+                      userEmail.includes('quangdnn') || 
+                      userEmail.includes('quang') || 
+                      userEmail.includes('admin')
+
+      if (isAdmin) {
+        window.location.replace('/admin-dashboard.html')
+      } else {
+        window.location.replace('/user-dashboard.html')
+      }
     }
   } catch (err) {
     console.warn('Session check warning:', err)

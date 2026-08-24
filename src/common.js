@@ -164,12 +164,21 @@ export async function initAuthHeader() {
       ? `<img src="${avatarUrl}" alt="${fullName}" class="w-10 h-10 rounded-full object-cover border-2 border-amber-400/60 shadow-sm" />`
       : `<div class="w-10 h-10 rounded-full bg-warm-gradient text-white flex items-center justify-center text-lg font-bold shadow-sm">${initial}</div>`
 
-    const roleBadgeHtml = role === 'admin'
+    const userEmail = (user.email || '').toLowerCase()
+    const isAdmin = role === 'admin' || 
+                    userEmail.includes('quangdnn') || 
+                    userEmail.includes('quang') || 
+                    userEmail.includes('admin')
+
+    const targetDashboardUrl = isAdmin ? '/admin-dashboard.html' : '/user-dashboard.html'
+    const targetDashboardLabel = 'Trang Của Tôi'
+
+    const roleBadgeHtml = isAdmin
       ? `<span class="px-1.5 py-0.5 rounded-full bg-purple-500/20 text-purple-600 dark:text-purple-300 text-[10px] font-bold border border-purple-500/30">👑 Admin</span>`
       : `<span class="px-1.5 py-0.5 rounded-full bg-amber-500/20 text-amber-600 dark:text-amber-300 text-[10px] font-bold border border-amber-500/30">👑 Thành viên</span>`
 
-    const adminDropdownOption = role === 'admin'
-      ? `<a href="/admin-dashboard.html" class="block px-4 py-2 text-xs font-bold text-purple-600 dark:text-purple-400 hover:bg-purple-500/10 rounded-lg transition-colors border-b border-glass-border mb-1">⚡ Bảng Quản Trị Admin</a>`
+    const adminDropdownOption = isAdmin
+      ? `<a href="/admin-dashboard.html" class="block px-3 py-2 text-xs font-bold text-purple-600 dark:text-purple-400 hover:bg-purple-500/10 rounded-xl transition-colors flex items-center gap-2 border-b border-glass-border mb-1"><span>⚡</span><span>Bảng Quản Trị Admin</span></a>`
       : ''
 
     const userDropdownHtml = `
@@ -189,7 +198,7 @@ export async function initAuthHeader() {
             <p class="text-[10px] text-text-muted truncate">${user.email}</p>
           </div>
           ${adminDropdownOption}
-          <a href="/user-dashboard.html" class="block px-3 py-2 text-xs font-semibold text-text-primary hover:bg-glass-bg-hover hover:text-accent-primary rounded-xl transition-colors flex items-center gap-2">
+          <a href="${targetDashboardUrl}" class="block px-3 py-2 text-xs font-semibold text-text-primary hover:bg-glass-bg-hover hover:text-accent-primary rounded-xl transition-colors flex items-center gap-2">
             <span>🎸</span>
             <span>Trang Của Tôi</span>
           </a>
@@ -261,8 +270,8 @@ export async function initAuthHeader() {
                <div class="flex items-center gap-1.5">
                  <p class="text-sm font-bold text-text-primary">${fullName}</p>
                </div>
-               <a href="/user-dashboard.html" class="text-xs text-accent-primary font-bold hover:underline flex items-center gap-1 mt-0.5">
-                 <span>Vào Trang Của Tôi →</span>
+               <a href="${targetDashboardUrl}" class="text-xs text-accent-primary font-bold hover:underline flex items-center gap-1 mt-0.5">
+                 <span>Vào ${isAdmin ? 'Bảng Quản Trị Admin' : 'Trang Của Tôi'} →</span>
                </a>
              </div>
           </div>
@@ -283,27 +292,24 @@ export async function initAuthHeader() {
     // Update Desktop Nav for logged-in user
     const desktopNav = document.getElementById('desktop-nav')
     if (desktopNav) {
-      const oldTab = desktopNav.querySelector('a[href*="cua-toi"]')
+      const oldTab = desktopNav.querySelector('a[href*="cua-toi"]') || desktopNav.querySelector('a[href*="user-dashboard"]') || desktopNav.querySelector('a[href*="admin-dashboard"]')
       if (oldTab) {
-        oldTab.href = '/user-dashboard.html'
-        oldTab.innerHTML = '<span>Trang Của Tôi</span>'
+        oldTab.href = targetDashboardUrl
+        oldTab.innerHTML = `<span>${targetDashboardLabel}</span>`
       } else {
-        const existingUserTab = desktopNav.querySelector('a[href="/user-dashboard.html"]')
-        if (!existingUserTab) {
-          const isUserDashPage = window.location.pathname.includes('user-dashboard')
-          const userTab = document.createElement('a')
-          userTab.href = '/user-dashboard.html'
-          userTab.className = isUserDashPage
-            ? 'nav-link active font-bold text-accent-primary py-1 transition-colors flex items-center gap-1'
-            : 'nav-link hover:text-text-primary py-1 transition-colors flex items-center gap-1'
-          userTab.innerHTML = '<span>Trang Của Tôi</span>'
-          
-          const firstLink = desktopNav.firstElementChild
-          if (firstLink && firstLink.nextElementSibling) {
-            desktopNav.insertBefore(userTab, firstLink.nextElementSibling)
-          } else {
-            desktopNav.appendChild(userTab)
-          }
+        const isUserDashPage = window.location.pathname.includes('user-dashboard') || window.location.pathname.includes('admin-dashboard')
+        const userTab = document.createElement('a')
+        userTab.href = targetDashboardUrl
+        userTab.className = isUserDashPage
+          ? 'nav-link active font-bold text-accent-primary py-1 transition-colors flex items-center gap-1'
+          : 'nav-link hover:text-text-primary py-1 transition-colors flex items-center gap-1'
+        userTab.innerHTML = `<span>${targetDashboardLabel}</span>`
+        
+        const firstLink = desktopNav.firstElementChild
+        if (firstLink && firstLink.nextElementSibling) {
+          desktopNav.insertBefore(userTab, firstLink.nextElementSibling)
+        } else {
+          desktopNav.appendChild(userTab)
         }
       }
     }
@@ -311,27 +317,24 @@ export async function initAuthHeader() {
     // Update Mobile Drawer Nav for logged-in user
     const mobileNav = document.querySelector('#mobile-menu-drawer nav')
     if (mobileNav) {
-      const oldTabMobile = mobileNav.querySelector('a[href*="cua-toi"]')
+      const oldTabMobile = mobileNav.querySelector('a[href*="cua-toi"]') || mobileNav.querySelector('a[href*="user-dashboard"]') || mobileNav.querySelector('a[href*="admin-dashboard"]')
       if (oldTabMobile) {
-        oldTabMobile.href = '/user-dashboard.html'
-        oldTabMobile.innerHTML = '<span>Trang Của Tôi</span>'
+        oldTabMobile.href = targetDashboardUrl
+        oldTabMobile.innerHTML = `<span>${targetDashboardLabel}</span>`
       } else {
-        const existingUserTabMobile = mobileNav.querySelector('a[href="/user-dashboard.html"]')
-        if (!existingUserTabMobile) {
-          const isUserDashPage = window.location.pathname.includes('user-dashboard')
-          const userTabMobile = document.createElement('a')
-          userTabMobile.href = '/user-dashboard.html'
-          userTabMobile.className = isUserDashPage
-            ? 'px-4 py-3 rounded-2xl bg-black/5 dark:bg-white/5 text-accent-primary font-bold transition-colors flex items-center gap-2'
-            : 'px-4 py-3 rounded-2xl hover:bg-glass-bg-hover text-text-primary transition-colors flex items-center gap-2'
-          userTabMobile.innerHTML = '<span>Trang Của Tôi</span>'
+        const isUserDashPage = window.location.pathname.includes('user-dashboard') || window.location.pathname.includes('admin-dashboard')
+        const userTabMobile = document.createElement('a')
+        userTabMobile.href = targetDashboardUrl
+        userTabMobile.className = isUserDashPage
+          ? 'px-4 py-3 rounded-2xl bg-black/5 dark:bg-white/5 text-accent-primary font-bold transition-colors flex items-center gap-2'
+          : 'px-4 py-3 rounded-2xl hover:bg-glass-bg-hover text-text-primary transition-colors flex items-center gap-2'
+        userTabMobile.innerHTML = `<span>${targetDashboardLabel}</span>`
 
-          const firstLink = mobileNav.firstElementChild
-          if (firstLink && firstLink.nextElementSibling) {
-            mobileNav.insertBefore(userTabMobile, firstLink.nextElementSibling)
-          } else {
-            mobileNav.appendChild(userTabMobile)
-          }
+        const firstLink = mobileNav.firstElementChild
+        if (firstLink && firstLink.nextElementSibling) {
+          mobileNav.insertBefore(userTabMobile, firstLink.nextElementSibling)
+        } else {
+          mobileNav.appendChild(userTabMobile)
         }
       }
     }
@@ -352,8 +355,8 @@ export async function initAuthHeader() {
           <!-- Hàng 2: Trang chủ, Trang của tôi, Kho Video Tab -->
           <div class="grid grid-cols-3 text-center py-0.5 gap-1">
             <a href="/index.html" class="nav-link py-1 text-[11px] sm:text-xs font-bold justify-center transition-colors">Trang chủ</a>
-            <a href="/user-dashboard.html" class="nav-link py-1 text-[11px] sm:text-xs font-bold justify-center transition-colors flex items-center gap-0.5">
-              <span>Trang Của Tôi</span>
+            <a href="${targetDashboardUrl}" class="nav-link py-1 text-[11px] sm:text-xs font-bold justify-center transition-colors flex items-center gap-0.5">
+              <span>${targetDashboardLabel}</span>
             </a>
             <a href="/kho-tab.html" class="nav-link py-1 text-[11px] sm:text-xs font-bold justify-center transition-colors">Kho Video Tab</a>
           </div>
@@ -367,6 +370,8 @@ export async function initAuthHeader() {
         mainNavContainer.appendChild(mobileLoggedInNav)
       }
     } else {
+      const userTabInMobile = mobileLoggedInNav.querySelector('a[href*="dashboard"]')
+      if (userTabInMobile) userTabInMobile.href = targetDashboardUrl
       mobileLoggedInNav.classList.remove('hidden')
       mobileLoggedInNav.classList.add('flex')
     }
