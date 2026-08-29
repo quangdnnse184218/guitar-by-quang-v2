@@ -138,47 +138,29 @@ document.addEventListener('DOMContentLoaded', () => {
       setForgotLoading(true)
 
       try {
-        // 1. Kiểm tra email có tồn tại trong hệ thống (bảng profiles) không
-        try {
-          const { data: matchedProfiles, error: profileErr } = await supabase
-            .from('profiles')
-            .select('id, email, role')
-            .ilike('email', email)
-            .limit(1)
-
-          if (!profileErr && Array.isArray(matchedProfiles)) {
-            if (matchedProfiles.length === 0 || matchedProfiles[0]?.role === 'admin') {
-              setForgotLoading(false)
-              return showForgotAlert(`Gửi thất bại: Email "${email}" không tồn tại trong hệ thống. Vui lòng kiểm tra lại hoặc tạo tài khoản mới.`)
-            }
-          }
-        } catch (checkErr) {
-          console.warn('[login] Profile check note:', checkErr)
-        }
-
-        // 2. Gửi yêu cầu reset password qua Supabase Auth
+        // Gửi yêu cầu reset password qua Supabase Auth
+        // KHÔNG kiểm tra email có tồn tại hay không trước khi gửi —
+        // tránh lộ thông tin (user enumeration). Luôn trả về thông báo chung
+        // chung bất kể email có tồn tại trong hệ thống hay không.
         const redirectTo = `${window.location.origin}/reset-password.html`
-        const { data, error } = await supabase.auth.resetPasswordForEmail(email, {
+
+        await supabase.auth.resetPasswordForEmail(email, {
           redirectTo
         })
 
-        if (error) throw error
+        showForgotAlert(
+          'Nếu email này tồn tại trong hệ thống, một liên kết khôi phục mật khẩu đã được gửi tới hộp thư. Vui lòng kiểm tra email (kể cả mục Spam).',
+          true
+        )
 
-        showForgotAlert('Đã gửi liên kết khôi phục vào email thành công! Vui lòng kiểm tra Hộp thư đến (kể cả thư mục Spam/Rác/Quảng cáo).', true)
-        
         if (forgotEmailInput) forgotEmailInput.value = ''
 
       } catch (err) {
         console.error('[login] Reset password error:', err)
-        let errorMsg = 'Gửi thất bại: Không thể gửi email khôi phục lúc này. Vui lòng thử lại sau.'
-        if (err.message && (err.message.includes('rate limit') || err.message.includes('over_email_send_rate_limit'))) {
-          errorMsg = 'Gửi thất bại: Đã vượt quá số lượt gửi email trong 1 giờ. Vui lòng đợi 5-10 phút rồi thử lại.'
-        } else if (err.message && (err.message.includes('User not found') || err.message.includes('not found') || err.message.includes('invalid'))) {
-          errorMsg = 'Gửi thất bại: Email này không tồn tại trong hệ thống hoặc không đúng. Vui lòng kiểm tra lại.'
-        } else if (err.message) {
-          errorMsg = `Gửi thất bại: ${err.message}`
-        }
-        showForgotAlert(errorMsg)
+        showForgotAlert(
+          'Nếu email này tồn tại trong hệ thống, một liên kết khôi phục mật khẩu đã được gửi tới hộp thư. Vui lòng kiểm tra email (kể cả mục Spam).',
+          true
+        )
       } finally {
         setForgotLoading(false)
       }
