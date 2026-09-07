@@ -19,7 +19,7 @@
 
     <!-- Top Admin Header -->
     <header class="sticky top-0 z-40 bg-bg-base/95 backdrop-blur-md border-b border-glass-border px-3.5 sm:px-8 py-3 flex items-center justify-between shadow-xs">
-      <div class="flex items-center gap-2.5 sm:gap-3 min-w-0">
+      <div class="flex items-center gap-2.5 sm:gap-3 min-w-0 flex-1">
         <div class="w-8 h-8 sm:w-9 sm:h-9 rounded-xl bg-warm-gradient text-white flex items-center justify-center font-black text-sm sm:text-base shadow-sm flex-shrink-0">
           🎸
         </div>
@@ -28,13 +28,13 @@
             <span class="font-extrabold text-text-primary text-sm sm:text-base tracking-tight truncate">Guitar By Quang</span>
             <span class="px-1.5 py-0.5 rounded-md bg-accent-primary/15 text-accent-primary text-[9px] sm:text-[10px] font-black uppercase tracking-wider border border-accent-primary/30 flex-shrink-0">ADMIN</span>
           </div>
-          <span id="admin-user-email" class="text-xs text-text-muted font-mono font-semibold hidden sm:inline-block">Đang tải phiên...</span>
+          <span id="admin-user-email" class="text-xs text-text-muted font-mono font-semibold hidden lg:inline-block">Đang tải phiên...</span>
         </div>
       </div>
 
-      <div class="flex items-center gap-1.5 sm:gap-3 flex-shrink-0">
+      <div class="flex items-center gap-1 sm:gap-3 flex-shrink-0">
         <!-- Theme Toggle Button -->
-        <button id="theme-toggle-btn" aria-label="Chuyển đổi giao diện Sáng / Tối" title="Chuyển đổi giao diện" class="p-2 rounded-xl bg-glass-bg hover:bg-glass-bg-hover text-text-primary border border-glass-border flex items-center justify-center transition-colors cursor-pointer">
+        <button id="theme-toggle-btn" aria-label="Chuyển đổi giao diện Sáng / Tối" title="Chuyển đổi giao diện" class="p-1.5 sm:p-2 rounded-xl bg-glass-bg hover:bg-glass-bg-hover text-text-primary border border-glass-border flex items-center justify-center transition-colors cursor-pointer">
           <svg class="sun-icon w-4 h-4 text-accent-primary" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
             <circle cx="12" cy="12" r="4"></circle>
             <path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M6.34 17.66l-1.41 1.41M19.07 4.93l-1.41 1.41"></path>
@@ -44,18 +44,18 @@
           </svg>
         </button>
 
-        <button id="open-change-password-btn" class="p-2 sm:px-3.5 sm:py-1.5 rounded-full bg-glass-bg hover:bg-glass-bg-hover text-text-primary border border-glass-border text-xs font-bold transition-colors flex items-center gap-1.5 cursor-pointer shadow-xs" title="Đổi mật khẩu tài khoản Admin" aria-label="Đổi mật khẩu">
+        <button id="open-change-password-btn" class="p-1.5 sm:p-2 lg:px-3.5 lg:py-1.5 rounded-full bg-glass-bg hover:bg-glass-bg-hover text-text-primary border border-glass-border text-xs font-bold transition-colors flex items-center gap-1.5 cursor-pointer shadow-xs" title="Đổi mật khẩu tài khoản Admin" aria-label="Đổi mật khẩu">
           <span class="text-xs">🔒</span>
-          <span class="hidden sm:inline">Đổi mật khẩu</span>
+          <span class="hidden lg:inline">Đổi mật khẩu</span>
         </button>
-        <a href="/" class="p-2 sm:px-3.5 sm:py-1.5 rounded-full bg-glass-bg hover:bg-glass-bg-hover text-text-primary border border-glass-border text-xs font-bold transition-colors flex items-center gap-1.5 shadow-xs" title="Xem Website chính" aria-label="Xem Website">
-          <svg class="w-4 h-4 text-accent-primary sm:hidden" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"/></svg>
-          <span class="hidden sm:inline">Xem Website</span>
-          <svg class="w-3.5 h-3.5 text-text-muted hidden sm:inline" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"/></svg>
+        <a href="/" class="p-1.5 sm:p-2 lg:px-3.5 lg:py-1.5 rounded-full bg-glass-bg hover:bg-glass-bg-hover text-text-primary border border-glass-border text-xs font-bold transition-colors flex items-center gap-1.5 shadow-xs" title="Xem Website chính" aria-label="Xem Website">
+          <svg class="w-4 h-4 text-accent-primary lg:hidden" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"/></svg>
+          <span class="hidden lg:inline">Xem Website</span>
+          <svg class="w-3.5 h-3.5 text-text-muted hidden lg:inline" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"/></svg>
         </a>
-        <button id="logout-btn" class="p-2 sm:px-3.5 sm:py-1.5 rounded-full bg-rose-500/10 hover:bg-rose-500/20 text-rose-600 dark:text-rose-400 border border-rose-500/30 text-xs font-bold transition-colors flex items-center gap-1.5 cursor-pointer shadow-xs" title="Đăng xuất khỏi hệ thống" aria-label="Đăng xuất">
-          <svg class="w-4 h-4 sm:w-3.5 sm:h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"/></svg>
-          <span class="hidden sm:inline">Đăng xuất</span>
+        <button id="logout-btn" class="p-1.5 sm:p-2 lg:px-3.5 lg:py-1.5 rounded-full bg-rose-500/10 hover:bg-rose-500/20 text-rose-600 dark:text-rose-400 border border-rose-500/30 text-xs font-bold transition-colors flex items-center gap-1.5 cursor-pointer shadow-xs" title="Đăng xuất khỏi hệ thống" aria-label="Đăng xuất">
+          <svg class="w-4 h-4 lg:w-3.5 lg:h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"/></svg>
+          <span class="hidden lg:inline">Đăng xuất</span>
         </button>
       </div>
     </header>
