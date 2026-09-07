@@ -504,6 +504,35 @@ export function normalizeAudioPath(urlOrPath) {
   return clean
 }
 
+/**
+ * Rút gọn tên bài hát thành các ký tự đầu (bỏ dấu, chỉ giữ a-z0-9) để ghép vào ID,
+ * ví dụ "Hồng nhan" -> "hongnh"
+ */
+function slugifyTitle(title, maxLen = 6) {
+  if (!title) return 'tab'
+  const slug = title
+    .normalize('NFD')
+    .replace(/[̀-ͯ]/g, '')
+    .replace(/đ/g, 'd')
+    .replace(/Đ/g, 'D')
+    .toLowerCase()
+    .replace(/[^a-z0-9]/g, '')
+  return slug.slice(0, maxLen) || 'tab'
+}
+
+/**
+ * Số thứ tự kế tiếp cho ID mới, tính theo phần số lớn nhất đang có trong các ID
+ * dạng "<số>-<slug>" (không dùng `order` vì order có thể đổi khi admin sắp xếp lại)
+ */
+function getNextSongSeq(existingSongs) {
+  let max = 0
+  for (const s of existingSongs) {
+    const match = String(s.id || '').match(/^(\d+)-/)
+    if (match) max = Math.max(max, parseInt(match[1], 10))
+  }
+  return max + 1
+}
+
 const VALID_SONG_COLUMNS = [
   'id', 'title', 'singer', 'category', 'level', 'level_num', 'is_free',
   'price', 'price_formatted', 'discount_note', 'tuning',
@@ -559,8 +588,10 @@ function extractMissingColumn(errMsg) {
  */
 async function writeSongToSupabase(payload, isEdit, songId) {
   let attemptPayload = { ...payload }
+  // Mỗi lần thử tối đa xoá 1 cột lỗi khỏi payload, nên không thể lặp quá số cột đang gửi
+  const maxAttempts = Object.keys(attemptPayload).length + 1
 
-  for (let attempt = 0; attempt < 35; attempt++) {
+  for (let attempt = 0; attempt < maxAttempts; attempt++) {
     try {
       if (isEdit && songId) {
         const { data, error } = await supabase
@@ -626,7 +657,7 @@ export async function saveSong(payload, isEdit = false, songId = null) {
   const all = getLocalSongs()
 
   // Ensure ID is generated for new records
-  const targetId = songId || payload.id || `tab-${Date.now()}`
+  const targetId = songId || payload.id || `${getNextSongSeq(all)}-${slugifyTitle(payload.title)}`
   payload.id = targetId
 
   const cleanPayload = sanitizeSongPayload(payload)
