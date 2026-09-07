@@ -356,7 +356,7 @@ export async function initAuthHeader() {
     // Update Desktop Nav for logged-in user
     const desktopNav = document.getElementById('desktop-nav')
     if (desktopNav) {
-      const oldTab = desktopNav.querySelector('a[href*="cua-toi"]') || desktopNav.querySelector('a[href*="user-dashboard"]') || desktopNav.querySelector('a[href*="admin-dashboard"]')
+      const oldTab = desktopNav.querySelector('a[href*="user-dashboard"]') || desktopNav.querySelector('a[href*="admin-dashboard"]')
       if (oldTab) {
         oldTab.href = targetDashboardUrl
         oldTab.innerHTML = `<span>${targetDashboardLabel}</span>`
@@ -381,7 +381,7 @@ export async function initAuthHeader() {
     // Update Mobile Drawer Nav for logged-in user
     const mobileNav = document.querySelector('#mobile-menu-drawer nav')
     if (mobileNav) {
-      const oldTabMobile = mobileNav.querySelector('a[href*="cua-toi"]') || mobileNav.querySelector('a[href*="user-dashboard"]') || mobileNav.querySelector('a[href*="admin-dashboard"]')
+      const oldTabMobile = mobileNav.querySelector('a[href*="user-dashboard"]') || mobileNav.querySelector('a[href*="admin-dashboard"]')
       if (oldTabMobile) {
         oldTabMobile.href = targetDashboardUrl
         oldTabMobile.innerHTML = `<span>${targetDashboardLabel}</span>`
