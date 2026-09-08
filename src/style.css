@@ -425,6 +425,15 @@ header, footer, nav, .ambient-blob {
   background: linear-gradient(90deg, transparent, var(--glass-border), transparent);
 }
 
+/* Trạng thái header thu nhỏ khi cuộn (initNavbarShrink trong common.js).
+   Dùng !important vì mỗi trang có class padding gốc (py-*) khác nhau, nên
+   không thể chỉ toggle qua lại giữa 2 class Tailwind py-* như trước (dễ bị
+   class padding gốc của trang đè mất, khiến hiệu ứng không chạy). */
+#main-nav.nav-shrunk {
+  padding-top: 0.5rem !important;
+  padding-bottom: 0.5rem !important;
+}
+
 .nav-link {
   position: relative;
   display: inline-flex;

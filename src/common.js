@@ -68,12 +68,11 @@ export function initNavbarShrink() {
     if (!ticking) {
       window.requestAnimationFrame(() => {
         if (window.scrollY > 60) {
-          navbar.classList.add('py-3', 'shadow-lg', 'border-b', 'border-glass-border')
-          navbar.classList.remove('py-4', 'py-5')
+          navbar.classList.add('nav-shrunk', 'shadow-lg', 'border-b', 'border-glass-border')
           navbar.style.backgroundColor = 'var(--header-bg)'
         } else {
-          navbar.classList.add('py-4', 'border-b', 'border-glass-border')
-          navbar.classList.remove('py-3', 'shadow-lg')
+          navbar.classList.remove('nav-shrunk', 'shadow-lg')
+          navbar.classList.add('border-b', 'border-glass-border')
           navbar.style.backgroundColor = ''
         }
         ticking = false
