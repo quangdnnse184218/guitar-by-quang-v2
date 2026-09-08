@@ -22,12 +22,12 @@ export function getPreferredTheme() {
 
 /**
  * Áp dụng theme lên document và phát tín hiệu cho các listener (như Three.js scene)
- * @param {'light' | 'dark'} theme 
- * @param {boolean} persist 
+ * @param {'light' | 'dark'} theme
+ * @param {boolean} persist
  */
 export function applyTheme(theme, persist = true) {
   const root = document.documentElement
-  
+
   if (theme === 'light') {
     root.setAttribute('data-theme', 'light')
     root.classList.remove('dark')
@@ -46,14 +46,17 @@ export function applyTheme(theme, persist = true) {
 
   // Update ARIA labels and state on all theme toggle buttons if present
   const toggleButtons = document.querySelectorAll('#theme-toggle-btn, .theme-toggle-btn')
-  toggleButtons.forEach(btn => {
+  toggleButtons.forEach((btn) => {
     btn.setAttribute('aria-checked', theme === 'light' ? 'false' : 'true')
-    btn.setAttribute('title', theme === 'light' ? 'Chuyển sang giao diện Tối' : 'Chuyển sang giao diện Sáng')
+    btn.setAttribute(
+      'title',
+      theme === 'light' ? 'Chuyển sang giao diện Tối' : 'Chuyển sang giao diện Sáng'
+    )
   })
 
   // Notify listeners (e.g. Three.js light intensity adjustment)
   const isDark = theme === 'dark'
-  themeListeners.forEach(listener => {
+  themeListeners.forEach((listener) => {
     try {
       listener(isDark)
     } catch (err) {
@@ -68,7 +71,7 @@ export function applyTheme(theme, persist = true) {
 
 /**
  * Đăng ký listener khi theme thay đổi
- * @param {(isDark: boolean) => void} callback 
+ * @param {(isDark: boolean) => void} callback
  * @returns {() => void} Hàm hủy đăng ký
  */
 export function onThemeChange(callback) {
@@ -86,7 +89,7 @@ export function initThemeToggle() {
   // Gắn sự kiện cho các nút toggle trên trang
   const attachButtons = () => {
     const toggleButtons = document.querySelectorAll('#theme-toggle-btn, .theme-toggle-btn')
-    toggleButtons.forEach(btn => {
+    toggleButtons.forEach((btn) => {
       // Remove old listener if re-initializing to avoid duplicate triggers
       btn.onclick = (e) => {
         e.preventDefault()

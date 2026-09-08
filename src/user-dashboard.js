@@ -7,11 +7,19 @@
 import { supabase } from './lib/supabase.js'
 import { initNavbarShrink, initMobileMenu } from './common.js'
 import { initThemeToggle } from './theme-toggle.js'
-import { fetchAllSongs, extractYoutubeId, normalizeVideoPath, normalizeAudioPath } from './lib/songs-service.js'
+import {
+  fetchAllSongs,
+  extractYoutubeId,
+  normalizeVideoPath,
+  normalizeAudioPath,
+} from './lib/songs-service.js'
 import { fetchAllGears, DEFAULT_GEARS } from './lib/gears-service.js'
 
 // If redirected here with a recovery token, immediately move to reset-password.html
-if (window.location.hash.includes('type=recovery') || window.location.search.includes('type=recovery')) {
+if (
+  window.location.hash.includes('type=recovery') ||
+  window.location.search.includes('type=recovery')
+) {
   window.location.replace('/reset-password.html' + (window.location.hash || window.location.search))
 }
 
@@ -72,7 +80,6 @@ const filterPurchasedSelect = document.getElementById('filter-purchased-select')
 
 // Redemption DOM
 
-
 // Profile Form
 const profileForm = document.getElementById('profile-update-form')
 const profileEmailInput = document.getElementById('profile-email-input')
@@ -100,7 +107,7 @@ let toastTimer = null
 export function showToast(msg, type = 'success') {
   if (!toastNotification || !toastMessage) return
   if (toastTimer) clearTimeout(toastTimer)
-  
+
   const toastIconEl = document.getElementById('toast-icon')
   const cleanMsg = msg.replace(/^[✓✕❌⟳•\s]+/, '').trim()
   toastMessage.textContent = cleanMsg || msg
@@ -110,24 +117,25 @@ export function showToast(msg, type = 'success') {
   if (toastIconEl) {
     if (type === 'error') {
       toastIconEl.textContent = '✕'
-      toastIconEl.className = 'w-8 h-8 rounded-full flex items-center justify-center flex-shrink-0 text-sm font-extrabold shadow-md'
+      toastIconEl.className =
+        'w-8 h-8 rounded-full flex items-center justify-center flex-shrink-0 text-sm font-extrabold shadow-md'
     } else if (type === 'info') {
       toastIconEl.textContent = '⟳'
-      toastIconEl.className = 'w-8 h-8 rounded-full flex items-center justify-center flex-shrink-0 text-sm font-extrabold shadow-md animate-spin'
+      toastIconEl.className =
+        'w-8 h-8 rounded-full flex items-center justify-center flex-shrink-0 text-sm font-extrabold shadow-md animate-spin'
     } else {
       toastIconEl.textContent = '✓'
-      toastIconEl.className = 'w-8 h-8 rounded-full flex items-center justify-center flex-shrink-0 text-sm font-extrabold shadow-md'
+      toastIconEl.className =
+        'w-8 h-8 rounded-full flex items-center justify-center flex-shrink-0 text-sm font-extrabold shadow-md'
     }
   }
-  
+
   toastTimer = setTimeout(() => {
     toastNotification.classList.remove('toast-visible')
   }, 4000)
 }
 
 window.showToast = showToast
-
-
 
 // ==========================================================================
 // TAB SWITCHING LOGIC
@@ -138,7 +146,7 @@ function setActiveTab(tab) {
     { key: 'overview', btn: navTabOverview, sec: sectionOverview },
     { key: 'favorites', btn: navTabFavorites, sec: sectionFavorites },
     { key: 'purchases', btn: navTabPurchases, sec: sectionPurchases },
-    { key: 'profile', btn: null, sec: sectionProfile }
+    { key: 'profile', btn: null, sec: sectionProfile },
   ]
 
   const isProfile = tab === 'profile'
@@ -156,10 +164,15 @@ function setActiveTab(tab) {
     commonSections?.classList.remove('hidden')
     sectionProfile?.classList.add('hidden')
 
-    tabs.slice(0, 3).forEach(t => {
+    tabs.slice(0, 3).forEach((t) => {
       if (t.key === tab) {
         if (t.btn) {
-          t.btn.classList.remove('text-text-muted', 'hover:text-text-primary', 'hover:bg-black/5', 'dark:hover:bg-white/5')
+          t.btn.classList.remove(
+            'text-text-muted',
+            'hover:text-text-primary',
+            'hover:bg-black/5',
+            'dark:hover:bg-white/5'
+          )
           t.btn.classList.add('bg-warm-gradient', 'text-white', 'shadow-md')
         }
         t.sec?.classList.remove('hidden')
@@ -197,16 +210,27 @@ window.addEventListener('hashchange', () => {
   }
 })
 
-navTabOverview?.addEventListener('click', () => { window.location.hash = 'overview'; setActiveTab('overview') })
-navTabFavorites?.addEventListener('click', () => { window.location.hash = 'favorites'; setActiveTab('favorites') })
-navTabPurchases?.addEventListener('click', () => { window.location.hash = 'purchases'; setActiveTab('purchases') })
+navTabOverview?.addEventListener('click', () => {
+  window.location.hash = 'overview'
+  setActiveTab('overview')
+})
+navTabFavorites?.addEventListener('click', () => {
+  window.location.hash = 'favorites'
+  setActiveTab('favorites')
+})
+navTabPurchases?.addEventListener('click', () => {
+  window.location.hash = 'purchases'
+  setActiveTab('purchases')
+})
 
 // ==========================================================================
 // DATA FETCHING
 // ==========================================================================
 async function checkAuthAndInit() {
   try {
-    const { data: { session } } = await supabase.auth.getSession()
+    const {
+      data: { session },
+    } = await supabase.auth.getSession()
     if (!session || !session.user) {
       window.location.replace('/login.html')
       return
@@ -222,17 +246,19 @@ async function checkAuthAndInit() {
       .single()
 
     currentProfile = profile || {
-      full_name: currentUser.user_metadata?.full_name || currentUser.email?.split('@')[0] || 'Thành viên',
+      full_name:
+        currentUser.user_metadata?.full_name || currentUser.email?.split('@')[0] || 'Thành viên',
       avatar_url: currentUser.user_metadata?.avatar_url || '',
       role: 'user',
-      created_at: currentUser.created_at
+      created_at: currentUser.created_at,
     }
 
     // Check if admin
     if (currentProfile.role === 'admin') {
       adminNoticeBanner?.classList.remove('hidden')
       userRoleBadge.innerHTML = '⚡ Quản Trị Viên (Admin)'
-      userRoleBadge.className = 'px-2 py-0.5 rounded-full bg-purple-500/20 text-purple-700 dark:text-purple-300 text-[10px] font-bold border border-purple-500/30'
+      userRoleBadge.className =
+        'px-2 py-0.5 rounded-full bg-purple-500/20 text-purple-700 dark:text-purple-300 text-[10px] font-bold border border-purple-500/30'
     }
 
     // Update Header & Banner UI
@@ -242,12 +268,12 @@ async function checkAuthAndInit() {
     const [songs, favRes, purRes] = await Promise.all([
       fetchAllSongs(),
       supabase.from('favorites').select('song_id').eq('user_id', currentUser.id),
-      supabase.from('purchases').select('song_id').eq('user_id', currentUser.id)
+      supabase.from('purchases').select('song_id').eq('user_id', currentUser.id),
     ])
 
     allSongs = songs || []
-    favoriteSongIds = new Set((favRes.data || []).map(f => String(f.song_id)))
-    purchasedSongIds = new Set((purRes.data || []).map(p => String(p.song_id)))
+    favoriteSongIds = new Set((favRes.data || []).map((f) => String(f.song_id)))
+    purchasedSongIds = new Set((purRes.data || []).map((p) => String(p.song_id)))
 
     updateCounters()
     renderOverviewFeatured()
@@ -271,7 +297,7 @@ async function checkAuthAndInit() {
 function updateUserInfoUI() {
   const name = currentProfile.full_name || currentUser.email?.split('@')[0] || 'Thành viên'
   const initial = name.charAt(0).toUpperCase()
-  
+
   if (userDisplayName) userDisplayName.textContent = name
   if (userEmailDisplay) userEmailDisplay.textContent = currentUser.email
   if (userAvatarInitial) userAvatarInitial.textContent = initial
@@ -329,7 +355,7 @@ export function formatCompactDiscount(note) {
   if (str.toLowerCase().includes('179')) return 'HSSV: 179k'
   if (str.length > 15) {
     const num = str.replace(/[^0-9]/g, '')
-    if (num) return `HSSV: ${num.length >= 4 ? Math.round(Number(num)/1000) : num}k`
+    if (num) return `HSSV: ${num.length >= 4 ? Math.round(Number(num) / 1000) : num}k`
   }
   return str
 }
@@ -342,37 +368,43 @@ function renderOverviewFeatured() {
   const featured = allSongs.slice(0, 4)
 
   if (featured.length === 0) {
-    overviewFeaturedTabs.innerHTML = '<div class="p-8 text-center text-text-muted text-xs col-span-full">Chưa có bài hát nào trong kho.</div>'
+    overviewFeaturedTabs.innerHTML =
+      '<div class="p-8 text-center text-text-muted text-xs col-span-full">Chưa có bài hát nào trong kho.</div>'
     return
   }
 
-  overviewFeaturedTabs.innerHTML = featured.map(song => {
-    const isFav = favoriteSongIds.has(String(song.id))
-    const isBought = purchasedSongIds.has(String(song.id))
-    const isFree = Boolean(song.is_free)
-    const levelStr = String(song.level || '5/10')
-    const levelNum = parseFloat(levelStr.replace(/[^0-9.]/g, '')) || 5
-    const percent = Math.min(100, Math.max(10, (levelNum / 10) * 100))
+  overviewFeaturedTabs.innerHTML = featured
+    .map((song) => {
+      const isFav = favoriteSongIds.has(String(song.id))
+      const isBought = purchasedSongIds.has(String(song.id))
+      const isFree = Boolean(song.is_free)
+      const levelStr = String(song.level || '5/10')
+      const levelNum = parseFloat(levelStr.replace(/[^0-9.]/g, '')) || 5
+      const percent = Math.min(100, Math.max(10, (levelNum / 10) * 100))
 
-    // Top action group: Favorite Heart Button + Check/View status
-    const userActionGroup = `
+      // Top action group: Favorite Heart Button + Check/View status
+      const userActionGroup = `
       <div class="flex items-center gap-1" onclick="event.stopPropagation();">
         <button onclick="window.toggleFavoriteSong(event, '${song.id}')" class="btn-fav-song p-1 sm:p-1.5 rounded-full bg-black/40 hover:bg-black/60 text-white transition-all cursor-pointer shadow-xs ${isFav ? 'text-rose-500 bg-black/70' : ''}" title="${isFav ? 'Bỏ yêu thích' : 'Thêm vào yêu thích'}">
           <svg class="w-3 h-3 sm:w-3.5 sm:h-3.5 ${isFav ? 'fill-rose-500 stroke-rose-500' : 'fill-none stroke-current'}" viewBox="0 0 24 24" stroke-width="2">
             <path stroke-linecap="round" stroke-linejoin="round" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"/>
           </svg>
         </button>
-        ${isBought ? `
+        ${
+          isBought
+            ? `
           <span class="p-1 sm:p-1.5 rounded-full bg-emerald-600 text-white shadow-xs" title="Đã sở hữu bài hát này">
             <svg class="w-3 h-3 sm:w-3.5 sm:h-3.5" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/></svg>
           </span>
-        ` : ''}
+        `
+            : ''
+        }
       </div>
     `
 
-    // 1. FREE TAB CARD
-    if (isFree) {
-      return `
+      // 1. FREE TAB CARD
+      if (isFree) {
+        return `
         <div onclick="window.openFreeTabModal('${song.id}')" class="song-card glass-card card-interactive p-2.5 sm:p-4 rounded-2xl sm:rounded-3xl border border-glass-border flex flex-col justify-between space-y-2.5 sm:space-y-3.5 group cursor-pointer w-full" data-id="${song.id}">
           <div class="space-y-2 sm:space-y-3">
             <!-- Thumbnail Visual (Emerald Green Gradient) -->
@@ -409,7 +441,7 @@ function renderOverviewFeatured() {
 
               <div class="space-y-0.5 sm:space-y-1 pt-0.5">
                 <div class="flex items-center justify-between text-[10px] sm:text-xs font-bold text-text-muted">
-                  <span>Độ khó: <strong class="text-emerald-500 font-mono tabular-nums">${song.level || (levelNum + '/10')}</strong></span>
+                  <span>Độ khó: <strong class="text-emerald-500 font-mono tabular-nums">${song.level || levelNum + '/10'}</strong></span>
                   <span class="text-[9px] sm:text-xs font-semibold text-text-muted hidden sm:inline">Tuning: ${song.tuning || 'Standard'}</span>
                 </div>
                 <div class="w-full bg-glass-bg rounded-full h-1 sm:h-1.5 overflow-hidden border border-glass-border">
@@ -430,16 +462,16 @@ function renderOverviewFeatured() {
           </div>
         </div>
       `
-    }
+      }
 
-    // 2. PAID TAB CARD
-    const rawPrice = song.price_formatted || song.priceFormatted || song.price || '239k'
-    const priceFormatted = formatCompactPrice(rawPrice)
-    const discountNote = formatCompactDiscount(song.discount_note || song.discountNote)
-    const videoDemoUrl = song.video_demo_url || song.video_demo || `/assets/${song.id}demo.mp4`
+      // 2. PAID TAB CARD
+      const rawPrice = song.price_formatted || song.priceFormatted || song.price || '239k'
+      const priceFormatted = formatCompactPrice(rawPrice)
+      const discountNote = formatCompactDiscount(song.discount_note || song.discountNote)
+      const videoDemoUrl = song.video_demo_url || song.video_demo || `/assets/${song.id}demo.mp4`
 
-    if (isBought) {
-      return `
+      if (isBought) {
+        return `
         <div onclick="window.navigateToPurchasesTab('${song.id}')" class="song-card glass-card card-interactive p-2.5 sm:p-4 flex flex-col justify-between space-y-2.5 sm:space-y-3.5 group cursor-pointer rounded-2xl sm:rounded-3xl border border-amber-500/40 hover:border-amber-400 hover:shadow-xl transition-all w-full" data-id="${song.id}">
           <div class="space-y-2 sm:space-y-3">
             <!-- Thumbnail Visual (Warm Brown/Orange Gradient) -->
@@ -479,7 +511,7 @@ function renderOverviewFeatured() {
 
               <div class="space-y-0.5 sm:space-y-1 pt-0.5">
                 <div class="flex items-center justify-between text-[10px] sm:text-xs font-bold text-text-muted">
-                  <span>Độ khó: <strong class="text-accent-primary font-mono tabular-nums">${song.level || (levelNum + '/10')}</strong></span>
+                  <span>Độ khó: <strong class="text-accent-primary font-mono tabular-nums">${song.level || levelNum + '/10'}</strong></span>
                   <span class="text-[9px] sm:text-xs font-semibold text-text-muted hidden sm:inline">Tuning: ${song.tuning || 'Standard'}</span>
                 </div>
                 <div class="w-full bg-glass-bg rounded-full h-1 sm:h-1.5 overflow-hidden border border-glass-border">
@@ -500,9 +532,9 @@ function renderOverviewFeatured() {
           </div>
         </div>
       `
-    }
+      }
 
-    return `
+      return `
       <div onclick="window.openCheckoutModal('${song.id}')" class="song-card glass-card card-interactive p-2.5 sm:p-4 flex flex-col justify-between space-y-2.5 sm:space-y-3.5 group cursor-pointer rounded-2xl sm:rounded-3xl border border-glass-border hover:border-amber-400 hover:shadow-xl transition-all w-full" data-id="${song.id}">
         <div class="space-y-2 sm:space-y-3">
           <!-- Thumbnail Visual (Warm Brown/Orange Gradient) -->
@@ -519,28 +551,34 @@ function renderOverviewFeatured() {
             </div>
 
             <!-- Center Play Demo Button -->
-            ${videoDemoUrl ? `
+            ${
+              videoDemoUrl
+                ? `
             <div class="my-auto text-center flex flex-col items-center justify-center py-0.5" onclick="event.stopPropagation(); window.openVideoDemoModal('${escapeHtml(song.title)}', '${videoDemoUrl}', false)">
               <div class="w-7 h-7 sm:w-10 sm:h-10 rounded-full bg-white text-[#9a4b24] flex items-center justify-center shadow-lg transform group-hover:scale-110 transition-transform">
                 <svg class="w-3.5 h-3.5 sm:w-4.5 sm:h-4.5 fill-current ml-0.5 text-accent-primary" viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
               </div>
               <span class="text-[8px] sm:text-[10px] font-bold mt-1 text-white/95 tracking-wide bg-black/60 px-2 py-0.5 rounded-full backdrop-blur-xs leading-none whitespace-nowrap">Nhấn để xem</span>
             </div>
-            ` : (song.audio_demo || song.demo_audio_url || song.audio_url) ? `
+            `
+                : song.audio_demo || song.demo_audio_url || song.audio_url
+                  ? `
             <div class="my-auto text-center flex flex-col items-center justify-center py-0.5" onclick="event.stopPropagation(); window.openVideoDemoModal('${escapeHtml(song.title)}', '${escapeHtml(song.audio_demo || song.demo_audio_url || song.audio_url)}', true)">
               <div class="w-7 h-7 sm:w-10 sm:h-10 rounded-full bg-white text-[#9a4b24] flex items-center justify-center shadow-lg transform group-hover:scale-110 transition-transform">
                 <span class="text-sm sm:text-base">🎧</span>
               </div>
               <span class="text-[8px] sm:text-[10px] font-bold mt-1 text-white/95 tracking-wide bg-black/60 px-2 py-0.5 rounded-full backdrop-blur-xs leading-none whitespace-nowrap">Nghe Audio Demo</span>
             </div>
-            ` : `
+            `
+                  : `
             <div class="my-auto text-center flex flex-col items-center justify-center opacity-80 py-0.5">
               <div class="w-6 h-6 sm:w-8 sm:h-8 rounded-full bg-black/30 flex items-center justify-center text-xs sm:text-sm shadow-sm">
                 🎸
               </div>
               <span class="text-[8px] sm:text-[10px] font-bold mt-0.5 text-white/80 tracking-wide">Acoustic Tab</span>
             </div>
-            `}
+            `
+            }
 
             <div class="flex justify-between items-end text-xs text-white/95 font-semibold">
               <span class="font-mono tabular-nums text-[9px] sm:text-[11px]">${song.duration || '03:40'}</span>
@@ -556,7 +594,7 @@ function renderOverviewFeatured() {
 
             <div class="space-y-0.5 sm:space-y-1 pt-0.5">
               <div class="flex items-center justify-between text-[10px] sm:text-xs font-bold text-text-muted">
-                <span>Độ khó: <strong class="text-accent-primary font-mono tabular-nums">${song.level || (levelNum + '/10')}</strong></span>
+                <span>Độ khó: <strong class="text-accent-primary font-mono tabular-nums">${song.level || levelNum + '/10'}</strong></span>
                 <span class="text-[9px] sm:text-xs font-semibold text-text-muted hidden sm:inline">Tuning: ${song.tuning || 'Standard'}</span>
               </div>
               <div class="w-full bg-glass-bg rounded-full h-1 sm:h-1.5 overflow-hidden border border-glass-border">
@@ -577,7 +615,8 @@ function renderOverviewFeatured() {
         </div>
       </div>
     `
-  }).join('')
+    })
+    .join('')
 }
 
 // ==========================================================================
@@ -599,20 +638,28 @@ async function renderOverviewGears() {
   const showMoreText = document.getElementById('overview-gears-show-more-text')
   const showMoreIcon = document.getElementById('overview-gears-show-more-icon')
 
-  overviewGearsCarousel.innerHTML = gears.map((gear, idx) => {
-    const buyButtonHtml = gear.buy_url || gear.buyUrl
-      ? `<a href="${gear.buy_url || gear.buyUrl}" target="_blank" rel="noopener noreferrer" class="w-full inline-flex items-center justify-center gap-1.5 py-2 px-3 rounded-xl bg-accent-primary/10 hover:bg-warm-gradient hover:text-white text-accent-primary text-xs font-bold transition-all duration-200 group/btn shadow-xs hover:shadow-md">
+  overviewGearsCarousel.innerHTML = gears
+    .map((gear, idx) => {
+      const buyButtonHtml =
+        gear.buy_url || gear.buyUrl
+          ? `<a href="${gear.buy_url || gear.buyUrl}" target="_blank" rel="noopener noreferrer" class="w-full inline-flex items-center justify-center gap-1.5 py-2 px-3 rounded-xl bg-accent-primary/10 hover:bg-warm-gradient hover:text-white text-accent-primary text-xs font-bold transition-all duration-200 group/btn shadow-xs hover:shadow-md">
           <span>${gear.buy_text || gear.buyText || 'Mua trên Shopee'}</span>
           <svg class="w-3.5 h-3.5 transition-transform group-hover/btn:translate-x-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M14 5l7 7m0 0l-7 7m7-7H3"></path></svg>
         </a>`
-      : `<div class="w-full text-center py-1.5 text-xs font-bold text-accent-primary italic truncate">${gear.footer_text || gear.footerText ? `"${(gear.footer_text || gear.footerText).replace(/"/g, '')}"` : ''}</div>`
+          : `<div class="w-full text-center py-1.5 text-xs font-bold text-accent-primary italic truncate">${gear.footer_text || gear.footerText ? `"${(gear.footer_text || gear.footerText).replace(/"/g, '')}"` : ''}</div>`
 
-    const cleanDesc = (gear.description || '').replace(/'/g, "\\'").replace(/"/g, '&quot;')
-    const cleanTitle = (gear.title || gear.name || '').replace(/'/g, "\\'").replace(/"/g, '&quot;')
-    const imagePath = gear.image ? (gear.image.startsWith('/') ? gear.image : '/' + gear.image) : '/assets/clover.jpg'
-    const extraClass = idx >= 4 ? 'gear-card-extra hidden' : ''
+      const cleanDesc = (gear.description || '').replace(/'/g, "\\'").replace(/"/g, '&quot;')
+      const cleanTitle = (gear.title || gear.name || '')
+        .replace(/'/g, "\\'")
+        .replace(/"/g, '&quot;')
+      const imagePath = gear.image
+        ? gear.image.startsWith('/')
+          ? gear.image
+          : '/' + gear.image
+        : '/assets/clover.jpg'
+      const extraClass = idx >= 4 ? 'gear-card-extra hidden' : ''
 
-    return `
+      return `
       <div class="w-full glass-card card-interactive rounded-2xl sm:rounded-3xl p-3.5 sm:p-4 shadow-sm hover:shadow-xl hover:border-accent-primary/50 border border-glass-border transition-all duration-300 flex flex-col justify-between group overflow-hidden ${extraClass}">
         <div class="space-y-2.5 sm:space-y-3">
           <!-- Khung ảnh vuông 1:1 -->
@@ -633,7 +680,8 @@ async function renderOverviewGears() {
         </div>
       </div>
     `
-  }).join('')
+    })
+    .join('')
 
   // Configure Show More Button
   if (showMoreWrap && showMoreBtn && gears.length > 4) {
@@ -646,7 +694,7 @@ async function renderOverviewGears() {
     showMoreBtn.onclick = () => {
       isExpanded = !isExpanded
       const extraCards = overviewGearsCarousel.querySelectorAll('.gear-card-extra')
-      extraCards.forEach(card => {
+      extraCards.forEach((card) => {
         if (isExpanded) {
           card.classList.remove('hidden')
           card.classList.add('animate-in', 'fade-in', 'zoom-in-95', 'duration-200')
@@ -687,7 +735,7 @@ export function initFaq() {
   const INITIAL_LIMIT = 2
 
   function updateFaqDisplay() {
-    const matchingItems = faqItems.filter(item => {
+    const matchingItems = faqItems.filter((item) => {
       const itemCat = item.getAttribute('data-category')
       return currentCategory === 'all' || itemCat === currentCategory
     })
@@ -695,11 +743,11 @@ export function initFaq() {
     const totalMatching = matchingItems.length
     const visibleCount = isShowMore ? totalMatching : Math.min(INITIAL_LIMIT, totalMatching)
 
-    faqItems.forEach(item => {
+    faqItems.forEach((item) => {
       item.classList.add('hidden')
     })
 
-    matchingItems.slice(0, visibleCount).forEach(item => {
+    matchingItems.slice(0, visibleCount).forEach((item) => {
       item.classList.remove('hidden')
     })
 
@@ -722,9 +770,9 @@ export function initFaq() {
   }
 
   // Lọc theo chủ đề
-  filterBtns.forEach(btn => {
+  filterBtns.forEach((btn) => {
     btn.addEventListener('click', () => {
-      filterBtns.forEach(b => b.classList.remove('active'))
+      filterBtns.forEach((b) => b.classList.remove('active'))
       btn.classList.add('active')
       currentCategory = btn.getAttribute('data-faq-filter') || 'all'
       isShowMore = false
@@ -777,8 +825,8 @@ export function toggleModal(modalId, show) {
       document.body.classList.add('modal-open')
     })
   } else {
-    modal.querySelectorAll('video').forEach(v => v.pause())
-    modal.querySelectorAll('audio').forEach(a => {
+    modal.querySelectorAll('video').forEach((v) => v.pause())
+    modal.querySelectorAll('audio').forEach((a) => {
       a.pause()
       a.currentTime = 0
     })
@@ -800,38 +848,51 @@ export function toggleModal(modalId, show) {
 
 window.openMaterialModal = function openMaterialModal(song) {
   if (!song) return
-  const driveUrl = song.tab_url || song.target_url || song.targetUrl || song.tabUrl || song.drive_url
+  const driveUrl =
+    song.tab_url || song.target_url || song.targetUrl || song.tabUrl || song.drive_url
   if (driveUrl && driveUrl.startsWith('http')) {
     showToast(`Đang mở Google Drive bài "${song.title}"...`, 'info')
     window.open(driveUrl, '_blank')
   } else {
-    showToast(`Bài hát "${song.title}" đang được cập nhật link Google Drive. Vui lòng liên hệ Admin!`, 'info')
+    showToast(
+      `Bài hát "${song.title}" đang được cập nhật link Google Drive. Vui lòng liên hệ Admin!`,
+      'info'
+    )
   }
 }
 
-window.navigateToPurchasesTab = function(songId) {
+window.navigateToPurchasesTab = function (songId) {
   window.location.hash = 'purchases'
   setActiveTab('purchases')
 
-  const song = allSongs.find(s => String(s.id) === String(songId))
+  const song = allSongs.find((s) => String(s.id) === String(songId))
   const songTitle = song?.title ? `"${song.title}"` : ''
-  
-  showToast(songTitle ? `Đã chuyển sang Tab Đã Mua bài ${songTitle} 🎸` : 'Đã chuyển sang mục Tab Đã Mua 🎸', 'success')
-  
+
+  showToast(
+    songTitle
+      ? `Đã chuyển sang Tab Đã Mua bài ${songTitle} 🎸`
+      : 'Đã chuyển sang mục Tab Đã Mua 🎸',
+    'success'
+  )
+
   // Smooth scroll up to tab bar / purchases section
   setTimeout(() => {
-    const targetElement = document.getElementById('section-purchases') || document.getElementById('dashboard-tab-bar')
+    const targetElement =
+      document.getElementById('section-purchases') || document.getElementById('dashboard-tab-bar')
     if (targetElement) {
       targetElement.scrollIntoView({ behavior: 'smooth', block: 'start' })
     }
-    
+
     if (songId) {
       setTimeout(() => {
         const card = document.querySelector(`[data-song-id="${songId}"]`)
         if (card) {
           card.scrollIntoView({ behavior: 'smooth', block: 'center' })
           card.classList.add('ring-4', 'ring-accent-primary', 'shadow-2xl')
-          setTimeout(() => card.classList.remove('ring-4', 'ring-accent-primary', 'shadow-2xl'), 3000)
+          setTimeout(
+            () => card.classList.remove('ring-4', 'ring-accent-primary', 'shadow-2xl'),
+            3000
+          )
         }
       }, 250)
     }
@@ -839,7 +900,7 @@ window.navigateToPurchasesTab = function(songId) {
 }
 
 window.openCheckoutModal = function openCheckoutModal(tabId) {
-  const tab = allSongs.find(t => String(t.id) === String(tabId))
+  const tab = allSongs.find((t) => String(t.id) === String(tabId))
   if (!tab) return
 
   // If user already bought this song, switch directly to purchases tab
@@ -865,7 +926,8 @@ window.openCheckoutModal = function openCheckoutModal(tabId) {
   const audioContainer = document.getElementById('checkout-modal-audio-container')
 
   if (titleEl) titleEl.textContent = tab.title
-  if (metaEl) metaEl.textContent = `Tuning: ${tab.tuning || 'Standard'} • Bản Video Tab chạy nốt đồng bộ với âm thanh đàn mộc thật và nhịp gõ`
+  if (metaEl)
+    metaEl.textContent = `Tuning: ${tab.tuning || 'Standard'} • Bản Video Tab chạy nốt đồng bộ với âm thanh đàn mộc thật và nhịp gõ`
   if (priceEl) priceEl.textContent = tab.price_formatted || tab.price || '239.000 VNĐ'
 
   if (levelEl) levelEl.textContent = tab.level || `${tab.level_num ?? tab.levelNum ?? 5}/10`
@@ -884,11 +946,20 @@ window.openCheckoutModal = function openCheckoutModal(tabId) {
     }
   }
 
-  const cleanSongCode = tab.title.replace(/[^a-zA-Z0-9]/g, '').toUpperCase().slice(0, 10)
+  const cleanSongCode = tab.title
+    .replace(/[^a-zA-Z0-9]/g, '')
+    .toUpperCase()
+    .slice(0, 10)
   activeCheckoutSyntax = `VIDEOTAB ${cleanSongCode}`
   if (syntaxEl) syntaxEl.textContent = activeCheckoutSyntax
 
-  const videoDemo = tab.video_demo_url || tab.demo_video_url || tab.video_demo || tab.videoDemo || tab.youtube_id || ''
+  const videoDemo =
+    tab.video_demo_url ||
+    tab.demo_video_url ||
+    tab.video_demo ||
+    tab.videoDemo ||
+    tab.youtube_id ||
+    ''
   const audioDemo = tab.audio_demo || tab.demo_audio_url || tab.audio_url || ''
 
   if (videoEl && videoContainer) {
@@ -922,7 +993,7 @@ window.openCheckoutModal = function openCheckoutModal(tabId) {
 }
 
 window.openFreeTabModal = function openFreeTabModal(tabId) {
-  const tab = allSongs.find(t => String(t.id) === String(tabId))
+  const tab = allSongs.find((t) => String(t.id) === String(tabId))
   if (!tab) return
 
   const titleEl = document.getElementById('free-tab-modal-title')
@@ -951,16 +1022,24 @@ window.openFreeTabModal = function openFreeTabModal(tabId) {
       const detected = []
       if (descLower.includes('slap')) detected.push('Slap')
       if (descLower.includes('nail attack')) detected.push('Nail Attack')
-      if (descLower.includes('hammer') || descLower.includes('pull')) detected.push('Hammer-on / Pull-off')
-      if (descLower.includes('slide') || descLower.includes('vuốt')) detected.push('Slide (Vuốt dây)')
+      if (descLower.includes('hammer') || descLower.includes('pull'))
+        detected.push('Hammer-on / Pull-off')
+      if (descLower.includes('slide') || descLower.includes('vuốt'))
+        detected.push('Slide (Vuốt dây)')
       if (descLower.includes('rải') || descLower.includes('tỉa')) detected.push('Tỉa ngón / Rải')
       if (descLower.includes('bass')) detected.push('Đi Bass')
       if (detected.length > 0) techs = detected
     }
-    techContainer.innerHTML = techs.map(t => `<span class="px-2.5 py-1 rounded-lg modal-inner-card text-text-primary text-[11px] font-semibold shadow-xs">${t}</span>`).join('')
+    techContainer.innerHTML = techs
+      .map(
+        (t) =>
+          `<span class="px-2.5 py-1 rounded-lg modal-inner-card text-text-primary text-[11px] font-semibold shadow-xs">${t}</span>`
+      )
+      .join('')
   }
 
-  const videoUrl = tab.target_url || tab.targetUrl || tab.video_demo_url || tab.video_demo || tab.videoDemo || ''
+  const videoUrl =
+    tab.target_url || tab.targetUrl || tab.video_demo_url || tab.video_demo || tab.videoDemo || ''
   let isYouTube = false
   let embedUrl = videoUrl
 
@@ -997,7 +1076,8 @@ window.openFreeTabModal = function openFreeTabModal(tabId) {
       pdfBtn.removeAttribute('disabled')
       pdfBtn.href = pdfUrl
       pdfBtn.target = '_blank'
-      pdfBtn.className = 'w-full py-3 rounded-2xl bg-warm-gradient hover:brightness-105 text-white font-extrabold text-xs transition-all shadow-md flex items-center justify-center gap-2 text-center cursor-pointer active:scale-95'
+      pdfBtn.className =
+        'w-full py-3 rounded-2xl bg-warm-gradient hover:brightness-105 text-white font-extrabold text-xs transition-all shadow-md flex items-center justify-center gap-2 text-center cursor-pointer active:scale-95'
       pdfBtn.innerHTML = `
         <svg class="w-4 h-4 fill-none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>
         <span>Tải file PDF Tab</span>
@@ -1005,7 +1085,8 @@ window.openFreeTabModal = function openFreeTabModal(tabId) {
     } else {
       pdfBtn.setAttribute('disabled', 'true')
       pdfBtn.removeAttribute('href')
-      pdfBtn.className = 'w-full py-3 rounded-2xl bg-glass-bg/40 border border-glass-border/50 text-text-faint font-semibold text-xs transition-all shadow-xs flex items-center justify-center gap-2 text-center cursor-not-allowed opacity-60 pointer-events-none'
+      pdfBtn.className =
+        'w-full py-3 rounded-2xl bg-glass-bg/40 border border-glass-border/50 text-text-faint font-semibold text-xs transition-all shadow-xs flex items-center justify-center gap-2 text-center cursor-not-allowed opacity-60 pointer-events-none'
       pdfBtn.innerHTML = `
         <svg class="w-4 h-4 text-text-muted" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
         <span>Tải file PDF (Đang cập nhật)</span>
@@ -1075,7 +1156,7 @@ window.openVideoDemoModal = function openVideoDemoModal(title, mediaSrc, isAudio
       videoEl.classList.remove('hidden')
       videoEl.currentTime = 0
       videoEl.load()
-      videoEl.play().catch(e => console.warn('Auto play demo video error:', e))
+      videoEl.play().catch((e) => console.warn('Auto play demo video error:', e))
     }
   }
 
@@ -1092,7 +1173,7 @@ window.openImageModal = function openImageModal(src, title, caption) {
   toggleModal('image-preview-modal', true)
 }
 
-window.toggleFavoriteSong = async function(event, songId) {
+window.toggleFavoriteSong = async function (event, songId) {
   if (event) event.stopPropagation()
   if (!currentUser) return
 
@@ -1101,12 +1182,17 @@ window.toggleFavoriteSong = async function(event, songId) {
 
   try {
     if (isFav) {
-      const { error } = await supabase.from('favorites').delete().match({ user_id: currentUser.id, song_id: sId })
+      const { error } = await supabase
+        .from('favorites')
+        .delete()
+        .match({ user_id: currentUser.id, song_id: sId })
       if (error) throw error
       favoriteSongIds.delete(sId)
       showToast('Đã bỏ yêu thích bài hát!')
     } else {
-      const { error } = await supabase.from('favorites').insert({ user_id: currentUser.id, song_id: sId })
+      const { error } = await supabase
+        .from('favorites')
+        .insert({ user_id: currentUser.id, song_id: sId })
       if (error) throw error
       favoriteSongIds.add(sId)
       showToast('❤️ Đã thêm vào danh sách yêu thích!')
@@ -1126,12 +1212,24 @@ window.toggleFavoriteSong = async function(event, songId) {
 }
 
 // Modal Event Listeners
-document.getElementById('close-checkout-modal')?.addEventListener('click', () => toggleModal('checkout-modal', false))
-document.getElementById('close-free-tab-modal')?.addEventListener('click', () => toggleModal('free-tab-modal', false))
-document.getElementById('close-video-demo-modal')?.addEventListener('click', () => toggleModal('video-demo-modal', false))
-document.getElementById('close-image-modal')?.addEventListener('click', () => toggleModal('image-preview-modal', false))
-document.getElementById('close-material-modal')?.addEventListener('click', () => toggleModal('material-modal', false))
-document.getElementById('close-material-btn')?.addEventListener('click', () => toggleModal('material-modal', false))
+document
+  .getElementById('close-checkout-modal')
+  ?.addEventListener('click', () => toggleModal('checkout-modal', false))
+document
+  .getElementById('close-free-tab-modal')
+  ?.addEventListener('click', () => toggleModal('free-tab-modal', false))
+document
+  .getElementById('close-video-demo-modal')
+  ?.addEventListener('click', () => toggleModal('video-demo-modal', false))
+document
+  .getElementById('close-image-modal')
+  ?.addEventListener('click', () => toggleModal('image-preview-modal', false))
+document
+  .getElementById('close-material-modal')
+  ?.addEventListener('click', () => toggleModal('material-modal', false))
+document
+  .getElementById('close-material-btn')
+  ?.addEventListener('click', () => toggleModal('material-modal', false))
 
 // Copy STK
 document.getElementById('copy-stk-btn')?.addEventListener('click', async () => {
@@ -1165,7 +1263,13 @@ document.getElementById('share-fb-btn')?.addEventListener('click', () => {
 })
 
 // Modal backdrop clicks
-;['checkout-modal', 'free-tab-modal', 'video-demo-modal', 'image-preview-modal', 'material-modal'].forEach(id => {
+;[
+  'checkout-modal',
+  'free-tab-modal',
+  'video-demo-modal',
+  'image-preview-modal',
+  'material-modal',
+].forEach((id) => {
   const modal = document.getElementById(id)
   if (modal) {
     modal.addEventListener('click', (e) => {
@@ -1177,7 +1281,13 @@ document.getElementById('share-fb-btn')?.addEventListener('click', () => {
 // Escape key to close all modals
 window.addEventListener('keydown', (e) => {
   if (e.key === 'Escape') {
-    ;['checkout-modal', 'free-tab-modal', 'video-demo-modal', 'image-preview-modal', 'material-modal'].forEach(id => {
+    ;[
+      'checkout-modal',
+      'free-tab-modal',
+      'video-demo-modal',
+      'image-preview-modal',
+      'material-modal',
+    ].forEach((id) => {
       toggleModal(id, false)
     })
   }
@@ -1189,20 +1299,22 @@ window.addEventListener('keydown', (e) => {
 function renderFavorites() {
   if (!favoritesGrid) return
 
-  const favSongs = allSongs.filter(s => favoriteSongIds.has(String(s.id)))
-  
+  const favSongs = allSongs.filter((s) => favoriteSongIds.has(String(s.id)))
+
   // Filter
   let filtered = favSongs
   if (favFilter === 'free') {
-    filtered = filtered.filter(s => s.is_free)
+    filtered = filtered.filter((s) => s.is_free)
   } else if (favFilter === 'paid') {
-    filtered = filtered.filter(s => !s.is_free)
+    filtered = filtered.filter((s) => !s.is_free)
   }
 
   // Search
   const query = favSearchQuery.toLowerCase().trim()
   if (query) {
-    filtered = filtered.filter(s => s?.title?.toLowerCase().includes(query) || s?.singer?.toLowerCase().includes(query))
+    filtered = filtered.filter(
+      (s) => s?.title?.toLowerCase().includes(query) || s?.singer?.toLowerCase().includes(query)
+    )
   }
 
   if (filtered.length === 0) {
@@ -1222,16 +1334,19 @@ function renderFavorites() {
     return
   }
 
-  favoritesGrid.innerHTML = filtered.map(song => {
-    const isBought = purchasedSongIds.has(String(song.id))
-    return `
+  favoritesGrid.innerHTML = filtered
+    .map((song) => {
+      const isBought = purchasedSongIds.has(String(song.id))
+      return `
       <div class="glass-card rounded-2xl sm:rounded-3xl p-3 sm:p-5 border border-glass-border hover:border-amber-400/60 hover:shadow-xl transition-all flex flex-col justify-between group relative overflow-hidden" data-song-id="${song.id}">
         <div>
           <div class="flex items-center justify-between gap-1 sm:gap-2 mb-2 sm:mb-3">
             <span class="px-2 sm:px-2.5 py-0.5 rounded-full text-[9px] sm:text-[10px] font-bold ${
-              song?.level === 'Dễ' ? 'bg-emerald-500/15 text-emerald-600 dark:text-emerald-400 border border-emerald-500/30' :
-              song?.level === 'Trung bình' ? 'bg-amber-500/15 text-amber-600 dark:text-amber-400 border border-amber-500/30' :
-              'bg-rose-500/15 text-rose-600 dark:text-rose-400 border border-rose-500/30'
+              song?.level === 'Dễ'
+                ? 'bg-emerald-500/15 text-emerald-600 dark:text-emerald-400 border border-emerald-500/30'
+                : song?.level === 'Trung bình'
+                  ? 'bg-amber-500/15 text-amber-600 dark:text-amber-400 border border-amber-500/30'
+                  : 'bg-rose-500/15 text-rose-600 dark:text-rose-400 border border-rose-500/30'
             }">${song?.level || 'Cơ bản'}</span>
             
             <button class="btn-remove-fav p-1 sm:p-1.5 rounded-full text-rose-500 hover:bg-rose-500/15 transition-colors cursor-pointer" data-id="${song?.id}" title="Bỏ lưu khỏi mục yêu thích">
@@ -1252,19 +1367,24 @@ function renderFavorites() {
           <button class="btn-demo-view flex-1 py-1.5 sm:py-2 rounded-xl bg-black/5 dark:bg-white/5 hover:bg-glass-bg-hover text-[10px] sm:text-xs font-bold text-text-primary border border-glass-border transition-colors cursor-pointer" data-id="${song.id}">
             🎬 Demo
           </button>
-          ${isBought || song.is_free ? `
+          ${
+            isBought || song.is_free
+              ? `
             <button class="btn-open-material flex-1 py-1.5 sm:py-2 rounded-xl bg-emerald-500/20 text-emerald-600 dark:text-emerald-400 border border-emerald-500/30 text-[10px] sm:text-xs font-bold transition-colors cursor-pointer" data-id="${song.id}">
               <span class="truncate">🎬 Xem Video Tab</span>
             </button>
-          ` : `
+          `
+              : `
             <a href="/kho-tab.html" class="flex-1 py-1.5 sm:py-2 rounded-xl bg-warm-gradient text-white text-[10px] sm:text-xs font-bold text-center shadow-xs hover:brightness-105 transition-all">
               Mua Tab
             </a>
-          `}
+          `
+          }
         </div>
       </div>
     `
-  }).join('')
+    })
+    .join('')
 
   attachSongCardEvents(favoritesGrid)
 }
@@ -1275,20 +1395,22 @@ function renderFavorites() {
 function renderPurchases() {
   if (!purchasesGrid) return
 
-  const boughtSongs = allSongs.filter(s => purchasedSongIds.has(String(s.id)))
-  
+  const boughtSongs = allSongs.filter((s) => purchasedSongIds.has(String(s.id)))
+
   // Filter
   let filtered = boughtSongs
   if (purchasedFilter === 'free') {
-    filtered = filtered.filter(s => s.is_free)
+    filtered = filtered.filter((s) => s.is_free)
   } else if (purchasedFilter === 'paid') {
-    filtered = filtered.filter(s => !s.is_free)
+    filtered = filtered.filter((s) => !s.is_free)
   }
 
   // Search
   const query = purchasedSearchQuery.toLowerCase().trim()
   if (query) {
-    filtered = filtered.filter(s => s?.title?.toLowerCase().includes(query) || s?.singer?.toLowerCase().includes(query))
+    filtered = filtered.filter(
+      (s) => s?.title?.toLowerCase().includes(query) || s?.singer?.toLowerCase().includes(query)
+    )
   }
 
   if (filtered.length === 0) {
@@ -1308,8 +1430,9 @@ function renderPurchases() {
     return
   }
 
-  purchasesGrid.innerHTML = filtered.map(song => {
-    return `
+  purchasesGrid.innerHTML = filtered
+    .map((song) => {
+      return `
       <div class="glass-card rounded-2xl sm:rounded-3xl p-3 sm:p-5 border border-amber-500/40 hover:border-amber-400 hover:shadow-xl transition-all flex flex-col justify-between group relative overflow-hidden bg-gradient-to-b from-amber-500/5 to-transparent" data-song-id="${song.id}">
         <div>
           <div class="flex items-center justify-between gap-1 sm:gap-2 mb-2 sm:mb-3">
@@ -1339,7 +1462,8 @@ function renderPurchases() {
         </div>
       </div>
     `
-  }).join('')
+    })
+    .join('')
 
   attachSongCardEvents(purchasesGrid)
 }
@@ -1351,39 +1475,46 @@ function attachSongCardEvents(container) {
   if (!container) return
 
   // Demo Button
-  container.querySelectorAll('.btn-demo-view').forEach(btn => {
+  container.querySelectorAll('.btn-demo-view').forEach((btn) => {
     btn.addEventListener('click', () => {
       const id = btn.dataset.id
-      const song = allSongs.find(s => String(s.id) === String(id))
+      const song = allSongs.find((s) => String(s.id) === String(id))
       if (song) {
-        window.openVideoDemoModal(song.title, song.video_demo_url || song.video_demo || (`/assets/${song.id}demo.mp4`))
+        window.openVideoDemoModal(
+          song.title,
+          song.video_demo_url || song.video_demo || `/assets/${song.id}demo.mp4`
+        )
       }
     })
   })
 
   // Open Google Drive Video Tab Button
-  container.querySelectorAll('.btn-open-material').forEach(btn => {
+  container.querySelectorAll('.btn-open-material').forEach((btn) => {
     btn.addEventListener('click', () => {
       const id = btn.dataset.id
-      const song = allSongs.find(s => String(s.id) === String(id))
+      const song = allSongs.find((s) => String(s.id) === String(id))
       if (!song) return
 
-      const driveUrl = song.tab_url || song.target_url || song.targetUrl || song.tabUrl || song.drive_url
+      const driveUrl =
+        song.tab_url || song.target_url || song.targetUrl || song.tabUrl || song.drive_url
       if (driveUrl && driveUrl.startsWith('http')) {
         showToast(`Đang mở Google Drive bài "${song.title}"...`, 'info')
         window.open(driveUrl, '_blank')
       } else {
-        showToast(`Bài hát "${song.title}" đang được cập nhật link Google Drive. Vui lòng liên hệ Admin!`, 'info')
+        showToast(
+          `Bài hát "${song.title}" đang được cập nhật link Google Drive. Vui lòng liên hệ Admin!`,
+          'info'
+        )
       }
     })
   })
 
   // Remove Favorite Button
-  container.querySelectorAll('.btn-remove-fav').forEach(btn => {
+  container.querySelectorAll('.btn-remove-fav').forEach((btn) => {
     btn.addEventListener('click', async (e) => {
       e.stopPropagation()
       const id = String(btn.dataset.id)
-      
+
       try {
         const { error } = await supabase
           .from('favorites')
@@ -1426,8 +1557,6 @@ filterPurchasedSelect?.addEventListener('change', (e) => {
   renderPurchases()
 })
 
-
-
 // ==========================================================================
 // PROFILE UPDATE FORM HANDLER
 // ==========================================================================
@@ -1448,14 +1577,12 @@ if (profileForm) {
     }
 
     try {
-      const { error } = await supabase
-        .from('profiles')
-        .upsert({
-          id: currentUser.id,
-          full_name: fullName,
-          avatar_url: avatarUrl,
-          role: currentProfile?.role || 'user'
-        })
+      const { error } = await supabase.from('profiles').upsert({
+        id: currentUser.id,
+        full_name: fullName,
+        avatar_url: avatarUrl,
+        role: currentProfile?.role || 'user',
+      })
 
       if (error) throw error
 
@@ -1485,9 +1612,11 @@ function showPasswordAlert(msg, isSuccess = false) {
   passwordAlertText.textContent = msg
 
   if (isSuccess) {
-    passwordAlert.className = 'p-3.5 rounded-2xl bg-emerald-500/15 border border-emerald-500/30 text-emerald-600 dark:text-emerald-400 text-xs font-semibold leading-relaxed flex items-center gap-2.5'
+    passwordAlert.className =
+      'p-3.5 rounded-2xl bg-emerald-500/15 border border-emerald-500/30 text-emerald-600 dark:text-emerald-400 text-xs font-semibold leading-relaxed flex items-center gap-2.5'
   } else {
-    passwordAlert.className = 'p-3.5 rounded-2xl bg-rose-500/15 border border-rose-500/30 text-rose-600 dark:text-rose-400 text-xs font-semibold leading-relaxed flex items-center gap-2.5'
+    passwordAlert.className =
+      'p-3.5 rounded-2xl bg-rose-500/15 border border-rose-500/30 text-rose-600 dark:text-rose-400 text-xs font-semibold leading-relaxed flex items-center gap-2.5'
   }
 }
 
@@ -1534,7 +1663,7 @@ if (changePasswordForm) {
       // Step 1: Re-authenticate to verify old password
       const { error: signInError } = await supabase.auth.signInWithPassword({
         email: currentUser.email,
-        password: currentPassword
+        password: currentPassword,
       })
 
       if (signInError) {
@@ -1544,7 +1673,7 @@ if (changePasswordForm) {
 
       // Step 2: Update to new password
       const { error: updateError } = await supabase.auth.updateUser({
-        password: newPassword
+        password: newPassword,
       })
 
       if (updateError) throw updateError

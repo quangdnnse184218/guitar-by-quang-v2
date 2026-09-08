@@ -1,8 +1,18 @@
 import { renderAmbientBlobs, renderMusicNotes, initNavbarShrink, initMobileMenu } from './common.js'
 import { initThemeToggle } from './theme-toggle.js'
-import { fetchAllSongs, extractYoutubeId, normalizeVideoPath, normalizeAudioPath } from './lib/songs-service.js'
+import {
+  fetchAllSongs,
+  extractYoutubeId,
+  normalizeVideoPath,
+  normalizeAudioPath,
+} from './lib/songs-service.js'
 import { applyScrollReveal } from './animations/scroll-reveal.js'
-import { isFavorite, isCompleted, toggleFavorite, toggleCompleted } from './lib/local-storage-service.js'
+import {
+  isFavorite,
+  isCompleted,
+  toggleFavorite,
+  toggleCompleted,
+} from './lib/local-storage-service.js'
 import { supabase } from './lib/supabase.js'
 
 // Initialize UI
@@ -28,9 +38,9 @@ let toastTimer = null
 window.showToast = function showToast(msg, type = 'success') {
   if (!toastNotification || !toastMessage) return
   if (toastTimer) clearTimeout(toastTimer)
-  
+
   const toastIcon = document.getElementById('toast-icon')
-  
+
   const cleanMsg = msg.replace(/^[✓✕❌⟳•\s]+/, '').trim()
   toastMessage.textContent = cleanMsg || msg
 
@@ -48,7 +58,7 @@ window.showToast = function showToast(msg, type = 'success') {
       toastIcon.className = ''
     }
   }
-  
+
   toastTimer = setTimeout(() => {
     toastNotification.classList.remove('toast-visible')
   }, 4000)
@@ -79,7 +89,7 @@ export function formatCompactDiscount(note) {
   if (str.toLowerCase().includes('179')) return 'HSSV: 179k'
   if (str.length > 15) {
     const num = str.replace(/[^0-9]/g, '')
-    if (num) return `HSSV: ${num.length >= 4 ? Math.round(Number(num)/1000) : num}k`
+    if (num) return `HSSV: ${num.length >= 4 ? Math.round(Number(num) / 1000) : num}k`
   }
   return str
 }
@@ -123,7 +133,7 @@ function renderSongCard(tab, index, extraClass = '') {
 
             <div class="space-y-0.5 sm:space-y-1 pt-0.5">
               <div class="flex items-center justify-between text-[10px] sm:text-xs font-bold text-text-muted">
-                <span>Độ khó: <strong class="text-emerald-700 dark:text-emerald-400 font-mono tabular-nums">${tab.level || (levelNum + '/10')}</strong></span>
+                <span>Độ khó: <strong class="text-emerald-700 dark:text-emerald-400 font-mono tabular-nums">${tab.level || levelNum + '/10'}</strong></span>
                 <span class="text-[9px] sm:text-xs font-semibold text-text-faint hidden sm:inline">Tuning: ${tab.tuning || 'Standard'}</span>
               </div>
               <div class="w-full bg-glass-bg rounded-full h-1 sm:h-1.5 overflow-hidden border border-glass-border">
@@ -155,14 +165,21 @@ function renderSongCard(tab, index, extraClass = '') {
   const cardTypeClass = isFree ? 'card-free' : 'card-paid'
   const tuning = tab.tuning || 'Standard'
   const duration = tab.duration || '03:40'
-  const capoText = (tab.capo !== undefined && tab.capo !== null && tab.capo !== '' && tab.capo !== 0 && tab.capo !== '0') ? `Capo ${tab.capo}` : 'Không kẹp'
-  
+  const capoText =
+    tab.capo !== undefined &&
+    tab.capo !== null &&
+    tab.capo !== '' &&
+    tab.capo !== 0 &&
+    tab.capo !== '0'
+      ? `Capo ${tab.capo}`
+      : 'Không kẹp'
+
   const videoDemo = tab.demo_video_url || tab.video_demo || tab.videoDemo || tab.youtube_id || ''
   const audioDemo = tab.audio_demo || tab.demo_audio_url || tab.audio_url || ''
-  
+
   const normalizedVideo = videoDemo ? normalizeVideoPath(videoDemo) : ''
   const normalizedAudio = audioDemo ? normalizeAudioPath(audioDemo) : ''
-  
+
   const hasDemo = Boolean(normalizedVideo || normalizedAudio)
   const thumbnailBg = tab.thumbnail_bg || tab.thumbnailBg || 'from-[#C1602F] to-[#6E3B1F]'
 
@@ -229,7 +246,7 @@ function renderSongCard(tab, index, extraClass = '') {
 
           <div class="space-y-0.5 sm:space-y-1 pt-0.5">
             <div class="flex items-center justify-between text-[10px] sm:text-xs font-bold text-text-muted">
-              <span>Độ khó: <strong class="text-accent-primary font-mono tabular-nums">${tab.level || (levelNum + '/10')}</strong></span>
+              <span>Độ khó: <strong class="text-accent-primary font-mono tabular-nums">${tab.level || levelNum + '/10'}</strong></span>
               <span class="text-[9px] sm:text-xs font-semibold text-text-faint hidden sm:inline">Tuning: ${tab.tuning || 'Standard'}</span>
             </div>
             <div class="w-full bg-glass-bg rounded-full h-1 sm:h-1.5 overflow-hidden border border-glass-border">
@@ -256,7 +273,10 @@ function renderSongCard(tab, index, extraClass = '') {
 // RENDER & FILTER LIST
 // ==========================================================================
 function removeAccents(str) {
-  return str.normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase()
+  return str
+    .normalize('NFD')
+    .replace(/[\u0300-\u036f]/g, '')
+    .toLowerCase()
 }
 
 function updateGrid() {
@@ -267,15 +287,15 @@ function updateGrid() {
 
   // Lọc theo tag
   if (activeFilter === 'free') {
-    filtered = filtered.filter(s => s.is_free || s.isFree)
+    filtered = filtered.filter((s) => s.is_free || s.isFree)
   } else if (activeFilter === 'paid') {
-    filtered = filtered.filter(s => !s.is_free && !s.isFree)
+    filtered = filtered.filter((s) => !s.is_free && !s.isFree)
   }
 
   // Lọc theo search
   if (searchQuery) {
     const q = removeAccents(searchQuery)
-    filtered = filtered.filter(s => {
+    filtered = filtered.filter((s) => {
       const titleMatch = removeAccents(s.title || '').includes(q)
       const singerMatch = removeAccents(s.singer || '').includes(q)
       return titleMatch || singerMatch
@@ -309,15 +329,15 @@ function initSearchAndFilter() {
     })
   }
 
-  filterPills.forEach(pill => {
+  filterPills.forEach((pill) => {
     pill.addEventListener('click', () => {
-      filterPills.forEach(p => {
+      filterPills.forEach((p) => {
         p.classList.remove('active', 'text-text-primary')
         p.classList.add('text-text-muted')
       })
       pill.classList.add('active', 'text-text-primary')
       pill.classList.remove('text-text-muted')
-      
+
       activeFilter = pill.getAttribute('data-filter') || 'all'
       updateGrid()
     })
@@ -339,13 +359,15 @@ window.handleToggleFavorite = function handleToggleFavorite(event, songId) {
   if (event) event.stopPropagation()
   const nextState = toggleFavorite(songId)
   const btns = document.querySelectorAll(`[data-fav-btn="${songId}"]`)
-  btns.forEach(btn => {
+  btns.forEach((btn) => {
     if (nextState) {
-      btn.className = 'w-7 h-7 rounded-full flex items-center justify-center transition-all cursor-pointer shadow-sm bg-rose-500 text-white scale-105'
+      btn.className =
+        'w-7 h-7 rounded-full flex items-center justify-center transition-all cursor-pointer shadow-sm bg-rose-500 text-white scale-105'
       btn.title = 'Bỏ yêu thích'
       btn.innerHTML = `<svg class="w-3.5 h-3.5 fill-current" viewBox="0 0 24 24"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg>`
     } else {
-      btn.className = 'w-7 h-7 rounded-full flex items-center justify-center transition-all cursor-pointer shadow-sm bg-black/40 text-white/80 hover:text-white hover:bg-black/60'
+      btn.className =
+        'w-7 h-7 rounded-full flex items-center justify-center transition-all cursor-pointer shadow-sm bg-black/40 text-white/80 hover:text-white hover:bg-black/60'
       btn.title = 'Yêu thích'
       btn.innerHTML = `<svg class="w-3.5 h-3.5 fill-none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg>`
     }
@@ -355,12 +377,19 @@ window.handleToggleFavorite = function handleToggleFavorite(event, songId) {
   // Sync with Supabase favorites if logged in
   ;(async () => {
     try {
-      const { data: { session } } = await supabase.auth.getSession()
+      const {
+        data: { session },
+      } = await supabase.auth.getSession()
       if (session?.user) {
         if (nextState) {
-          await supabase.from('favorites').upsert({ user_id: session.user.id, song_id: String(songId) })
+          await supabase
+            .from('favorites')
+            .upsert({ user_id: session.user.id, song_id: String(songId) })
         } else {
-          await supabase.from('favorites').delete().match({ user_id: session.user.id, song_id: String(songId) })
+          await supabase
+            .from('favorites')
+            .delete()
+            .match({ user_id: session.user.id, song_id: String(songId) })
         }
       }
     } catch (err) {
@@ -373,13 +402,15 @@ window.handleToggleCompleted = function handleToggleCompleted(event, songId) {
   if (event) event.stopPropagation()
   const nextState = toggleCompleted(songId)
   const btns = document.querySelectorAll(`[data-comp-btn="${songId}"]`)
-  btns.forEach(btn => {
+  btns.forEach((btn) => {
     if (nextState) {
-      btn.className = 'w-7 h-7 rounded-full flex items-center justify-center transition-all cursor-pointer shadow-sm bg-emerald-500 text-white scale-105'
+      btn.className =
+        'w-7 h-7 rounded-full flex items-center justify-center transition-all cursor-pointer shadow-sm bg-emerald-500 text-white scale-105'
       btn.title = 'Đánh dấu chưa học'
       btn.innerHTML = `<svg class="w-3.5 h-3.5 fill-none" stroke="currentColor" stroke-width="3" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/></svg>`
     } else {
-      btn.className = 'w-7 h-7 rounded-full flex items-center justify-center transition-all cursor-pointer shadow-sm bg-black/40 text-white/80 hover:text-white hover:bg-black/60'
+      btn.className =
+        'w-7 h-7 rounded-full flex items-center justify-center transition-all cursor-pointer shadow-sm bg-black/40 text-white/80 hover:text-white hover:bg-black/60'
       btn.title = 'Đã học xong'
       btn.innerHTML = `<svg class="w-3.5 h-3.5 fill-none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/></svg>`
     }
@@ -407,8 +438,8 @@ export function toggleModal(modalId, show) {
       document.body.classList.add('modal-open')
     })
   } else {
-    modal.querySelectorAll('video').forEach(v => v.pause())
-    modal.querySelectorAll('audio').forEach(a => {
+    modal.querySelectorAll('video').forEach((v) => v.pause())
+    modal.querySelectorAll('audio').forEach((a) => {
       a.pause()
       a.currentTime = 0
     })
@@ -508,12 +539,14 @@ window.openImageModal = function openImageModal(src, title, caption) {
 
 window.openCheckoutModal = async function openCheckoutModal(tabId) {
   if (!allSongs || !allSongs.length) return
-  const tab = allSongs.find(t => t.id === tabId)
+  const tab = allSongs.find((t) => t.id === tabId)
   if (!tab) return
 
   // Gate Check for paid cards: MUST BE LOGGED IN
   try {
-    const { data: { session } } = await supabase.auth.getSession()
+    const {
+      data: { session },
+    } = await supabase.auth.getSession()
     if (!session || !session.user) {
       const loginBtn = document.getElementById('auth-required-login-btn')
       if (loginBtn) {
@@ -543,7 +576,8 @@ window.openCheckoutModal = async function openCheckoutModal(tabId) {
   const audioContainer = document.getElementById('checkout-modal-audio-container')
 
   if (titleEl) titleEl.textContent = tab.title
-  if (metaEl) metaEl.textContent = `Tuning: ${tab.tuning || 'Standard'} • Bản Video Tab chạy nốt đồng bộ với âm thanh đàn mộc thật và nhịp gõ`
+  if (metaEl)
+    metaEl.textContent = `Tuning: ${tab.tuning || 'Standard'} • Bản Video Tab chạy nốt đồng bộ với âm thanh đàn mộc thật và nhịp gõ`
   if (priceEl) priceEl.textContent = tab.price_formatted || tab.priceFormatted || '239.000 VNĐ'
 
   if (levelEl) levelEl.textContent = tab.level || `${tab.level_num ?? tab.levelNum ?? 5}/10`
@@ -562,7 +596,10 @@ window.openCheckoutModal = async function openCheckoutModal(tabId) {
     }
   }
 
-  const cleanSongCode = tab.title.replace(/[^a-zA-Z0-9]/g, '').toUpperCase().slice(0, 10)
+  const cleanSongCode = tab.title
+    .replace(/[^a-zA-Z0-9]/g, '')
+    .toUpperCase()
+    .slice(0, 10)
   activeCheckoutSyntax = `VIDEOTAB ${cleanSongCode}`
   if (syntaxEl) syntaxEl.textContent = activeCheckoutSyntax
 
@@ -601,7 +638,7 @@ window.openCheckoutModal = async function openCheckoutModal(tabId) {
 
 window.openFreeTabModal = function openFreeTabModal(tabId) {
   if (!allSongs || !allSongs.length) return
-  const tab = allSongs.find(t => t.id === tabId)
+  const tab = allSongs.find((t) => t.id === tabId)
   if (!tab) return
 
   const titleEl = document.getElementById('free-tab-modal-title')
@@ -629,13 +666,13 @@ window.openFreeTabModal = function openFreeTabModal(tabId) {
     { key: 'slide', label: 'Slide (Vuốt)' },
     { key: 'hammer', label: 'Hammer-on' },
     { key: 'pull', label: 'Pull-off' },
-    { key: 'harmonic', label: 'Harmonic' }
+    { key: 'harmonic', label: 'Harmonic' },
   ]
   if (techContainer) {
     const desc = (tab.description || '').toLowerCase()
     let html = ''
     let found = false
-    knownTech.forEach(tc => {
+    knownTech.forEach((tc) => {
       if (desc.includes(tc.key)) {
         html += `<span class="px-2.5 py-1 rounded-lg modal-inner-card text-text-primary text-[11px] font-semibold shadow-xs">${tc.label}</span>`
         found = true
@@ -661,7 +698,7 @@ window.openFreeTabModal = function openFreeTabModal(tabId) {
         let videoId = ''
         if (targetUrl.includes('youtu.be/')) videoId = targetUrl.split('youtu.be/')[1].split('?')[0]
         else if (targetUrl.includes('v=')) videoId = targetUrl.split('v=')[1].split('&')[0]
-        
+
         iframeEl.src = `https://www.youtube.com/embed/${videoId}`
         iframeEl.classList.remove('hidden')
         localVideoEl.classList.add('hidden')
@@ -713,11 +750,16 @@ function initModalInteractions() {
   const imageModal = document.getElementById('image-preview-modal')
   const authReqModal = document.getElementById('auth-required-modal')
 
-  if (closeCheckoutBtn) closeCheckoutBtn.addEventListener('click', () => toggleModal('checkout-modal', false))
-  if (closeFreeBtn) closeFreeBtn.addEventListener('click', () => toggleModal('free-tab-modal', false))
-  if (closeVideoDemoBtn) closeVideoDemoBtn.addEventListener('click', () => toggleModal('video-demo-modal', false))
-  if (closeImageBtn) closeImageBtn.addEventListener('click', () => toggleModal('image-preview-modal', false))
-  if (closeAuthReqBtn) closeAuthReqBtn.addEventListener('click', () => toggleModal('auth-required-modal', false))
+  if (closeCheckoutBtn)
+    closeCheckoutBtn.addEventListener('click', () => toggleModal('checkout-modal', false))
+  if (closeFreeBtn)
+    closeFreeBtn.addEventListener('click', () => toggleModal('free-tab-modal', false))
+  if (closeVideoDemoBtn)
+    closeVideoDemoBtn.addEventListener('click', () => toggleModal('video-demo-modal', false))
+  if (closeImageBtn)
+    closeImageBtn.addEventListener('click', () => toggleModal('image-preview-modal', false))
+  if (closeAuthReqBtn)
+    closeAuthReqBtn.addEventListener('click', () => toggleModal('auth-required-modal', false))
 
   window.addEventListener('click', (e) => {
     if (e.target === checkoutModal) toggleModal('checkout-modal', false)
@@ -740,11 +782,14 @@ function initModalInteractions() {
   const copySyntaxBtn = document.getElementById('copy-syntax-btn')
   if (copySyntaxBtn) {
     copySyntaxBtn.addEventListener('click', () => {
-      navigator.clipboard.writeText(activeCheckoutSyntax).then(() => {
-        showToast('Đã copy cú pháp: ' + activeCheckoutSyntax)
-      }).catch(() => {
-        showToast('Trình duyệt không hỗ trợ copy tự động!', 'error')
-      })
+      navigator.clipboard
+        .writeText(activeCheckoutSyntax)
+        .then(() => {
+          showToast('Đã copy cú pháp: ' + activeCheckoutSyntax)
+        })
+        .catch(() => {
+          showToast('Trình duyệt không hỗ trợ copy tự động!', 'error')
+        })
     })
   }
 
@@ -752,11 +797,14 @@ function initModalInteractions() {
   if (copyStkBtn) {
     copyStkBtn.addEventListener('click', () => {
       const stk = '03970202801'
-      navigator.clipboard.writeText(stk).then(() => {
-        showToast('Đã copy STK: ' + stk)
-      }).catch(() => {
-        showToast('Lỗi khi copy', 'error')
-      })
+      navigator.clipboard
+        .writeText(stk)
+        .then(() => {
+          showToast('Đã copy STK: ' + stk)
+        })
+        .catch(() => {
+          showToast('Lỗi khi copy', 'error')
+        })
     })
   }
 }

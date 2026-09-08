@@ -2,7 +2,7 @@
  * ==============================================================================
  * GUITAR BY QUANG v2 — DATA MIGRATION SCRIPT
  * ==============================================================================
- * 
+ *
  * HƯỚNG DẪN SỬ DỤNG:
  * 1. Chạy trên môi trường Node.js (Terminal): node scripts/migrate-data.js
  * 2. Điền SUPABASE_SERVICE_ROLE_KEY (khuyên dùng để bypass RLS) hoặc VITE_SUPABASE_ANON_KEY
@@ -42,14 +42,16 @@ if (!supabaseUrl || !supabaseKey) {
 }
 
 if (!process.env.SUPABASE_SERVICE_ROLE_KEY) {
-  console.warn('[CẢNH BÁO] Đang sử dụng anon key. Nếu có cấu hình RLS chặn write, vui lòng dùng SUPABASE_SERVICE_ROLE_KEY trong .env.local.')
+  console.warn(
+    '[CẢNH BÁO] Đang sử dụng anon key. Nếu có cấu hình RLS chặn write, vui lòng dùng SUPABASE_SERVICE_ROLE_KEY trong .env.local.'
+  )
 }
 
 const supabase = createClient(supabaseUrl, supabaseKey, {
   auth: {
     persistSession: false,
     autoRefreshToken: false,
-  }
+  },
 })
 
 // Chuyển camelCase sang snake_case
@@ -73,7 +75,7 @@ function convertObjectKeys(obj) {
 // Chuẩn hóa bản ghi Song
 function normalizeSong(song) {
   const converted = convertObjectKeys(song)
-  
+
   // Mapping tường minh các trường quan trọng theo thiết kế đã chốt
   const explicitMapping = {
     level_num: song.levelNum ?? converted.level_num,
@@ -104,7 +106,7 @@ function normalizeSong(song) {
 // Chuẩn hóa bản ghi Gear
 function normalizeGear(gear) {
   const converted = convertObjectKeys(gear)
-  
+
   const explicitMapping = {
     target_url: gear.targetUrl ?? converted.target_url,
     thumbnail_bg: gear.thumbnailBg ?? converted.thumbnail_bg,
@@ -146,20 +148,26 @@ async function runMigration() {
 
   if (Array.isArray(rawData)) {
     // Nếu là 1 mảng tổng hợp có phân loại type/collection
-    songsList = rawData.filter(item => item.collection === 'songs' || item.type === 'song' || item.level || item.artist)
-    gearsList = rawData.filter(item => item.collection === 'gears' || item.type === 'gear' || item.category)
+    songsList = rawData.filter(
+      (item) => item.collection === 'songs' || item.type === 'song' || item.level || item.artist
+    )
+    gearsList = rawData.filter(
+      (item) => item.collection === 'gears' || item.type === 'gear' || item.category
+    )
   } else if (typeof rawData === 'object' && rawData !== null) {
     songsList = rawData.collections?.songs || rawData.songs || rawData.tabs || []
     gearsList = rawData.collections?.gears || rawData.gears || rawData.tools || []
   }
 
-  console.log(`\n[INFO] Đã đọc từ file: ${songsList.length} bài hát (songs), ${gearsList.length} đồ nghề (gears).`)
+  console.log(
+    `\n[INFO] Đã đọc từ file: ${songsList.length} bài hát (songs), ${gearsList.length} đồ nghề (gears).`
+  )
 
   // 1. MIGRATE SONGS
   if (songsList.length > 0) {
     const normalizedSongs = songsList.map(normalizeSong)
     console.log(`\n[MIGRATE] Đang upsert ${normalizedSongs.length} bài hát vào bảng 'songs'...`)
-    
+
     const { data, error } = await supabase
       .from('songs')
       .upsert(normalizedSongs, { onConflict: 'id' })
@@ -168,7 +176,9 @@ async function runMigration() {
     if (error) {
       console.error(`[LỖI SONGS] Upsert thất bại: ${error.message}`)
     } else {
-      console.log(`[THÀNH CÔNG SONGS] Đã migrate thành công ${data ? data.length : normalizedSongs.length} bài hát.`)
+      console.log(
+        `[THÀNH CÔNG SONGS] Đã migrate thành công ${data ? data.length : normalizedSongs.length} bài hát.`
+      )
     }
   } else {
     console.log('[BỎ QUA] Không có bản ghi songs để migrate.')
@@ -178,7 +188,7 @@ async function runMigration() {
   if (gearsList.length > 0) {
     const normalizedGears = gearsList.map(normalizeGear)
     console.log(`\n[MIGRATE] Đang upsert ${normalizedGears.length} đồ nghề vào bảng 'gears'...`)
-    
+
     const { data, error } = await supabase
       .from('gears')
       .upsert(normalizedGears, { onConflict: 'id' })
@@ -187,7 +197,9 @@ async function runMigration() {
     if (error) {
       console.error(`[LỖI GEARS] Upsert thất bại: ${error.message}`)
     } else {
-      console.log(`[THÀNH CÔNG GEARS] Đã migrate thành công ${data ? data.length : normalizedGears.length} đồ nghề.`)
+      console.log(
+        `[THÀNH CÔNG GEARS] Đã migrate thành công ${data ? data.length : normalizedGears.length} đồ nghề.`
+      )
     }
   } else {
     console.log('[BỎ QUA] Không có bản ghi gears để migrate.')
@@ -196,7 +208,7 @@ async function runMigration() {
   console.log('\n=== HOÀN TẤT TIẾN TRÌNH MIGRATE DỮ LIỆU ===\n')
 }
 
-runMigration().catch(err => {
+runMigration().catch((err) => {
   console.error(`[LỖI KHÔNG MONG MUỐN] ${err.stack || err.message}`)
   process.exit(1)
 })

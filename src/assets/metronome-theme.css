@@ -6,12 +6,12 @@
 
 /* Nền tối chuyên dụng cho trang Metronome */
 body.metronome-page {
-  background-color: #1F1914;
-  color: #F7EFE6;
+  background-color: #1f1914;
+  color: #f7efe6;
 }
 
 body.metronome-page .bg-grain {
-  background-color: #1F1914;
+  background-color: #1f1914;
 }
 
 /* Card chứa app */
@@ -23,33 +23,44 @@ body.metronome-page .bg-grain {
 
 /* Beat flash visual — Đèn to phách 1 (Xanh lá Emerald) */
 #beat-flash {
-  transition: transform 70ms ease-out, background-color 70ms ease-out, box-shadow 70ms ease-out, border-color 70ms ease-out;
+  transition:
+    transform 70ms ease-out,
+    background-color 70ms ease-out,
+    box-shadow 70ms ease-out,
+    border-color 70ms ease-out;
   background: rgba(30, 24, 19, 0.9);
   border: 2px solid rgba(228, 213, 196, 0.2);
 }
 
 #beat-flash.beat-active {
   transform: scale(1.1);
-  background: #10B981;
-  border-color: #34D399;
-  box-shadow: 0 0 16px rgba(16, 185, 129, 0.5), 0 0 30px rgba(16, 185, 129, 0.25);
+  background: #10b981;
+  border-color: #34d399;
+  box-shadow:
+    0 0 16px rgba(16, 185, 129, 0.5),
+    0 0 30px rgba(16, 185, 129, 0.25);
 }
 
 #beat-flash.beat-accent {
   transform: scale(1.18);
   background: #059669;
-  border-color: #6EE7B7;
-  box-shadow: 0 0 22px rgba(16, 185, 129, 0.75), 0 0 42px rgba(16, 185, 129, 0.35);
+  border-color: #6ee7b7;
+  box-shadow:
+    0 0 22px rgba(16, 185, 129, 0.75),
+    0 0 42px rgba(16, 185, 129, 0.35);
 }
 
 /* Beat dots — Đèn nhỏ các phách (Xanh lá) */
 .beat-dot {
-  transition: background-color 60ms ease, transform 60ms ease, box-shadow 60ms ease;
+  transition:
+    background-color 60ms ease,
+    transform 60ms ease,
+    box-shadow 60ms ease;
   background-color: rgba(228, 213, 196, 0.2);
 }
 
 .beat-dot.dot-active {
-  background-color: #10B981;
+  background-color: #10b981;
   transform: scale(1.35);
   box-shadow: 0 0 10px rgba(16, 185, 129, 0.8);
 }
@@ -62,8 +73,8 @@ body.metronome-page .bg-grain {
 
 /* Play button active state */
 #play-btn.is-playing {
-  background: linear-gradient(135deg, #10B981, #059669);
-  border-color: #34D399;
+  background: linear-gradient(135deg, #10b981, #059669);
+  border-color: #34d399;
   box-shadow: 0 8px 25px rgba(16, 185, 129, 0.4);
 }
 
@@ -71,11 +82,11 @@ body.metronome-page .bg-grain {
 .time-sig-select {
   background-color: rgba(30, 24, 19, 0.85);
   border: 1px solid rgba(228, 213, 196, 0.25);
-  color: #F7EFE6;
+  color: #f7efe6;
 }
 
 .time-sig-select:focus {
-  border-color: #10B981;
+  border-color: #10b981;
   outline: none;
   box-shadow: 0 0 0 2px rgba(16, 185, 129, 0.25);
 }

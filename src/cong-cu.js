@@ -20,9 +20,9 @@ let toastTimer = null
 export function showToast(msg, type = 'success') {
   if (!toastNotification || !toastMessage) return
   if (toastTimer) clearTimeout(toastTimer)
-  
+
   const toastIcon = document.getElementById('toast-icon')
-  
+
   // Clean message: strip leading checkmarks/crosses to avoid duplication
   const cleanMsg = msg.replace(/^[✓✕❌⟳•\s]+/, '').trim()
   toastMessage.textContent = cleanMsg || msg
@@ -42,7 +42,7 @@ export function showToast(msg, type = 'success') {
       toastIcon.className = ''
     }
   }
-  
+
   toastTimer = setTimeout(() => {
     toastNotification.classList.remove('toast-visible')
   }, 4000)
@@ -54,43 +54,48 @@ const DEFAULT_GEARS = [
   {
     name: 'Đàn Guitar Enya Nova Go SP1',
     category: 'Guitar Carbon',
-    description: 'Cây đàn acoustic carbon dáng mỏng tích hợp loa hiệu ứng, action êm ái, bền bỉ với thời tiết.',
+    description:
+      'Cây đàn acoustic carbon dáng mỏng tích hợp loa hiệu ứng, action êm ái, bền bỉ với thời tiết.',
     price: '4.850.000đ',
     link: 'https://zalo.me/0326768885',
-    image: '/assets/clover.jpg'
+    image: '/assets/clover.jpg',
   },
   {
     name: 'Dây Đàn Elixir Phosphor Bronze',
     category: 'Phụ kiện',
-    description: 'Dây đàn phủ NANOWEB chống rỉ sét số 1, âm vang sáng, bấm êm tay, dùng cả năm vẫn bóng đẹp.',
+    description:
+      'Dây đàn phủ NANOWEB chống rỉ sét số 1, âm vang sáng, bấm êm tay, dùng cả năm vẫn bóng đẹp.',
     price: '380.000đ',
     link: 'https://zalo.me/0326768885',
-    image: '/assets/elixer.jpg'
+    image: '/assets/elixer.jpg',
   },
   {
     name: 'Capo Guitar G7th Performance 3',
     category: 'Phụ kiện',
-    description: 'Capo công nghệ ART tự cân chỉnh lực kẹp, không bị rè phím, giữ chuẩn cao độ mọi phím đàn.',
+    description:
+      'Capo công nghệ ART tự cân chỉnh lực kẹp, không bị rè phím, giữ chuẩn cao độ mọi phím đàn.',
     price: '850.000đ',
     link: 'https://zalo.me/0326768885',
-    image: '/assets/capo.jpg'
+    image: '/assets/capo.jpg',
   },
   {
     name: 'Micro Thu Âm AKG P120',
     category: 'Thiết bị thu âm',
-    description: 'Micro condenser thu âm tiếng mộc của thùng đàn rõ nét, bắt trọn từng tiếng gõ percussive fingerstyle.',
+    description:
+      'Micro condenser thu âm tiếng mộc của thùng đàn rõ nét, bắt trọn từng tiếng gõ percussive fingerstyle.',
     price: '2.450.000đ',
     link: 'https://zalo.me/0326768885',
-    image: '/assets/akg.jpg'
+    image: '/assets/akg.jpg',
   },
   {
     name: 'Phần mềm Guitar Pro 8',
     category: 'Phần mềm soạn tab',
-    description: 'Công cụ soạn tab và luyện tập chuẩn quốc tế, hỗ trợ phát audio track mộc thực tế và loop đoạn khó.',
+    description:
+      'Công cụ soạn tab và luyện tập chuẩn quốc tế, hỗ trợ phát audio track mộc thực tế và loop đoạn khó.',
     price: 'Bản quyền',
     link: 'https://zalo.me/0326768885',
-    image: '/assets/gp8.jpg'
-  }
+    image: '/assets/gp8.jpg',
+  },
 ]
 
 async function renderGears() {
@@ -107,22 +112,29 @@ async function renderGears() {
   const showMoreText = document.getElementById('gears-show-more-text')
   const showMoreIcon = document.getElementById('gears-show-more-icon')
 
-  gearsGrid.innerHTML = gears.map((gear, idx) => {
-    const buyUrl = gear.buy_url || gear.buyUrl || gear.link
-    const buyText = gear.buy_text || gear.buyText || 'Xem chi tiết'
-    const buyButtonHtml = buyUrl
-      ? `<a href="${buyUrl}" target="_blank" rel="noopener noreferrer" class="w-full inline-flex items-center justify-center gap-1.5 py-2 px-3 rounded-xl bg-accent-primary/10 hover:bg-warm-gradient hover:text-white text-accent-primary text-xs font-bold transition-all duration-200 group/btn shadow-xs hover:shadow-md">
+  gearsGrid.innerHTML = gears
+    .map((gear, idx) => {
+      const buyUrl = gear.buy_url || gear.buyUrl || gear.link
+      const buyText = gear.buy_text || gear.buyText || 'Xem chi tiết'
+      const buyButtonHtml = buyUrl
+        ? `<a href="${buyUrl}" target="_blank" rel="noopener noreferrer" class="w-full inline-flex items-center justify-center gap-1.5 py-2 px-3 rounded-xl bg-accent-primary/10 hover:bg-warm-gradient hover:text-white text-accent-primary text-xs font-bold transition-all duration-200 group/btn shadow-xs hover:shadow-md">
           <span>${buyText}</span>
           <svg class="w-3.5 h-3.5 transition-transform group-hover/btn:translate-x-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M14 5l7 7m0 0l-7 7m7-7H3"></path></svg>
         </a>`
-      : `<div class="w-full text-center py-1.5 text-xs font-bold text-accent-primary italic truncate">${gear.footer_text || gear.footerText ? `"${(gear.footer_text || gear.footerText).replace(/"/g, '')}"` : ''}</div>`
+        : `<div class="w-full text-center py-1.5 text-xs font-bold text-accent-primary italic truncate">${gear.footer_text || gear.footerText ? `"${(gear.footer_text || gear.footerText).replace(/"/g, '')}"` : ''}</div>`
 
-    const cleanDesc = (gear.description || '').replace(/'/g, "\\'").replace(/"/g, '&quot;')
-    const cleanTitle = (gear.title || gear.name || '').replace(/'/g, "\\'").replace(/"/g, '&quot;')
-    const imagePath = gear.image ? (gear.image.startsWith('/') ? gear.image : '/' + gear.image) : (gear.image_url || '/assets/clover.jpg')
-    const extraClass = idx >= 4 ? 'gear-card-extra hidden' : ''
+      const cleanDesc = (gear.description || '').replace(/'/g, "\\'").replace(/"/g, '&quot;')
+      const cleanTitle = (gear.title || gear.name || '')
+        .replace(/'/g, "\\'")
+        .replace(/"/g, '&quot;')
+      const imagePath = gear.image
+        ? gear.image.startsWith('/')
+          ? gear.image
+          : '/' + gear.image
+        : gear.image_url || '/assets/clover.jpg'
+      const extraClass = idx >= 4 ? 'gear-card-extra hidden' : ''
 
-    return `
+      return `
       <div class="w-full glass-card card-interactive rounded-2xl sm:rounded-3xl p-3.5 sm:p-4 shadow-sm hover:shadow-xl hover:border-accent-primary/50 border border-glass-border transition-all duration-300 flex flex-col justify-between group overflow-hidden ${extraClass}">
         <div class="space-y-2.5 sm:space-y-3">
           <!-- Khung ảnh vuông 1:1 -->
@@ -140,7 +152,8 @@ async function renderGears() {
         </div>
       </div>
     `
-  }).join('')
+    })
+    .join('')
 
   // Configure Show More Button
   if (showMoreWrap && showMoreBtn && gears.length > 4) {
@@ -153,7 +166,7 @@ async function renderGears() {
     showMoreBtn.onclick = () => {
       isExpanded = !isExpanded
       const extraCards = gearsGrid.querySelectorAll('.gear-card-extra')
-      extraCards.forEach(card => {
+      extraCards.forEach((card) => {
         if (isExpanded) {
           card.classList.remove('hidden')
           card.classList.add('animate-in', 'fade-in', 'zoom-in-95', 'duration-200')
