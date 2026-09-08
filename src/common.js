@@ -699,6 +699,139 @@ export function initMobileKeyboardScroll() {
 }
 
 /**
+ * Wires up the generic "quên mật khẩu" modal dùng chung giữa login.js và
+ * admin-login.js (trước đây 2 file gần như copy-paste y hệt nhau ~70 dòng).
+ * LUÔN hiện `successMessage` bất kể resetPasswordForEmail thành công hay lỗi
+ * — bắt buộc để chống user enumeration (CWE-204), xem CLAUDE.md.
+ */
+export function initForgotPasswordModal({
+  prefillEmailInputId,
+  redirectPath,
+  successMessage,
+  emptyEmailMessage,
+  logPrefix,
+}) {
+  const openBtn = document.getElementById('open-forgot-modal-btn')
+  const closeBtn = document.getElementById('close-forgot-modal-btn')
+  const cancelBtn = document.getElementById('cancel-forgot-btn')
+  const modal = document.getElementById('forgot-password-modal')
+  const form = document.getElementById('forgot-form')
+  const emailInput = document.getElementById('forgot-email')
+  const submitBtn = document.getElementById('forgot-submit-btn')
+  const btnText = document.getElementById('forgot-btn-text')
+  const btnSpinner = document.getElementById('forgot-btn-spinner')
+  const alertBox = document.getElementById('forgot-alert')
+  const alertText = document.getElementById('forgot-alert-text')
+  const alertIcon = document.getElementById('forgot-alert-icon')
+  const prefillInput = prefillEmailInputId ? document.getElementById(prefillEmailInputId) : null
+
+  function showAlert(message, isSuccess = false) {
+    if (!alertBox || !alertText) return
+    alertBox.classList.remove('hidden')
+    alertText.textContent = message
+
+    if (isSuccess) {
+      alertBox.className =
+        'p-3.5 rounded-2xl bg-emerald-500/15 border border-emerald-500/30 text-emerald-600 dark:text-emerald-400 text-xs font-semibold leading-relaxed flex items-center gap-2.5'
+      if (alertIcon) {
+        alertIcon.innerHTML =
+          '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>'
+        alertIcon.classList.replace('text-rose-500', 'text-emerald-500')
+      }
+    } else {
+      alertBox.className =
+        'p-3.5 rounded-2xl bg-rose-500/15 border border-rose-500/30 text-rose-600 dark:text-rose-400 text-xs font-semibold leading-relaxed flex items-center gap-2.5'
+      if (alertIcon) {
+        alertIcon.innerHTML =
+          '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>'
+        alertIcon.classList.replace('text-emerald-500', 'text-rose-500')
+      }
+    }
+  }
+
+  function hideAlert() {
+    if (alertBox) alertBox.classList.add('hidden')
+  }
+
+  function setLoading(isLoading) {
+    if (!submitBtn) return
+    submitBtn.disabled = isLoading
+    if (isLoading) {
+      submitBtn.classList.add('opacity-70', 'cursor-not-allowed')
+      if (btnText) btnText.textContent = 'Đang gửi email...'
+      if (btnSpinner) btnSpinner.classList.remove('hidden')
+    } else {
+      submitBtn.classList.remove('opacity-70', 'cursor-not-allowed')
+      if (btnText) btnText.textContent = 'Gửi Liên Kết Khôi Phục'
+      if (btnSpinner) btnSpinner.classList.add('hidden')
+    }
+  }
+
+  function openModal() {
+    if (!modal) return
+    hideAlert()
+    if (prefillInput && emailInput && prefillInput.value.trim()) {
+      emailInput.value = prefillInput.value.trim()
+    }
+    modal.classList.remove('hidden')
+  }
+
+  function closeModal() {
+    if (!modal) return
+    modal.classList.add('hidden')
+    hideAlert()
+  }
+
+  if (openBtn) openBtn.addEventListener('click', openModal)
+  if (closeBtn) closeBtn.addEventListener('click', closeModal)
+  if (cancelBtn) cancelBtn.addEventListener('click', closeModal)
+
+  if (modal) {
+    modal.addEventListener('click', (e) => {
+      if (e.target === modal) closeModal()
+    })
+  }
+
+  if (form) {
+    form.addEventListener('submit', async (e) => {
+      e.preventDefault()
+      hideAlert()
+
+      const email = emailInput?.value?.trim()
+      if (!email) {
+        return showAlert(emptyEmailMessage)
+      }
+
+      const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/
+      if (!emailRegex.test(email)) {
+        return showAlert(
+          'Gửi thất bại: Địa chỉ email không đúng định dạng hoặc sai tên email. Vui lòng kiểm tra lại.'
+        )
+      }
+
+      setLoading(true)
+
+      try {
+        // KHÔNG kiểm tra email có tồn tại/có quyền admin hay không trước khi
+        // gửi — tránh lộ thông tin (user enumeration). Luôn trả về
+        // successMessage bất kể email có tồn tại trong hệ thống hay không.
+        await supabase.auth.resetPasswordForEmail(email, {
+          redirectTo: `${window.location.origin}${redirectPath}`,
+        })
+
+        showAlert(successMessage, true)
+        if (emailInput) emailInput.value = ''
+      } catch (err) {
+        console.error(`${logPrefix} Reset password error:`, err)
+        showAlert(successMessage, true)
+      } finally {
+        setLoading(false)
+      }
+    })
+  }
+}
+
+/**
  * Universal Password Toggle Helper (with Global Event Delegation)
  */
 export function initPasswordToggles() {
