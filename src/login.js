@@ -222,9 +222,11 @@ document.addEventListener('DOMContentLoaded', () => {
 
           if (profile?.role === 'admin') {
             await supabase.auth.signOut()
-            showAlert(
-              'Tài khoản không tồn tại. Vui lòng kiểm tra lại email hoặc đăng ký tài khoản mới.'
-            )
+            // Dùng chung message với nhánh sai mật khẩu (không phải message
+            // riêng như "tài khoản không tồn tại") — để không tạo tín hiệu
+            // phân biệt giữa 2 trường hợp, tránh lộ danh tính admin nếu
+            // mật khẩu admin từng bị lộ và ai đó thử đăng nhập ở cổng member.
+            showAlert('Sai email hoặc mật khẩu. Vui lòng kiểm tra lại.')
             setLoading(false)
             return
           }
