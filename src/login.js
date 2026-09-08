@@ -1,5 +1,6 @@
 import { supabase } from './lib/supabase.js'
 import { initThemeToggle } from './theme-toggle.js'
+import { initForgotPasswordModal } from './common.js'
 
 document.addEventListener('DOMContentLoaded', () => {
   initThemeToggle()
@@ -17,19 +18,14 @@ document.addEventListener('DOMContentLoaded', () => {
   const alertText = document.getElementById('login-alert-text')
   const alertIcon = document.getElementById('login-alert-icon')
 
-  // Forgot Password Elements
-  const openForgotBtn = document.getElementById('open-forgot-modal-btn')
-  const closeForgotBtn = document.getElementById('close-forgot-modal-btn')
-  const cancelForgotBtn = document.getElementById('cancel-forgot-btn')
-  const forgotModal = document.getElementById('forgot-password-modal')
-  const forgotForm = document.getElementById('forgot-form')
-  const forgotEmailInput = document.getElementById('forgot-email')
-  const forgotSubmitBtn = document.getElementById('forgot-submit-btn')
-  const forgotBtnText = document.getElementById('forgot-btn-text')
-  const forgotBtnSpinner = document.getElementById('forgot-btn-spinner')
-  const forgotAlert = document.getElementById('forgot-alert')
-  const forgotAlertText = document.getElementById('forgot-alert-text')
-  const forgotAlertIcon = document.getElementById('forgot-alert-icon')
+  initForgotPasswordModal({
+    prefillEmailInputId: 'login-email',
+    redirectPath: '/reset-password.html',
+    successMessage:
+      'Nếu email này tồn tại trong hệ thống, một liên kết khôi phục mật khẩu đã được gửi tới hộp thư. Vui lòng kiểm tra email (kể cả mục Spam).',
+    emptyEmailMessage: 'Vui lòng nhập địa chỉ email của bạn.',
+    logPrefix: '[login]',
+  })
 
   function showAlert(message, isSuccess = false) {
     if (!alertBox || !alertText) return
@@ -57,123 +53,6 @@ document.addEventListener('DOMContentLoaded', () => {
 
   function hideAlert() {
     if (alertBox) alertBox.classList.add('hidden')
-  }
-
-  function showForgotAlert(message, isSuccess = false) {
-    if (!forgotAlert || !forgotAlertText) return
-    forgotAlert.classList.remove('hidden')
-    forgotAlertText.textContent = message
-
-    if (isSuccess) {
-      forgotAlert.className =
-        'p-3.5 rounded-2xl bg-emerald-500/15 border border-emerald-500/30 text-emerald-600 dark:text-emerald-400 text-xs font-semibold leading-relaxed flex items-center gap-2.5'
-      if (forgotAlertIcon) {
-        forgotAlertIcon.innerHTML =
-          '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>'
-        forgotAlertIcon.classList.replace('text-rose-500', 'text-emerald-500')
-      }
-    } else {
-      forgotAlert.className =
-        'p-3.5 rounded-2xl bg-rose-500/15 border border-rose-500/30 text-rose-600 dark:text-rose-400 text-xs font-semibold leading-relaxed flex items-center gap-2.5'
-      if (forgotAlertIcon) {
-        forgotAlertIcon.innerHTML =
-          '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>'
-        forgotAlertIcon.classList.replace('text-emerald-500', 'text-rose-500')
-      }
-    }
-  }
-
-  function hideForgotAlert() {
-    if (forgotAlert) forgotAlert.classList.add('hidden')
-  }
-
-  function setForgotLoading(isLoading) {
-    if (!forgotSubmitBtn) return
-    forgotSubmitBtn.disabled = isLoading
-    if (isLoading) {
-      forgotSubmitBtn.classList.add('opacity-70', 'cursor-not-allowed')
-      if (forgotBtnText) forgotBtnText.textContent = 'Đang gửi email...'
-      if (forgotBtnSpinner) forgotBtnSpinner.classList.remove('hidden')
-    } else {
-      forgotSubmitBtn.classList.remove('opacity-70', 'cursor-not-allowed')
-      if (forgotBtnText) forgotBtnText.textContent = 'Gửi Liên Kết Khôi Phục'
-      if (forgotBtnSpinner) forgotBtnSpinner.classList.add('hidden')
-    }
-  }
-
-  function openForgotModal() {
-    if (!forgotModal) return
-    hideForgotAlert()
-    if (emailInput && forgotEmailInput && emailInput.value.trim()) {
-      forgotEmailInput.value = emailInput.value.trim()
-    }
-    forgotModal.classList.remove('hidden')
-  }
-
-  function closeForgotModal() {
-    if (!forgotModal) return
-    forgotModal.classList.add('hidden')
-    hideForgotAlert()
-  }
-
-  if (openForgotBtn) openForgotBtn.addEventListener('click', openForgotModal)
-  if (closeForgotBtn) closeForgotBtn.addEventListener('click', closeForgotModal)
-  if (cancelForgotBtn) cancelForgotBtn.addEventListener('click', closeForgotModal)
-
-  if (forgotModal) {
-    forgotModal.addEventListener('click', (e) => {
-      if (e.target === forgotModal) closeForgotModal()
-    })
-  }
-
-  // Forgot Form Submit
-  if (forgotForm) {
-    forgotForm.addEventListener('submit', async (e) => {
-      e.preventDefault()
-      hideForgotAlert()
-
-      const email = forgotEmailInput?.value?.trim()
-      if (!email) {
-        return showForgotAlert('Vui lòng nhập địa chỉ email của bạn.')
-      }
-
-      // Kiểm tra định dạng email chuẩn
-      const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/
-      if (!emailRegex.test(email)) {
-        return showForgotAlert(
-          'Gửi thất bại: Địa chỉ email không đúng định dạng hoặc sai tên email. Vui lòng kiểm tra lại.'
-        )
-      }
-
-      setForgotLoading(true)
-
-      try {
-        // Gửi yêu cầu reset password qua Supabase Auth
-        // KHÔNG kiểm tra email có tồn tại hay không trước khi gửi —
-        // tránh lộ thông tin (user enumeration). Luôn trả về thông báo chung
-        // chung bất kể email có tồn tại trong hệ thống hay không.
-        const redirectTo = `${window.location.origin}/reset-password.html`
-
-        await supabase.auth.resetPasswordForEmail(email, {
-          redirectTo,
-        })
-
-        showForgotAlert(
-          'Nếu email này tồn tại trong hệ thống, một liên kết khôi phục mật khẩu đã được gửi tới hộp thư. Vui lòng kiểm tra email (kể cả mục Spam).',
-          true
-        )
-
-        if (forgotEmailInput) forgotEmailInput.value = ''
-      } catch (err) {
-        console.error('[login] Reset password error:', err)
-        showForgotAlert(
-          'Nếu email này tồn tại trong hệ thống, một liên kết khôi phục mật khẩu đã được gửi tới hộp thư. Vui lòng kiểm tra email (kể cả mục Spam).',
-          true
-        )
-      } finally {
-        setForgotLoading(false)
-      }
-    })
   }
 
   function setLoading(isLoading) {

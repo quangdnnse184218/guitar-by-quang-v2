@@ -1,7 +1,11 @@
 /**
- * Test cho bất biến bảo mật ở cổng admin (admin-login.js): message ở flow
- * "quên mật khẩu quản trị" phải giống hệt nhau dù email có tồn tại hay có
- * quyền admin hay không (chống user/admin enumeration — CWE-204).
+ * Test cho bất biến bảo mật ở cổng admin (admin-login.js): tài khoản hợp lệ
+ * nhưng không có quyền admin phải bị từ chối và đăng xuất.
+ *
+ * Flow "quên mật khẩu quản trị" được test riêng ở
+ * tests/forgot-password-modal.test.js vì logic đó nằm chung trong
+ * initForgotPasswordModal (src/common.js), dùng lại cho cả login.js và
+ * admin-login.js — ở đây chỉ mock nó làm no-op.
  */
 import { beforeEach, describe, expect, it, vi } from 'vitest'
 
@@ -9,7 +13,6 @@ const mockSupabase = {
   auth: {
     signInWithPassword: vi.fn(),
     signOut: vi.fn().mockResolvedValue({ error: null }),
-    resetPasswordForEmail: vi.fn(),
     getSession: vi.fn().mockResolvedValue({ data: { session: null } }),
   },
   from: vi.fn(),
@@ -17,7 +20,10 @@ const mockSupabase = {
 
 vi.mock('../src/lib/supabase.js', () => ({ supabase: mockSupabase }))
 vi.mock('../src/theme-toggle.js', () => ({ initThemeToggle: vi.fn() }))
-vi.mock('../src/common.js', () => ({ initPasswordToggles: vi.fn() }))
+vi.mock('../src/common.js', () => ({
+  initPasswordToggles: vi.fn(),
+  initForgotPasswordModal: vi.fn(),
+}))
 
 function mockProfileRole(role) {
   mockSupabase.from.mockReturnValue({
@@ -37,19 +43,6 @@ function renderAdminLoginPage() {
       <button id="login-submit-btn"><span id="btn-text"></span><span id="btn-spinner" class="hidden"></span></button>
     </form>
     <div id="login-error" class="hidden"><span id="login-error-text"></span></div>
-    <button id="open-forgot-modal-btn"></button>
-    <button id="close-forgot-modal-btn"></button>
-    <button id="cancel-forgot-btn"></button>
-    <div id="forgot-password-modal" class="hidden">
-      <form id="forgot-form">
-        <input id="forgot-email" />
-        <button id="forgot-submit-btn"><span id="forgot-btn-text"></span><span id="forgot-btn-spinner" class="hidden"></span></button>
-      </form>
-      <div id="forgot-alert" class="hidden">
-        <svg id="forgot-alert-icon"></svg>
-        <span id="forgot-alert-text"></span>
-      </div>
-    </div>
   `
 }
 
@@ -68,34 +61,6 @@ beforeEach(() => {
   vi.clearAllMocks()
   mockSupabase.auth.signOut.mockResolvedValue({ error: null })
   mockSupabase.auth.getSession.mockResolvedValue({ data: { session: null } })
-})
-
-describe('admin-login.js — forgot password (chống user/admin enumeration)', () => {
-  it('hiện message thành công chung chung khi resetPasswordForEmail thành công', async () => {
-    mockSupabase.auth.resetPasswordForEmail.mockResolvedValue({ data: {}, error: null })
-    await loadAdminLoginModule()
-
-    document.getElementById('forgot-email').value = 'admin@example.com'
-    document.getElementById('forgot-form').dispatchEvent(new Event('submit', { cancelable: true }))
-    await flushPromises()
-
-    expect(document.getElementById('forgot-alert-text').textContent).toBe(
-      'Nếu email này tồn tại trong hệ thống và có quyền Quản trị viên, một liên kết khôi phục mật khẩu đã được gửi tới hộp thư. Vui lòng kiểm tra email (kể cả mục Spam).'
-    )
-  })
-
-  it('hiện ĐÚNG message y hệt khi resetPasswordForEmail lỗi (kể cả rate-limit không được lộ ra ngoài)', async () => {
-    mockSupabase.auth.resetPasswordForEmail.mockRejectedValue(new Error('rate limit exceeded'))
-    await loadAdminLoginModule()
-
-    document.getElementById('forgot-email').value = 'not-an-admin@example.com'
-    document.getElementById('forgot-form').dispatchEvent(new Event('submit', { cancelable: true }))
-    await flushPromises()
-
-    expect(document.getElementById('forgot-alert-text').textContent).toBe(
-      'Nếu email này tồn tại trong hệ thống và có quyền Quản trị viên, một liên kết khôi phục mật khẩu đã được gửi tới hộp thư. Vui lòng kiểm tra email (kể cả mục Spam).'
-    )
-  })
 })
 
 describe('admin-login.js — chặn tài khoản không phải admin', () => {
