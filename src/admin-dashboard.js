@@ -7,12 +7,32 @@
 import { supabase } from './lib/supabase.js'
 import { initThemeToggle } from './theme-toggle.js'
 import { initPasswordToggles } from './common.js'
-import { fetchAllSongs, saveSong, removeSong, reorderAllSongs, extractYoutubeId, normalizeVideoPath, normalizeAudioPath } from './lib/songs-service.js'
-import { fetchAllGears, DEFAULT_GEARS, saveGear, removeGear, reorderAllGears, normalizeImagePath } from './lib/gears-service.js'
+import {
+  fetchAllSongs,
+  saveSong,
+  removeSong,
+  reorderAllSongs,
+  extractYoutubeId,
+  normalizeVideoPath,
+  normalizeAudioPath,
+} from './lib/songs-service.js'
+import {
+  fetchAllGears,
+  DEFAULT_GEARS,
+  saveGear,
+  removeGear,
+  reorderAllGears,
+  normalizeImagePath,
+} from './lib/gears-service.js'
 
 // If redirected here with a recovery token, immediately move to admin-reset-password.html
-if (window.location.hash.includes('type=recovery') || window.location.search.includes('type=recovery')) {
-  window.location.replace('/admin-reset-password.html' + (window.location.hash || window.location.search))
+if (
+  window.location.hash.includes('type=recovery') ||
+  window.location.search.includes('type=recovery')
+) {
+  window.location.replace(
+    '/admin-reset-password.html' + (window.location.hash || window.location.search)
+  )
 }
 
 initThemeToggle()
@@ -103,7 +123,9 @@ const changePasswordForm = document.getElementById('change-password-form')
 const adminNewPassword = document.getElementById('admin-new-password')
 const adminConfirmPassword = document.getElementById('admin-confirm-password')
 const toggleNewPasswordVisibility = document.getElementById('toggle-new-password-visibility')
-const toggleConfirmPasswordVisibility = document.getElementById('toggle-confirm-password-visibility')
+const toggleConfirmPasswordVisibility = document.getElementById(
+  'toggle-confirm-password-visibility'
+)
 const changePwdError = document.getElementById('change-pwd-error')
 const changePwdErrorText = document.getElementById('change-pwd-error-text')
 const savePasswordBtn = document.getElementById('save-password-btn')
@@ -133,9 +155,9 @@ function escapeHtml(str) {
 export function showToast(msg, type = 'success') {
   if (!toastNotification || !toastMessage) return
   if (toastTimer) clearTimeout(toastTimer)
-  
+
   const toastIcon = document.getElementById('toast-icon')
-  
+
   // Clean message: strip leading checkmarks/crosses to avoid duplication
   const cleanMsg = msg.replace(/^[✓✕❌⟳•\s]+/, '').trim()
   toastMessage.textContent = cleanMsg || msg
@@ -155,7 +177,7 @@ export function showToast(msg, type = 'success') {
       toastIcon.className = ''
     }
   }
-  
+
   toastTimer = setTimeout(() => {
     toastNotification.classList.remove('toast-visible')
   }, 4000)
@@ -194,7 +216,9 @@ function toggleModal(modalEl, show = true) {
 
 async function checkAuth() {
   try {
-    const { data: { session } } = await supabase.auth.getSession()
+    const {
+      data: { session },
+    } = await supabase.auth.getSession()
     if (!session || !session.user) {
       window.location.replace('/admin-login.html')
       return false
@@ -241,9 +265,9 @@ function updateStats() {
   if (!songsList) return
 
   const total = songsList.length
-  const free = songsList.filter(s => s.is_free ?? s.isFree).length
+  const free = songsList.filter((s) => s.is_free ?? s.isFree).length
   const paid = total - free
-  const featured = songsList.filter(s => s.is_featured ?? s.isFeatured).length
+  const featured = songsList.filter((s) => s.is_featured ?? s.isFeatured).length
 
   if (statTotalSongs) statTotalSongs.textContent = total
   if (statFreeSongs) statFreeSongs.textContent = free
@@ -259,23 +283,26 @@ function renderSongsTable() {
   // Filter Search
   if (songSearchQuery.trim()) {
     const q = songSearchQuery.toLowerCase().trim()
-    filtered = filtered.filter(s => 
-      (s.title && s.title.toLowerCase().includes(q)) ||
-      (s.singer && s.singer.toLowerCase().includes(q)) ||
-      (s.category && s.category.toLowerCase().includes(q))
+    filtered = filtered.filter(
+      (s) =>
+        (s.title && s.title.toLowerCase().includes(q)) ||
+        (s.singer && s.singer.toLowerCase().includes(q)) ||
+        (s.category && s.category.toLowerCase().includes(q))
     )
   }
 
   // Filter Category
   if (songCategoryFilter !== 'all') {
-    filtered = filtered.filter(s => (s.category || 'Fingerstyle').toLowerCase() === songCategoryFilter.toLowerCase())
+    filtered = filtered.filter(
+      (s) => (s.category || 'Fingerstyle').toLowerCase() === songCategoryFilter.toLowerCase()
+    )
   }
 
   // Filter Type (Free / Paid)
   if (songTypeFilter === 'free') {
-    filtered = filtered.filter(s => s.is_free ?? s.isFree)
+    filtered = filtered.filter((s) => s.is_free ?? s.isFree)
   } else if (songTypeFilter === 'paid') {
-    filtered = filtered.filter(s => !(s.is_free ?? s.isFree))
+    filtered = filtered.filter((s) => !(s.is_free ?? s.isFree))
   }
 
   if (filtered.length === 0) {
@@ -289,19 +316,22 @@ function renderSongsTable() {
     return
   }
 
-  adminSongsTbody.innerHTML = filtered.map((song, idx) => {
-    const isFree = song.is_free ?? song.isFree ?? false
-    const isFeatured = song.is_featured ?? song.isFeatured ?? false
-    const level = song.level_num ?? song.levelNum ?? 5
-    const priceDisplay = isFree ? 'FREE' : formatCompactPrice(song.price_formatted || song.priceFormatted || song.price)
-    const priceText = isFree 
-      ? '<span class="px-2.5 py-1 rounded-full badge-semantic-success font-bold font-mono text-xs">FREE</span>' 
-      : `<span class="font-mono tabular-nums font-bold text-rose-600 dark:text-rose-400 text-xs">${priceDisplay}</span>`
-    const currentOrder = song.order || (idx + 1)
-    const isFirst = idx === 0
-    const isLast = idx === filtered.length - 1
+  adminSongsTbody.innerHTML = filtered
+    .map((song, idx) => {
+      const isFree = song.is_free ?? song.isFree ?? false
+      const isFeatured = song.is_featured ?? song.isFeatured ?? false
+      const level = song.level_num ?? song.levelNum ?? 5
+      const priceDisplay = isFree
+        ? 'FREE'
+        : formatCompactPrice(song.price_formatted || song.priceFormatted || song.price)
+      const priceText = isFree
+        ? '<span class="px-2.5 py-1 rounded-full badge-semantic-success font-bold font-mono text-xs">FREE</span>'
+        : `<span class="font-mono tabular-nums font-bold text-rose-600 dark:text-rose-400 text-xs">${priceDisplay}</span>`
+      const currentOrder = song.order || idx + 1
+      const isFirst = idx === 0
+      const isLast = idx === filtered.length - 1
 
-    return `
+      return `
       <tr class="hover:bg-black/5 dark:hover:bg-white/5 transition-colors admin-song-card-row" data-id="${song.id}">
         <!-- Vị Trí & Di Chuyển -->
         <td data-label="Vị Trí & Thứ Tự" class="py-3 px-3 text-center song-col-order">
@@ -371,14 +401,15 @@ function renderSongsTable() {
         </td>
       </tr>
     `
-  }).join('')
+    })
+    .join('')
 }
 
 // ==========================================================================
 // SONG POSITION & REORDER HANDLERS
 // ==========================================================================
 
-window.handleSaveSongPosition = async function(songId) {
+window.handleSaveSongPosition = async function (songId) {
   const input = document.getElementById(`order-input-song-${songId}`)
   if (!input) return
 
@@ -386,7 +417,7 @@ window.handleSaveSongPosition = async function(songId) {
   if (isNaN(targetPos) || targetPos < 1) targetPos = 1
   if (targetPos > songsList.length) targetPos = songsList.length
 
-  const currentIdx = songsList.findIndex(s => String(s.id) === String(songId))
+  const currentIdx = songsList.findIndex((s) => String(s.id) === String(songId))
   if (currentIdx === -1) return
 
   if (targetPos === currentIdx + 1) {
@@ -399,21 +430,24 @@ window.handleSaveSongPosition = async function(songId) {
   const [movedSong] = list.splice(currentIdx, 1)
   list.splice(targetPos - 1, 0, movedSong)
 
-  const orderedIds = list.map(s => s.id)
+  const orderedIds = list.map((s) => s.id)
   showToast('Đang cập nhật vị trí...', 'info')
-  
+
   const res = await reorderAllSongs(orderedIds)
 
   if (res.success) {
-    showToast(`✓ Đã di chuyển "${movedSong.title}" về vị trí số ${targetPos}! Các bài khác đã tự động dời.`, 'success')
+    showToast(
+      `✓ Đã di chuyển "${movedSong.title}" về vị trí số ${targetPos}! Các bài khác đã tự động dời.`,
+      'success'
+    )
     await loadSongs()
   } else {
     showToast(`❌ Lỗi khi lưu vị trí: ${res.error}`, 'error')
   }
 }
 
-window.handleMoveSong = async function(songId, direction) {
-  const currentIdx = songsList.findIndex(s => String(s.id) === String(songId))
+window.handleMoveSong = async function (songId, direction) {
+  const currentIdx = songsList.findIndex((s) => String(s.id) === String(songId))
   if (currentIdx === -1) return
 
   const targetIdx = direction === 'up' ? currentIdx - 1 : currentIdx + 1
@@ -423,18 +457,21 @@ window.handleMoveSong = async function(songId, direction) {
   const [movedSong] = list.splice(currentIdx, 1)
   list.splice(targetIdx, 0, movedSong)
 
-  const orderedIds = list.map(s => s.id)
+  const orderedIds = list.map((s) => s.id)
   const res = await reorderAllSongs(orderedIds)
 
   if (res.success) {
-    showToast(`✓ Đã di chuyển "${movedSong.title}" ${direction === 'up' ? 'lên' : 'xuống'} vị trí ${targetIdx + 1}!`, 'success')
+    showToast(
+      `✓ Đã di chuyển "${movedSong.title}" ${direction === 'up' ? 'lên' : 'xuống'} vị trí ${targetIdx + 1}!`,
+      'success'
+    )
     await loadSongs()
   } else {
     showToast(`❌ Lỗi khi di chuyển bài hát: ${res.error}`, 'error')
   }
 }
 
-window.setSongModalType = function(type) {
+window.setSongModalType = function (type) {
   const typeInput = document.getElementById('song-type')
   const freeBtn = document.getElementById('tab-btn-free')
   const paidBtn = document.getElementById('tab-btn-paid')
@@ -445,31 +482,35 @@ window.setSongModalType = function(type) {
 
   if (type === 'free') {
     if (freeBtn) {
-      freeBtn.className = 'py-2.5 px-3 rounded-xl font-bold text-xs sm:text-sm flex items-center justify-center gap-2 transition-all cursor-pointer bg-emerald-600 text-white shadow-xs'
+      freeBtn.className =
+        'py-2.5 px-3 rounded-xl font-bold text-xs sm:text-sm flex items-center justify-center gap-2 transition-all cursor-pointer bg-emerald-600 text-white shadow-xs'
     }
     if (paidBtn) {
-      paidBtn.className = 'py-2.5 px-3 rounded-xl font-bold text-xs sm:text-sm flex items-center justify-center gap-2 transition-all cursor-pointer text-text-muted hover:text-text-primary'
+      paidBtn.className =
+        'py-2.5 px-3 rounded-xl font-bold text-xs sm:text-sm flex items-center justify-center gap-2 transition-all cursor-pointer text-text-muted hover:text-text-primary'
     }
     freeFields?.classList.remove('hidden')
     paidFields?.classList.add('hidden')
   } else {
     if (paidBtn) {
-      paidBtn.className = 'py-2.5 px-3 rounded-xl font-bold text-xs sm:text-sm flex items-center justify-center gap-2 transition-all cursor-pointer bg-rose-600 text-white shadow-xs'
+      paidBtn.className =
+        'py-2.5 px-3 rounded-xl font-bold text-xs sm:text-sm flex items-center justify-center gap-2 transition-all cursor-pointer bg-rose-600 text-white shadow-xs'
     }
     if (freeBtn) {
-      freeBtn.className = 'py-2.5 px-3 rounded-xl font-bold text-xs sm:text-sm flex items-center justify-center gap-2 transition-all cursor-pointer text-text-muted hover:text-text-primary'
+      freeBtn.className =
+        'py-2.5 px-3 rounded-xl font-bold text-xs sm:text-sm flex items-center justify-center gap-2 transition-all cursor-pointer text-text-muted hover:text-text-primary'
     }
     freeFields?.classList.add('hidden')
     paidFields?.classList.remove('hidden')
   }
 }
 
-window.openAddSongModal = function(type = 'free') {
+window.openAddSongModal = function (type = 'free') {
   if (!songForm) return
   songForm.reset()
   document.getElementById('song-id').value = ''
   window.setSongModalType(type)
-  
+
   if (type === 'free') {
     document.getElementById('song-level').value = '5'
     document.getElementById('song-tuning').value = 'Standard'
@@ -508,38 +549,57 @@ export function formatCompactPrice(val) {
   return str
 }
 
-window.editSong = function(id) {
-  const song = songsList.find(s => String(s.id) === String(id))
+window.editSong = function (id) {
+  const song = songsList.find((s) => String(s.id) === String(id))
   if (!song) return
 
-  const isSongFree = Boolean(song.is_free ?? song.isFree ?? (Number(song.price) === 0))
+  const isSongFree = Boolean(song.is_free ?? song.isFree ?? Number(song.price) === 0)
   const songType = isSongFree ? 'free' : 'paid'
 
   document.getElementById('song-id').value = song.id
   document.getElementById('song-title').value = song.title || ''
   document.getElementById('song-singer').value = song.singer || ''
   document.getElementById('song-category').value = song.category || 'Nhạc Việt'
-  document.getElementById('song-level').value = song.level_num ?? song.levelNum ?? (isSongFree ? 5 : 8)
+  document.getElementById('song-level').value =
+    song.level_num ?? song.levelNum ?? (isSongFree ? 5 : 8)
   document.getElementById('song-tuning').value = song.tuning || 'Standard'
   document.getElementById('song-capo').value = song.capo ?? (isSongFree ? 0 : 1)
   document.getElementById('song-duration').value = song.duration || (isSongFree ? '03:15' : '03:40')
   document.getElementById('song-description').value = song.description || ''
-  document.getElementById('song-thumbnail-bg').value = song.thumbnail_bg || song.thumbnailBg || (isSongFree ? 'from-[#D8C4AC] to-[#647A6C]' : 'from-[#C1602F] to-[#6E3B1F]')
+  document.getElementById('song-thumbnail-bg').value =
+    song.thumbnail_bg ||
+    song.thumbnailBg ||
+    (isSongFree ? 'from-[#D8C4AC] to-[#647A6C]' : 'from-[#C1602F] to-[#6E3B1F]')
   document.getElementById('song-is-featured').checked = Boolean(song.is_featured ?? song.isFeatured)
 
   const audioDemoVal = song.audio_demo || song.demo_audio_url || song.audio_url || ''
 
   if (isSongFree) {
-    const rawTarget = song.target_url || song.tab_url || (song.youtube_id?.length === 11 ? `https://youtu.be/${song.youtube_id}` : song.youtube_id) || song.video_demo || ''
+    const rawTarget =
+      song.target_url ||
+      song.tab_url ||
+      (song.youtube_id?.length === 11 ? `https://youtu.be/${song.youtube_id}` : song.youtube_id) ||
+      song.video_demo ||
+      ''
     document.getElementById('song-free-target-url').value = rawTarget
     document.getElementById('song-free-audio-url').value = audioDemoVal
     document.getElementById('song-free-pdf-url').value = song.pdf_url || song.pdfUrl || ''
   } else {
-    document.getElementById('song-paid-price').value = song.price_formatted || song.priceFormatted || (song.price ? formatCompactPrice(song.price) : '239k')
-    document.getElementById('song-paid-discount').value = song.discount_note || song.discountNote || 'HSSV: 179k'
-    document.getElementById('song-paid-demo-url').value = song.demo_video_url || song.video_demo || song.videoDemo || (song.youtube_id?.length === 11 ? `https://youtu.be/${song.youtube_id}` : song.youtube_id) || ''
+    document.getElementById('song-paid-price').value =
+      song.price_formatted ||
+      song.priceFormatted ||
+      (song.price ? formatCompactPrice(song.price) : '239k')
+    document.getElementById('song-paid-discount').value =
+      song.discount_note || song.discountNote || 'HSSV: 179k'
+    document.getElementById('song-paid-demo-url').value =
+      song.demo_video_url ||
+      song.video_demo ||
+      song.videoDemo ||
+      (song.youtube_id?.length === 11 ? `https://youtu.be/${song.youtube_id}` : song.youtube_id) ||
+      ''
     document.getElementById('song-paid-audio-url').value = audioDemoVal
-    document.getElementById('song-paid-drive-url').value = song.tab_url || song.target_url || song.targetUrl || song.tabUrl || ''
+    document.getElementById('song-paid-drive-url').value =
+      song.tab_url || song.target_url || song.targetUrl || song.tabUrl || ''
   }
 
   window.setSongModalType(songType)
@@ -550,7 +610,7 @@ window.editSong = function(id) {
   toggleModal(songModal, true)
 }
 
-window.deleteSong = async function(id, title) {
+window.deleteSong = async function (id, title) {
   if (!confirm(`Bạn có chắc chắn muốn xóa bài hát "${title}"? Thao tác này không thể hoàn tác.`)) {
     return
   }
@@ -586,8 +646,11 @@ if (songForm) {
     const levelVal = Number(document.getElementById('song-level').value) || (isFree ? 5 : 8)
     const tuningVal = document.getElementById('song-tuning').value.trim() || 'Standard'
     const capoVal = String(document.getElementById('song-capo').value ?? (isFree ? '0' : '1'))
-    const durationVal = document.getElementById('song-duration').value.trim() || (isFree ? '03:15' : '03:40')
-    const thumbnailBgVal = document.getElementById('song-thumbnail-bg').value || (isFree ? 'from-[#D8C4AC] to-[#647A6C]' : 'from-[#C1602F] to-[#6E3B1F]')
+    const durationVal =
+      document.getElementById('song-duration').value.trim() || (isFree ? '03:15' : '03:40')
+    const thumbnailBgVal =
+      document.getElementById('song-thumbnail-bg').value ||
+      (isFree ? 'from-[#D8C4AC] to-[#647A6C]' : 'from-[#C1602F] to-[#6E3B1F]')
     const descriptionVal = document.getElementById('song-description').value.trim()
     const isFeatured = document.getElementById('song-is-featured').checked
 
@@ -601,7 +664,9 @@ if (songForm) {
       const ytId = freeTargetUrl ? extractYoutubeId(freeTargetUrl) : null
       const cleanTarget = freeTargetUrl ? normalizeVideoPath(freeTargetUrl) : ''
       const cleanAudio = freeAudioUrl ? normalizeAudioPath(freeAudioUrl) : ''
-      const hasDemo = Boolean(ytId || (cleanTarget && cleanTarget.toLowerCase().includes('.mp4')) || cleanAudio)
+      const hasDemo = Boolean(
+        ytId || (cleanTarget && cleanTarget.toLowerCase().includes('.mp4')) || cleanAudio
+      )
 
       payload = {
         title: titleVal,
@@ -612,7 +677,11 @@ if (songForm) {
         tuning: tuningVal,
         capo: capoVal,
         duration: durationVal,
-        description: descriptionVal || (singerVal ? `Ca sĩ / Tác giả: ${singerVal}. Bản tab miễn phí kèm video/audio hướng dẫn từ Guitar By Quang.` : 'Bản tab guitar fingerstyle miễn phí kèm hướng dẫn.'),
+        description:
+          descriptionVal ||
+          (singerVal
+            ? `Ca sĩ / Tác giả: ${singerVal}. Bản tab miễn phí kèm video/audio hướng dẫn từ Guitar By Quang.`
+            : 'Bản tab guitar fingerstyle miễn phí kèm hướng dẫn.'),
         is_free: true,
         price: 0,
         price_formatted: 'Miễn phí',
@@ -631,14 +700,15 @@ if (songForm) {
         thumbnail_bg: thumbnailBgVal,
         button_type: 'link',
         button_text: 'Link xem tab',
-        is_featured: isFeatured
+        is_featured: isFeatured,
       }
     } else {
       const priceRaw = document.getElementById('song-paid-price').value.trim() || '239k'
       const priceFormatted = formatCompactPrice(priceRaw)
       const numericPrice = Number(priceRaw.replace(/[^0-9]/g, '')) || 239000
       const priceVal = numericPrice < 1000 && numericPrice > 0 ? numericPrice * 1000 : numericPrice
-      const discountNoteVal = document.getElementById('song-paid-discount').value.trim() || 'HSSV: 179k'
+      const discountNoteVal =
+        document.getElementById('song-paid-discount').value.trim() || 'HSSV: 179k'
       const demoUrlVal = document.getElementById('song-paid-demo-url').value.trim()
       const paidAudioUrl = document.getElementById('song-paid-audio-url').value.trim()
       const driveUrlVal = document.getElementById('song-paid-drive-url').value.trim()
@@ -647,7 +717,14 @@ if (songForm) {
       const cleanDemo = demoUrlVal ? normalizeVideoPath(demoUrlVal) : ''
       const cleanAudio = paidAudioUrl ? normalizeAudioPath(paidAudioUrl) : ''
       const cleanDrive = driveUrlVal ? driveUrlVal.trim() : ''
-      const hasDemo = Boolean(ytId || (cleanDemo && (cleanDemo.toLowerCase().includes('.mp4') || cleanDemo.startsWith('http') || cleanDemo.startsWith('/'))) || cleanAudio)
+      const hasDemo = Boolean(
+        ytId ||
+        (cleanDemo &&
+          (cleanDemo.toLowerCase().includes('.mp4') ||
+            cleanDemo.startsWith('http') ||
+            cleanDemo.startsWith('/'))) ||
+        cleanAudio
+      )
 
       payload = {
         title: titleVal,
@@ -658,7 +735,11 @@ if (songForm) {
         tuning: tuningVal,
         capo: capoVal,
         duration: durationVal,
-        description: descriptionVal || (singerVal ? `Ca sĩ / Tác giả: ${singerVal}. Fingerstyle nâng cao kèm video chi tiết.` : 'Bản Video Tab độc quyền chất lượng cao từ Guitar By Quang.'),
+        description:
+          descriptionVal ||
+          (singerVal
+            ? `Ca sĩ / Tác giả: ${singerVal}. Fingerstyle nâng cao kèm video chi tiết.`
+            : 'Bản Video Tab độc quyền chất lượng cao từ Guitar By Quang.'),
         is_free: false,
         price: priceVal,
         price_formatted: priceFormatted,
@@ -677,20 +758,28 @@ if (songForm) {
         thumbnail_bg: thumbnailBgVal,
         button_type: 'buy',
         button_text: 'Mua Video Tab',
-        is_featured: isFeatured
+        is_featured: isFeatured,
       }
     }
 
     try {
       showToast('Đang lưu bài hát...', 'info')
       const res = await saveSong(payload, isEdit, songId)
-      
+
       if (res.success) {
-        showToast(isEdit ? `✓ Đã cập nhật thành công bài hát: "${titleVal}"!` : `✓ Đã thêm bài hát mới thành công: "${titleVal}"!`, 'success')
+        showToast(
+          isEdit
+            ? `✓ Đã cập nhật thành công bài hát: "${titleVal}"!`
+            : `✓ Đã thêm bài hát mới thành công: "${titleVal}"!`,
+          'success'
+        )
         toggleModal(songModal, false)
         await loadSongs()
       } else {
-        showToast(`❌ Lưu thất bại: ${res.error || res.warning || 'Không thể lưu bài hát vào Supabase'}`, 'error')
+        showToast(
+          `❌ Lưu thất bại: ${res.error || res.warning || 'Không thể lưu bài hát vào Supabase'}`,
+          'error'
+        )
       }
     } catch (err) {
       showToast(`❌ Lỗi khi lưu bài hát: ${err.message}`, 'error')
@@ -721,17 +810,18 @@ function renderGearsTable() {
     return
   }
 
-  adminGearsTbody.innerHTML = gearsList.map((gear, idx) => {
-    const currentOrder = gear.order || (idx + 1)
-    const isFirst = idx === 0
-    const isLast = idx === gearsList.length - 1
-    const name = gear.name || gear.title || 'Món đồ nghề'
-    const image = gear.image_url || gear.image || '/assets/avatar.jpg'
-    const category = gear.category || 'Phụ kiện'
-    const price = gear.footer_text || gear.price || 'Liên hệ'
-    const description = gear.description || 'Chưa có mô tả'
+  adminGearsTbody.innerHTML = gearsList
+    .map((gear, idx) => {
+      const currentOrder = gear.order || idx + 1
+      const isFirst = idx === 0
+      const isLast = idx === gearsList.length - 1
+      const name = gear.name || gear.title || 'Món đồ nghề'
+      const image = gear.image_url || gear.image || '/assets/avatar.jpg'
+      const category = gear.category || 'Phụ kiện'
+      const price = gear.footer_text || gear.price || 'Liên hệ'
+      const description = gear.description || 'Chưa có mô tả'
 
-    return `
+      return `
       <tr class="hover:bg-black/5 dark:hover:bg-white/5 transition-colors admin-gear-card-row" data-id="${gear.id}">
         <!-- Vị Trí & Di Chuyển -->
         <td data-label="Vị Trí" class="py-3 px-3 text-center gear-col-order">
@@ -798,14 +888,15 @@ function renderGearsTable() {
         </td>
       </tr>
     `
-  }).join('')
+    })
+    .join('')
 }
 
 // ==========================================================================
 // GEAR POSITION & REORDER HANDLERS
 // ==========================================================================
 
-window.handleSaveGearPosition = async function(gearId) {
+window.handleSaveGearPosition = async function (gearId) {
   const input = document.getElementById(`order-input-gear-${gearId}`)
   if (!input) return
 
@@ -813,7 +904,7 @@ window.handleSaveGearPosition = async function(gearId) {
   if (isNaN(targetPos) || targetPos < 1) targetPos = 1
   if (targetPos > gearsList.length) targetPos = gearsList.length
 
-  const currentIdx = gearsList.findIndex(g => String(g.id) === String(gearId))
+  const currentIdx = gearsList.findIndex((g) => String(g.id) === String(gearId))
   if (currentIdx === -1) return
 
   if (targetPos === currentIdx + 1) {
@@ -826,22 +917,25 @@ window.handleSaveGearPosition = async function(gearId) {
   const [movedGear] = list.splice(currentIdx, 1)
   list.splice(targetPos - 1, 0, movedGear)
 
-  const orderedIds = list.map(g => g.id)
+  const orderedIds = list.map((g) => g.id)
   showToast('Đang cập nhật vị trí...', 'info')
-  
+
   const res = await reorderAllGears(orderedIds)
 
   if (res.success) {
     const gearTitle = movedGear.name || movedGear.title
-    showToast(`✓ Đã di chuyển "${gearTitle}" về vị trí số ${targetPos}! Các món khác đã tự động dời.`, 'success')
+    showToast(
+      `✓ Đã di chuyển "${gearTitle}" về vị trí số ${targetPos}! Các món khác đã tự động dời.`,
+      'success'
+    )
     await loadGears()
   } else {
     showToast(`❌ Lỗi khi lưu vị trí gear: ${res.error}`, 'error')
   }
 }
 
-window.handleMoveGear = async function(gearId, direction) {
-  const currentIdx = gearsList.findIndex(g => String(g.id) === String(gearId))
+window.handleMoveGear = async function (gearId, direction) {
+  const currentIdx = gearsList.findIndex((g) => String(g.id) === String(gearId))
   if (currentIdx === -1) return
 
   const targetIdx = direction === 'up' ? currentIdx - 1 : currentIdx + 1
@@ -851,19 +945,22 @@ window.handleMoveGear = async function(gearId, direction) {
   const [movedGear] = list.splice(currentIdx, 1)
   list.splice(targetIdx, 0, movedGear)
 
-  const orderedIds = list.map(g => g.id)
+  const orderedIds = list.map((g) => g.id)
   const res = await reorderAllGears(orderedIds)
 
   if (res.success) {
     const gearTitle = movedGear.name || movedGear.title
-    showToast(`✓ Đã di chuyển "${gearTitle}" ${direction === 'up' ? 'lên' : 'xuống'} vị trí ${targetIdx + 1}!`, 'success')
+    showToast(
+      `✓ Đã di chuyển "${gearTitle}" ${direction === 'up' ? 'lên' : 'xuống'} vị trí ${targetIdx + 1}!`,
+      'success'
+    )
     await loadGears()
   } else {
     showToast(`❌ Lỗi khi di chuyển gear: ${res.error}`, 'error')
   }
 }
 
-window.openAddGearModal = function() {
+window.openAddGearModal = function () {
   if (!gearForm) return
   gearForm.reset()
   document.getElementById('gear-id').value = ''
@@ -871,23 +968,26 @@ window.openAddGearModal = function() {
   toggleModal(gearModal, true)
 }
 
-window.editGear = function(id) {
-  const gear = gearsList.find(g => String(g.id) === String(id))
+window.editGear = function (id) {
+  const gear = gearsList.find((g) => String(g.id) === String(id))
   if (!gear) return
 
   document.getElementById('gear-id').value = gear.id
   document.getElementById('gear-name').value = gear.name || gear.title || ''
   document.getElementById('gear-category').value = gear.category || 'Phụ kiện'
-  document.getElementById('gear-price').value = gear.footer_text || gear.price || gear.footerText || ''
+  document.getElementById('gear-price').value =
+    gear.footer_text || gear.price || gear.footerText || ''
   document.getElementById('gear-description').value = gear.description || ''
   document.getElementById('gear-link').value = gear.buy_url || gear.link || gear.buyUrl || ''
-  document.getElementById('gear-image').value = normalizeImagePath(gear.image || gear.image_url || '')
+  document.getElementById('gear-image').value = normalizeImagePath(
+    gear.image || gear.image_url || ''
+  )
 
   if (gearModalTitle) gearModalTitle.textContent = `Sửa Gear: ${gear.name || gear.title}`
   toggleModal(gearModal, true)
 }
 
-window.deleteGear = async function(id, name) {
+window.deleteGear = async function (id, name) {
   if (!confirm(`Bạn có chắc chắn muốn xóa gear "${name}"?`)) {
     return
   }
@@ -927,7 +1027,7 @@ if (gearForm) {
       link: document.getElementById('gear-link').value.trim() || '',
       image: cleanImage,
       image_url: cleanImage,
-      buy_text: 'Mua ngay'
+      buy_text: 'Mua ngay',
     }
 
     try {
@@ -935,7 +1035,10 @@ if (gearForm) {
       const res = await saveGear(payload, isEdit, gearId)
 
       if (res.success) {
-        showToast(isEdit ? `✓ Đã cập nhật gear: "${nameVal}"!` : `✓ Đã thêm gear mới: "${nameVal}"!`, 'success')
+        showToast(
+          isEdit ? `✓ Đã cập nhật gear: "${nameVal}"!` : `✓ Đã thêm gear mới: "${nameVal}"!`,
+          'success'
+        )
         toggleModal(gearModal, false)
         await loadGears()
       } else {
@@ -946,7 +1049,6 @@ if (gearForm) {
     }
   })
 }
-
 
 // ==========================================================================
 // USERS & ACCESS GRANT (ORDERS) LOGIC
@@ -974,10 +1076,11 @@ function renderUsersTable() {
   // Filter Search Query
   const q = userSearchQuery.toLowerCase().trim()
   if (q) {
-    filtered = filtered.filter(u => 
-      (u.full_name && u.full_name.toLowerCase().includes(q)) ||
-      (u.email && u.email.toLowerCase().includes(q)) ||
-      (u.id && u.id.toLowerCase().includes(q))
+    filtered = filtered.filter(
+      (u) =>
+        (u.full_name && u.full_name.toLowerCase().includes(q)) ||
+        (u.email && u.email.toLowerCase().includes(q)) ||
+        (u.id && u.id.toLowerCase().includes(q))
     )
   }
 
@@ -997,22 +1100,24 @@ function renderUsersTable() {
     return
   }
 
-  filtered.forEach(u => {
+  filtered.forEach((u) => {
     const isSelf = currentAdminId && u.id === currentAdminId
     const isVip = u.purchases_count > 0 || u.role === 'admin'
-    const roleBadge = u.role === 'admin' 
-      ? `<span class="px-2 py-0.5 rounded-md bg-rose-500/15 text-rose-600 dark:text-rose-400 text-[10px] font-black uppercase tracking-wider border border-rose-500/30">ADMIN</span>`
-      : (isVip ? `<span class="px-2 py-0.5 rounded-full bg-amber-500/20 text-amber-600 dark:text-amber-300 text-[10px] font-bold border border-amber-500/30 shadow-glow">VIP Member</span>`
-               : `<span class="px-2 py-0.5 rounded-full bg-black/5 dark:bg-white/5 border border-glass-border text-text-muted text-[10px] font-medium">Free</span>`)
-    
+    const roleBadge =
+      u.role === 'admin'
+        ? `<span class="px-2 py-0.5 rounded-md bg-rose-500/15 text-rose-600 dark:text-rose-400 text-[10px] font-black uppercase tracking-wider border border-rose-500/30">ADMIN</span>`
+        : isVip
+          ? `<span class="px-2 py-0.5 rounded-full bg-amber-500/20 text-amber-600 dark:text-amber-300 text-[10px] font-bold border border-amber-500/30 shadow-glow">VIP Member</span>`
+          : `<span class="px-2 py-0.5 rounded-full bg-black/5 dark:bg-white/5 border border-glass-border text-text-muted text-[10px] font-medium">Free</span>`
+
     // Short UUID format: a1b2c3d4...9f8e
     const uuidStr = String(u.id || '')
-    const shortUuid = uuidStr.length > 12 
-      ? `${uuidStr.slice(0, 8)}...${uuidStr.slice(-4)}`
-      : uuidStr
+    const shortUuid =
+      uuidStr.length > 12 ? `${uuidStr.slice(0, 8)}...${uuidStr.slice(-4)}` : uuidStr
 
     const tr = document.createElement('tr')
-    tr.className = 'hover:bg-black/5 dark:hover:bg-white/5 transition-colors border-b border-glass-border/50 last:border-0 admin-user-card-row'
+    tr.className =
+      'hover:bg-black/5 dark:hover:bg-white/5 transition-colors border-b border-glass-border/50 last:border-0 admin-user-card-row'
     tr.innerHTML = `
       <td data-label="Thành viên" class="p-3 sm:p-4 user-col-profile">
         <div class="flex items-center gap-3 w-full">
@@ -1072,11 +1177,12 @@ function renderUsersTable() {
           <button onclick="selectUserForGrant('${escapeHtml(uuidStr)}')" class="flex-1 sm:flex-initial py-1.5 px-3 rounded-lg sm:rounded-xl bg-warm-gradient hover:brightness-105 text-white text-xs font-bold transition-all shadow-xs text-center cursor-pointer active:scale-95" title="Cấp quyền tab cho user này">
             Cấp quyền
           </button>
-          ${isSelf 
-            ? `<button disabled class="p-2 rounded-lg sm:rounded-xl bg-black/5 dark:bg-white/5 text-text-muted opacity-30 cursor-not-allowed" title="Không thể xoá tài khoản của chính mình">
+          ${
+            isSelf
+              ? `<button disabled class="p-2 rounded-lg sm:rounded-xl bg-black/5 dark:bg-white/5 text-text-muted opacity-30 cursor-not-allowed" title="Không thể xoá tài khoản của chính mình">
                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg>
                </button>`
-            : `<button onclick="confirmDeleteUser('${escapeHtml(uuidStr)}', '${escapeHtml(u.full_name || 'Khách')}', '${escapeHtml(u.email || '')}')" class="p-2 rounded-lg sm:rounded-xl bg-rose-500/10 border border-rose-500/20 hover:bg-rose-500/20 text-rose-600 transition-all cursor-pointer active:scale-95" title="Xoá vĩnh viễn tài khoản">
+              : `<button onclick="confirmDeleteUser('${escapeHtml(uuidStr)}', '${escapeHtml(u.full_name || 'Khách')}', '${escapeHtml(u.email || '')}')" class="p-2 rounded-lg sm:rounded-xl bg-rose-500/10 border border-rose-500/20 hover:bg-rose-500/20 text-rose-600 transition-all cursor-pointer active:scale-95" title="Xoá vĩnh viễn tài khoản">
                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/></svg>
                </button>`
           }
@@ -1087,12 +1193,12 @@ function renderUsersTable() {
   })
 }
 
-window.copyUserId = function(id) {
+window.copyUserId = function (id) {
   navigator.clipboard.writeText(id)
   showToast('✓ Đã copy toàn bộ UUID: ' + id, 'success')
 }
 
-window.selectUserForGrant = function(id) {
+window.selectUserForGrant = function (id) {
   switchTab('grant')
   if (grantUserIdInput) {
     grantUserIdInput.value = id
@@ -1101,7 +1207,7 @@ window.selectUserForGrant = function(id) {
   showToast('✓ Đã nạp UUID vào form cấp quyền!', 'info')
 }
 
-window.confirmDeleteUser = async function(id, name, email) {
+window.confirmDeleteUser = async function (id, name, email) {
   const msg = `⚠️ BẠN ĐANG THỰC HIỆN XOÁ TRIỆT ĐỂ USER:\n- Tên: ${name}\n- Email: ${email || 'Chưa có'}\n- UUID: ${id}\n\nHành động này sẽ xoá tài khoản khỏi hệ thống và xoá sạch lịch sử tab đã mua, yêu thích. Bấm OK để xác nhận xoá!`
   if (!confirm(msg)) return
 
@@ -1118,14 +1224,14 @@ window.confirmDeleteUser = async function(id, name, email) {
 
 // Populate Grant Dropdown & Paid Songs Grid
 function renderPaidSongs() {
-  const paidSongs = songsList.filter(s => !s.is_free)
-  
+  const paidSongs = songsList.filter((s) => !s.is_free)
+
   if (statPaidSongsCount) statPaidSongsCount.textContent = `${paidSongs.length} bài`
 
   // Select dropdown
   if (grantSongSelect) {
     grantSongSelect.innerHTML = '<option value="">-- Chọn bài hát cần cấp quyền --</option>'
-    paidSongs.forEach(s => {
+    paidSongs.forEach((s) => {
       const opt = document.createElement('option')
       opt.value = s.id
       opt.textContent = `${s.title}${s.singer ? ' - ' + s.singer : ''} (${s.price || 'Có phí'})`
@@ -1141,9 +1247,10 @@ function renderPaidSongs() {
       return
     }
 
-    paidSongs.forEach(s => {
+    paidSongs.forEach((s) => {
       const div = document.createElement('div')
-      div.className = 'p-3 rounded-2xl bg-black/5 dark:bg-white/5 border border-glass-border flex items-center justify-between gap-2 hover:border-accent-primary/40 transition-colors'
+      div.className =
+        'p-3 rounded-2xl bg-black/5 dark:bg-white/5 border border-glass-border flex items-center justify-between gap-2 hover:border-accent-primary/40 transition-colors'
       div.innerHTML = `
         <div class="min-w-0">
           <h4 class="text-xs font-bold text-text-primary truncate">${escapeHtml(s.title || 'Không tên')}</h4>
@@ -1158,7 +1265,7 @@ function renderPaidSongs() {
   }
 }
 
-window.quickSelectSongForGrant = function(songId) {
+window.quickSelectSongForGrant = function (songId) {
   if (grantSongSelect) {
     grantSongSelect.value = songId
   }
@@ -1193,9 +1300,10 @@ function renderRecentGrants() {
     return
   }
 
-  recentGrantsList.forEach(r => {
+  recentGrantsList.forEach((r) => {
     const tr = document.createElement('tr')
-    tr.className = 'hover:bg-black/5 dark:hover:bg-white/5 transition-colors border-b border-glass-border/40 last:border-0'
+    tr.className =
+      'hover:bg-black/5 dark:hover:bg-white/5 transition-colors border-b border-glass-border/40 last:border-0'
     tr.innerHTML = `
       <td data-label="Thành viên" class="p-3">
         <div class="font-bold text-text-primary text-right sm:text-left">${escapeHtml(r.user_name || 'Học viên')}</div>
@@ -1233,18 +1341,15 @@ if (grantAccessForm) {
     try {
       const { data, error } = await supabase.rpc('admin_grant_access', {
         p_user_id: userId,
-        p_song_id: songId
+        p_song_id: songId,
       })
       if (error) throw error
 
       showToast('✓ Đã cấp quyền xem Tab thành công!', 'success')
       grantUserIdInput.value = ''
-      
+
       // Reload both lists
-      await Promise.all([
-        loadUsers(),
-        loadRecentGrants()
-      ])
+      await Promise.all([loadUsers(), loadRecentGrants()])
     } catch (err) {
       console.error(err)
       showToast('❌ ' + (err.message || 'Lỗi khi cấp quyền'), 'error')
@@ -1295,17 +1400,18 @@ async function initDashboard() {
   // Tab Switcher Helper
   function switchTab(tabId) {
     activeTab = tabId
-    
+
     // Default inactive and active classes supporting 2x2 grid on mobile and flex on desktop
-    const baseClass = 'px-3 sm:px-4 py-2.5 sm:py-2 rounded-xl text-xs font-bold transition-all cursor-pointer flex items-center justify-center gap-1.5 text-center'
+    const baseClass =
+      'px-3 sm:px-4 py-2.5 sm:py-2 rounded-xl text-xs font-bold transition-all cursor-pointer flex items-center justify-center gap-1.5 text-center'
     const inactiveClass = `${baseClass} text-text-muted hover:text-text-primary`
     const activeClass = `${baseClass} bg-warm-gradient text-white shadow-xs`
-    
+
     if (tabNavSongs) tabNavSongs.className = tabId === 'songs' ? activeClass : inactiveClass
     if (tabNavGears) tabNavGears.className = tabId === 'gears' ? activeClass : inactiveClass
     if (tabNavUsers) tabNavUsers.className = tabId === 'users' ? activeClass : inactiveClass
     if (tabNavGrant) tabNavGrant.className = tabId === 'grant' ? activeClass : inactiveClass
-    
+
     if (sectionSongs) sectionSongs.classList.toggle('hidden', tabId !== 'songs')
     if (sectionGears) sectionGears.classList.toggle('hidden', tabId !== 'gears')
     if (sectionUsers) sectionUsers.classList.toggle('hidden', tabId !== 'users')
@@ -1333,10 +1439,13 @@ async function initDashboard() {
 
   // Close Modals
   if (closeSongModal) closeSongModal.addEventListener('click', () => toggleModal(songModal, false))
-  if (cancelSongModalBtn) cancelSongModalBtn.addEventListener('click', () => toggleModal(songModal, false))
+  if (cancelSongModalBtn)
+    cancelSongModalBtn.addEventListener('click', () => toggleModal(songModal, false))
   if (closeGearModal) closeGearModal.addEventListener('click', () => toggleModal(gearModal, false))
-  if (cancelGearModalBtn) cancelGearModalBtn.addEventListener('click', () => toggleModal(gearModal, false))
-  if (closeCodesModal) closeCodesModal.addEventListener('click', () => toggleModal(codesModal, false))
+  if (cancelGearModalBtn)
+    cancelGearModalBtn.addEventListener('click', () => toggleModal(gearModal, false))
+  if (closeCodesModal)
+    closeCodesModal.addEventListener('click', () => toggleModal(codesModal, false))
 
   // Filter Listeners
   if (adminSearchSongs) {
@@ -1373,7 +1482,7 @@ async function initDashboard() {
     if (changePwdError) changePwdError.classList.add('hidden')
   }
 
-  window.openChangePasswordModal = function() {
+  window.openChangePasswordModal = function () {
     hideChangePwdError()
     if (adminNewPassword) {
       adminNewPassword.value = ''
@@ -1392,7 +1501,9 @@ async function initDashboard() {
   }
 
   if (closeChangePasswordModal) {
-    closeChangePasswordModal.addEventListener('click', () => toggleModal(changePasswordModal, false))
+    closeChangePasswordModal.addEventListener('click', () =>
+      toggleModal(changePasswordModal, false)
+    )
   }
 
   if (cancelChangePasswordBtn) {
@@ -1423,7 +1534,7 @@ async function initDashboard() {
 
       try {
         const { data, error } = await supabase.auth.updateUser({
-          password: newPwd
+          password: newPwd,
         })
 
         if (error) {

@@ -17,7 +17,8 @@ export const DEFAULT_SONGS = [
     tuning: 'Standard',
     capo: 0,
     duration: '04:15',
-    description: 'Bài này xài hợp âm chặn vừa phải, đi bass nhịp 4/4 mộc mạc. Anh em chú ý lực ngón tay trái để tiếng đàn ngân tròn trịa.',
+    description:
+      'Bài này xài hợp âm chặn vừa phải, đi bass nhịp 4/4 mộc mạc. Anh em chú ý lực ngón tay trái để tiếng đàn ngân tròn trịa.',
     has_demo: false,
     hasDemo: false,
     button_type: 'link',
@@ -25,7 +26,7 @@ export const DEFAULT_SONGS = [
     tab_url: 'https://youtu.be/NPWSiVFlPf0?si=ZDdTXuL7mZbhnhv2',
     button_text: 'Link xem tab',
     thumbnail_bg: 'from-[#D8C4AC] to-[#647A6C]',
-    order: 1
+    order: 1,
   },
   {
     id: 'tab-1',
@@ -45,7 +46,8 @@ export const DEFAULT_SONGS = [
     tuning: 'Standard',
     capo: 1,
     duration: '03:40',
-    description: 'Fingerstyle nâng cao: nhiều đoạn hammer-on/pull-off tốc độ cao, thế tay dãn rộng và có slap kết hợp tỉa nốt. Anh em nên luyện chậm từng ô nhịp.',
+    description:
+      'Fingerstyle nâng cao: nhiều đoạn hammer-on/pull-off tốc độ cao, thế tay dãn rộng và có slap kết hợp tỉa nốt. Anh em nên luyện chậm từng ô nhịp.',
     has_demo: true,
     hasDemo: true,
     video_demo: 'assets/resg1ctkdemo.mp4',
@@ -55,7 +57,7 @@ export const DEFAULT_SONGS = [
     thumbnail_bg: 'from-[#C1602F] to-[#6E3B1F]',
     target_url: '',
     tab_url: '',
-    order: 2
+    order: 2,
   },
   {
     id: 'tab-8',
@@ -73,7 +75,8 @@ export const DEFAULT_SONGS = [
     tuning: 'Standard',
     capo: 0,
     duration: '04:05',
-    description: 'Tuyến bassline chạy liên tục, đòi hỏi tay trái bấm chắc và giữ nhịp chuẩn để không bị hụt nốt khi chuyển hợp âm.',
+    description:
+      'Tuyến bassline chạy liên tục, đòi hỏi tay trái bấm chắc và giữ nhịp chuẩn để không bị hụt nốt khi chuyển hợp âm.',
     has_demo: false,
     hasDemo: false,
     button_type: 'link',
@@ -81,7 +84,7 @@ export const DEFAULT_SONGS = [
     tab_url: 'https://youtu.be/z28fkDnirKY?si=eLIvQpSSoxCZQaWr',
     button_text: 'Link xem tab',
     thumbnail_bg: 'from-[#C9AE92] to-[#8C6E8A]',
-    order: 3
+    order: 3,
   },
   {
     id: 'tab-2',
@@ -99,7 +102,8 @@ export const DEFAULT_SONGS = [
     tuning: 'Standard',
     capo: 0,
     duration: '03:15',
-    description: 'Ballad cơ bản: đi bass theo nhịp 4/4 kết hợp rải ngón dây 1-2-3 đơn giản. Rất hợp cho anh em mới bắt đầu làm quen với fingerstyle.',
+    description:
+      'Ballad cơ bản: đi bass theo nhịp 4/4 kết hợp rải ngón dây 1-2-3 đơn giản. Rất hợp cho anh em mới bắt đầu làm quen với fingerstyle.',
     has_demo: true,
     hasDemo: true,
     video_demo: 'assets/noigiolendemo.mp4',
@@ -109,7 +113,7 @@ export const DEFAULT_SONGS = [
     tab_url: 'https://www.tiktok.com/@quangdnn104/video/7627688728240147732',
     button_text: 'Tải video tab',
     thumbnail_bg: 'from-[#CBB79E] to-[#7E9885]',
-    order: 4
+    order: 4,
   },
   {
     id: 'tab-3',
@@ -127,7 +131,8 @@ export const DEFAULT_SONGS = [
     tuning: 'Standard',
     capo: 0,
     duration: '01:15',
-    description: 'Đoạn intro kinh điển: chú ý các nốt slide (vuốt dây) liền mạch và kỹ thuật let-ring để giữ hợp âm ngân vang đều tay.',
+    description:
+      'Đoạn intro kinh điển: chú ý các nốt slide (vuốt dây) liền mạch và kỹ thuật let-ring để giữ hợp âm ngân vang đều tay.',
     has_demo: true,
     hasDemo: true,
     video_demo: 'assets/thangtudemo.mp4',
@@ -137,7 +142,7 @@ export const DEFAULT_SONGS = [
     tab_url: 'https://www.tiktok.com/@quangdnn104/video/7625293561130405141',
     button_text: 'Tải video tab (Miễn phí)',
     thumbnail_bg: 'from-[#D9C3A0] to-[#8C6E8A]',
-    order: 5
+    order: 5,
   },
   {
     id: 'tab-4',
@@ -155,7 +160,8 @@ export const DEFAULT_SONGS = [
     tuning: 'Standard',
     capo: 0,
     duration: '03:50',
-    description: 'Vòng hợp âm quen thuộc, không có thế bấm khó. Bài này chủ yếu giữ đều nhịp rải và đổi hợp âm dứt khoát.',
+    description:
+      'Vòng hợp âm quen thuộc, không có thế bấm khó. Bài này chủ yếu giữ đều nhịp rải và đổi hợp âm dứt khoát.',
     has_demo: false,
     hasDemo: false,
     button_type: 'link',
@@ -163,7 +169,7 @@ export const DEFAULT_SONGS = [
     tab_url: 'https://youtu.be/z9jFiANmQTs?si=3N703CQfBFtX7Dx9',
     button_text: 'Link xem tab',
     thumbnail_bg: 'from-[#C7B49C] to-[#6B5844]',
-    order: 6
+    order: 6,
   },
   {
     id: 'tab-5',
@@ -181,7 +187,8 @@ export const DEFAULT_SONGS = [
     tuning: 'Standard',
     capo: 0,
     duration: '03:35',
-    description: 'Tiết tấu nhanh: kết hợp slap ngón cái (bass thumb) vào phách 2 và 4 để tạo nhịp gõ thùng, đoạn điệp khúc solo nốt liền tay.',
+    description:
+      'Tiết tấu nhanh: kết hợp slap ngón cái (bass thumb) vào phách 2 và 4 để tạo nhịp gõ thùng, đoạn điệp khúc solo nốt liền tay.',
     has_demo: false,
     hasDemo: false,
     button_type: 'link',
@@ -189,7 +196,7 @@ export const DEFAULT_SONGS = [
     tab_url: 'https://youtu.be/4MQ4mfm5mDs?si=y0Wm8PhRbTjh1qrF',
     button_text: 'Link xem tab',
     thumbnail_bg: 'from-[#D6BE9E] to-[#7E9885]',
-    order: 7
+    order: 7,
   },
   {
     id: 'tab-6',
@@ -207,7 +214,8 @@ export const DEFAULT_SONGS = [
     tuning: 'Standard',
     capo: 0,
     duration: '03:40',
-    description: 'Nhiều đoạn chuyển thế bấm chặn (barre chord) liên tục ở phím cao. Cần giữ lực ngón trỏ tốt để nốt không bị tịt tiếng.',
+    description:
+      'Nhiều đoạn chuyển thế bấm chặn (barre chord) liên tục ở phím cao. Cần giữ lực ngón trỏ tốt để nốt không bị tịt tiếng.',
     has_demo: false,
     hasDemo: false,
     button_type: 'link',
@@ -215,7 +223,7 @@ export const DEFAULT_SONGS = [
     tab_url: 'https://youtu.be/4pHsZuNtcZo?si=3XrQIwyXBBvhFCmO',
     button_text: 'Link xem tab',
     thumbnail_bg: 'from-[#BFA88E] to-[#5F4C3B]',
-    order: 8
+    order: 8,
   },
   {
     id: 'tab-7',
@@ -233,7 +241,8 @@ export const DEFAULT_SONGS = [
     tuning: 'Standard',
     capo: 0,
     duration: '03:30',
-    description: 'Mẫu rải arpeggio lặp lại liên tục với tốc độ đều. Anh em tập trung thả lỏng cổ tay phải để chuỗi nốt chạy thật mượt.',
+    description:
+      'Mẫu rải arpeggio lặp lại liên tục với tốc độ đều. Anh em tập trung thả lỏng cổ tay phải để chuỗi nốt chạy thật mượt.',
     has_demo: false,
     hasDemo: false,
     button_type: 'link',
@@ -241,7 +250,7 @@ export const DEFAULT_SONGS = [
     tab_url: 'https://youtu.be/83pXGn1t-94?si=a9GVYFPvRSRJBqyE',
     button_text: 'Link xem tab',
     thumbnail_bg: 'from-[#E0C9A6] to-[#CE9145]',
-    order: 9
+    order: 9,
   },
   {
     id: 'tab-10',
@@ -259,7 +268,8 @@ export const DEFAULT_SONGS = [
     tuning: 'Standard',
     capo: 0,
     duration: '03:10',
-    description: 'Giai điệu vui tươi, nhịp điệu rộn rã. Chú ý các câu tỉa solo nốt luyến láy và các nhịp ngắt tiếng (staccato) dứt khoát.',
+    description:
+      'Giai điệu vui tươi, nhịp điệu rộn rã. Chú ý các câu tỉa solo nốt luyến láy và các nhịp ngắt tiếng (staccato) dứt khoát.',
     has_demo: false,
     hasDemo: false,
     button_type: 'link',
@@ -267,8 +277,8 @@ export const DEFAULT_SONGS = [
     tab_url: 'https://youtu.be/It3GVRIy3gs?si=KlPfcyWcCoHcQ6sp',
     button_text: 'Link xem tab',
     thumbnail_bg: 'from-[#C4AC93] to-[#6B5844]',
-    order: 10
-  }
+    order: 10,
+  },
 ]
 
 function getSongOverrides() {
@@ -291,15 +301,22 @@ export function setSongOverride(songId, overrides) {
 function enrichSongsWithOverrides(songs) {
   if (!Array.isArray(songs)) return songs
   const overrides = getSongOverrides()
-  return songs.map(s => {
+  return songs.map((s) => {
     const ov = overrides[s.id] || {}
-    const audioDemo = ov.audio_demo || ov.demo_audio_url || ov.audio_url || s.audio_demo || s.demo_audio_url || s.audio_url || null
+    const audioDemo =
+      ov.audio_demo ||
+      ov.demo_audio_url ||
+      ov.audio_url ||
+      s.audio_demo ||
+      s.demo_audio_url ||
+      s.audio_url ||
+      null
     return {
       ...s,
       ...ov,
       audio_demo: audioDemo,
       demo_audio_url: audioDemo,
-      audio_url: audioDemo
+      audio_url: audioDemo,
     }
   })
 }
@@ -338,12 +355,12 @@ export async function fetchFeaturedSongs() {
       .select('*')
       .order('order', { ascending: true })
       .limit(4)
-      
+
     if (error || !data || data.length === 0) {
       const fallback = getLocalSongs()
       return fallback.slice(0, 4)
     }
-    
+
     return enrichSongsWithOverrides(data)
   } catch (err) {
     console.error('[songs-service] Ngoại lệ khi tải bài hát nổi bật:', err.message, err)
@@ -361,11 +378,11 @@ export async function fetchAllSongs() {
       .from('songs')
       .select('*')
       .order('order', { ascending: true })
-      
+
     if (error || !data || data.length === 0) {
       return getLocalSongs()
     }
-    
+
     const enriched = enrichSongsWithOverrides(data)
     setLocalSongs(enriched)
     return enriched
@@ -380,27 +397,23 @@ export async function fetchAllSongs() {
  */
 export async function fetchSongById(id) {
   try {
-    const { data, error } = await supabase
-      .from('songs')
-      .select('*')
-      .eq('id', id)
-      .single()
-      
+    const { data, error } = await supabase.from('songs').select('*').eq('id', id).single()
+
     if (error || !data) {
       const all = getLocalSongs()
-      return all.find(s => String(s.id) === String(id)) || null
+      return all.find((s) => String(s.id) === String(id)) || null
     }
-    
+
     const overrides = getSongOverrides()
     const ov = overrides[data.id] || {}
     return {
       ...data,
-      ...ov
+      ...ov,
     }
   } catch (err) {
     console.error(`[songs-service] Ngoại lệ khi tải bài hát ${id}:`, err.message, err)
     const all = getLocalSongs()
-    return all.find(s => String(s.id) === String(id)) || null
+    return all.find((s) => String(s.id) === String(id)) || null
   }
 }
 
@@ -408,7 +421,7 @@ export function extractYoutubeId(urlOrId) {
   if (!urlOrId || typeof urlOrId !== 'string') return ''
   const trimmed = urlOrId.trim()
   if (/^[a-zA-Z0-9_-]{11}$/.test(trimmed)) return trimmed
-  
+
   const matchBe = trimmed.match(/youtu\.be\/([a-zA-Z0-9_-]{11})/)
   if (matchBe) return matchBe[1]
 
@@ -426,14 +439,21 @@ export function extractYoutubeId(urlOrId) {
 
 export function normalizeVideoPath(urlOrPath) {
   if (!urlOrPath || typeof urlOrPath !== 'string') return ''
-  const trimmed = urlOrPath.trim().replace(/^["']+|["']+$/g, '').trim()
+  const trimmed = urlOrPath
+    .trim()
+    .replace(/^["']+|["']+$/g, '')
+    .trim()
 
   const ytId = extractYoutubeId(trimmed)
   if (ytId) {
     return `https://youtu.be/${ytId}`
   }
 
-  if (trimmed.startsWith('http://') || trimmed.startsWith('https://') || trimmed.startsWith('data:')) {
+  if (
+    trimmed.startsWith('http://') ||
+    trimmed.startsWith('https://') ||
+    trimmed.startsWith('data:')
+  ) {
     return trimmed
   }
 
@@ -468,10 +488,18 @@ export function normalizeVideoPath(urlOrPath) {
 
 export function normalizeAudioPath(urlOrPath) {
   if (!urlOrPath || typeof urlOrPath !== 'string') return ''
-  const trimmed = urlOrPath.trim().replace(/^["']+|["']+$/g, '').trim()
+  const trimmed = urlOrPath
+    .trim()
+    .replace(/^["']+|["']+$/g, '')
+    .trim()
   if (!trimmed) return ''
 
-  if (trimmed.startsWith('http://') || trimmed.startsWith('https://') || trimmed.startsWith('data:') || trimmed.startsWith('blob:')) {
+  if (
+    trimmed.startsWith('http://') ||
+    trimmed.startsWith('https://') ||
+    trimmed.startsWith('data:') ||
+    trimmed.startsWith('blob:')
+  ) {
     return trimmed
   }
 
@@ -534,12 +562,37 @@ function getNextSongSeq(existingSongs) {
 }
 
 const VALID_SONG_COLUMNS = [
-  'id', 'title', 'singer', 'category', 'level', 'level_num', 'is_free',
-  'price', 'price_formatted', 'discount_note', 'tuning',
-  'duration', 'description', 'has_demo', 'video_demo', 'demo_video_url',
-  'audio_demo', 'demo_audio_url', 'audio_url',
-  'youtube_id', 'tab_url', 'target_url', 'pdf_url', 'thumbnail_bg',
-  'button_type', 'button_text', 'capo', 'tempo', 'order', 'is_featured', 'created_at'
+  'id',
+  'title',
+  'singer',
+  'category',
+  'level',
+  'level_num',
+  'is_free',
+  'price',
+  'price_formatted',
+  'discount_note',
+  'tuning',
+  'duration',
+  'description',
+  'has_demo',
+  'video_demo',
+  'demo_video_url',
+  'audio_demo',
+  'demo_audio_url',
+  'audio_url',
+  'youtube_id',
+  'tab_url',
+  'target_url',
+  'pdf_url',
+  'thumbnail_bg',
+  'button_type',
+  'button_text',
+  'capo',
+  'tempo',
+  'order',
+  'is_featured',
+  'created_at',
 ]
 
 function sanitizeSongPayload(payload) {
@@ -623,10 +676,7 @@ async function writeSongToSupabase(payload, isEdit, songId) {
         }
         return { data: null, error }
       } else {
-        const { data, error } = await supabase
-          .from('songs')
-          .insert([attemptPayload])
-          .select()
+        const { data, error } = await supabase.from('songs').insert([attemptPayload]).select()
 
         if (!error) {
           return { data: (data && data[0]) || attemptPayload, error: null }
@@ -647,7 +697,10 @@ async function writeSongToSupabase(payload, isEdit, songId) {
     }
   }
 
-  return { data: null, error: new Error('Không thể tự động điều chỉnh các cột với Supabase sau 35 lần thử.') }
+  return {
+    data: null,
+    error: new Error('Không thể tự động điều chỉnh các cột với Supabase sau 35 lần thử.'),
+  }
 }
 
 /**
@@ -685,22 +738,27 @@ export async function saveSong(payload, isEdit = false, songId = null) {
   }
 
   // 2. Luôn đồng bộ vào LocalStorage & Song Overrides để không bao giờ làm mất dữ liệu của admin
-  if (payload.audio_demo !== undefined || payload.demo_audio_url !== undefined || payload.audio_url !== undefined) {
+  if (
+    payload.audio_demo !== undefined ||
+    payload.demo_audio_url !== undefined ||
+    payload.audio_url !== undefined
+  ) {
     const aUrl = payload.audio_demo || payload.demo_audio_url || payload.audio_url || null
     setSongOverride(targetId, { audio_demo: aUrl, demo_audio_url: aUrl, audio_url: aUrl })
   }
-  
+
   if (payload.video_demo !== undefined || payload.demo_video_url !== undefined) {
     const vUrl = payload.video_demo || payload.demo_video_url || null
     setSongOverride(targetId, { video_demo: vUrl, demo_video_url: vUrl })
   }
 
   if (payload.capo !== undefined) setSongOverride(targetId, { capo: payload.capo })
-  if (payload.discount_note !== undefined) setSongOverride(targetId, { discount_note: payload.discount_note })
+  if (payload.discount_note !== undefined)
+    setSongOverride(targetId, { discount_note: payload.discount_note })
 
   const fullRecord = { ...payload, ...(savedRecord || {}), id: targetId }
   if (isEdit && songId) {
-    const idx = all.findIndex(s => String(s.id) === String(songId))
+    const idx = all.findIndex((s) => String(s.id) === String(songId))
     if (idx !== -1) {
       all[idx] = { ...all[idx], ...fullRecord }
     } else {
@@ -717,7 +775,7 @@ export async function saveSong(payload, isEdit = false, songId = null) {
     savedLocally: true,
     supabaseSaved: supabaseSuccess,
     warning: supabaseWarning,
-    record: fullRecord
+    record: fullRecord,
   }
 }
 
@@ -734,7 +792,7 @@ export async function removeSong(songId) {
     console.warn('[songs-service] Supabase delete warning:', e)
   }
 
-  const all = getLocalSongs().filter(s => String(s.id) !== String(songId))
+  const all = getLocalSongs().filter((s) => String(s.id) !== String(songId))
   setLocalSongs(all)
   return { success: true, warning: supabaseError?.message }
 }
@@ -750,8 +808,11 @@ export async function reorderAllSongs(orderedSongIds) {
 
     // 1. Update Supabase
     try {
-      const updates = orderedSongIds.map((id, index) => 
-        supabase.from('songs').update({ order: index + 1 }).eq('id', id)
+      const updates = orderedSongIds.map((id, index) =>
+        supabase
+          .from('songs')
+          .update({ order: index + 1 })
+          .eq('id', id)
       )
       await Promise.all(updates)
     } catch (e) {
@@ -760,7 +821,7 @@ export async function reorderAllSongs(orderedSongIds) {
 
     // 2. Update LocalStorage
     const all = getLocalSongs()
-    const songMap = new Map(all.map(s => [String(s.id), s]))
+    const songMap = new Map(all.map((s) => [String(s.id), s]))
     const newOrderedList = []
 
     orderedSongIds.forEach((id, idx) => {
@@ -772,7 +833,7 @@ export async function reorderAllSongs(orderedSongIds) {
     })
 
     // Add any remaining songs not in orderedSongIds
-    all.forEach(s => {
+    all.forEach((s) => {
       if (!orderedSongIds.includes(s.id)) {
         s.order = newOrderedList.length + 1
         newOrderedList.push(s)
@@ -786,6 +847,3 @@ export async function reorderAllSongs(orderedSongIds) {
     return { success: false, error: error.message || 'Lỗi khi cập nhật thứ tự' }
   }
 }
-
-
-

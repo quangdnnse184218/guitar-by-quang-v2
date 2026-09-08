@@ -18,7 +18,7 @@ document.addEventListener('DOMContentLoaded', async () => {
   const submitBtn = document.getElementById('reset-submit-btn')
   const btnText = document.getElementById('btn-text')
   const btnSpinner = document.getElementById('btn-spinner')
-  
+
   const alertBox = document.getElementById('reset-alert')
   const alertText = document.getElementById('reset-alert-text')
   const alertIcon = document.getElementById('reset-alert-icon')
@@ -35,17 +35,21 @@ document.addEventListener('DOMContentLoaded', async () => {
     if (!alertBox || !alertText) return
     alertBox.classList.remove('hidden')
     alertText.textContent = message
-    
+
     if (isSuccess) {
-      alertBox.className = 'p-3.5 rounded-2xl bg-emerald-500/15 border border-emerald-500/30 text-emerald-600 dark:text-emerald-400 text-xs font-semibold leading-relaxed flex items-center gap-2.5'
+      alertBox.className =
+        'p-3.5 rounded-2xl bg-emerald-500/15 border border-emerald-500/30 text-emerald-600 dark:text-emerald-400 text-xs font-semibold leading-relaxed flex items-center gap-2.5'
       if (alertIcon) {
-        alertIcon.innerHTML = '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>'
+        alertIcon.innerHTML =
+          '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>'
         alertIcon.classList.replace('text-rose-500', 'text-emerald-500')
       }
     } else {
-      alertBox.className = 'p-3.5 rounded-2xl bg-rose-500/15 border border-rose-500/30 text-rose-600 dark:text-rose-400 text-xs font-semibold leading-relaxed flex items-center gap-2.5'
+      alertBox.className =
+        'p-3.5 rounded-2xl bg-rose-500/15 border border-rose-500/30 text-rose-600 dark:text-rose-400 text-xs font-semibold leading-relaxed flex items-center gap-2.5'
       if (alertIcon) {
-        alertIcon.innerHTML = '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>'
+        alertIcon.innerHTML =
+          '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>'
         alertIcon.classList.replace('text-emerald-500', 'text-rose-500')
       }
     }
@@ -72,10 +76,13 @@ document.addEventListener('DOMContentLoaded', async () => {
   // Check URL hash / search params for Supabase error messages
   const hashParams = new URLSearchParams(window.location.hash.substring(1))
   const searchParams = new URLSearchParams(window.location.search)
-  const errorDescription = hashParams.get('error_description') || searchParams.get('error_description')
+  const errorDescription =
+    hashParams.get('error_description') || searchParams.get('error_description')
 
   if (errorDescription) {
-    showAlert(`Liên kết không hợp lệ hoặc đã hết hạn: ${decodeURIComponent(errorDescription.replace(/\+/g, ' '))}`)
+    showAlert(
+      `Liên kết không hợp lệ hoặc đã hết hạn: ${decodeURIComponent(errorDescription.replace(/\+/g, ' '))}`
+    )
     setLoading(true)
     submitBtn.style.display = 'none'
     if (accountEmailSpan) accountEmailSpan.textContent = 'Không hợp lệ'
@@ -95,13 +102,17 @@ document.addEventListener('DOMContentLoaded', async () => {
   // Verify if session exists
   async function checkSession() {
     try {
-      const { data: { session } } = await supabase.auth.getSession()
+      const {
+        data: { session },
+      } = await supabase.auth.getSession()
       if (session?.user?.email) {
         setAccountEmail(session.user.email)
         return
       }
 
-      const { data: { user } } = await supabase.auth.getUser()
+      const {
+        data: { user },
+      } = await supabase.auth.getUser()
       if (user?.email) {
         setAccountEmail(user.email)
         return
@@ -109,7 +120,9 @@ document.addEventListener('DOMContentLoaded', async () => {
 
       // Small retry for hash parsing
       setTimeout(async () => {
-        const { data: { session: s2 } } = await supabase.auth.getSession()
+        const {
+          data: { session: s2 },
+        } = await supabase.auth.getSession()
         if (s2?.user?.email) {
           setAccountEmail(s2.user.email)
         } else if (!window.location.hash.includes('access_token')) {
@@ -148,13 +161,16 @@ document.addEventListener('DOMContentLoaded', async () => {
 
       try {
         const { data, error } = await supabase.auth.updateUser({
-          password: newPassword
+          password: newPassword,
         })
 
         if (error) throw error
 
-        showAlert('Đặt lại mật khẩu Admin thành công! Đang chuyển hướng về trang đăng nhập Quản trị...', true)
-        
+        showAlert(
+          'Đặt lại mật khẩu Admin thành công! Đang chuyển hướng về trang đăng nhập Quản trị...',
+          true
+        )
+
         // Auto logout to ensure clean state
         try {
           await supabase.auth.signOut()
@@ -163,7 +179,6 @@ document.addEventListener('DOMContentLoaded', async () => {
         setTimeout(() => {
           window.location.href = '/admin-login.html'
         }, 1500)
-
       } catch (err) {
         console.error('[admin-reset-password] Update password error:', err)
         let msg = 'Không thể đặt lại mật khẩu. Vui lòng yêu cầu gửi lại email mới.'

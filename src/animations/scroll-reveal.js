@@ -20,12 +20,12 @@ export function applyScrollReveal(selector, options = {}) {
       duration: 0.25,
       ease: 'power2.out',
       clearProps: 'transform,opacity',
-      scrollTrigger: { 
-        trigger: el, 
+      scrollTrigger: {
+        trigger: el,
         start: 'top 98%',
-        once: true
+        once: true,
       },
-      ...options
+      ...options,
     })
   })
 }
@@ -39,6 +39,6 @@ export function bindGuitarRotationToScroll(heroSectionEl, onProgress) {
     start: 'top top',
     end: 'bottom top',
     scrub: true,
-    onUpdate: (self) => onProgress(self.progress)
+    onUpdate: (self) => onProgress(self.progress),
   })
 }

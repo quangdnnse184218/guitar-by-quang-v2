@@ -50,15 +50,19 @@ function showForgotAlert(message, isSuccess = false) {
   forgotAlertText.textContent = message
 
   if (isSuccess) {
-    forgotAlert.className = 'p-3.5 rounded-2xl bg-emerald-500/15 border border-emerald-500/30 text-emerald-600 dark:text-emerald-400 text-xs font-semibold leading-relaxed flex items-center gap-2.5'
+    forgotAlert.className =
+      'p-3.5 rounded-2xl bg-emerald-500/15 border border-emerald-500/30 text-emerald-600 dark:text-emerald-400 text-xs font-semibold leading-relaxed flex items-center gap-2.5'
     if (forgotAlertIcon) {
-      forgotAlertIcon.innerHTML = '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>'
+      forgotAlertIcon.innerHTML =
+        '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>'
       forgotAlertIcon.classList.replace('text-rose-500', 'text-emerald-500')
     }
   } else {
-    forgotAlert.className = 'p-3.5 rounded-2xl bg-rose-500/15 border border-rose-500/30 text-rose-600 dark:text-rose-400 text-xs font-semibold leading-relaxed flex items-center gap-2.5'
+    forgotAlert.className =
+      'p-3.5 rounded-2xl bg-rose-500/15 border border-rose-500/30 text-rose-600 dark:text-rose-400 text-xs font-semibold leading-relaxed flex items-center gap-2.5'
     if (forgotAlertIcon) {
-      forgotAlertIcon.innerHTML = '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>'
+      forgotAlertIcon.innerHTML =
+        '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>'
       forgotAlertIcon.classList.replace('text-emerald-500', 'text-rose-500')
     }
   }
@@ -121,7 +125,9 @@ if (forgotForm) {
     // Kiểm tra định dạng email chuẩn
     const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/
     if (!emailRegex.test(email)) {
-      return showForgotAlert('Gửi thất bại: Địa chỉ email không đúng định dạng hoặc sai tên email. Vui lòng kiểm tra lại.')
+      return showForgotAlert(
+        'Gửi thất bại: Địa chỉ email không đúng định dạng hoặc sai tên email. Vui lòng kiểm tra lại.'
+      )
     }
 
     setForgotLoading(true)
@@ -134,7 +140,7 @@ if (forgotForm) {
       const redirectTo = `${window.location.origin}/admin-reset-password.html`
 
       await supabase.auth.resetPasswordForEmail(email, {
-        redirectTo
+        redirectTo,
       })
 
       // Luôn hiện thông báo thành công chung chung, kể cả khi có lỗi rate-limit
@@ -145,7 +151,6 @@ if (forgotForm) {
       )
 
       if (forgotEmailInput) forgotEmailInput.value = ''
-
     } catch (err) {
       // Chỉ log lỗi ra console để debug, KHÔNG hiện chi tiết lỗi thật cho người dùng
       console.error('[admin-login] Reset password error:', err)
@@ -173,14 +178,16 @@ function setLoading(isLoading) {
 
 async function checkExistingSession() {
   try {
-    const { data: { session } } = await supabase.auth.getSession()
+    const {
+      data: { session },
+    } = await supabase.auth.getSession()
     if (session && session.user) {
       const { data: profile } = await supabase
         .from('profiles')
         .select('role')
         .eq('id', session.user.id)
         .single()
-      
+
       if (profile?.role === 'admin') {
         window.location.replace('/admin-dashboard.html')
       }
@@ -208,7 +215,7 @@ if (loginForm) {
     try {
       const { data, error } = await supabase.auth.signInWithPassword({
         email,
-        password
+        password,
       })
 
       if (error) {
@@ -251,4 +258,3 @@ if (loginForm) {
 }
 
 document.addEventListener('DOMContentLoaded', checkExistingSession)
-

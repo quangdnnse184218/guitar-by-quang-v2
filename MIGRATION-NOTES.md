@@ -16,7 +16,7 @@ Dự án đã hoàn thành Giai đoạn 2: Tích hợp thành công mô hình Gu
 - **Dữ liệu thật từ Supabase**:
   - `songs-service.js`: Lấy 3 bài hát được chọn ưu tiên (dựa theo field `order`).
   - `gears-service.js`: Lấy danh sách đồ nghề (dựa theo field `order`).
-- **GSAP Scroll Reveal**: 
+- **GSAP Scroll Reveal**:
   - Module hoá logic ở `scroll-reveal.js` để áp dụng hiệu ứng stagger fade-up mượt mà khi cuộn đến các phần tử.
 
 ---
@@ -54,6 +54,7 @@ Giai đoạn 2.5 đã hoàn thành: Bổ sung hệ thống Light/Dark Mode thôn
 ---
 
 ## 1. NGUYÊN NHÂN BUG DỮ LIỆU & CÁCH XỬ LÝ (BƯỚC 0)
+
 1. **Cấu trúc JSON**: File `DATA-EXPORT.json` chứa dữ liệu dạng lồng `collections.songs` và `collections.gears`, trong khi script `migrate-data.js` ban đầu đọc ở cấp root `data.songs`. Đã sửa đường dẫn truy cập thành `rawData.collections?.songs || rawData.songs`.
 2. **Quyền ghi Supabase (RLS)**: Cấu hình Row-Level Security trên Supabase yêu cầu quyền Admin/Service Role để ghi. Sau khi thêm `SUPABASE_SERVICE_ROLE_KEY` vào `.env.local`, toàn bộ **10 bài hát (songs)** và **5 đồ nghề (gears)** đã được migrate thành công vào database.
 
@@ -88,21 +89,22 @@ Giai đoạn 2.5 đã hoàn thành: Bổ sung hệ thống Light/Dark Mode thôn
 
 ## 3. DANH SÁCH FILE ĐÃ TẠO MỚI / CHỈNH SỬA
 
-- `src/theme-toggle.js` *(MỚI)*: Module quản lý theme dùng chung.
-- `src/style.css` *(CẬP NHẬT)*: Thêm bộ token `[data-theme="light"]`, smooth transitions, card shimmer, footer & header CSS.
-- `tailwind.config.js` *(CẬP NHẬT)*: Chuyển toàn bộ màu sắc sang CSS Custom Properties `var(...)` để tự động đổi màu theo theme.
-- `index.html` *(CẬP NHẬT)*: Cấu trúc Header mới, Hero mới, Footer 3 cột và mobile drawer.
-- `src/common.js` *(CẬP NHẬT)*: Cập nhật `initNavbarShrink` và thêm `initMobileMenu`.
-- `src/main.js` *(CẬP NHẬT)*: Khởi tạo theme toggle, mobile menu, kết nối scene lighting.
-- `src/three/guitar-scene.js` *(CẬP NHẬT)*: Thêm hàm `updateSceneLighting`.
-- `src/lib/songs-service.js` & `src/lib/gears-service.js` *(CẬP NHẬT)*: Cung cấp log lỗi chi tiết khi truy vấn Supabase.
-- `scripts/migrate-data.js` *(CẬP NHẬT)*: Đọc đúng cấu trúc `collections.songs` và `collections.gears`.
+- `src/theme-toggle.js` _(MỚI)_: Module quản lý theme dùng chung.
+- `src/style.css` _(CẬP NHẬT)_: Thêm bộ token `[data-theme="light"]`, smooth transitions, card shimmer, footer & header CSS.
+- `tailwind.config.js` _(CẬP NHẬT)_: Chuyển toàn bộ màu sắc sang CSS Custom Properties `var(...)` để tự động đổi màu theo theme.
+- `index.html` _(CẬP NHẬT)_: Cấu trúc Header mới, Hero mới, Footer 3 cột và mobile drawer.
+- `src/common.js` _(CẬP NHẬT)_: Cập nhật `initNavbarShrink` và thêm `initMobileMenu`.
+- `src/main.js` _(CẬP NHẬT)_: Khởi tạo theme toggle, mobile menu, kết nối scene lighting.
+- `src/three/guitar-scene.js` _(CẬP NHẬT)_: Thêm hàm `updateSceneLighting`.
+- `src/lib/songs-service.js` & `src/lib/gears-service.js` _(CẬP NHẬT)_: Cung cấp log lỗi chi tiết khi truy vấn Supabase.
+- `scripts/migrate-data.js` _(CẬP NHẬT)_: Đọc đúng cấu trúc `collections.songs` và `collections.gears`.
 
 ---
 
 ## 4. CÁC PLACEHOLDER CẦN BẠN ĐIỀN THẬT (USER ACTION ITEMS)
 
 Bạn có thể mở `index.html` để thay đổi các liên kết và thông tin sau khi có thông tin chính thức:
+
 - [ ] **Social Links** (trong Footer `index.html`):
   - Facebook: `href="#"` -> Đổi thành link Fanpage/Trang cá nhân thật.
   - YouTube: `href="#"` -> Đổi thành link kênh YouTube thật.
@@ -146,10 +148,10 @@ Giai đoạn 3 đã hoàn thành: Xây dựng hoàn chỉnh trang `kho-tab.html`
 
 ## 2. DANH SÁCH FILE ĐÃ TẠO MỚI / CHỈNH SỬA
 
-- `kho-tab.html` *(CẬP NHẬT)*: Chuyển từ placeholder sang trang hoàn chỉnh đầy đủ Header/Footer, Search, Filter, 2 Modal, Toast.
-- `src/kho-tab.js` *(MỚI)*: Toàn bộ logic tìm kiếm, lọc, render danh sách, xử lý modal và clipboard.
-- `src/lib/songs-service.js` *(CẬP NHẬT)*: Bổ sung 2 hàm `fetchAllSongs()` và `fetchSongById(id)`.
-- `src/style.css` *(CẬP NHẬT)*: Bổ sung class `.glass-input`, `.filter-pill`, `.modal-open`, `.skeleton-pulse`.
+- `kho-tab.html` _(CẬP NHẬT)_: Chuyển từ placeholder sang trang hoàn chỉnh đầy đủ Header/Footer, Search, Filter, 2 Modal, Toast.
+- `src/kho-tab.js` _(MỚI)_: Toàn bộ logic tìm kiếm, lọc, render danh sách, xử lý modal và clipboard.
+- `src/lib/songs-service.js` _(CẬP NHẬT)_: Bổ sung 2 hàm `fetchAllSongs()` và `fetchSongById(id)`.
+- `src/style.css` _(CẬP NHẬT)_: Bổ sung class `.glass-input`, `.filter-pill`, `.modal-open`, `.skeleton-pulse`.
 
 ---
 
@@ -162,5 +164,3 @@ Giai đoạn 3 đã hoàn thành: Xây dựng hoàn chỉnh trang `kho-tab.html`
   - Đang để `href="https://zalo.me/placeholder"`. Hãy đổi thành số điện thoại Zalo của bạn (ví dụ `https://zalo.me/098xxxxxxx`).
 - [ ] **Kiểm tra Video Demo trong `public/assets/`**:
   - Đảm bảo các file video (`resg1ctkdemo.mp4`, `noigiolendemo.mp4`, `thangtudemo.mp4`, ...) đã nằm trong `public/assets/` để modal phát video mượt mà.
-
-

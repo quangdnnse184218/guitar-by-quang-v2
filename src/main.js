@@ -8,10 +8,20 @@
 
 import { renderAmbientBlobs, renderMusicNotes, initNavbarShrink, initMobileMenu } from './common.js'
 import { initThemeToggle } from './theme-toggle.js'
-import { fetchFeaturedSongs, extractYoutubeId, normalizeVideoPath, normalizeAudioPath } from './lib/songs-service.js'
+import {
+  fetchFeaturedSongs,
+  extractYoutubeId,
+  normalizeVideoPath,
+  normalizeAudioPath,
+} from './lib/songs-service.js'
 import { fetchAllGears } from './lib/gears-service.js'
 import { applyScrollReveal } from './animations/scroll-reveal.js'
-import { isFavorite, isCompleted, toggleFavorite, toggleCompleted } from './lib/local-storage-service.js'
+import {
+  isFavorite,
+  isCompleted,
+  toggleFavorite,
+  toggleCompleted,
+} from './lib/local-storage-service.js'
 import { supabase } from './lib/supabase.js'
 
 // 1. Initialize UI Globals
@@ -35,9 +45,9 @@ let toastTimer = null
 export function showToast(msg, type = 'success') {
   if (!toastNotification || !toastMessage) return
   if (toastTimer) clearTimeout(toastTimer)
-  
+
   const toastIcon = document.getElementById('toast-icon')
-  
+
   // Clean message: strip leading checkmarks/crosses to avoid duplication
   const cleanMsg = msg.replace(/^[✓✕❌⟳•\s]+/, '').trim()
   toastMessage.textContent = cleanMsg || msg
@@ -57,7 +67,7 @@ export function showToast(msg, type = 'success') {
       toastIcon.className = ''
     }
   }
-  
+
   toastTimer = setTimeout(() => {
     toastNotification.classList.remove('toast-visible')
   }, 4000)
@@ -91,7 +101,7 @@ export function formatCompactDiscount(note) {
   if (str.toLowerCase().includes('179')) return 'HSSV: 179k'
   if (str.length > 15) {
     const num = str.replace(/[^0-9]/g, '')
-    if (num) return `HSSV: ${num.length >= 4 ? Math.round(Number(num)/1000) : num}k`
+    if (num) return `HSSV: ${num.length >= 4 ? Math.round(Number(num) / 1000) : num}k`
   }
   return str
 }
@@ -138,7 +148,7 @@ export function renderSongCard(tab, index, extraClass = '') {
 
             <div class="space-y-0.5 sm:space-y-1 pt-0.5">
               <div class="flex items-center justify-between text-[10px] sm:text-xs font-bold text-text-muted">
-                <span>Độ khó: <strong class="text-emerald-700 dark:text-emerald-400 font-mono tabular-nums">${tab.level || (levelNum + '/10')}</strong></span>
+                <span>Độ khó: <strong class="text-emerald-700 dark:text-emerald-400 font-mono tabular-nums">${tab.level || levelNum + '/10'}</strong></span>
                 <span class="text-[9px] sm:text-xs font-semibold text-text-faint hidden sm:inline">Tuning: ${tab.tuning || 'Standard'}</span>
               </div>
               <div class="w-full bg-glass-bg rounded-full h-1 sm:h-1.5 overflow-hidden border border-glass-border">
@@ -170,7 +180,14 @@ export function renderSongCard(tab, index, extraClass = '') {
   const cardTypeClass = isFree ? 'card-free' : 'card-paid'
   const tuning = tab.tuning || 'Standard'
   const duration = tab.duration || '03:40'
-  const capoText = (tab.capo !== undefined && tab.capo !== null && tab.capo !== '' && tab.capo !== 0 && tab.capo !== '0') ? `Capo ${tab.capo}` : 'Không kẹp'
+  const capoText =
+    tab.capo !== undefined &&
+    tab.capo !== null &&
+    tab.capo !== '' &&
+    tab.capo !== 0 &&
+    tab.capo !== '0'
+      ? `Capo ${tab.capo}`
+      : 'Không kẹp'
   const videoDemo = tab.demo_video_url || tab.video_demo || tab.videoDemo || tab.youtube_id || ''
   const audioDemo = tab.audio_demo || tab.demo_audio_url || tab.audio_url || ''
   const hasDemo = Boolean(videoDemo || audioDemo)
@@ -239,7 +256,7 @@ export function renderSongCard(tab, index, extraClass = '') {
 
           <div class="space-y-0.5 sm:space-y-1 pt-0.5">
             <div class="flex items-center justify-between text-[10px] sm:text-xs font-bold text-text-muted">
-              <span>Độ khó: <strong class="text-accent-primary font-mono tabular-nums">${tab.level || (levelNum + '/10')}</strong></span>
+              <span>Độ khó: <strong class="text-accent-primary font-mono tabular-nums">${tab.level || levelNum + '/10'}</strong></span>
               <span class="text-[9px] sm:text-xs font-semibold text-text-faint hidden sm:inline">Tuning: ${tab.tuning || 'Standard'}</span>
             </div>
             <div class="w-full bg-glass-bg rounded-full h-1 sm:h-1.5 overflow-hidden border border-glass-border">
@@ -275,20 +292,28 @@ export function renderGears(gears) {
   const showMoreText = document.getElementById('gear-show-more-text')
   const showMoreIcon = document.getElementById('gear-show-more-icon')
 
-  container.innerHTML = gears.map((gear, idx) => {
-    const buyButtonHtml = gear.buy_url || gear.buyUrl
-      ? `<a href="${gear.buy_url || gear.buyUrl}" target="_blank" rel="noopener noreferrer" class="w-full inline-flex items-center justify-center gap-1.5 py-2 px-3 rounded-xl bg-accent-primary/10 hover:bg-warm-gradient hover:text-white text-accent-primary text-xs font-bold transition-all duration-200 group/btn shadow-xs hover:shadow-md">
+  container.innerHTML = gears
+    .map((gear, idx) => {
+      const buyButtonHtml =
+        gear.buy_url || gear.buyUrl
+          ? `<a href="${gear.buy_url || gear.buyUrl}" target="_blank" rel="noopener noreferrer" class="w-full inline-flex items-center justify-center gap-1.5 py-2 px-3 rounded-xl bg-accent-primary/10 hover:bg-warm-gradient hover:text-white text-accent-primary text-xs font-bold transition-all duration-200 group/btn shadow-xs hover:shadow-md">
           <span>${gear.buy_text || gear.buyText || 'Mua trên Shopee'}</span>
           <svg class="w-3.5 h-3.5 transition-transform group-hover/btn:translate-x-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M14 5l7 7m0 0l-7 7m7-7H3"></path></svg>
         </a>`
-      : `<div class="w-full text-center py-1.5 text-xs font-bold text-accent-primary italic truncate">${gear.footer_text || gear.footerText ? `"${(gear.footer_text || gear.footerText).replace(/"/g, '')}"` : ''}</div>`
+          : `<div class="w-full text-center py-1.5 text-xs font-bold text-accent-primary italic truncate">${gear.footer_text || gear.footerText ? `"${(gear.footer_text || gear.footerText).replace(/"/g, '')}"` : ''}</div>`
 
-    const cleanDesc = (gear.description || '').replace(/'/g, "\\'").replace(/"/g, '&quot;')
-    const cleanTitle = (gear.title || gear.name || '').replace(/'/g, "\\'").replace(/"/g, '&quot;')
-    const imagePath = gear.image ? (gear.image.startsWith('/') ? gear.image : '/' + gear.image) : '/assets/clover.jpg'
-    const extraClass = idx >= 4 ? 'gear-card-extra hidden' : ''
+      const cleanDesc = (gear.description || '').replace(/'/g, "\\'").replace(/"/g, '&quot;')
+      const cleanTitle = (gear.title || gear.name || '')
+        .replace(/'/g, "\\'")
+        .replace(/"/g, '&quot;')
+      const imagePath = gear.image
+        ? gear.image.startsWith('/')
+          ? gear.image
+          : '/' + gear.image
+        : '/assets/clover.jpg'
+      const extraClass = idx >= 4 ? 'gear-card-extra hidden' : ''
 
-    return `
+      return `
       <div class="w-full glass-card card-interactive rounded-2xl sm:rounded-3xl p-3.5 sm:p-4 shadow-sm hover:shadow-xl hover:border-accent-primary/50 border border-glass-border transition-all duration-300 flex flex-col justify-between group overflow-hidden ${extraClass}">
         <div class="space-y-2.5 sm:space-y-3">
           <!-- Khung ảnh vuông 1:1 -->
@@ -309,7 +334,8 @@ export function renderGears(gears) {
         </div>
       </div>
     `
-  }).join('')
+    })
+    .join('')
 
   // Configure Show More Button
   if (showMoreWrap && showMoreBtn && gears.length > 4) {
@@ -322,7 +348,7 @@ export function renderGears(gears) {
     showMoreBtn.onclick = () => {
       isExpanded = !isExpanded
       const extraCards = container.querySelectorAll('.gear-card-extra')
-      extraCards.forEach(card => {
+      extraCards.forEach((card) => {
         if (isExpanded) {
           card.classList.remove('hidden')
           card.classList.add('animate-in', 'fade-in', 'zoom-in-95', 'duration-200')
@@ -366,7 +392,7 @@ export function initFaq() {
   const INITIAL_LIMIT = 2
 
   function updateFaqDisplay() {
-    const matchingItems = faqItems.filter(item => {
+    const matchingItems = faqItems.filter((item) => {
       const itemCat = item.getAttribute('data-category')
       return currentCategory === 'all' || itemCat === currentCategory
     })
@@ -374,11 +400,11 @@ export function initFaq() {
     const totalMatching = matchingItems.length
     const visibleCount = isShowMore ? totalMatching : Math.min(INITIAL_LIMIT, totalMatching)
 
-    faqItems.forEach(item => {
+    faqItems.forEach((item) => {
       item.classList.add('hidden')
     })
 
-    matchingItems.slice(0, visibleCount).forEach(item => {
+    matchingItems.slice(0, visibleCount).forEach((item) => {
       item.classList.remove('hidden')
     })
 
@@ -401,9 +427,9 @@ export function initFaq() {
   }
 
   // 1. Lọc theo chủ đề
-  filterBtns.forEach(btn => {
+  filterBtns.forEach((btn) => {
     btn.addEventListener('click', () => {
-      filterBtns.forEach(b => b.classList.remove('active'))
+      filterBtns.forEach((b) => b.classList.remove('active'))
       btn.classList.add('active')
       currentCategory = btn.getAttribute('data-faq-filter') || 'all'
       isShowMore = false
@@ -431,13 +457,15 @@ window.handleToggleFavorite = function handleToggleFavorite(event, songId) {
   if (event) event.stopPropagation()
   const nextState = toggleFavorite(songId)
   const btns = document.querySelectorAll(`[data-fav-btn="${songId}"]`)
-  btns.forEach(btn => {
+  btns.forEach((btn) => {
     if (nextState) {
-      btn.className = 'w-7 h-7 rounded-full flex items-center justify-center transition-all cursor-pointer shadow-sm bg-rose-500 text-white scale-105'
+      btn.className =
+        'w-7 h-7 rounded-full flex items-center justify-center transition-all cursor-pointer shadow-sm bg-rose-500 text-white scale-105'
       btn.title = 'Bỏ yêu thích'
       btn.innerHTML = `<svg class="w-3.5 h-3.5 fill-current" viewBox="0 0 24 24"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg>`
     } else {
-      btn.className = 'w-7 h-7 rounded-full flex items-center justify-center transition-all cursor-pointer shadow-sm bg-black/40 text-white/80 hover:text-white hover:bg-black/60'
+      btn.className =
+        'w-7 h-7 rounded-full flex items-center justify-center transition-all cursor-pointer shadow-sm bg-black/40 text-white/80 hover:text-white hover:bg-black/60'
       btn.title = 'Yêu thích'
       btn.innerHTML = `<svg class="w-3.5 h-3.5 fill-none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg>`
     }
@@ -447,12 +475,19 @@ window.handleToggleFavorite = function handleToggleFavorite(event, songId) {
   // Sync with Supabase favorites if logged in
   ;(async () => {
     try {
-      const { data: { session } } = await supabase.auth.getSession()
+      const {
+        data: { session },
+      } = await supabase.auth.getSession()
       if (session?.user) {
         if (nextState) {
-          await supabase.from('favorites').upsert({ user_id: session.user.id, song_id: String(songId) })
+          await supabase
+            .from('favorites')
+            .upsert({ user_id: session.user.id, song_id: String(songId) })
         } else {
-          await supabase.from('favorites').delete().match({ user_id: session.user.id, song_id: String(songId) })
+          await supabase
+            .from('favorites')
+            .delete()
+            .match({ user_id: session.user.id, song_id: String(songId) })
         }
       }
     } catch (err) {
@@ -465,13 +500,15 @@ window.handleToggleCompleted = function handleToggleCompleted(event, songId) {
   if (event) event.stopPropagation()
   const nextState = toggleCompleted(songId)
   const btns = document.querySelectorAll(`[data-comp-btn="${songId}"]`)
-  btns.forEach(btn => {
+  btns.forEach((btn) => {
     if (nextState) {
-      btn.className = 'w-7 h-7 rounded-full flex items-center justify-center transition-all cursor-pointer shadow-sm bg-emerald-500 text-white scale-105'
+      btn.className =
+        'w-7 h-7 rounded-full flex items-center justify-center transition-all cursor-pointer shadow-sm bg-emerald-500 text-white scale-105'
       btn.title = 'Đánh dấu chưa học'
       btn.innerHTML = `<svg class="w-3.5 h-3.5 fill-none" stroke="currentColor" stroke-width="3" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/></svg>`
     } else {
-      btn.className = 'w-7 h-7 rounded-full flex items-center justify-center transition-all cursor-pointer shadow-sm bg-black/40 text-white/80 hover:text-white hover:bg-black/60'
+      btn.className =
+        'w-7 h-7 rounded-full flex items-center justify-center transition-all cursor-pointer shadow-sm bg-black/40 text-white/80 hover:text-white hover:bg-black/60'
       btn.title = 'Đã học xong'
       btn.innerHTML = `<svg class="w-3.5 h-3.5 fill-none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/></svg>`
     }
@@ -500,8 +537,8 @@ export function toggleModal(modalId, show) {
       document.body.classList.add('modal-open')
     })
   } else {
-    modal.querySelectorAll('video').forEach(v => v.pause())
-    modal.querySelectorAll('audio').forEach(a => {
+    modal.querySelectorAll('video').forEach((v) => v.pause())
+    modal.querySelectorAll('audio').forEach((a) => {
       a.pause()
       a.currentTime = 0
     })
@@ -607,12 +644,14 @@ window.openImageModal = function openImageModal(src, title, caption) {
 
 window.openCheckoutModal = async function openCheckoutModal(tabId) {
   if (!featuredSongs || !featuredSongs.length) return
-  const tab = featuredSongs.find(t => t.id === tabId)
+  const tab = featuredSongs.find((t) => t.id === tabId)
   if (!tab) return
 
   // Gate Check for paid cards: MUST BE LOGGED IN
   try {
-    const { data: { session } } = await supabase.auth.getSession()
+    const {
+      data: { session },
+    } = await supabase.auth.getSession()
     if (!session || !session.user) {
       const loginBtn = document.getElementById('auth-required-login-btn')
       if (loginBtn) {
@@ -648,7 +687,8 @@ window.openCheckoutModal = async function openCheckoutModal(tabId) {
   const audioContainer = document.getElementById('checkout-modal-audio-container')
 
   if (titleEl) titleEl.textContent = tab.title
-  if (metaEl) metaEl.textContent = `Tuning: ${tab.tuning || 'Standard'} • Bản Video Tab chạy nốt đồng bộ với âm thanh đàn mộc thật và nhịp gõ`
+  if (metaEl)
+    metaEl.textContent = `Tuning: ${tab.tuning || 'Standard'} • Bản Video Tab chạy nốt đồng bộ với âm thanh đàn mộc thật và nhịp gõ`
   if (priceEl) priceEl.textContent = tab.price_formatted || tab.priceFormatted || '239.000 VNĐ'
 
   if (levelEl) levelEl.textContent = tab.level || `${tab.level_num ?? tab.levelNum ?? 5}/10`
@@ -667,7 +707,10 @@ window.openCheckoutModal = async function openCheckoutModal(tabId) {
     }
   }
 
-  const cleanSongCode = tab.title.replace(/[^a-zA-Z0-9]/g, '').toUpperCase().slice(0, 10)
+  const cleanSongCode = tab.title
+    .replace(/[^a-zA-Z0-9]/g, '')
+    .toUpperCase()
+    .slice(0, 10)
   activeCheckoutSyntax = `VIDEOTAB ${cleanSongCode}`
   if (syntaxEl) syntaxEl.textContent = activeCheckoutSyntax
 
@@ -706,7 +749,7 @@ window.openCheckoutModal = async function openCheckoutModal(tabId) {
 
 window.openFreeTabModal = function openFreeTabModal(tabId) {
   if (!featuredSongs || !featuredSongs.length) return
-  const tab = featuredSongs.find(t => t.id === tabId)
+  const tab = featuredSongs.find((t) => t.id === tabId)
   if (!tab) return
 
   const titleEl = document.getElementById('free-tab-modal-title')
@@ -735,13 +778,20 @@ window.openFreeTabModal = function openFreeTabModal(tabId) {
       const detected = []
       if (descLower.includes('slap')) detected.push('Slap')
       if (descLower.includes('nail attack')) detected.push('Nail Attack')
-      if (descLower.includes('hammer') || descLower.includes('pull')) detected.push('Hammer-on / Pull-off')
-      if (descLower.includes('slide') || descLower.includes('vuốt')) detected.push('Slide (Vuốt dây)')
+      if (descLower.includes('hammer') || descLower.includes('pull'))
+        detected.push('Hammer-on / Pull-off')
+      if (descLower.includes('slide') || descLower.includes('vuốt'))
+        detected.push('Slide (Vuốt dây)')
       if (descLower.includes('rải') || descLower.includes('tỉa')) detected.push('Tỉa ngón / Rải')
       if (descLower.includes('bass')) detected.push('Đi Bass')
       if (detected.length > 0) techs = detected
     }
-    techContainer.innerHTML = techs.map(t => `<span class="px-2.5 py-1 rounded-lg modal-inner-card text-text-primary text-[11px] font-semibold shadow-xs">${t}</span>`).join('')
+    techContainer.innerHTML = techs
+      .map(
+        (t) =>
+          `<span class="px-2.5 py-1 rounded-lg modal-inner-card text-text-primary text-[11px] font-semibold shadow-xs">${t}</span>`
+      )
+      .join('')
   }
 
   const videoUrl = tab.target_url || tab.targetUrl || tab.video_demo || tab.videoDemo || ''
@@ -781,7 +831,8 @@ window.openFreeTabModal = function openFreeTabModal(tabId) {
       pdfBtn.removeAttribute('disabled')
       pdfBtn.href = pdfUrl
       pdfBtn.target = '_blank'
-      pdfBtn.className = 'w-full py-3 rounded-2xl bg-warm-gradient hover:brightness-105 text-white font-extrabold text-xs transition-all shadow-md flex items-center justify-center gap-2 text-center cursor-pointer active:scale-95'
+      pdfBtn.className =
+        'w-full py-3 rounded-2xl bg-warm-gradient hover:brightness-105 text-white font-extrabold text-xs transition-all shadow-md flex items-center justify-center gap-2 text-center cursor-pointer active:scale-95'
       pdfBtn.innerHTML = `
         <svg class="w-4 h-4 fill-none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>
         <span>Tải file PDF Tab</span>
@@ -789,7 +840,8 @@ window.openFreeTabModal = function openFreeTabModal(tabId) {
     } else {
       pdfBtn.setAttribute('disabled', 'true')
       pdfBtn.removeAttribute('href')
-      pdfBtn.className = 'w-full py-3 rounded-2xl bg-glass-bg/40 border border-glass-border/50 text-text-faint font-semibold text-xs transition-all shadow-xs flex items-center justify-center gap-2 text-center cursor-not-allowed opacity-60 pointer-events-none'
+      pdfBtn.className =
+        'w-full py-3 rounded-2xl bg-glass-bg/40 border border-glass-border/50 text-text-faint font-semibold text-xs transition-all shadow-xs flex items-center justify-center gap-2 text-center cursor-not-allowed opacity-60 pointer-events-none'
       pdfBtn.innerHTML = `
         <svg class="w-4 h-4 text-text-muted" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
         <span>Tải file PDF (Đang cập nhật)</span>
@@ -806,24 +858,33 @@ window.openFreeTabModal = function openFreeTabModal(tabId) {
 
 function setupEventListeners() {
   const closeCheckoutBtn = document.getElementById('close-checkout-modal')
-  if (closeCheckoutBtn) closeCheckoutBtn.addEventListener('click', () => toggleModal('checkout-modal', false))
+  if (closeCheckoutBtn)
+    closeCheckoutBtn.addEventListener('click', () => toggleModal('checkout-modal', false))
 
   const closeFreeBtn = document.getElementById('close-free-tab-modal')
-  if (closeFreeBtn) closeFreeBtn.addEventListener('click', () => toggleModal('free-tab-modal', false))
+  if (closeFreeBtn)
+    closeFreeBtn.addEventListener('click', () => toggleModal('free-tab-modal', false))
 
   const closeVideoDemoBtn = document.getElementById('close-video-demo-modal')
-  if (closeVideoDemoBtn) closeVideoDemoBtn.addEventListener('click', () => toggleModal('video-demo-modal', false))
+  if (closeVideoDemoBtn)
+    closeVideoDemoBtn.addEventListener('click', () => toggleModal('video-demo-modal', false))
 
   const closeImageModalBtn = document.getElementById('close-image-modal')
-  if (closeImageModalBtn) closeImageModalBtn.addEventListener('click', () => toggleModal('image-preview-modal', false))
+  if (closeImageModalBtn)
+    closeImageModalBtn.addEventListener('click', () => toggleModal('image-preview-modal', false))
 
   const closeAuthReqBtn = document.getElementById('close-auth-required-modal')
-  if (closeAuthReqBtn) closeAuthReqBtn.addEventListener('click', () => toggleModal('auth-required-modal', false))
+  if (closeAuthReqBtn)
+    closeAuthReqBtn.addEventListener('click', () => toggleModal('auth-required-modal', false))
 
   const qrTrigger = document.getElementById('qr-preview-trigger')
   if (qrTrigger) {
     qrTrigger.addEventListener('click', () => {
-      window.openImageModal('/assets/qr.jpg', 'Mã QR Chuyển Khoản TpBank (03970202801)', 'Quét mã QR bằng App Ngân hàng bất kỳ để nhận bản Video Tab và hỗ trợ 1-1 qua Zalo.')
+      window.openImageModal(
+        '/assets/qr.jpg',
+        'Mã QR Chuyển Khoản TpBank (03970202801)',
+        'Quét mã QR bằng App Ngân hàng bất kỳ để nhận bản Video Tab và hỗ trợ 1-1 qua Zalo.'
+      )
     })
   }
 
@@ -867,8 +928,14 @@ function setupEventListeners() {
     })
   }
 
-  const modals = ['checkout-modal', 'free-tab-modal', 'video-demo-modal', 'image-preview-modal', 'auth-required-modal']
-  modals.forEach(id => {
+  const modals = [
+    'checkout-modal',
+    'free-tab-modal',
+    'video-demo-modal',
+    'image-preview-modal',
+    'auth-required-modal',
+  ]
+  modals.forEach((id) => {
     const el = document.getElementById(id)
     if (el) {
       el.addEventListener('click', (e) => {
@@ -878,7 +945,7 @@ function setupEventListeners() {
   })
 
   document.addEventListener('keydown', (e) => {
-    if (e.key === 'Escape') modals.forEach(id => toggleModal(id, false))
+    if (e.key === 'Escape') modals.forEach((id) => toggleModal(id, false))
   })
 }
 
@@ -894,9 +961,10 @@ async function initHome() {
   const featuredContainer = document.getElementById('featured-grid')
   if (featuredContainer) {
     if (featuredSongs && featuredSongs.length > 0) {
-      const songsHtml = featuredSongs.slice(0, 4).map((tab, idx) => 
-        renderSongCard(tab, idx, 'w-full')
-      ).join('')
+      const songsHtml = featuredSongs
+        .slice(0, 4)
+        .map((tab, idx) => renderSongCard(tab, idx, 'w-full'))
+        .join('')
 
       featuredContainer.innerHTML = songsHtml
       applyScrollReveal('#featured-grid .song-card')

@@ -35,7 +35,7 @@ const TEMPO_MARKINGS = [
   { min: 108, max: 119, label: 'Moderato (Vừa phải)' },
   { min: 120, max: 139, label: 'Allegro (Nhanh, vui tươi)' },
   { min: 140, max: 167, label: 'Vivace (Rất nhanh, sôi nổi)' },
-  { min: 168, max: 208, label: 'Presto (Cực nhanh, dồn dập)' }
+  { min: 168, max: 208, label: 'Presto (Cực nhanh, dồn dập)' },
 ]
 
 // ==========================================================================
@@ -119,7 +119,8 @@ function triggerVisualBeat(beatIndex, isAccent) {
       }`
       setTimeout(() => {
         if (beatFlash) {
-          beatFlash.className = 'metro-pulse metro-pulse-box w-16 h-16 rounded-2xl flex items-center justify-center cursor-default'
+          beatFlash.className =
+            'metro-pulse metro-pulse-box w-16 h-16 rounded-2xl flex items-center justify-center cursor-default'
         }
       }, 90)
     }
@@ -142,9 +143,9 @@ function scheduleNote() {
   if (!ctx) return
 
   while (nextNoteTime < ctx.currentTime + LOOKAHEAD_SEC) {
-    const isAccent = (currentBeat === 0)
+    const isAccent = currentBeat === 0
     scheduleClick(nextNoteTime, isAccent)
-    
+
     // Schedule visual sync precisely
     const timeDiffMs = Math.max(0, (nextNoteTime - ctx.currentTime) * 1000)
     const scheduledBeat = currentBeat
@@ -204,12 +205,14 @@ export function toggleMetronome() {
 function updatePlayButtonUI(active) {
   if (!playBtn) return
   if (active) {
-    playBtn.className = 'flex-1 py-3.5 rounded-2xl bg-rose-500 hover:bg-rose-600 text-white font-extrabold text-xs sm:text-sm transition-all active:scale-95 cursor-pointer shadow-lg shadow-rose-500/25 flex items-center justify-center gap-2'
+    playBtn.className =
+      'flex-1 py-3.5 rounded-2xl bg-rose-500 hover:bg-rose-600 text-white font-extrabold text-xs sm:text-sm transition-all active:scale-95 cursor-pointer shadow-lg shadow-rose-500/25 flex items-center justify-center gap-2'
     if (playIcon) playIcon.classList.add('hidden')
     if (pauseIcon) pauseIcon.classList.remove('hidden')
     if (playLabel) playLabel.textContent = 'Dừng Lại'
   } else {
-    playBtn.className = 'flex-1 py-3.5 rounded-2xl bg-emerald-500 hover:bg-emerald-400 text-white font-extrabold text-xs sm:text-sm transition-all active:scale-95 cursor-pointer shadow-lg shadow-emerald-500/25 flex items-center justify-center gap-2'
+    playBtn.className =
+      'flex-1 py-3.5 rounded-2xl bg-emerald-500 hover:bg-emerald-400 text-white font-extrabold text-xs sm:text-sm transition-all active:scale-95 cursor-pointer shadow-lg shadow-emerald-500/25 flex items-center justify-center gap-2'
     if (playIcon) playIcon.classList.remove('hidden')
     if (pauseIcon) pauseIcon.classList.add('hidden')
     if (playLabel) playLabel.textContent = 'Bắt Đầu Gõ'
@@ -218,11 +221,12 @@ function updatePlayButtonUI(active) {
 
 function resetBeatVisuals() {
   if (beatFlash) {
-    beatFlash.className = 'metro-pulse metro-pulse-box w-16 h-16 rounded-2xl flex items-center justify-center cursor-default'
+    beatFlash.className =
+      'metro-pulse metro-pulse-box w-16 h-16 rounded-2xl flex items-center justify-center cursor-default'
   }
   if (beatDots) {
     const dots = beatDots.querySelectorAll('.metro-dot-item')
-    dots.forEach(dot => {
+    dots.forEach((dot) => {
       dot.className = 'metro-dot-item'
     })
   }
@@ -236,7 +240,7 @@ export function setBpm(newBpm) {
   if (bpmSlider) bpmSlider.value = bpm
 
   // Update tempo label
-  const marking = TEMPO_MARKINGS.find(m => bpm >= m.min && bpm <= m.max)
+  const marking = TEMPO_MARKINGS.find((m) => bpm >= m.min && bpm <= m.max)
   if (tempoMarkingLabel && marking) {
     tempoMarkingLabel.textContent = marking.label
   }
@@ -244,7 +248,7 @@ export function setBpm(newBpm) {
 
 function handleTapTempo() {
   const now = performance.now()
-  if (lastTapTime && (now - lastTapTime > TAP_RESET_MS)) {
+  if (lastTapTime && now - lastTapTime > TAP_RESET_MS) {
     tapTimes = []
   }
 

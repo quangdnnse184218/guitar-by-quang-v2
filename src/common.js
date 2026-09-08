@@ -12,7 +12,8 @@ import { supabase } from './lib/supabase.js'
   const pathname = window.location.pathname
 
   if (isRecovery && !pathname.includes('reset-password')) {
-    const isAdmin = pathname.includes('admin') || hash.includes('role=admin') || search.includes('role=admin')
+    const isAdmin =
+      pathname.includes('admin') || hash.includes('role=admin') || search.includes('role=admin')
     const targetUrl = isAdmin ? '/admin-reset-password.html' : '/reset-password.html'
     window.location.replace(`${targetUrl}${hash || search}`)
     return
@@ -21,7 +22,8 @@ import { supabase } from './lib/supabase.js'
   // Also listen for Supabase PASSWORD_RECOVERY auth event
   supabase.auth.onAuthStateChange((event) => {
     if (event === 'PASSWORD_RECOVERY' && !window.location.pathname.includes('reset-password')) {
-      const isAdmin = window.location.pathname.includes('admin') || window.location.hash.includes('admin')
+      const isAdmin =
+        window.location.pathname.includes('admin') || window.location.hash.includes('admin')
       const targetUrl = isAdmin ? '/admin-reset-password.html' : '/reset-password.html'
       window.location.replace(`${targetUrl}${window.location.hash}`)
     }
@@ -50,10 +52,10 @@ export function renderAmbientBlobs() {
  * Music notes removed as per requirement 7d
  */
 export function renderMusicNotes() {
-  const existing = document.getElementById('music-notes-root');
-  if (existing) existing.remove();
-  const existingStyle = document.getElementById('music-notes-style');
-  if (existingStyle) existingStyle.remove();
+  const existing = document.getElementById('music-notes-root')
+  if (existing) existing.remove()
+  const existingStyle = document.getElementById('music-notes-style')
+  if (existingStyle) existingStyle.remove()
 }
 
 /**
@@ -123,7 +125,7 @@ export function initMobileMenu() {
   if (backdrop) backdrop.addEventListener('click', closeMenu)
 
   // Close when clicking any nav link inside mobile menu
-  menuDrawer.querySelectorAll('a').forEach(link => {
+  menuDrawer.querySelectorAll('a').forEach((link) => {
     link.addEventListener('click', closeMenu)
   })
 
@@ -141,11 +143,13 @@ export function initMobileMenu() {
 export async function initAuthHeader() {
   const desktopContainer = document.getElementById('desktop-auth-container')
   const mobileContainer = document.getElementById('mobile-auth-container')
-  
+
   if (!desktopContainer && !mobileContainer) return
 
   try {
-    const { data: { session } } = await supabase.auth.getSession()
+    const {
+      data: { session },
+    } = await supabase.auth.getSession()
 
     if (session && session.user) {
       updateHeaderForUser(session.user)
@@ -184,7 +188,7 @@ export async function initAuthHeader() {
     }
 
     const initial = fullName.charAt(0).toUpperCase()
-    
+
     // Avatar image or initial letter
     const avatarHtml = avatarUrl
       ? `<img src="${avatarUrl}" alt="${fullName}" class="w-6 h-6 rounded-full object-cover border border-amber-400/50" />`
@@ -251,11 +255,11 @@ export async function initAuthHeader() {
     if (desktopContainer) {
       const themeToggle = desktopContainer.querySelector('#theme-toggle-btn')
       desktopContainer.innerHTML = ''
-      
+
       const userDiv = document.createElement('div')
       userDiv.innerHTML = userDropdownHtml
       desktopContainer.appendChild(userDiv.firstElementChild)
-      
+
       if (themeToggle) desktopContainer.appendChild(themeToggle)
 
       // Setup click-to-toggle behavior for mobile touch & accessibility
@@ -287,16 +291,16 @@ export async function initAuthHeader() {
         })
 
         // Close dropdown when any item inside is clicked
-        dropdownMenu?.querySelectorAll('a, button').forEach(item => {
+        dropdownMenu?.querySelectorAll('a, button').forEach((item) => {
           item.addEventListener('click', () => {
             dropdownWrap.classList.remove('open')
             dropdownBtn.setAttribute('aria-expanded', 'false')
           })
         })
       }
-      
+
       // Wire up dropdown navigation links for single-page tab switching
-      desktopContainer.querySelectorAll('a[href*="user-dashboard.html"]').forEach(link => {
+      desktopContainer.querySelectorAll('a[href*="user-dashboard.html"]').forEach((link) => {
         link.addEventListener('click', (e) => {
           if (window.location.pathname.includes('user-dashboard')) {
             const url = new URL(link.href, window.location.origin)
@@ -307,7 +311,9 @@ export async function initAuthHeader() {
               window.setActiveDashboardTab(targetHash)
               if (targetHash === 'profile') {
                 setTimeout(() => {
-                  document.getElementById('section-profile')?.scrollIntoView({ behavior: 'smooth', block: 'start' })
+                  document
+                    .getElementById('section-profile')
+                    ?.scrollIntoView({ behavior: 'smooth', block: 'start' })
                 }, 50)
               }
             }
@@ -355,19 +361,23 @@ export async function initAuthHeader() {
     // Update Desktop Nav for logged-in user
     const desktopNav = document.getElementById('desktop-nav')
     if (desktopNav) {
-      const oldTab = desktopNav.querySelector('a[href*="user-dashboard"]') || desktopNav.querySelector('a[href*="admin-dashboard"]')
+      const oldTab =
+        desktopNav.querySelector('a[href*="user-dashboard"]') ||
+        desktopNav.querySelector('a[href*="admin-dashboard"]')
       if (oldTab) {
         oldTab.href = targetDashboardUrl
         oldTab.innerHTML = `<span>${targetDashboardLabel}</span>`
       } else {
-        const isUserDashPage = window.location.pathname.includes('user-dashboard') || window.location.pathname.includes('admin-dashboard')
+        const isUserDashPage =
+          window.location.pathname.includes('user-dashboard') ||
+          window.location.pathname.includes('admin-dashboard')
         const userTab = document.createElement('a')
         userTab.href = targetDashboardUrl
         userTab.className = isUserDashPage
           ? 'nav-link active font-bold text-accent-primary py-1 transition-colors flex items-center gap-1'
           : 'nav-link hover:text-text-primary py-1 transition-colors flex items-center gap-1'
         userTab.innerHTML = `<span>${targetDashboardLabel}</span>`
-        
+
         const firstLink = desktopNav.firstElementChild
         if (firstLink && firstLink.nextElementSibling) {
           desktopNav.insertBefore(userTab, firstLink.nextElementSibling)
@@ -380,12 +390,16 @@ export async function initAuthHeader() {
     // Update Mobile Drawer Nav for logged-in user
     const mobileNav = document.querySelector('#mobile-menu-drawer nav')
     if (mobileNav) {
-      const oldTabMobile = mobileNav.querySelector('a[href*="user-dashboard"]') || mobileNav.querySelector('a[href*="admin-dashboard"]')
+      const oldTabMobile =
+        mobileNav.querySelector('a[href*="user-dashboard"]') ||
+        mobileNav.querySelector('a[href*="admin-dashboard"]')
       if (oldTabMobile) {
         oldTabMobile.href = targetDashboardUrl
         oldTabMobile.innerHTML = `<span>${targetDashboardLabel}</span>`
       } else {
-        const isUserDashPage = window.location.pathname.includes('user-dashboard') || window.location.pathname.includes('admin-dashboard')
+        const isUserDashPage =
+          window.location.pathname.includes('user-dashboard') ||
+          window.location.pathname.includes('admin-dashboard')
         const userTabMobile = document.createElement('a')
         userTabMobile.href = targetDashboardUrl
         userTabMobile.className = isUserDashPage
@@ -409,11 +423,15 @@ export async function initAuthHeader() {
     // Show or create 3-row layout for mobile logged-in navigation (Row 2 & Row 3)
     let mobileLoggedInNav = document.getElementById('mobile-logged-in-nav')
     if (!mobileLoggedInNav) {
-      const mainNavContainer = document.querySelector('#main-nav > div') || document.querySelector('header .container') || document.querySelector('header > div')
+      const mainNavContainer =
+        document.querySelector('#main-nav > div') ||
+        document.querySelector('header .container') ||
+        document.querySelector('header > div')
       if (mainNavContainer) {
         mobileLoggedInNav = document.createElement('div')
         mobileLoggedInNav.id = 'mobile-logged-in-nav'
-        mobileLoggedInNav.className = 'md:hidden flex flex-col pt-1 mt-0.5 text-xs font-bold text-text-muted'
+        mobileLoggedInNav.className =
+          'md:hidden flex flex-col pt-1 mt-0.5 text-xs font-bold text-text-muted'
         mobileLoggedInNav.innerHTML = `
           <!-- Hàng 2: Trang chủ, Trang của tôi, Kho Video Tab -->
           <div class="grid grid-cols-3 text-center py-0.5 gap-1">
@@ -454,27 +472,31 @@ export function initMobileHeaderScroll() {
   let lastScrollY = window.scrollY
   let ticking = false
 
-  window.addEventListener('scroll', () => {
-    if (!ticking) {
-      window.requestAnimationFrame(() => {
-        const currentScrollY = window.scrollY
-        if (window.innerWidth < 768) {
-          if (currentScrollY > lastScrollY && currentScrollY > 60) {
-            // Scrolling down -> hide header
-            mainNav.classList.add('-translate-y-full')
-          } else if (currentScrollY < lastScrollY) {
-            // Scrolling up -> show header
+  window.addEventListener(
+    'scroll',
+    () => {
+      if (!ticking) {
+        window.requestAnimationFrame(() => {
+          const currentScrollY = window.scrollY
+          if (window.innerWidth < 768) {
+            if (currentScrollY > lastScrollY && currentScrollY > 60) {
+              // Scrolling down -> hide header
+              mainNav.classList.add('-translate-y-full')
+            } else if (currentScrollY < lastScrollY) {
+              // Scrolling up -> show header
+              mainNav.classList.remove('-translate-y-full')
+            }
+          } else {
             mainNav.classList.remove('-translate-y-full')
           }
-        } else {
-          mainNav.classList.remove('-translate-y-full')
-        }
-        lastScrollY = Math.max(0, currentScrollY)
-        ticking = false
-      })
-      ticking = true
-    }
-  }, { passive: true })
+          lastScrollY = Math.max(0, currentScrollY)
+          ticking = false
+        })
+        ticking = true
+      }
+    },
+    { passive: true }
+  )
 }
 
 /**
@@ -486,7 +508,9 @@ export function initNavActiveSpy() {
 
   function getAllNavLinks() {
     const desktopLinks = desktopNav ? Array.from(desktopNav.querySelectorAll('a.nav-link')) : []
-    const mobileHeaderLinks = Array.from(document.querySelectorAll('#mobile-logged-in-nav a.nav-link'))
+    const mobileHeaderLinks = Array.from(
+      document.querySelectorAll('#mobile-logged-in-nav a.nav-link')
+    )
     const mobileLinks = mobileNav ? Array.from(mobileNav.querySelectorAll('a')) : []
     return { desktopLinks: [...desktopLinks, ...mobileHeaderLinks], mobileLinks }
   }
@@ -495,10 +519,17 @@ export function initNavActiveSpy() {
     if (!href) return ''
     if (href.includes('kho-tab')) return 'kho-tab'
     if (href.includes('user-dashboard') && !href.includes('#')) return 'dashboard'
-    if (href.includes('#tools') || href.includes('cong-cu') || href.includes('metronome')) return 'tools'
+    if (href.includes('#tools') || href.includes('cong-cu') || href.includes('metronome'))
+      return 'tools'
     if (href.includes('#faq') || href.includes('faq')) return 'faq'
     if (href.includes('#contact') || href.includes('contact')) return 'contact'
-    if (href.includes('index.html') || href === '/' || href.includes('#about') || href.includes('#hero')) return 'home'
+    if (
+      href.includes('index.html') ||
+      href === '/' ||
+      href.includes('#about') ||
+      href.includes('#hero')
+    )
+      return 'home'
     return ''
   }
 
@@ -506,7 +537,7 @@ export function initNavActiveSpy() {
     if (!key) return
     const { desktopLinks, mobileLinks } = getAllNavLinks()
 
-    desktopLinks.forEach(link => {
+    desktopLinks.forEach((link) => {
       const linkKey = getLinkKey(link.getAttribute('href'))
       if (linkKey === key) {
         link.classList.add('active', 'font-bold', 'text-accent-primary')
@@ -517,7 +548,7 @@ export function initNavActiveSpy() {
       }
     })
 
-    mobileLinks.forEach(link => {
+    mobileLinks.forEach((link) => {
       const linkKey = getLinkKey(link.getAttribute('href'))
       if (linkKey === key) {
         link.classList.add('text-accent-primary', 'font-bold')
@@ -531,7 +562,8 @@ export function initNavActiveSpy() {
 
   function getActiveSectionOnPage() {
     // Check if scrolled near bottom of page (for footer/contact)
-    const isNearBottom = (window.innerHeight + window.scrollY) >= (document.documentElement.scrollHeight - 150)
+    const isNearBottom =
+      window.innerHeight + window.scrollY >= document.documentElement.scrollHeight - 150
     if (isNearBottom) {
       const contactEl = document.getElementById('contact')
       if (contactEl) return 'contact'
@@ -544,7 +576,7 @@ export function initNavActiveSpy() {
       { id: 'gear', key: 'tools' },
       { id: 'featured', key: 'home' },
       { id: 'about', key: 'home' },
-      { id: 'hero', key: 'home' }
+      { id: 'hero', key: 'home' },
     ]
 
     const scrollY = window.scrollY + 200
@@ -585,7 +617,12 @@ export function initNavActiveSpy() {
     const href = targetLink.getAttribute('href')
     if (!href) return
 
-    if (targetLink.classList.contains('nav-link') || targetLink.closest('#desktop-nav') || targetLink.closest('#mobile-menu-drawer') || targetLink.closest('#mobile-logged-in-nav')) {
+    if (
+      targetLink.classList.contains('nav-link') ||
+      targetLink.closest('#desktop-nav') ||
+      targetLink.closest('#mobile-menu-drawer') ||
+      targetLink.closest('#mobile-logged-in-nav')
+    ) {
       const key = getLinkKey(href)
       if (key) {
         setActiveKey(key)
@@ -606,13 +643,13 @@ export function initMobileKeyboardScroll() {
 
   function scrollIntoVisibleArea(el) {
     if (!el || !(el instanceof HTMLElement)) return
-    
+
     // Immediate gentle scroll
     setTimeout(() => {
       el.scrollIntoView({
         behavior: 'smooth',
         block: 'center',
-        inline: 'nearest'
+        inline: 'nearest',
       })
     }, 150)
 
@@ -621,27 +658,43 @@ export function initMobileKeyboardScroll() {
       el.scrollIntoView({
         behavior: 'smooth',
         block: 'center',
-        inline: 'nearest'
+        inline: 'nearest',
       })
     }, 350)
   }
 
   // Listen to focus on all inputs/textareas
-  document.addEventListener('focusin', (e) => {
-    const target = e.target
-    if (target && (target.tagName === 'INPUT' || target.tagName === 'TEXTAREA' || target.tagName === 'SELECT')) {
-      scrollIntoVisibleArea(target)
-    }
-  }, { passive: true })
+  document.addEventListener(
+    'focusin',
+    (e) => {
+      const target = e.target
+      if (
+        target &&
+        (target.tagName === 'INPUT' || target.tagName === 'TEXTAREA' || target.tagName === 'SELECT')
+      ) {
+        scrollIntoVisibleArea(target)
+      }
+    },
+    { passive: true }
+  )
 
   // Handle virtual viewport resize when keyboard opens or closes
   if (window.visualViewport) {
-    window.visualViewport.addEventListener('resize', () => {
-      const active = document.activeElement
-      if (active && (active.tagName === 'INPUT' || active.tagName === 'TEXTAREA' || active.tagName === 'SELECT')) {
-        scrollIntoVisibleArea(active)
-      }
-    }, { passive: true })
+    window.visualViewport.addEventListener(
+      'resize',
+      () => {
+        const active = document.activeElement
+        if (
+          active &&
+          (active.tagName === 'INPUT' ||
+            active.tagName === 'TEXTAREA' ||
+            active.tagName === 'SELECT')
+        ) {
+          scrollIntoVisibleArea(active)
+        }
+      },
+      { passive: true }
+    )
   }
 }
 
@@ -660,7 +713,9 @@ export function initPasswordToggles() {
     e.stopPropagation()
 
     const targetId = btn.getAttribute('data-toggle-password')
-    const input = (targetId ? document.getElementById(targetId) : null) || btn.parentElement?.querySelector('input')
+    const input =
+      (targetId ? document.getElementById(targetId) : null) ||
+      btn.parentElement?.querySelector('input')
     if (!input) return
 
     const isPassword = input.type === 'password'
@@ -680,7 +735,7 @@ export function initPasswordToggles() {
   })
 }
 
-document.addEventListener("DOMContentLoaded", () => {
+document.addEventListener('DOMContentLoaded', () => {
   initAuthHeader()
   initNavActiveSpy()
   initMobileHeaderScroll()
@@ -691,4 +746,3 @@ initNavActiveSpy()
 initMobileHeaderScroll()
 initPasswordToggles()
 initMobileKeyboardScroll()
-
