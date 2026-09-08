@@ -1,3 +1,8 @@
 dist
 node_modules
 DATA-EXPORT.json
+
+# HTML dùng style indent phẳng cố ý (xem commit "style: format JS/CSS/MD/YAML
+# với Prettier") — Prettier mặc định sẽ re-indent toàn bộ <head>/<body> theo
+# style nested, tạo diff rất lớn. Bỏ qua cho tới khi có quyết định riêng.
+*.html
