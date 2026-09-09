@@ -19,6 +19,7 @@ import {
   normalizeVideoPath,
   normalizeAudioPath,
 } from '../lib/songs-service.js'
+import { uploadToStorage, removeFromStorageByUrl, formatBytes, MAX_UPLOAD_BYTES } from '../lib/storage-service.js'
 
 const adminSongsTbody = document.getElementById('admin-songs-tbody')
 const addSongBtn = document.getElementById('add-song-btn')
@@ -291,6 +292,10 @@ window.openAddSongModal = function (type = 'free') {
   if (!songForm) return
   songForm.reset()
   document.getElementById('song-id').value = ''
+  UPLOAD_FIELDS.forEach(({ nameId }) => {
+    const span = document.getElementById(nameId)
+    if (span) span.textContent = ''
+  })
   window.setSongModalType(type)
 
   if (type === 'free') {
@@ -337,6 +342,13 @@ window.editSong = function (id) {
 
   const isSongFree = Boolean(song.is_free ?? song.isFree ?? Number(song.price) === 0)
   const songType = isSongFree ? 'free' : 'paid'
+
+  UPLOAD_FIELDS.forEach(({ fileId, nameId }) => {
+    const fileInput = document.getElementById(fileId)
+    const span = document.getElementById(nameId)
+    if (fileInput) fileInput.value = ''
+    if (span) span.textContent = ''
+  })
 
   document.getElementById('song-id').value = song.id
   document.getElementById('song-title').value = song.title || ''
@@ -406,6 +418,56 @@ window.deleteSong = async function (id, title) {
   }
 }
 
+// ==========================================================================
+// FILE UPLOAD — chọn file trực tiếp từ máy thay vì gõ đường dẫn thủ công
+// ==========================================================================
+const UPLOAD_FIELDS = [
+  { fileId: 'song-free-target-file', nameId: 'song-free-target-file-name' },
+  { fileId: 'song-free-audio-file', nameId: 'song-free-audio-file-name' },
+  { fileId: 'song-paid-demo-file', nameId: 'song-paid-demo-file-name' },
+  { fileId: 'song-paid-audio-file', nameId: 'song-paid-audio-file-name' },
+]
+
+UPLOAD_FIELDS.forEach(({ fileId, nameId }) => {
+  const fileInput = document.getElementById(fileId)
+  const nameSpan = document.getElementById(nameId)
+  if (!fileInput || !nameSpan) return
+  fileInput.addEventListener('change', () => {
+    const file = fileInput.files?.[0]
+    if (!file) {
+      nameSpan.textContent = ''
+      return
+    }
+    if (file.size > MAX_UPLOAD_BYTES) {
+      nameSpan.textContent = `⚠️ ${file.name} (${formatBytes(file.size)}) vượt quá 50MB, sẽ không tải lên được.`
+      nameSpan.className = 'text-[11px] text-rose-500 truncate flex-1'
+    } else {
+      nameSpan.textContent = `✓ ${file.name} (${formatBytes(file.size)})`
+      nameSpan.className = 'text-[11px] text-emerald-600 dark:text-emerald-400 truncate flex-1'
+    }
+  })
+})
+
+/**
+ * If a file was picked in `fileInputId`, upload it to Storage (deleting the
+ * previous Storage file at `oldUrl` when replacing one on edit) and return
+ * the new public URL. Otherwise falls back to whatever's typed in the text
+ * input — preserves the old "paste a URL/path" workflow unchanged.
+ */
+async function resolveMediaUrl(textInputId, fileInputId, folder, prefix) {
+  const fileInput = document.getElementById(fileInputId)
+  const file = fileInput?.files?.[0]
+  const currentVal = document.getElementById(textInputId).value.trim()
+
+  if (!file) return currentVal
+
+  showToast(`Đang tải ${file.name} lên...`, 'info')
+  const url = await uploadToStorage(file, folder, prefix)
+  if (currentVal) await removeFromStorageByUrl(currentVal)
+  fileInput.value = ''
+  return url
+}
+
 // Handler Submit Song Modal Form
 if (songForm) {
   songForm.addEventListener('submit', async (e) => {
@@ -437,10 +499,27 @@ if (songForm) {
     const isFeatured = document.getElementById('song-is-featured').checked
 
     let payload = {}
+    const uploadPrefix = songId || 'new'
 
     if (isFree) {
-      const freeTargetUrl = document.getElementById('song-free-target-url').value.trim()
-      const freeAudioUrl = document.getElementById('song-free-audio-url').value.trim()
+      let freeTargetUrl, freeAudioUrl
+      try {
+        freeTargetUrl = await resolveMediaUrl(
+          'song-free-target-url',
+          'song-free-target-file',
+          'songs',
+          uploadPrefix
+        )
+        freeAudioUrl = await resolveMediaUrl(
+          'song-free-audio-url',
+          'song-free-audio-file',
+          'songs',
+          uploadPrefix
+        )
+      } catch (err) {
+        showToast(`❌ ${err.message}`, 'error')
+        return
+      }
       const freePdfUrl = document.getElementById('song-free-pdf-url').value.trim()
 
       const ytId = freeTargetUrl ? extractYoutubeId(freeTargetUrl) : null
@@ -491,8 +570,24 @@ if (songForm) {
       const priceVal = numericPrice < 1000 && numericPrice > 0 ? numericPrice * 1000 : numericPrice
       const discountNoteVal =
         document.getElementById('song-paid-discount').value.trim() || 'HSSV: 179k'
-      const demoUrlVal = document.getElementById('song-paid-demo-url').value.trim()
-      const paidAudioUrl = document.getElementById('song-paid-audio-url').value.trim()
+      let demoUrlVal, paidAudioUrl
+      try {
+        demoUrlVal = await resolveMediaUrl(
+          'song-paid-demo-url',
+          'song-paid-demo-file',
+          'songs',
+          uploadPrefix
+        )
+        paidAudioUrl = await resolveMediaUrl(
+          'song-paid-audio-url',
+          'song-paid-audio-file',
+          'songs',
+          uploadPrefix
+        )
+      } catch (err) {
+        showToast(`❌ ${err.message}`, 'error')
+        return
+      }
       const driveUrlVal = document.getElementById('song-paid-drive-url').value.trim()
 
       const ytId = demoUrlVal ? extractYoutubeId(demoUrlVal) : null

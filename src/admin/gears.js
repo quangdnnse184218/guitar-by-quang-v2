@@ -14,6 +14,7 @@ import {
   reorderAllGears,
   normalizeImagePath,
 } from '../lib/gears-service.js'
+import { uploadToStorage, removeFromStorageByUrl, formatBytes, MAX_UPLOAD_BYTES } from '../lib/storage-service.js'
 
 const adminGearsTbody = document.getElementById('admin-gears-tbody')
 const addGearBtn = document.getElementById('add-gear-btn')
@@ -192,10 +193,32 @@ window.handleMoveGear = async function (gearId, direction) {
   }
 }
 
+const gearImageFileInput = document.getElementById('gear-image-file')
+const gearImageFileName = document.getElementById('gear-image-file-name')
+
+if (gearImageFileInput && gearImageFileName) {
+  gearImageFileInput.addEventListener('change', () => {
+    const file = gearImageFileInput.files?.[0]
+    if (!file) {
+      gearImageFileName.textContent = ''
+      return
+    }
+    if (file.size > MAX_UPLOAD_BYTES) {
+      gearImageFileName.textContent = `⚠️ ${file.name} (${formatBytes(file.size)}) vượt quá 50MB, sẽ không tải lên được.`
+      gearImageFileName.className = 'text-[11px] text-rose-500 truncate flex-1'
+    } else {
+      gearImageFileName.textContent = `✓ ${file.name} (${formatBytes(file.size)})`
+      gearImageFileName.className = 'text-[11px] text-emerald-600 dark:text-emerald-400 truncate flex-1'
+    }
+  })
+}
+
 window.openAddGearModal = function () {
   if (!gearForm) return
   gearForm.reset()
   document.getElementById('gear-id').value = ''
+  if (gearImageFileInput) gearImageFileInput.value = ''
+  if (gearImageFileName) gearImageFileName.textContent = ''
   if (gearModalTitle) gearModalTitle.textContent = 'Thêm Gear Mới'
   toggleModal(gearModal, true)
 }
@@ -203,6 +226,9 @@ window.openAddGearModal = function () {
 window.editGear = function (id) {
   const gear = state.gearsList.find((g) => String(g.id) === String(id))
   if (!gear) return
+
+  if (gearImageFileInput) gearImageFileInput.value = ''
+  if (gearImageFileName) gearImageFileName.textContent = ''
 
   document.getElementById('gear-id').value = gear.id
   document.getElementById('gear-name').value = gear.name || gear.title || ''
@@ -245,8 +271,30 @@ if (gearForm) {
       return
     }
 
-    const rawImage = document.getElementById('gear-image').value.trim()
-    const cleanImage = normalizeImagePath(rawImage)
+    const selectedFile = gearImageFileInput?.files?.[0]
+    let cleanImage
+    if (selectedFile) {
+      if (selectedFile.size > MAX_UPLOAD_BYTES) {
+        showToast(
+          `❌ Ảnh quá lớn (${formatBytes(selectedFile.size)}). Gói Supabase miễn phí chỉ cho phép tối đa 50MB/file.`,
+          'error'
+        )
+        return
+      }
+      const oldImage = document.getElementById('gear-image').value.trim()
+      try {
+        showToast(`Đang tải ${selectedFile.name} lên...`, 'info')
+        cleanImage = await uploadToStorage(selectedFile, 'gears', gearId || 'new')
+        if (oldImage) await removeFromStorageByUrl(oldImage)
+        gearImageFileInput.value = ''
+      } catch (err) {
+        showToast(`❌ ${err.message}`, 'error')
+        return
+      }
+    } else {
+      const rawImage = document.getElementById('gear-image').value.trim()
+      cleanImage = normalizeImagePath(rawImage)
+    }
 
     const payload = {
       title: nameVal,
