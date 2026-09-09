@@ -501,6 +501,15 @@ export function initMobileHeaderScroll() {
   const mainNav = document.getElementById('main-nav')
   if (!mainNav) return
 
+  // Reappearing on ANY upward scroll (regardless of position) made the header
+  // slide back over content sitting just below the fold — e.g. the hero badge
+  // on index.html, still only ~60-100px down when scrolling back up a little.
+  // Only hide/reveal past this point so it can never land on top of that.
+  const revealSafeZone = document.getElementById('hero')
+  const revealThreshold = revealSafeZone
+    ? revealSafeZone.offsetTop + revealSafeZone.offsetHeight
+    : 400
+
   let lastScrollY = window.scrollY
   let ticking = false
 
@@ -510,8 +519,8 @@ export function initMobileHeaderScroll() {
       if (!ticking) {
         window.requestAnimationFrame(() => {
           const currentScrollY = window.scrollY
-          if (window.innerWidth < 768) {
-            if (currentScrollY > lastScrollY && currentScrollY > 60) {
+          if (window.innerWidth < 768 && currentScrollY > revealThreshold) {
+            if (currentScrollY > lastScrollY) {
               // Scrolling down -> hide header
               mainNav.classList.add('-translate-y-full')
             } else if (currentScrollY < lastScrollY) {
