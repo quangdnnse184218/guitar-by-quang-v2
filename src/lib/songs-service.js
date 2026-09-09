@@ -50,8 +50,10 @@ export const DEFAULT_SONGS = [
       'Fingerstyle nâng cao: nhiều đoạn hammer-on/pull-off tốc độ cao, thế tay dãn rộng và có slap kết hợp tỉa nốt. Anh em nên luyện chậm từng ô nhịp.',
     has_demo: true,
     hasDemo: true,
-    video_demo: 'assets/resg1ctkdemo.mp4',
-    demo_video_url: 'assets/resg1ctkdemo.mp4',
+    video_demo:
+      'https://covzjzcqerldfssxasax.supabase.co/storage/v1/object/public/uploads/songs/migrated-resg1ctkdemo.mp4',
+    demo_video_url:
+      'https://covzjzcqerldfssxasax.supabase.co/storage/v1/object/public/uploads/songs/migrated-resg1ctkdemo.mp4',
     button_type: 'buy',
     button_text: 'Mua Video Tab',
     thumbnail_bg: 'from-[#C1602F] to-[#6E3B1F]',
@@ -106,8 +108,10 @@ export const DEFAULT_SONGS = [
       'Ballad cơ bản: đi bass theo nhịp 4/4 kết hợp rải ngón dây 1-2-3 đơn giản. Rất hợp cho anh em mới bắt đầu làm quen với fingerstyle.',
     has_demo: true,
     hasDemo: true,
-    video_demo: 'assets/noigiolendemo.mp4',
-    demo_video_url: 'assets/noigiolendemo.mp4',
+    video_demo:
+      'https://covzjzcqerldfssxasax.supabase.co/storage/v1/object/public/uploads/songs/migrated-noigiolendemo.mp4',
+    demo_video_url:
+      'https://covzjzcqerldfssxasax.supabase.co/storage/v1/object/public/uploads/songs/migrated-noigiolendemo.mp4',
     button_type: 'link',
     target_url: 'https://www.tiktok.com/@quangdnn104/video/7627688728240147732',
     tab_url: 'https://www.tiktok.com/@quangdnn104/video/7627688728240147732',
@@ -135,8 +139,10 @@ export const DEFAULT_SONGS = [
       'Đoạn intro kinh điển: chú ý các nốt slide (vuốt dây) liền mạch và kỹ thuật let-ring để giữ hợp âm ngân vang đều tay.',
     has_demo: true,
     hasDemo: true,
-    video_demo: 'assets/thangtudemo.mp4',
-    demo_video_url: 'assets/thangtudemo.mp4',
+    video_demo:
+      'https://covzjzcqerldfssxasax.supabase.co/storage/v1/object/public/uploads/songs/migrated-thangtudemo.mp4',
+    demo_video_url:
+      'https://covzjzcqerldfssxasax.supabase.co/storage/v1/object/public/uploads/songs/migrated-thangtudemo.mp4',
     button_type: 'link',
     target_url: 'https://www.tiktok.com/@quangdnn104/video/7625293561130405141',
     tab_url: 'https://www.tiktok.com/@quangdnn104/video/7625293561130405141',
