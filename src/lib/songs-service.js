@@ -617,89 +617,44 @@ function sanitizeSongPayload(payload) {
   return clean
 }
 
-function extractMissingColumn(errMsg) {
-  if (!errMsg || typeof errMsg !== 'string') return null
-  const m1 = errMsg.match(/column "([^"]+)" of relation "songs" does not exist/i)
-  if (m1) return m1[1]
-  const m2 = errMsg.match(/Could not find the '([^']+)' column/i)
-  if (m2) return m2[1]
-  const m3 = errMsg.match(/column "([^"]+)" does not exist/i)
-  if (m3) return m3[1]
-  const m4 = errMsg.match(/column [a-zA-Z0-9_]+\.([a-zA-Z0-9_]+) does not exist/i)
-  if (m4) return m4[1]
-  const m5 = errMsg.match(/'([^']+)' column of 'songs'/i)
-  if (m5) return m5[1]
-  const m6 = errMsg.match(/Could not find the column '([^']+)'/i)
-  if (m6) return m6[1]
-  const m7 = errMsg.match(/"([^"]+)" column of "songs"/i)
-  if (m7) return m7[1]
-  return null
-}
-
 /**
- * Helper to write to Supabase with automatic retry when non-existent columns are encountered
+ * Helper to write a song to Supabase (insert or update).
+ * Trước đây có thêm 1 vòng retry tự phát hiện & xoá cột lỗi khỏi payload khi
+ * gặp "column does not exist" — đó là do bảng `songs` từng thiếu 9 cột so với
+ * VALID_SONG_COLUMNS (singer, is_featured, youtube_id, pdf_url, audio_demo,
+ * demo_audio_url, audio_url, demo_video_url, tab_url). Giờ schema đã đủ cột
+ * nên ghi thẳng, không cần né tránh nữa.
  */
 async function writeSongToSupabase(payload, isEdit, songId) {
-  let attemptPayload = { ...payload }
-  // Mỗi lần thử tối đa xoá 1 cột lỗi khỏi payload, nên không thể lặp quá số cột đang gửi
-  const maxAttempts = Object.keys(attemptPayload).length + 1
+  try {
+    if (isEdit && songId) {
+      const { data, error } = await supabase
+        .from('songs')
+        .update(payload)
+        .eq('id', songId)
+        .select()
 
-  for (let attempt = 0; attempt < maxAttempts; attempt++) {
-    try {
-      if (isEdit && songId) {
-        const { data, error } = await supabase
+      if (error) return { data: null, error }
+
+      // If update matched 0 rows (song not synced to Supabase yet), insert instead
+      if (Array.isArray(data) && data.length === 0) {
+        const { data: insData, error: insError } = await supabase
           .from('songs')
-          .update(attemptPayload)
-          .eq('id', songId)
+          .insert([payload])
           .select()
-
-        if (!error) {
-          // If update succeeded but matched 0 rows, try inserting instead
-          if (Array.isArray(data) && data.length === 0) {
-            const { data: insData, error: insError } = await supabase
-              .from('songs')
-              .insert([attemptPayload])
-              .select()
-            if (!insError) {
-              return { data: (insData && insData[0]) || attemptPayload, error: null }
-            }
-          }
-          return { data: (data && data[0]) || attemptPayload, error: null }
-        }
-
-        console.warn(`[songs-service] Update attempt ${attempt + 1} warning:`, error.message)
-
-        const missingCol = extractMissingColumn(error.message)
-        if (missingCol && attemptPayload[missingCol] !== undefined) {
-          delete attemptPayload[missingCol]
-          continue
-        }
-        return { data: null, error }
-      } else {
-        const { data, error } = await supabase.from('songs').insert([attemptPayload]).select()
-
-        if (!error) {
-          return { data: (data && data[0]) || attemptPayload, error: null }
-        }
-
-        console.warn(`[songs-service] Insert attempt ${attempt + 1} warning:`, error.message)
-
-        const missingCol = extractMissingColumn(error.message)
-        if (missingCol && attemptPayload[missingCol] !== undefined) {
-          delete attemptPayload[missingCol]
-          continue
-        }
-        return { data: null, error }
+        if (insError) return { data: null, error: insError }
+        return { data: (insData && insData[0]) || payload, error: null }
       }
-    } catch (err) {
-      console.error('[songs-service] Exception writing to Supabase:', err)
-      return { data: null, error: err }
-    }
-  }
 
-  return {
-    data: null,
-    error: new Error('Không thể tự động điều chỉnh các cột với Supabase sau 35 lần thử.'),
+      return { data: (data && data[0]) || payload, error: null }
+    }
+
+    const { data, error } = await supabase.from('songs').insert([payload]).select()
+    if (error) return { data: null, error }
+    return { data: (data && data[0]) || payload, error: null }
+  } catch (err) {
+    console.error('[songs-service] Exception writing to Supabase:', err)
+    return { data: null, error: err }
   }
 }
 
