@@ -281,60 +281,19 @@ export const DEFAULT_SONGS = [
   },
 ]
 
-function getSongOverrides() {
-  try {
-    const raw = localStorage.getItem('gbq_song_meta_overrides')
-    return raw ? JSON.parse(raw) : {}
-  } catch (e) {
-    return {}
-  }
-}
-
-export function setSongOverride(songId, overrides) {
-  try {
-    const current = getSongOverrides()
-    current[songId] = { ...(current[songId] || {}), ...overrides }
-    localStorage.setItem('gbq_song_meta_overrides', JSON.stringify(current))
-  } catch (e) {}
-}
-
-function enrichSongsWithOverrides(songs) {
-  if (!Array.isArray(songs)) return songs
-  const overrides = getSongOverrides()
-  return songs.map((s) => {
-    const ov = overrides[s.id] || {}
-    const audioDemo =
-      ov.audio_demo ||
-      ov.demo_audio_url ||
-      ov.audio_url ||
-      s.audio_demo ||
-      s.demo_audio_url ||
-      s.audio_url ||
-      null
-    return {
-      ...s,
-      ...ov,
-      audio_demo: audioDemo,
-      demo_audio_url: audioDemo,
-      audio_url: audioDemo,
-    }
-  })
-}
-
 function getLocalSongs() {
   const local = localStorage.getItem('gbq_songs')
   if (local) {
     try {
       const parsed = JSON.parse(local)
       if (Array.isArray(parsed) && parsed.length > 0) {
-        const enriched = enrichSongsWithOverrides(parsed)
-        return enriched.sort((a, b) => (a.order || 99) - (b.order || 99))
+        return parsed.sort((a, b) => (a.order || 99) - (b.order || 99))
       }
     } catch (e) {
       console.warn('[songs-service] Lỗi parse gbq_songs:', e)
     }
   }
-  return enrichSongsWithOverrides(DEFAULT_SONGS)
+  return DEFAULT_SONGS
 }
 
 function setLocalSongs(songs) {
@@ -361,7 +320,7 @@ export async function fetchFeaturedSongs() {
       return fallback.slice(0, 4)
     }
 
-    return enrichSongsWithOverrides(data)
+    return data
   } catch (err) {
     console.error('[songs-service] Ngoại lệ khi tải bài hát nổi bật:', err.message, err)
     const fallback = getLocalSongs()
@@ -383,9 +342,8 @@ export async function fetchAllSongs() {
       return getLocalSongs()
     }
 
-    const enriched = enrichSongsWithOverrides(data)
-    setLocalSongs(enriched)
-    return enriched
+    setLocalSongs(data)
+    return data
   } catch (err) {
     console.error('[songs-service] Ngoại lệ khi tải tất cả bài hát:', err.message, err)
     return getLocalSongs()
@@ -404,12 +362,7 @@ export async function fetchSongById(id) {
       return all.find((s) => String(s.id) === String(id)) || null
     }
 
-    const overrides = getSongOverrides()
-    const ov = overrides[data.id] || {}
-    return {
-      ...data,
-      ...ov,
-    }
+    return data
   } catch (err) {
     console.error(`[songs-service] Ngoại lệ khi tải bài hát ${id}:`, err.message, err)
     const all = getLocalSongs()
@@ -692,25 +645,7 @@ export async function saveSong(payload, isEdit = false, songId = null) {
     supabaseWarning = err?.message || 'Lỗi mạng khi gọi Supabase'
   }
 
-  // 2. Luôn đồng bộ vào LocalStorage & Song Overrides để không bao giờ làm mất dữ liệu của admin
-  if (
-    payload.audio_demo !== undefined ||
-    payload.demo_audio_url !== undefined ||
-    payload.audio_url !== undefined
-  ) {
-    const aUrl = payload.audio_demo || payload.demo_audio_url || payload.audio_url || null
-    setSongOverride(targetId, { audio_demo: aUrl, demo_audio_url: aUrl, audio_url: aUrl })
-  }
-
-  if (payload.video_demo !== undefined || payload.demo_video_url !== undefined) {
-    const vUrl = payload.video_demo || payload.demo_video_url || null
-    setSongOverride(targetId, { video_demo: vUrl, demo_video_url: vUrl })
-  }
-
-  if (payload.capo !== undefined) setSongOverride(targetId, { capo: payload.capo })
-  if (payload.discount_note !== undefined)
-    setSongOverride(targetId, { discount_note: payload.discount_note })
-
+  // 2. Luôn đồng bộ vào LocalStorage để có fallback khi Supabase lỗi/offline
   const fullRecord = { ...payload, ...(savedRecord || {}), id: targetId }
   if (isEdit && songId) {
     const idx = all.findIndex((s) => String(s.id) === String(songId))
