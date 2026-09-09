@@ -5,7 +5,7 @@
  */
 
 import { supabase } from './lib/supabase.js'
-import { initNavbarShrink, initMobileMenu } from './common.js'
+import { initNavbarShrink, initMobileMenu, initCardTouchFeedback } from './common.js'
 import { initThemeToggle } from './theme-toggle.js'
 import {
   fetchAllSongs,
@@ -26,6 +26,7 @@ if (
 initNavbarShrink()
 initMobileMenu()
 initThemeToggle()
+initCardTouchFeedback()
 
 // ==========================================================================
 // STATE
@@ -222,6 +223,74 @@ navTabPurchases?.addEventListener('click', () => {
   window.location.hash = 'purchases'
   setActiveTab('purchases')
 })
+
+// Swipe left/right on a tab section to move to the next/previous tab —
+// dashboard is mostly used on mobile, where tapping the tab bar every time
+// is more friction than a horizontal swipe on the content itself.
+function initTabSwipe() {
+  const order = ['overview', 'favorites', 'purchases']
+  // #section-overview itself stays empty — the "Tổng quan" tab's visible content
+  // (featured songs, gear) lives in #dashboard-common-sections, shared by all 3
+  // tabs — so that container needs the same listeners for swipe-from-overview to work.
+  const commonSections = document.getElementById('dashboard-common-sections')
+  const sections = [sectionOverview, sectionFavorites, sectionPurchases, commonSections].filter(
+    Boolean
+  )
+  let touch = null
+
+  sections.forEach((sec) => {
+    sec.addEventListener(
+      'touchstart',
+      (e) => {
+        if (e.touches.length > 1) return
+        const t = e.touches[0]
+        touch = { startX: t.clientX, startY: t.clientY, locked: null }
+      },
+      { passive: true }
+    )
+
+    sec.addEventListener(
+      'touchmove',
+      (e) => {
+        if (!touch) return
+        const t = e.touches[0]
+        const dx = t.clientX - touch.startX
+        const dy = t.clientY - touch.startY
+        if (touch.locked === null && (Math.abs(dx) > 10 || Math.abs(dy) > 10)) {
+          touch.locked = Math.abs(dx) > Math.abs(dy) * 1.5 ? 'x' : 'y'
+        }
+        if (touch.locked === 'x') e.preventDefault()
+      },
+      { passive: false }
+    )
+
+    const endSwipe = (e) => {
+      if (!touch) return
+      const changed = e.changedTouches && e.changedTouches[0]
+      if (touch.locked === 'x' && changed) {
+        const dx = changed.clientX - touch.startX
+        if (Math.abs(dx) > 60) {
+          const idx = order.indexOf(activeTab)
+          let nextIdx = idx
+          if (dx < 0 && idx < order.length - 1) nextIdx = idx + 1
+          if (dx > 0 && idx > 0) nextIdx = idx - 1
+          if (nextIdx !== idx) {
+            window.location.hash = order[nextIdx]
+            setActiveTab(order[nextIdx])
+          }
+        }
+      }
+      touch = null
+    }
+
+    sec.addEventListener('touchend', endSwipe, { passive: true })
+    sec.addEventListener('touchcancel', () => {
+      touch = null
+    })
+  })
+}
+
+initTabSwipe()
 
 // ==========================================================================
 // DATA FETCHING

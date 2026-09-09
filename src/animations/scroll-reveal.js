@@ -10,7 +10,9 @@ export function applyScrollReveal(selector, options = {}) {
   const els = document.querySelectorAll(selector)
   if (els.length === 0) return
 
-  els.forEach((el) => {
+  const { stagger = 0, ...gsapOptions } = options
+
+  els.forEach((el, i) => {
     if (el.dataset.revealed === 'true') return
     el.dataset.revealed = 'true'
 
@@ -18,6 +20,7 @@ export function applyScrollReveal(selector, options = {}) {
       opacity: 0,
       y: 10,
       duration: 0.25,
+      delay: stagger * i,
       ease: 'power2.out',
       clearProps: 'transform,opacity',
       scrollTrigger: {
@@ -25,7 +28,7 @@ export function applyScrollReveal(selector, options = {}) {
         start: 'top 98%',
         once: true,
       },
-      ...options,
+      ...gsapOptions,
     })
   })
 }

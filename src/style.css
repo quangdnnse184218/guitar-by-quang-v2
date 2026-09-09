@@ -387,14 +387,22 @@ nav,
 
 .song-card:hover::before,
 .gear-card:hover::before,
-.card-interactive:hover::before {
+.card-interactive:hover::before,
+.song-card.touch-active::before,
+.gear-card.touch-active::before,
+.card-interactive.touch-active::before {
   left: 180%;
   transition: left 0.75s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
+/* Mirror :hover feedback on touch devices (no mouse = no :hover), toggled
+   via a delegated touchstart/touchend listener in common.js (initCardTouchFeedback) */
 .song-card:hover,
 .gear-card:hover,
-.card-interactive:hover {
+.card-interactive:hover,
+.song-card.touch-active,
+.gear-card.touch-active,
+.card-interactive.touch-active {
   background-color: var(--glass-bg-hover);
   transform: translateY(-5px);
   box-shadow:
@@ -405,11 +413,29 @@ nav,
 
 [data-theme='light'] .song-card:hover,
 [data-theme='light'] .gear-card:hover,
-[data-theme='light'] .card-interactive:hover {
+[data-theme='light'] .card-interactive:hover,
+[data-theme='light'] .song-card.touch-active,
+[data-theme='light'] .gear-card.touch-active,
+[data-theme='light'] .card-interactive.touch-active {
   box-shadow:
     0 16px 32px rgba(60, 40, 20, 0.12),
     0 0 16px rgba(211, 95, 29, 0.12);
   border-color: rgba(211, 95, 29, 0.4);
+}
+
+/* Swipe-to-favorite overlay (kho-tab.js): heart flash shown while dragging a
+   song-card horizontally. Opacity/transform driven inline by JS per-frame. */
+.swipe-fav-overlay {
+  transition: opacity 0.2s ease;
+}
+
+/* Bento highlight for pinned (is_featured) songs in the catalog grid */
+#songs-grid {
+  grid-auto-flow: dense;
+}
+.song-card.song-card-pinned {
+  grid-column: span 2;
+  grid-row: span 2;
 }
 
 /* ==============================================================================
