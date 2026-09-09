@@ -237,7 +237,7 @@
                 class="absolute -bottom-8 -left-6 w-60 h-60 bg-accent-primary/15 rounded-full blur-3xl pointer-events-none">
               </div>
 
-              <div class="relative glass-card p-3 sm:p-4 border border-glass-border shadow-xl">
+              <div id="hero-tilt-card" class="relative glass-card p-3 sm:p-4 border border-glass-border shadow-xl">
                 <div
                   class="relative overflow-hidden rounded-2xl aspect-video bg-black/70 shadow-lg border border-glass-border">
                   <video id="hero-cover-video" controls playsinline webkit-playsinline preload="metadata"
@@ -287,7 +287,7 @@
           <!-- 2 Mini Cards / Story Timeline Steps -->
           <div class="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6">
             <!-- Bước 1 -->
-            <div class="p-5 sm:p-6 rounded-2xl sm:rounded-3xl bg-black/5 dark:bg-white/[0.04] border border-glass-border/70 flex flex-col justify-between space-y-3 hover:border-accent-primary/40 transition-all">
+            <div class="reveal-item p-5 sm:p-6 rounded-2xl sm:rounded-3xl bg-black/5 dark:bg-white/[0.04] border border-glass-border/70 flex flex-col justify-between space-y-3 hover:border-accent-primary/40 transition-all">
               <div class="flex items-center gap-3">
                 <span class="w-9 h-9 rounded-xl bg-warm-gradient text-white flex items-center justify-center text-xs font-black shadow-xs flex-shrink-0">01</span>
                 <h3 class="text-sm sm:text-base font-bold text-text-primary">Tự mò mẫm từ cấp 3</h3>
@@ -298,7 +298,7 @@
             </div>
 
             <!-- Bước 2 -->
-            <div class="p-5 sm:p-6 rounded-2xl sm:rounded-3xl bg-black/5 dark:bg-white/[0.04] border border-glass-border/70 flex flex-col justify-between space-y-3 hover:border-accent-primary/40 transition-all">
+            <div class="reveal-item p-5 sm:p-6 rounded-2xl sm:rounded-3xl bg-black/5 dark:bg-white/[0.04] border border-glass-border/70 flex flex-col justify-between space-y-3 hover:border-accent-primary/40 transition-all">
               <div class="flex items-center gap-3">
                 <span class="w-9 h-9 rounded-xl bg-warm-gradient text-white flex items-center justify-center text-xs font-black shadow-xs flex-shrink-0">02</span>
                 <h3 class="text-sm sm:text-base font-bold text-text-primary">Tự chuyển soạn Tab</h3>
@@ -371,20 +371,21 @@
           </a>
         </div>
 
-        <!-- Featured Grid (2 Columns on Mobile / 4 Columns on Desktop) -->
+        <!-- Featured Grid: swipeable horizontal row on mobile (snap-scroll),
+             regular 4-col grid from md: up -->
         <div id="featured-grid"
-          class="grid grid-cols-2 md:grid-cols-4 gap-3 sm:gap-5 lg:gap-6 w-full">
+          class="flex overflow-x-auto scrollbar-none snap-x snap-mandatory -mx-4 px-4 sm:-mx-6 sm:px-6 md:mx-0 md:px-0 md:grid md:grid-cols-4 md:overflow-visible gap-3 sm:gap-5 lg:gap-6 w-full">
           <div
-            class="w-full skeleton-pulse rounded-xl sm:rounded-2xl bg-glass-bg border border-glass-border aspect-[3/4]">
+            class="shrink-0 snap-start w-[45%] sm:w-[30%] md:w-full skeleton-pulse rounded-xl sm:rounded-2xl bg-glass-bg border border-glass-border aspect-[3/4]">
           </div>
           <div
-            class="w-full skeleton-pulse rounded-xl sm:rounded-2xl bg-glass-bg border border-glass-border aspect-[3/4]">
+            class="shrink-0 snap-start w-[45%] sm:w-[30%] md:w-full skeleton-pulse rounded-xl sm:rounded-2xl bg-glass-bg border border-glass-border aspect-[3/4]">
           </div>
           <div
-            class="w-full skeleton-pulse rounded-xl sm:rounded-2xl bg-glass-bg border border-glass-border aspect-[3/4]">
+            class="shrink-0 snap-start w-[45%] sm:w-[30%] md:w-full skeleton-pulse rounded-xl sm:rounded-2xl bg-glass-bg border border-glass-border aspect-[3/4]">
           </div>
           <div
-            class="w-full skeleton-pulse rounded-xl sm:rounded-2xl bg-glass-bg border border-glass-border aspect-[3/4]">
+            class="shrink-0 snap-start w-[45%] sm:w-[30%] md:w-full skeleton-pulse rounded-xl sm:rounded-2xl bg-glass-bg border border-glass-border aspect-[3/4]">
           </div>
         </div>
 
@@ -694,7 +695,7 @@
             class="grid grid-cols-2 md:grid-cols-3 gap-3 sm:gap-5 lg:gap-6">
             <!-- Service 1 -->
             <div
-              class="p-3.5 sm:p-5 rounded-2xl bg-glass-bg border border-glass-border hover:border-accent-primary/50 transition-all duration-300 flex flex-col justify-between space-y-2.5 sm:space-y-3 group text-left">
+              class="reveal-item p-3.5 sm:p-5 rounded-2xl bg-glass-bg border border-glass-border hover:border-accent-primary/50 transition-all duration-300 flex flex-col justify-between space-y-2.5 sm:space-y-3 group text-left">
               <div class="space-y-1.5 sm:space-y-2.5">
                 <div
                   class="w-9 h-9 sm:w-11 sm:h-11 rounded-xl bg-accent-primary/20 text-accent-primary flex items-center justify-center text-lg sm:text-xl shadow-inner group-hover:scale-105 transition-transform">
@@ -709,7 +710,7 @@
 
             <!-- Service 2 -->
             <div
-              class="p-3.5 sm:p-5 rounded-2xl bg-glass-bg border border-glass-border hover:border-accent-primary/50 transition-all duration-300 flex flex-col justify-between space-y-2.5 sm:space-y-3 group text-left">
+              class="reveal-item p-3.5 sm:p-5 rounded-2xl bg-glass-bg border border-glass-border hover:border-accent-primary/50 transition-all duration-300 flex flex-col justify-between space-y-2.5 sm:space-y-3 group text-left">
               <div class="space-y-1.5 sm:space-y-2.5">
                 <div
                   class="w-9 h-9 sm:w-11 sm:h-11 rounded-xl bg-emerald-500/20 text-emerald-400 flex items-center justify-center text-lg sm:text-xl shadow-inner group-hover:scale-105 transition-transform">
@@ -724,7 +725,7 @@
 
             <!-- Service 3 (Centered / Spans row 2 on mobile) -->
             <div
-              class="col-span-2 md:col-span-1 p-3.5 sm:p-5 rounded-2xl bg-glass-bg border border-glass-border hover:border-accent-primary/50 transition-all duration-300 flex flex-col justify-between space-y-2.5 sm:space-y-3 group text-left">
+              class="reveal-item col-span-2 md:col-span-1 p-3.5 sm:p-5 rounded-2xl bg-glass-bg border border-glass-border hover:border-accent-primary/50 transition-all duration-300 flex flex-col justify-between space-y-2.5 sm:space-y-3 group text-left">
               <div class="space-y-1.5 sm:space-y-2.5">
                 <div
                   class="w-9 h-9 sm:w-11 sm:h-11 rounded-xl bg-amber-500/20 text-amber-400 flex items-center justify-center text-lg sm:text-xl shadow-inner group-hover:scale-105 transition-transform">

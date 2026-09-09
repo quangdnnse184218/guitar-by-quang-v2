@@ -138,6 +138,38 @@ export function initMobileMenu() {
 }
 
 /**
+ * Mirrors the :hover lift/shine effect on .song-card/.gear-card/.card-interactive
+ * to touch devices, which never fire :hover. Adds `.touch-active` on touchstart
+ * (matched by the same CSS rules as :hover) and removes it shortly after release
+ * so the feedback is visible instead of invisible-and-instant.
+ */
+export function initCardTouchFeedback() {
+  const selector = '.song-card, .gear-card, .card-interactive'
+  let activeEl = null
+
+  document.addEventListener(
+    'touchstart',
+    (e) => {
+      const card = e.target.closest(selector)
+      if (!card) return
+      activeEl = card
+      card.classList.add('touch-active')
+    },
+    { passive: true }
+  )
+
+  const release = () => {
+    if (!activeEl) return
+    const el = activeEl
+    activeEl = null
+    setTimeout(() => el.classList.remove('touch-active'), 200)
+  }
+
+  document.addEventListener('touchend', release, { passive: true })
+  document.addEventListener('touchcancel', release, { passive: true })
+}
+
+/**
  * Checks authentication state and updates the header if user is logged in
  */
 export async function initAuthHeader() {

@@ -6,7 +6,13 @@
  * v2's Glassmorphism & Light/Dark Theme System.
  */
 
-import { renderAmbientBlobs, renderMusicNotes, initNavbarShrink, initMobileMenu } from './common.js'
+import {
+  renderAmbientBlobs,
+  renderMusicNotes,
+  initNavbarShrink,
+  initMobileMenu,
+  initCardTouchFeedback,
+} from './common.js'
 import { initThemeToggle } from './theme-toggle.js'
 import {
   fetchFeaturedSongs,
@@ -30,6 +36,8 @@ renderMusicNotes()
 initNavbarShrink()
 initMobileMenu()
 initThemeToggle()
+initCardTouchFeedback()
+initHeroTiltEffect()
 
 // ==========================================================================
 // STATE
@@ -950,11 +958,78 @@ function setupEventListeners() {
 }
 
 // ==========================================================================
+// HERO TILT EFFECT — mouse-follow parallax on desktop, device-tilt on mobile
+// ==========================================================================
+function initHeroTiltEffect() {
+  const card = document.getElementById('hero-tilt-card')
+  if (!card) return
+  if (window.matchMedia?.('(prefers-reduced-motion: reduce)').matches) return
+
+  const MAX_TILT = 8 // degrees, kept subtle so it reads as polish, not motion sickness
+
+  card.style.transition = 'transform 0.4s cubic-bezier(0.16, 1, 0.3, 1)'
+  card.style.willChange = 'transform'
+
+  const applyTilt = (rotX, rotY) => {
+    card.style.transform = `perspective(1000px) rotateX(${rotX}deg) rotateY(${rotY}deg)`
+  }
+
+  // Desktop: tilt follows cursor position over the card
+  card.addEventListener('mousemove', (e) => {
+    const rect = card.getBoundingClientRect()
+    const px = (e.clientX - rect.left) / rect.width - 0.5
+    const py = (e.clientY - rect.top) / rect.height - 0.5
+    card.style.transition = 'transform 0.1s ease-out'
+    applyTilt(-py * MAX_TILT * 2, px * MAX_TILT * 2)
+  })
+
+  card.addEventListener('mouseleave', () => {
+    card.style.transition = 'transform 0.4s cubic-bezier(0.16, 1, 0.3, 1)'
+    applyTilt(0, 0)
+  })
+
+  // Mobile: tilt follows device orientation (gyroscope)
+  let gyroEnabled = false
+  const onOrientation = (e) => {
+    if (e.beta === null || e.gamma === null) return
+    const rotX = Math.max(-MAX_TILT, Math.min(MAX_TILT, (e.beta - 45) * -0.25))
+    const rotY = Math.max(-MAX_TILT, Math.min(MAX_TILT, e.gamma * 0.35))
+    applyTilt(rotX, rotY)
+  }
+
+  const enableGyro = () => {
+    if (gyroEnabled) return
+    gyroEnabled = true
+    window.addEventListener('deviceorientation', onOrientation)
+  }
+
+  if (typeof DeviceOrientationEvent?.requestPermission === 'function') {
+    // iOS 13+ requires an explicit user gesture before the permission prompt can appear
+    const requestOnce = () => {
+      document.removeEventListener('touchend', requestOnce)
+      DeviceOrientationEvent.requestPermission()
+        .then((state) => {
+          if (state === 'granted') enableGyro()
+        })
+        .catch(() => {})
+    }
+    document.addEventListener('touchend', requestOnce, { once: true })
+  } else if (typeof window.DeviceOrientationEvent !== 'undefined') {
+    enableGyro()
+  }
+}
+
+// ==========================================================================
 // INITIALIZATION
 // ==========================================================================
 
 async function initHome() {
   setupEventListeners()
+
+  // Reveal static sections (About story/step cards, FAQ items, Contact service
+  // cards) as they scroll into view — previously only song/gear cards animated.
+  applyScrollReveal('.reveal-item', { stagger: 0.08 })
+  applyScrollReveal('.faq-item', { stagger: 0.06 })
 
   // 1. Fetch & Render Featured Songs
   featuredSongs = await fetchFeaturedSongs()
@@ -963,7 +1038,7 @@ async function initHome() {
     if (featuredSongs && featuredSongs.length > 0) {
       const songsHtml = featuredSongs
         .slice(0, 4)
-        .map((tab, idx) => renderSongCard(tab, idx, 'w-full'))
+        .map((tab, idx) => renderSongCard(tab, idx, 'shrink-0 snap-start w-[45%] sm:w-[30%] md:w-full'))
         .join('')
 
       featuredContainer.innerHTML = songsHtml

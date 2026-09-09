@@ -1,4 +1,10 @@
-import { renderAmbientBlobs, renderMusicNotes, initNavbarShrink, initMobileMenu } from './common.js'
+import {
+  renderAmbientBlobs,
+  renderMusicNotes,
+  initNavbarShrink,
+  initMobileMenu,
+  initCardTouchFeedback,
+} from './common.js'
 import { initThemeToggle } from './theme-toggle.js'
 import {
   fetchAllSongs,
@@ -21,6 +27,7 @@ renderMusicNotes()
 initNavbarShrink()
 initMobileMenu()
 initThemeToggle()
+initCardTouchFeedback()
 
 // ==========================================================================
 // STATE
@@ -98,15 +105,29 @@ function renderSongCard(tab, index, extraClass = '') {
   const levelNum = tab.level_num ?? tab.levelNum ?? 5
   const percent = Math.min(100, Math.max(10, (levelNum / 10) * 100))
   const isFree = tab.is_free ?? tab.isFree ?? false
+  const isPinned = Boolean(tab.is_featured)
+  const pinnedClass = isPinned ? 'song-card-pinned' : ''
+  const pinnedBadge = isPinned
+    ? '<span class="px-1.5 sm:px-2 py-0.5 rounded-full text-[8px] sm:text-[10px] font-black bg-amber-400 text-black shadow-sm uppercase tracking-wide">⭐ Nổi bật</span>'
+    : ''
+
+  // Overlay shown mid-drag when swiping a card right to toggle favorite (see initSwipeToFavorite)
+  const swipeFavOverlay = `
+    <div class="swipe-fav-overlay absolute inset-0 flex items-center justify-center rounded-2xl sm:rounded-3xl opacity-0 pointer-events-none z-30 bg-rose-500/90">
+      <span class="text-3xl sm:text-4xl">❤️</span>
+    </div>
+  `
 
   if (isFree) {
     return `
-      <div onclick="window.openFreeTabModal('${tab.id}')" class="song-card glass-card card-interactive p-2.5 sm:p-4 rounded-2xl sm:rounded-3xl border border-glass-border flex flex-col justify-between space-y-2.5 sm:space-y-3.5 group cursor-pointer ${extraClass}" data-id="${tab.id}">
+      <div onclick="window.openFreeTabModal('${tab.id}')" class="song-card glass-card card-interactive p-2.5 sm:p-4 rounded-2xl sm:rounded-3xl border border-glass-border flex flex-col justify-between space-y-2.5 sm:space-y-3.5 group cursor-pointer ${pinnedClass} ${extraClass}" data-id="${tab.id}">
+        ${swipeFavOverlay}
         <div class="space-y-2 sm:space-y-3">
           <div class="relative overflow-hidden rounded-xl sm:rounded-2xl aspect-[4/3] sm:aspect-[16/10] bg-gradient-to-br from-[#1E3A2F] via-[#2A4D3E] to-[#172A22] p-2 sm:p-3.5 flex flex-col justify-between text-white shadow-inner group-hover:scale-[1.02] transition-transform duration-500 ease-out">
             <div class="flex justify-between items-start text-xs uppercase font-bold tracking-wider">
               <span class="bg-black/50 backdrop-blur px-1.5 sm:px-2 py-0.5 rounded-full text-white/95 text-[8px] sm:text-[10px] font-mono">${tab.category || 'Fingerstyle'}</span>
               <div class="flex items-center gap-1 flex-wrap justify-end">
+                ${pinnedBadge}
                 <span class="px-1.5 sm:px-2 py-0.5 rounded-full text-[8px] sm:text-[10px] font-black bg-emerald-600 text-white shadow-sm uppercase tracking-wide">FREE</span>
               </div>
             </div>
@@ -221,12 +242,14 @@ function renderSongCard(tab, index, extraClass = '') {
   }
 
   return `
-    <div onclick="window.openCheckoutModal('${tab.id}')" class="song-card glass-card card-interactive p-2.5 sm:p-4 rounded-2xl sm:rounded-3xl border border-glass-border flex flex-col justify-between space-y-2.5 sm:space-y-3.5 group cursor-pointer ${cardTypeClass} ${extraClass}" data-id="${tab.id}">
+    <div onclick="window.openCheckoutModal('${tab.id}')" class="song-card glass-card card-interactive p-2.5 sm:p-4 rounded-2xl sm:rounded-3xl border border-glass-border flex flex-col justify-between space-y-2.5 sm:space-y-3.5 group cursor-pointer ${cardTypeClass} ${pinnedClass} ${extraClass}" data-id="${tab.id}">
+      ${swipeFavOverlay}
       <div class="space-y-2 sm:space-y-3">
         <div class="relative overflow-hidden rounded-xl sm:rounded-2xl aspect-[4/3] sm:aspect-[16/10] bg-gradient-to-br ${thumbnailBg} p-2 sm:p-3.5 flex flex-col justify-between text-white shadow-inner group-hover:scale-[1.02] transition-transform duration-500 ease-out">
           <div class="flex justify-between items-start text-xs uppercase font-bold tracking-wider">
             <span class="bg-black/50 backdrop-blur px-1.5 sm:px-2 py-0.5 rounded-full text-white/95 text-[8px] sm:text-[10px] font-mono">${tab.category || 'Nhạc Việt'}</span>
             <div class="flex items-start gap-1 flex-wrap justify-end">
+              ${pinnedBadge}
               ${badgeHtml}
             </div>
           </div>
@@ -342,6 +365,83 @@ function initSearchAndFilter() {
       updateGrid()
     })
   })
+}
+
+// ==========================================================================
+// SWIPE-TO-FAVORITE (Feature-detects touch; delegated on the grid container
+// so it keeps working after updateGrid() replaces the cards' innerHTML)
+// ==========================================================================
+function initSwipeToFavorite() {
+  const grid = document.getElementById('songs-grid')
+  if (!grid) return
+
+  const DRAG_CAP = 90
+  const THRESHOLD = 60
+  let state = null
+
+  grid.addEventListener(
+    'touchstart',
+    (e) => {
+      if (e.touches.length > 1) return
+      const card = e.target.closest('.song-card')
+      if (!card) return
+      const t = e.touches[0]
+      state = { card, startX: t.clientX, startY: t.clientY, locked: null, dx: 0 }
+    },
+    { passive: true }
+  )
+
+  grid.addEventListener(
+    'touchmove',
+    (e) => {
+      if (!state) return
+      const t = e.touches[0]
+      const dx = t.clientX - state.startX
+      const dy = t.clientY - state.startY
+
+      if (state.locked === null && (Math.abs(dx) > 8 || Math.abs(dy) > 8)) {
+        state.locked = Math.abs(dx) > Math.abs(dy) ? 'x' : 'y'
+      }
+      if (state.locked !== 'x') return
+
+      e.preventDefault()
+      const clamped = Math.max(0, Math.min(dx, DRAG_CAP))
+      state.dx = clamped
+      state.card.style.transform = `translateX(${clamped}px)`
+      const overlay = state.card.querySelector('.swipe-fav-overlay')
+      if (overlay) overlay.style.opacity = String(Math.min(1, clamped / (THRESHOLD + 10)))
+    },
+    { passive: false }
+  )
+
+  const endSwipe = () => {
+    if (!state) return
+    const { card, dx } = state
+    const overlay = card.querySelector('.swipe-fav-overlay')
+
+    card.style.transition = 'transform 0.3s cubic-bezier(0.16, 1, 0.3, 1)'
+    if (overlay) overlay.style.transition = 'opacity 0.3s ease'
+
+    if (dx > THRESHOLD) {
+      const nextState = toggleFavorite(card.dataset.id)
+      window.showToast?.(
+        nextState ? 'Đã thêm vào yêu thích ❤️' : 'Đã bỏ khỏi yêu thích',
+        'success'
+      )
+    }
+
+    card.style.transform = 'translateX(0)'
+    if (overlay) overlay.style.opacity = '0'
+
+    setTimeout(() => {
+      card.style.transition = ''
+      if (overlay) overlay.style.transition = ''
+    }, 320)
+    state = null
+  }
+
+  grid.addEventListener('touchend', endSwipe, { passive: true })
+  grid.addEventListener('touchcancel', endSwipe, { passive: true })
 }
 
 // ==========================================================================
@@ -812,5 +912,6 @@ function initModalInteractions() {
 document.addEventListener('DOMContentLoaded', () => {
   initSearchAndFilter()
   initModalInteractions()
+  initSwipeToFavorite()
   loadData()
 })
