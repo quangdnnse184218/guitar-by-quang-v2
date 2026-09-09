@@ -13,12 +13,7 @@ import {
   normalizeAudioPath,
 } from './lib/songs-service.js'
 import { applyScrollReveal } from './animations/scroll-reveal.js'
-import {
-  isFavorite,
-  isCompleted,
-  toggleFavorite,
-  toggleCompleted,
-} from './lib/local-storage-service.js'
+import { isCompleted, toggleCompleted } from './lib/local-storage-service.js'
 import { supabase } from './lib/supabase.js'
 
 // Initialize UI
@@ -36,6 +31,26 @@ let allSongs = []
 let activeFilter = 'all' // all, free, paid
 let searchQuery = ''
 let activeCheckoutSyntax = ''
+
+// Favorites are an account feature — no localStorage fallback for guests.
+// Populated from Supabase on load (empty for anonymous visitors).
+let favoriteSongIds = new Set()
+
+async function loadFavoriteIds() {
+  const {
+    data: { session },
+  } = await supabase.auth.getSession()
+  if (!session?.user) {
+    favoriteSongIds = new Set()
+    return
+  }
+  const { data, error } = await supabase.from('favorites').select('song_id').eq('user_id', session.user.id)
+  if (error) {
+    console.warn('[kho-tab] Không thể tải danh sách yêu thích:', error.message)
+    return
+  }
+  favoriteSongIds = new Set((data || []).map((r) => String(r.song_id)))
+}
 
 // Toast Notification
 const toastNotification = document.getElementById('toast-notification')
@@ -122,7 +137,7 @@ function renderSongCard(tab, index, extraClass = '') {
   // so every card also gets an explicit heart button reflecting the real state.
   // Sits inline in the same badge row as FREE/price (not absolutely positioned
   // on the card) so it never straddles the thumbnail's rounded edge.
-  const favActiveForBtn = isFavorite(tab.id)
+  const favActiveForBtn = favoriteSongIds.has(String(tab.id))
   const favButtonHtml = `
     <button
       type="button"
@@ -471,17 +486,52 @@ function initSwipeToFavorite() {
 // LOAD DATA
 // ==========================================================================
 async function loadData() {
-  allSongs = await fetchAllSongs()
+  const [songs] = await Promise.all([fetchAllSongs(), loadFavoriteIds()])
+  allSongs = songs
   updateGrid()
 }
 
 // ==========================================================================
 // FAVORITE & COMPLETED HANDLERS (Copied from main.js)
 // ==========================================================================
-window.handleToggleFavorite = function handleToggleFavorite(event, songId) {
+// Favorites require a real account — this always writes straight to Supabase
+// `favorites` (never localStorage), and refuses anonymous visitors outright
+// rather than silently keeping a local-only list that doesn't mean anything.
+window.handleToggleFavorite = async function handleToggleFavorite(event, songId) {
   if (event) event.stopPropagation()
-  const nextState = toggleFavorite(songId)
-  const btns = document.querySelectorAll(`[data-fav-btn="${songId}"]`)
+
+  const {
+    data: { session },
+  } = await supabase.auth.getSession()
+  if (!session?.user) {
+    showToast('Vui lòng đăng nhập để lưu bài hát yêu thích!', 'info')
+    return
+  }
+
+  const sId = String(songId)
+  const nextState = !favoriteSongIds.has(sId)
+
+  try {
+    if (nextState) {
+      const { error } = await supabase
+        .from('favorites')
+        .insert({ user_id: session.user.id, song_id: sId })
+      if (error) throw error
+      favoriteSongIds.add(sId)
+    } else {
+      const { error } = await supabase
+        .from('favorites')
+        .delete()
+        .match({ user_id: session.user.id, song_id: sId })
+      if (error) throw error
+      favoriteSongIds.delete(sId)
+    }
+  } catch (err) {
+    showToast('Lỗi khi cập nhật yêu thích: ' + err.message, 'error')
+    return
+  }
+
+  const btns = document.querySelectorAll(`[data-fav-btn="${sId}"]`)
   btns.forEach((btn) => {
     if (nextState) {
       btn.className =
@@ -496,29 +546,6 @@ window.handleToggleFavorite = function handleToggleFavorite(event, songId) {
     }
   })
   showToast(nextState ? 'Đã lưu vào danh sách Yêu thích ❤️' : 'Đã bỏ khỏi danh sách Yêu thích')
-
-  // Sync with Supabase favorites if logged in
-  ;(async () => {
-    try {
-      const {
-        data: { session },
-      } = await supabase.auth.getSession()
-      if (session?.user) {
-        if (nextState) {
-          await supabase
-            .from('favorites')
-            .upsert({ user_id: session.user.id, song_id: String(songId) })
-        } else {
-          await supabase
-            .from('favorites')
-            .delete()
-            .match({ user_id: session.user.id, song_id: String(songId) })
-        }
-      }
-    } catch (err) {
-      console.warn('Sync favorite error:', err)
-    }
-  })()
 }
 
 window.handleToggleCompleted = function handleToggleCompleted(event, songId) {

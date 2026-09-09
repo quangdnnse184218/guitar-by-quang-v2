@@ -2,11 +2,13 @@
  * GUITAR BY QUANG — Local Storage Service Layer
  *
  * Quản lý tính năng cá nhân hóa phía client không cần tài khoản:
- * 1. Bài hát Yêu thích (Favorites ❤️) — key: 'gbq_favorites'
- * 2. Bài hát Đã học xong (Completed ✓) — key: 'gbq_completed'
+ * 1. Bài hát Đã học xong (Completed ✓) — key: 'gbq_completed'
+ *
+ * Yêu thích (Favorites) KHÔNG nằm ở đây nữa — đó là tính năng của tài
+ * khoản, lưu thẳng vào bảng `favorites` trên Supabase (xem kho-tab.js /
+ * user-dashboard.js). Không có fallback localStorage cho khách vãng lai.
  */
 
-const FAVORITES_KEY = 'gbq_favorites'
 const COMPLETED_KEY = 'gbq_completed'
 
 function getArrayFromStorage(key) {
@@ -32,39 +34,7 @@ function saveArrayToStorage(key, array) {
 }
 
 // ============================================================
-// 1. YÊU THÍCH (Favorites)
-// ============================================================
-
-export function getFavorites() {
-  return getArrayFromStorage(FAVORITES_KEY)
-}
-
-export function isFavorite(songId) {
-  if (!songId) return false
-  const list = getFavorites()
-  return list.includes(String(songId))
-}
-
-export function toggleFavorite(songId) {
-  if (!songId) return false
-  const strId = String(songId)
-  let list = getFavorites()
-  let nextState = false
-
-  if (list.includes(strId)) {
-    list = list.filter((id) => id !== strId)
-    nextState = false
-  } else {
-    list.push(strId)
-    nextState = true
-  }
-
-  saveArrayToStorage(FAVORITES_KEY, list)
-  return nextState
-}
-
-// ============================================================
-// 2. ĐÃ HỌC XONG (Completed)
+// ĐÃ HỌC XONG (Completed)
 // ============================================================
 
 export function getCompleted() {
@@ -95,6 +65,5 @@ export function toggleCompleted(songId) {
   return nextState
 }
 
-// Aliases for compatibility
-export const getFavoriteIds = getFavorites
+// Alias for compatibility
 export const getCompletedIds = getCompleted
