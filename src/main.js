@@ -22,12 +22,7 @@ import {
 } from './lib/songs-service.js'
 import { fetchAllGears } from './lib/gears-service.js'
 import { applyScrollReveal } from './animations/scroll-reveal.js'
-import {
-  isFavorite,
-  isCompleted,
-  toggleFavorite,
-  toggleCompleted,
-} from './lib/local-storage-service.js'
+import { isCompleted, toggleCompleted } from './lib/local-storage-service.js'
 import { supabase } from './lib/supabase.js'
 
 // 1. Initialize UI Globals
@@ -180,7 +175,6 @@ export function renderSongCard(tab, index, extraClass = '') {
   }
 
   // 2. PAID CARD
-  const favActive = isFavorite(tab.id)
   const compActive = isCompleted(tab.id)
 
   const priceFormatted = tab.price_formatted || tab.priceFormatted || '239k'
@@ -458,51 +452,10 @@ export function initFaq() {
 }
 
 // ==========================================================================
-// FAVORITE & COMPLETED HANDLERS
+// COMPLETED HANDLER
 // ==========================================================================
-
-window.handleToggleFavorite = function handleToggleFavorite(event, songId) {
-  if (event) event.stopPropagation()
-  const nextState = toggleFavorite(songId)
-  const btns = document.querySelectorAll(`[data-fav-btn="${songId}"]`)
-  btns.forEach((btn) => {
-    if (nextState) {
-      btn.className =
-        'w-7 h-7 rounded-full flex items-center justify-center transition-all cursor-pointer shadow-sm bg-rose-500 text-white scale-105'
-      btn.title = 'Bỏ yêu thích'
-      btn.innerHTML = `<svg class="w-3.5 h-3.5 fill-current" viewBox="0 0 24 24"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg>`
-    } else {
-      btn.className =
-        'w-7 h-7 rounded-full flex items-center justify-center transition-all cursor-pointer shadow-sm bg-black/40 text-white/80 hover:text-white hover:bg-black/60'
-      btn.title = 'Yêu thích'
-      btn.innerHTML = `<svg class="w-3.5 h-3.5 fill-none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg>`
-    }
-  })
-  showToast(nextState ? 'Đã lưu vào danh sách Yêu thích ❤️' : 'Đã bỏ khỏi danh sách Yêu thích')
-
-  // Sync with Supabase favorites if logged in
-  ;(async () => {
-    try {
-      const {
-        data: { session },
-      } = await supabase.auth.getSession()
-      if (session?.user) {
-        if (nextState) {
-          await supabase
-            .from('favorites')
-            .upsert({ user_id: session.user.id, song_id: String(songId) })
-        } else {
-          await supabase
-            .from('favorites')
-            .delete()
-            .match({ user_id: session.user.id, song_id: String(songId) })
-        }
-      }
-    } catch (err) {
-      console.warn('Sync favorite error:', err)
-    }
-  })()
-}
+// (Favorites have no UI on the homepage — see kho-tab.js for the real,
+// account-only, Supabase-backed favorite toggle.)
 
 window.handleToggleCompleted = function handleToggleCompleted(event, songId) {
   if (event) event.stopPropagation()
