@@ -310,6 +310,28 @@
       }
       .btn-ghost:hover { color: var(--ink); border-color: var(--ink-faint); }
 
+      .sound-test {
+        margin-top: 10px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
+      }
+      .sound-test svg { width: 16px; height: 16px; flex-shrink: 0; }
+      .sound-test:disabled { opacity: 0.5; cursor: default; }
+
+      .audio-warn {
+        margin: 12px 0 0;
+        padding: 11px 13px;
+        border-radius: 12px;
+        background: color-mix(in srgb, var(--teach) 10%, var(--panel));
+        border: 1px solid color-mix(in srgb, var(--teach) 38%, transparent);
+        font-size: 12.5px;
+        line-height: 1.55;
+        color: var(--ink-dim);
+      }
+      .audio-warn strong { color: var(--ink); font-weight: 800; }
+
       /* ===================== Màn hình chơi ===================== */
       .hud {
         display: flex;
@@ -672,6 +694,16 @@
         </div>
 
         <button type="button" class="btn-primary" id="start-btn" disabled>Đang tải âm thanh…</button>
+
+        <button type="button" class="btn-ghost sound-test" id="test-sound-btn">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 5 6 9H2v6h4l5 4V5Z" /><path d="M15.5 8.5a5 5 0 0 1 0 7" /><path d="M18.5 5.5a9 9 0 0 1 0 13" /></svg>
+          <span id="test-sound-label">Nghe thử tiếng đàn</span>
+        </button>
+
+        <p class="audio-warn" id="audio-warn" hidden>
+          Không nghe thấy gì? Kiểm tra âm lượng máy, và <strong>nếu dùng iPhone thì gạt nút chuông ra khỏi chế độ im
+          lặng</strong> — ở chế độ im lặng iPhone chặn luôn tiếng của trang web.
+        </p>
       </section>
 
       <!-- ============ MÀN HÌNH CHƠI ============ -->
