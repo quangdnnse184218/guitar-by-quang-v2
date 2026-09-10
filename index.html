@@ -284,39 +284,52 @@
 
 
     <!-- ================================================================
-           1B. MỜI CHƠI GAME VỌNG ÂM (dải ngắn, tông tối tách hẳn khỏi
-           các section khác để nhìn ra ngay đây là thứ khác — game)
+           1B. MỜI CHƠI GAME LUYỆN CẢM ÂM — dải sáng, nhiều màu, mời gọi
+           bấm vào chơi ngay
            ================================================================ -->
     <section id="game-teaser" class="relative py-8 sm:py-10 px-6 sm:px-8 md:px-12">
-      <a href="/vong-am.html"
-        class="group relative block max-w-4xl mx-auto rounded-3xl overflow-hidden border border-[#3d2c26] bg-[#191110] px-5 py-5 sm:px-8 sm:py-7 shadow-xl">
+      <a href="/luyen-cam-am.html"
+        class="group relative block max-w-4xl mx-auto rounded-3xl overflow-hidden px-5 py-6 sm:px-8 sm:py-7 shadow-lg hover:shadow-2xl transition-all duration-300 hover:-translate-y-1"
+        style="background-image: linear-gradient(115deg, #fcd34d 0%, #fbbf24 38%, #fb923c 70%, #fb7185 100%);">
         <div class="flex items-center gap-4 sm:gap-6">
           <!-- Đĩa than mini, quay khi rê chuột vào -->
           <span aria-hidden="true"
-            class="flex-shrink-0 w-14 h-14 sm:w-20 sm:h-20 rounded-full grid place-items-center transition-transform duration-700 group-hover:rotate-180"
-            style="background: repeating-radial-gradient(circle at center, #0b0807 0 2px, #17100e 2px 4px);">
-            <span class="w-5 h-5 sm:w-7 sm:h-7 rounded-full bg-[#e0a526]"></span>
+            class="flex-shrink-0 w-14 h-14 sm:w-20 sm:h-20 rounded-full grid place-items-center shadow-lg transition-transform duration-[900ms] group-hover:rotate-180"
+            style="background: repeating-radial-gradient(circle at center, #241b17 0 2px, #332620 2px 4px);">
+            <span class="w-5 h-5 sm:w-7 sm:h-7 rounded-full bg-[#fcd34d] shadow-inner"></span>
           </span>
 
           <div class="flex-grow min-w-0">
-            <span class="block text-[10px] sm:text-[11px] font-extrabold tracking-[0.18em] uppercase text-[#e0a526] mb-1">Game
+            <span class="block text-[10px] sm:text-[11px] font-extrabold tracking-[0.18em] uppercase text-[#7c2d12] mb-1">Game
               miễn phí</span>
-            <h3 class="text-lg sm:text-2xl font-extrabold text-[#f4e7ce] leading-tight">Vọng Âm — nghe rồi nhại lại</h3>
-            <p class="text-xs sm:text-sm text-[#b3a184] font-medium leading-snug mt-1">Nhại đúng chuỗi nốt guitar để đi
-              xa nhất có thể. Chơi vài phút mỗi ngày là tai thính hẳn lên.</p>
+            <h3 class="text-lg sm:text-2xl font-extrabold text-[#3b1a08] leading-tight">Game Luyện Cảm Âm</h3>
+            <p class="text-xs sm:text-sm text-[#6b2f12] font-semibold leading-snug mt-1">Nghe chuỗi nốt guitar rồi lặp
+              lại đúng thứ tự — chuỗi càng dài càng khó. Vài phút mỗi ngày là tai thính hẳn lên.</p>
+
+            <!-- Bảy chấm màu ứng với bảy phím nốt trong game -->
+            <span class="flex items-center gap-1.5 mt-2.5" aria-hidden="true">
+              <span class="w-2.5 h-2.5 sm:w-3 sm:h-3 rounded-full bg-[#f5c044] ring-2 ring-white/70"></span>
+              <span class="w-2.5 h-2.5 sm:w-3 sm:h-3 rounded-full bg-[#f49a45] ring-2 ring-white/70"></span>
+              <span class="w-2.5 h-2.5 sm:w-3 sm:h-3 rounded-full bg-[#ee7b6e] ring-2 ring-white/70"></span>
+              <span class="w-2.5 h-2.5 sm:w-3 sm:h-3 rounded-full bg-[#d97bae] ring-2 ring-white/70"></span>
+              <span class="w-2.5 h-2.5 sm:w-3 sm:h-3 rounded-full bg-[#9c8be8] ring-2 ring-white/70"></span>
+              <span class="w-2.5 h-2.5 sm:w-3 sm:h-3 rounded-full bg-[#4fc2ac] ring-2 ring-white/70"></span>
+              <span class="w-2.5 h-2.5 sm:w-3 sm:h-3 rounded-full bg-[#a8c554] ring-2 ring-white/70"></span>
+            </span>
           </div>
 
           <span
-            class="flex-shrink-0 hidden sm:inline-flex items-center gap-2 px-5 py-2.5 rounded-full bg-[#e0a526] text-[#191110] text-sm font-extrabold whitespace-nowrap transition-transform group-hover:scale-105">
-            <span>Chơi thử</span>
+            class="flex-shrink-0 hidden sm:inline-flex items-center gap-2 px-6 py-3 rounded-full bg-white text-[#3b1a08] text-sm font-extrabold whitespace-nowrap shadow-md transition-transform group-hover:scale-105">
+            <span>Chơi thử ngay</span>
             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M17 8l4 4m0 0l-4 4m4-4H3" />
             </svg>
           </span>
-          <svg class="sm:hidden flex-shrink-0 w-5 h-5 text-[#e0a526]" fill="none" stroke="currentColor"
-            viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M9 5l7 7-7 7" />
-          </svg>
+          <span class="sm:hidden flex-shrink-0 w-9 h-9 rounded-full bg-white grid place-items-center shadow-md">
+            <svg class="w-4 h-4 text-[#3b1a08]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M9 5l7 7-7 7" />
+            </svg>
+          </span>
         </div>
       </a>
     </section>
