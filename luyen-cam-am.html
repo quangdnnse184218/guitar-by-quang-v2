@@ -331,6 +331,14 @@
         color: var(--ink-dim);
       }
       .audio-warn strong { color: var(--ink); font-weight: 800; }
+      .audio-state {
+        display: block;
+        margin-top: 7px;
+        font-size: 11.5px;
+        font-weight: 700;
+        color: var(--teach);
+      }
+      .audio-state:empty { display: none; }
 
       /* ===================== Màn hình chơi ===================== */
       .hud {
@@ -701,8 +709,10 @@
         </button>
 
         <p class="audio-warn" id="audio-warn" hidden>
-          Không nghe thấy gì? Kiểm tra âm lượng máy, và <strong>nếu dùng iPhone thì gạt nút chuông ra khỏi chế độ im
-          lặng</strong> — ở chế độ im lặng iPhone chặn luôn tiếng của trang web.
+          Không nghe thấy gì? <strong>Dùng iPhone thì gạt nút chuông ra khỏi chế độ im lặng</strong> rồi tải lại trang —
+          ở chế độ im lặng iPhone chặn luôn tiếng của trang web, dù xem video vẫn có tiếng bình thường. Ngoài ra nhớ vặn
+          to âm lượng máy.
+          <span class="audio-state" id="audio-state"></span>
         </p>
       </section>
 

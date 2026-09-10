@@ -39,8 +39,20 @@ const BEST_KEY_PREFIX = 'gbq_camam_best_'
 // ==========================================================================
 let audioCtx = null
 let audioUnlocked = false
+let masterBus = null
 const rawSamples = new Map()
 const decodedSamples = new Map()
+const sampleGains = new Map()
+
+// Mẫu guitar trong bộ soundfont được thu rất nhỏ (đỉnh chỉ khoảng 0.12 trên
+// thang 1.0, tức là tầm -18dB), phát nguyên bản thì trên loa điện thoại gần
+// như không nghe thấy gì. Nên mỗi nốt được chuẩn hoá lên đỉnh NORMALIZE_PEAK,
+// và tất cả đi qua một bộ nén ở cuối để không vỡ tiếng khi các nốt ngân
+// chồng lên nhau.
+const NORMALIZE_PEAK = 0.75
+const MAX_SAMPLE_GAIN = 14
+const MASTER_GAIN = 0.85
+const NOTE_HOLD_SEC = 1.6
 
 function getAudioContext() {
   if (!audioCtx) {
@@ -51,6 +63,35 @@ function getAudioContext() {
   return audioCtx
 }
 
+/** Đường ra chung: mọi tiếng đều qua bộ nén này để không vỡ khi chồng nhau. */
+function getMasterBus(ctx) {
+  if (masterBus) return masterBus
+  const gain = ctx.createGain()
+  const compressor = ctx.createDynamicsCompressor()
+  gain.gain.value = MASTER_GAIN
+  compressor.threshold.value = -8
+  compressor.knee.value = 6
+  compressor.ratio.value = 10
+  compressor.attack.value = 0.004
+  compressor.release.value = 0.18
+  gain.connect(compressor)
+  compressor.connect(ctx.destination)
+  masterBus = gain
+  return masterBus
+}
+
+function peakOf(buffer) {
+  let peak = 0
+  for (let channel = 0; channel < buffer.numberOfChannels; channel++) {
+    const data = buffer.getChannelData(channel)
+    for (let i = 0; i < data.length; i++) {
+      const value = Math.abs(data[i])
+      if (value > peak) peak = value
+    }
+  }
+  return peak
+}
+
 /**
  * PHẢI gọi đồng bộ ngay trong tác vụ chạm/bấm, trước mọi await.
  *
@@ -59,16 +100,35 @@ function getAudioContext() {
  * rơi sang tick sau, context vẫn khoá, và cả game im ru trong khi giao diện
  * vẫn chạy bình thường — không có lỗi nào hiện ra để mà biết.
  */
+/**
+ * iPhone mặc định coi tiếng của Web Audio là "ambient", nên gạt nút chuông
+ * sang im lặng là câm luôn — trong khi Android không bị vậy. Khai báo
+ * audioSession kiểu "playback" để iOS xếp nó vào loại phát nhạc và bỏ qua
+ * nút gạt đó. Hỗ trợ từ iOS 16.4; máy cũ hơn thì đành phải gạt nút chuông.
+ */
+function claimPlaybackSession() {
+  try {
+    if (navigator.audioSession) navigator.audioSession.type = 'playback'
+  } catch {
+    // Trình duyệt không có API này — bỏ qua, không ảnh hưởng gì.
+  }
+}
+
 function unlockAudio() {
+  claimPlaybackSession()
   const ctx = getAudioContext()
   if (!ctx) return null
   if (!audioUnlocked) {
     const source = ctx.createBufferSource()
-    source.buffer = ctx.createBuffer(1, 1, 22050)
+    // Đệm câm dài 20ms thay vì đúng 1 frame: một số bản iOS bỏ qua buffer quá
+    // ngắn nên coi như chưa hề có tiếng nào phát ra, và không chịu mở khoá.
+    const frames = Math.max(1, Math.floor(ctx.sampleRate * 0.02))
+    source.buffer = ctx.createBuffer(1, frames, ctx.sampleRate)
     source.connect(ctx.destination)
     source.start(0)
     audioUnlocked = true
   }
+  if (ctx.state === 'suspended') ctx.resume()
   return ctx
 }
 
@@ -98,7 +158,10 @@ async function decodeSamples() {
       if (decodedSamples.get(note.id)) return
       // slice() để giữ bản gốc: decodeAudioData sẽ "nuốt" mất ArrayBuffer truyền vào.
       const copy = rawSamples.get(note.id).slice(0)
-      decodedSamples.set(note.id, await decodeAudio(ctx, copy))
+      const buffer = await decodeAudio(ctx, copy)
+      decodedSamples.set(note.id, buffer)
+      const peak = peakOf(buffer)
+      sampleGains.set(note.id, peak > 0 ? Math.min(MAX_SAMPLE_GAIN, NORMALIZE_PEAK / peak) : 1)
     })
   )
   // Không để hỏng âm thầm: thiếu nốt nào thì báo lỗi, thay vì chơi mà không kêu.
@@ -116,9 +179,18 @@ function playNote(noteId) {
   const gain = ctx.createGain()
   source.buffer = buffer
   source.connect(gain)
-  gain.connect(ctx.destination)
-  gain.gain.setValueAtTime(0.85, ctx.currentTime)
-  source.start()
+  gain.connect(getMasterBus(ctx))
+
+  // Mẫu gốc ngân tới hơn 3 giây, trong khi nốt kế tiếp phát sau chưa tới 1
+  // giây — để nguyên thì các nốt chồng lên nhau nghe rất rối. Cho tắt dần
+  // trong khoảng 1,6 giây để từng nốt nghe rõ ràng, tách bạch.
+  const level = sampleGains.get(noteId) || 1
+  const now = ctx.currentTime
+  gain.gain.setValueAtTime(level, now)
+  gain.gain.setValueAtTime(level, now + NOTE_HOLD_SEC * 0.45)
+  gain.gain.exponentialRampToValueAtTime(0.0001, now + NOTE_HOLD_SEC)
+  source.start(now)
+  source.stop(now + NOTE_HOLD_SEC + 0.05)
 }
 
 function playBlip(frequency, startOffset, duration, type = 'triangle', peak = 0.2) {
@@ -128,7 +200,7 @@ function playBlip(frequency, startOffset, duration, type = 'triangle', peak = 0.
   const osc = ctx.createOscillator()
   const gain = ctx.createGain()
   osc.connect(gain)
-  gain.connect(ctx.destination)
+  gain.connect(getMasterBus(ctx))
   osc.type = type
   osc.frequency.setValueAtTime(frequency, at)
   gain.gain.setValueAtTime(0, at)
@@ -184,6 +256,7 @@ const startBtn = document.getElementById('start-btn')
 const testSoundBtn = document.getElementById('test-sound-btn')
 const testSoundLabel = document.getElementById('test-sound-label')
 const audioWarn = document.getElementById('audio-warn')
+const audioState = document.getElementById('audio-state')
 
 const turntable = document.getElementById('turntable')
 const hub = document.getElementById('hub')
@@ -518,16 +591,21 @@ startBtn.addEventListener('click', async () => {
 
 /** Cho người chơi thử loa trước khi vào game — cách nhanh nhất để biết máy mình có tiếng hay không. */
 testSoundBtn.addEventListener('click', async () => {
-  unlockAudio()
+  const ctx = unlockAudio()
   testSoundBtn.disabled = true
   try {
     if (rawSamples.size < NOTES.length) await fetchSamples()
     await decodeSamples()
     playNote('do')
     testSoundLabel.textContent = 'Vừa phát nốt Đồ — nghe thấy chứ?'
+    // Trạng thái này giúp phân biệt "trình duyệt chặn" với "máy đang để im lặng":
+    // nếu ở đây báo đang chạy mà vẫn không nghe gì thì gần như chắc chắn do
+    // nút gạt chuông hoặc âm lượng, chứ không phải lỗi trang web.
+    audioState.textContent = ctx ? `Trạng thái âm thanh: ${ctx.state}` : 'Trình duyệt không hỗ trợ Web Audio'
     audioWarn.hidden = false
-  } catch {
+  } catch (error) {
     testSoundLabel.textContent = 'Không phát được âm thanh'
+    audioState.textContent = `Lỗi: ${error.message}`
     audioWarn.hidden = false
   }
   testSoundBtn.disabled = false
@@ -565,5 +643,19 @@ document.addEventListener('keydown', (event) => {
   }
 })
 
+// Lưới an toàn: nếu vì lý do nào đó âm thanh vẫn bị treo ở trạng thái tạm
+// dừng, mọi lần chạm tiếp theo trên trang đều thử đánh thức lại.
+document.addEventListener(
+  'pointerdown',
+  () => {
+    if (audioCtx && audioCtx.state !== 'running') {
+      claimPlaybackSession()
+      audioCtx.resume()
+    }
+  },
+  { passive: true }
+)
+
+claimPlaybackSession()
 refreshBestLabels()
 bootstrapAudio()
