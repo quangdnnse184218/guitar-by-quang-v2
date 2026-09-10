@@ -183,20 +183,13 @@ document.addEventListener('DOMContentLoaded', () => {
         )
       }
 
-      // Tự động ghi bản ghi vào bảng 'profiles'
-      if (data?.user) {
-        try {
-          await supabase.from('profiles').upsert({
-            id: data.user.id,
-            email: email,
-            full_name: displayName,
-            avatar_url: '',
-            role: 'user',
-          })
-        } catch (pErr) {
-          console.warn('Profile insertion note:', pErr)
-        }
-      }
+      // Hàng 'profiles' được một trigger phía Supabase tự tạo ngay khi tài
+      // khoản Auth mới được insert (copy full_name từ user_metadata và email
+      // từ auth.users — xem scripts/fix-profile-email-sync.sql). Không cần
+      // client tự ghi thêm nữa: trước đây có gọi upsert() ở đây nhưng luôn
+      // thất bại âm thầm vì tài khoản thường không có quyền INSERT trên bảng
+      // profiles (chỉ có quyền UPDATE), row đã tồn tại sẵn trước khi lệnh
+      // này kịp chạy.
 
       // Kiểm tra xem Supabase có yêu cầu xác thực email hay không
       if (data?.user && data?.session === null) {
