@@ -1,23 +1,29 @@
 /**
  * ==============================================================================
- * GUITAR BY QUANG v2 — VỌNG ÂM (vong-am.js)
+ * GUITAR BY QUANG v2 — GAME LUYỆN CẢM ÂM (luyen-cam-am.js)
  * ==============================================================================
- * Game luyện cảm âm kiểu "nghe rồi nhại lại": máy phát một chuỗi nốt guitar,
- * người chơi bấm lại đúng thứ tự, nhại đúng thì chuỗi dài thêm một nốt.
+ * Máy phát một chuỗi nốt guitar, người chơi bấm lặp lại đúng thứ tự; lặp đúng
+ * thì chuỗi dài thêm một nốt.
  *
- * Năm phím là thang ngũ cung Đô - Rê - Mi - Sol - La, nhờ vậy mọi chuỗi ngẫu
- * nhiên đều nghe ra giai điệu chứ không chói tai.
+ * Bảy phím là trọn quãng tám Đồ - Rê - Mi - Fa - Sol - La - Si, xếp quanh vòng
+ * tròn theo cao độ tăng dần cùng chiều kim đồng hồ.
  *
- * Trang này cố tình KHÔNG import common.js: nó có thanh điều hướng riêng, và
+ * Trang này cố tình KHÔNG import common.js: nó có thanh điều hướng riêng, mà
  * common.js chạy initAuthHeader() như một side effect trên mọi trang import nó.
  */
+
+import { initThemeToggle } from './theme-toggle.js'
+
+initThemeToggle()
 
 const NOTES = [
   { id: 'do', sample: 'C4' },
   { id: 're', sample: 'D4' },
   { id: 'mi', sample: 'E4' },
+  { id: 'fa', sample: 'F4' },
   { id: 'sol', sample: 'G4' },
   { id: 'la', sample: 'A4' },
+  { id: 'si', sample: 'B4' },
 ]
 
 const SAMPLE_DIR = '/assets/audio/guitar-steel'
@@ -26,7 +32,7 @@ const BASE_GAP_MS = 620
 const MIN_GAP_MS = 400
 const GAP_STEP_MS = 18
 const LIT_MS = 340
-const BEST_KEY_PREFIX = 'gbq_vongam_best_'
+const BEST_KEY_PREFIX = 'gbq_camam_best_'
 
 // ==========================================================================
 // ÂM THANH
@@ -111,19 +117,19 @@ function playErrorBuzz() {
 // ==========================================================================
 // KỶ LỤC (localStorage)
 // ==========================================================================
-function getBest(mode) {
+function getBest(modeName) {
   try {
-    return Number(localStorage.getItem(BEST_KEY_PREFIX + mode)) || 0
+    return Number(localStorage.getItem(BEST_KEY_PREFIX + modeName)) || 0
   } catch {
     return 0
   }
 }
 
-function saveBest(mode, score) {
+function saveBest(modeName, score) {
   try {
-    localStorage.setItem(BEST_KEY_PREFIX + mode, String(score))
+    localStorage.setItem(BEST_KEY_PREFIX + modeName, String(score))
   } catch {
-    // Trình duyệt chặn localStorage (ẩn danh nghiêm ngặt) — vẫn chơi được, chỉ là không lưu kỷ lục.
+    // Trình duyệt chặn localStorage — vẫn chơi được, chỉ là không lưu kỷ lục.
   }
 }
 
@@ -146,6 +152,7 @@ const turntable = document.getElementById('turntable')
 const record = document.getElementById('record')
 const pads = Array.from(document.querySelectorAll('.pad'))
 const statusEl = document.getElementById('status')
+const progressDots = document.getElementById('progress-dots')
 const hudRound = document.getElementById('hud-round')
 const hudBest = document.getElementById('hud-best')
 const hudMode = document.getElementById('hud-mode')
@@ -219,6 +226,12 @@ record.addEventListener('animationend', (event) => {
   if (event.animationName === 'pulse-ring') record.classList.remove('pulse')
 })
 
+function renderProgressDots() {
+  progressDots.innerHTML = sequence
+    .map((_, index) => `<span class="progress-dot${index < playerIndex ? ' done' : ''}"></span>`)
+    .join('')
+}
+
 function gapForRound() {
   const round = sequence.length - START_LENGTH + 1
   return Math.max(MIN_GAP_MS, BASE_GAP_MS - (round - 1) * GAP_STEP_MS)
@@ -241,7 +254,6 @@ async function playSequence() {
   setPadsEnabled(false)
   replayBtn.disabled = true
   setStatus('Nghe kỹ nhé…')
-  turntable.classList.add('playing')
   record.classList.add('spinning')
 
   const gap = gapForRound()
@@ -257,10 +269,10 @@ async function playSequence() {
 
   if (token !== playToken) return
 
-  turntable.classList.remove('playing')
   record.classList.remove('spinning')
   phase = 'input'
   playerIndex = 0
+  renderProgressDots()
   setPadsEnabled(true)
   replayBtn.disabled = replayUsed
   setStatus('Tới lượt bạn!', 'turn')
@@ -269,8 +281,10 @@ async function playSequence() {
 function startRound() {
   sequence.push(randomNoteId())
   replayUsed = false
+  playerIndex = 0
   replayLabel.textContent = 'Nghe lại (1 lần)'
   hudRound.textContent = String(sequence.length - START_LENGTH + 1)
+  renderProgressDots()
   playSequence()
 }
 
@@ -298,14 +312,15 @@ function handlePadPress(noteId) {
   }
 
   playerIndex += 1
+  renderProgressDots()
   if (playerIndex < sequence.length) return
 
-  // Nhại xong trọn chuỗi của vòng này.
+  // Lặp lại trọn chuỗi của vòng này.
   phase = 'idle'
   longest = sequence.length
   setPadsEnabled(false)
   replayBtn.disabled = true
-  setStatus('Chuẩn luôn!', 'turn')
+  setStatus('Chuẩn luôn!', 'good')
   playSuccessChime()
   setTimeout(startRound, 900)
 }
@@ -315,9 +330,8 @@ function endGame() {
   phase = 'idle'
   setPadsEnabled(false)
   replayBtn.disabled = true
-  turntable.classList.remove('playing')
   record.classList.remove('spinning')
-  setStatus('Trượt rồi!', 'bad')
+  setStatus('Sai rồi!', 'bad')
   playErrorBuzz()
 
   turntable.classList.add('shake')
@@ -333,8 +347,8 @@ function endGame() {
     newBestTag.hidden = !isNewBest
     overEmoji.textContent = longest >= 10 ? '🏆' : longest >= 6 ? '🎧' : '🎸'
     overSub.textContent = longest === 0
-      ? 'Chưa nhại được nốt nào — thử lại nhé!'
-      : `Bạn nhại đúng chuỗi ${longest} nốt trước khi trượt`
+      ? 'Chưa lặp được nốt nào — thử lại nhé!'
+      : `Bạn lặp lại đúng chuỗi ${longest} nốt`
     refreshBestLabels()
     showScreen('over')
   }, 900)
@@ -356,7 +370,7 @@ async function bootstrapAudio() {
   try {
     await fetchSamples()
     startBtn.disabled = false
-    startBtn.textContent = 'Bắt Đầu'
+    startBtn.textContent = 'Bắt Đầu Chơi'
   } catch {
     startBtn.disabled = false
     startBtn.textContent = 'Tải lại âm thanh'
@@ -372,7 +386,7 @@ startBtn.addEventListener('click', async () => {
   startBtn.textContent = 'Đang chuẩn bị…'
   try {
     await decodeSamples()
-    startBtn.textContent = 'Bắt Đầu'
+    startBtn.textContent = 'Bắt Đầu Chơi'
     startBtn.disabled = false
     startGame()
   } catch {
@@ -389,7 +403,6 @@ pads.forEach((pad) => {
 })
 
 replayBtn.addEventListener('click', handleReplay)
-
 againBtn.addEventListener('click', startGame)
 
 backMenuBtn.addEventListener('click', () => {
@@ -399,7 +412,7 @@ backMenuBtn.addEventListener('click', () => {
   showScreen('start')
 })
 
-// Phím 1-5 cho người chơi trên máy tính.
+// Phím 1-7 cho người chơi trên máy tính.
 document.addEventListener('keydown', (event) => {
   if (phase !== 'input') return
   const index = Number(event.key) - 1

@@ -1,0 +1,673 @@
+<!DOCTYPE html>
+<html lang="vi" data-theme="light">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Game Luyện Cảm Âm — Nghe Rồi Lặp Lại | Guitar By Quang</title>
+    <meta name="description" content="Game luyện cảm âm miễn phí: nghe chuỗi nốt guitar rồi lặp lại đúng thứ tự, chuỗi càng dài càng khó. Đủ 7 nốt Đồ Rê Mi Fa Sol La Si, có chế độ Chỉ Nghe để luyện tai thật sự." />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;500;600;700;800&family=Montserrat:wght@700;800;900&display=swap" rel="stylesheet" />
+
+    <style>
+      /* =====================================================================
+         GAME LUYỆN CẢM ÂM
+         Trang tự chứa CSS, không dùng /src/style.css và không import
+         common.js (common.js chạy initAuthHeader() như side effect trên mọi
+         trang import nó, mà trang này có thanh điều hướng riêng).
+         Theme bám đúng cơ chế của site: mặc định sáng, chế độ tối là khi
+         <html> có class "dark" (xem src/theme-toggle.js).
+         ===================================================================== */
+      :root {
+        --ground: #fbf5ea;
+        --ground-glow: #f6e3c6;
+        --panel: #ffffff;
+        --panel-hi: #fbf2e3;
+        --line: #e8dcc7;
+        --line-strong: #d8c8ab;
+        --ink: #2a1d12;
+        --ink-dim: #6d5a44;
+        --ink-faint: #9d8a72;
+        --gold: #c07d12;
+        --gold-solid: #eaa62c;
+        --gold-solid-ink: #2a1d12;
+        --good: #2f8f6d;
+        --bad: #cf4630;
+        --record: #241b17;
+        --record-groove: #2f2420;
+        --shadow-soft: 0 10px 30px rgba(74, 52, 26, 0.12);
+        --shadow-lift: 0 16px 40px rgba(74, 52, 26, 0.18);
+        --pad-rest: 0.86;
+      }
+
+      :root.dark {
+        --ground: #1e1713;
+        --ground-glow: #302319;
+        --panel: #2a211c;
+        --panel-hi: #34281f;
+        --line: #443529;
+        --line-strong: #55432f;
+        --ink: #f7ebd7;
+        --ink-dim: #bfab8e;
+        --ink-faint: #8d7a62;
+        --gold: #f0b03c;
+        --gold-solid: #eaa62c;
+        --gold-solid-ink: #1e1713;
+        --good: #4fc2a0;
+        --bad: #f0705a;
+        --record: #14100e;
+        --record-groove: #1e1815;
+        --shadow-soft: 0 10px 30px rgba(0, 0, 0, 0.4);
+        --shadow-lift: 0 16px 40px rgba(0, 0, 0, 0.5);
+        --pad-rest: 0.82;
+      }
+
+      * { box-sizing: border-box; }
+      html, body { height: 100%; }
+
+      body {
+        margin: 0;
+        background:
+          radial-gradient(115% 80% at 50% 0%, var(--ground-glow) 0%, var(--ground) 58%);
+        background-attachment: fixed;
+        color: var(--ink);
+        font-family: 'Be Vietnam Pro', system-ui, sans-serif;
+        min-height: 100vh;
+        display: flex;
+        flex-direction: column;
+      }
+
+      /* ===================== Thanh trên ===================== */
+      .topbar {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 12px;
+        padding: 13px 16px;
+        border-bottom: 1px solid var(--line);
+      }
+      .topbar-left { display: flex; align-items: center; gap: 12px; min-width: 0; }
+      .back-link {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        color: var(--ink-dim);
+        text-decoration: none;
+        font-size: 13px;
+        font-weight: 600;
+        padding: 7px 13px 7px 10px;
+        border: 1px solid var(--line-strong);
+        border-radius: 999px;
+        background: var(--panel);
+        transition: color 0.15s, border-color 0.15s;
+      }
+      .back-link:hover { color: var(--gold); border-color: var(--gold); }
+      .back-link svg { width: 14px; height: 14px; }
+      .topbar-brand {
+        font-family: 'Montserrat', sans-serif;
+        font-weight: 800;
+        font-size: 12px;
+        letter-spacing: 0.14em;
+        text-transform: uppercase;
+        color: var(--ink-faint);
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+      }
+      #theme-toggle-btn {
+        flex-shrink: 0;
+        display: grid;
+        place-items: center;
+        width: 36px;
+        height: 36px;
+        border-radius: 50%;
+        border: 1px solid var(--line-strong);
+        background: var(--panel);
+        color: var(--gold);
+        cursor: pointer;
+      }
+      #theme-toggle-btn svg { width: 16px; height: 16px; }
+      .sun-icon { display: none; }
+      .moon-icon { display: block; }
+      :root.dark .sun-icon { display: block; }
+      :root.dark .moon-icon { display: none; }
+
+      main {
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        padding: 24px 18px 36px;
+      }
+
+      .screen { width: 100%; max-width: 470px; animation: fade-in 0.32s ease both; }
+      .screen[hidden] { display: none; }
+      @keyframes fade-in { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: none; } }
+
+      /* ===================== Màn hình mở đầu ===================== */
+      .hero-mark {
+        width: 88px;
+        height: 88px;
+        margin: 0 auto 18px;
+        border-radius: 50%;
+        background: repeating-radial-gradient(circle at center, var(--record) 0 2px, var(--record-groove) 2px 4px);
+        display: grid;
+        place-items: center;
+        box-shadow: var(--shadow-lift);
+        animation: spin 9s linear infinite;
+      }
+      .hero-mark span { width: 30px; height: 30px; border-radius: 50%; background: var(--gold-solid); }
+
+      h1 {
+        font-family: 'Montserrat', sans-serif;
+        font-weight: 900;
+        font-size: clamp(29px, 8.6vw, 41px);
+        letter-spacing: 0.01em;
+        text-transform: uppercase;
+        text-align: center;
+        margin: 0;
+        line-height: 1;
+        text-wrap: balance;
+      }
+      .subtitle {
+        text-align: center;
+        font-size: 11.5px;
+        font-weight: 800;
+        letter-spacing: 0.2em;
+        text-transform: uppercase;
+        color: var(--gold);
+        margin: 11px 0 0;
+      }
+      .lede {
+        text-align: center;
+        font-size: 14px;
+        line-height: 1.65;
+        color: var(--ink-dim);
+        margin: 14px auto 22px;
+        max-width: 40ch;
+      }
+
+      .how {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 8px;
+        margin-bottom: 24px;
+      }
+      .how-step {
+        background: var(--panel);
+        border: 1px solid var(--line);
+        border-radius: 12px;
+        padding: 12px 10px;
+        text-align: center;
+      }
+      .how-num {
+        display: inline-grid;
+        place-items: center;
+        width: 21px;
+        height: 21px;
+        border-radius: 50%;
+        background: var(--gold-solid);
+        color: var(--gold-solid-ink);
+        font-family: 'Montserrat', sans-serif;
+        font-weight: 900;
+        font-size: 11px;
+        margin-bottom: 6px;
+      }
+      .how-text { display: block; font-size: 11.5px; line-height: 1.45; color: var(--ink-dim); font-weight: 500; }
+
+      .mode-label {
+        font-size: 10.5px;
+        font-weight: 800;
+        letter-spacing: 0.14em;
+        text-transform: uppercase;
+        color: var(--ink-faint);
+        text-align: center;
+        margin-bottom: 10px;
+      }
+      .modes { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 20px; }
+      .mode-card {
+        position: relative;
+        border: 1.5px solid var(--line);
+        background: var(--panel);
+        border-radius: 14px;
+        padding: 14px 13px;
+        text-align: left;
+        cursor: pointer;
+        font-family: inherit;
+        transition: border-color 0.15s, box-shadow 0.15s, transform 0.12s;
+      }
+      .mode-card:hover { transform: translateY(-2px); box-shadow: var(--shadow-soft); }
+      .mode-card[aria-pressed='true'] { border-color: var(--gold-solid); box-shadow: var(--shadow-soft); }
+      .mode-card[aria-pressed='true']::after {
+        content: '';
+        position: absolute;
+        top: 11px;
+        right: 11px;
+        width: 8px;
+        height: 8px;
+        border-radius: 50%;
+        background: var(--gold-solid);
+      }
+      .mode-name {
+        display: block;
+        font-family: 'Montserrat', sans-serif;
+        font-weight: 800;
+        font-size: 13.5px;
+        letter-spacing: 0.02em;
+        text-transform: uppercase;
+        margin-bottom: 5px;
+        color: var(--ink);
+      }
+      .mode-desc { display: block; font-size: 11.5px; line-height: 1.5; color: var(--ink-faint); }
+      .mode-best { display: block; margin-top: 8px; font-size: 11px; font-weight: 700; color: var(--gold); }
+
+      .btn-primary {
+        display: block;
+        width: 100%;
+        font-family: 'Montserrat', sans-serif;
+        font-weight: 900;
+        font-size: 15px;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+        color: var(--gold-solid-ink);
+        background: linear-gradient(135deg, #f3ba45, var(--gold-solid) 55%, #e08b27);
+        border: none;
+        border-radius: 999px;
+        padding: 16px;
+        cursor: pointer;
+        box-shadow: var(--shadow-soft);
+        transition: filter 0.15s, transform 0.1s;
+      }
+      .btn-primary:hover:not(:disabled) { filter: brightness(1.06); }
+      .btn-primary:active:not(:disabled) { transform: scale(0.985); }
+      .btn-primary:disabled { opacity: 0.55; cursor: default; }
+
+      .btn-ghost {
+        display: block;
+        width: 100%;
+        font-family: inherit;
+        font-weight: 700;
+        font-size: 13.5px;
+        color: var(--ink-dim);
+        background: var(--panel);
+        border: 1px solid var(--line-strong);
+        border-radius: 999px;
+        padding: 13px;
+        cursor: pointer;
+        transition: color 0.15s, border-color 0.15s;
+      }
+      .btn-ghost:hover { color: var(--ink); border-color: var(--ink-faint); }
+
+      /* ===================== Màn hình chơi ===================== */
+      .hud {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 10px;
+        margin-bottom: 14px;
+      }
+      .hud-cell { flex: 1; }
+      .hud-cell:last-child { text-align: right; }
+      .hud-key {
+        display: block;
+        font-size: 9.5px;
+        font-weight: 800;
+        letter-spacing: 0.13em;
+        text-transform: uppercase;
+        color: var(--ink-faint);
+        margin-bottom: 2px;
+      }
+      .hud-val {
+        display: block;
+        font-family: 'Montserrat', sans-serif;
+        font-weight: 900;
+        font-size: 19px;
+        color: var(--ink);
+        font-variant-numeric: tabular-nums;
+      }
+      .hud-val.gold { color: var(--gold); }
+      .hud-mode {
+        font-size: 10.5px;
+        font-weight: 800;
+        color: var(--gold);
+        border: 1.5px solid var(--gold-solid);
+        border-radius: 999px;
+        padding: 5px 12px;
+        white-space: nowrap;
+      }
+
+      .turntable { position: relative; width: min(100%, 400px); aspect-ratio: 1; margin: 0 auto; }
+
+      .record {
+        position: absolute;
+        left: 50%;
+        top: 50%;
+        width: 44%;
+        aspect-ratio: 1;
+        transform: translate(-50%, -50%);
+        border-radius: 50%;
+        background: repeating-radial-gradient(circle at center, var(--record) 0 2.5px, var(--record-groove) 2.5px 5px);
+        box-shadow: var(--shadow-lift), inset 0 0 24px rgba(0, 0, 0, 0.55);
+        display: grid;
+        place-items: center;
+      }
+      .record.spinning { animation: spin 2.6s linear infinite; }
+      @keyframes spin { to { transform: translate(-50%, -50%) rotate(360deg); } }
+
+      .record-label {
+        width: 48%;
+        aspect-ratio: 1;
+        border-radius: 50%;
+        background: radial-gradient(circle at 34% 28%, #f6c65e, var(--gold-solid) 62%, #c9871b);
+        display: grid;
+        place-items: center;
+        text-align: center;
+      }
+      .record-label span {
+        font-family: 'Montserrat', sans-serif;
+        font-weight: 900;
+        font-size: 10px;
+        letter-spacing: 0.05em;
+        text-transform: uppercase;
+        color: #4a2f08;
+        line-height: 1.15;
+      }
+      .record.pulse { animation: pulse-ring 0.34s ease-out; }
+      @keyframes pulse-ring {
+        0% { box-shadow: var(--shadow-lift), inset 0 0 24px rgba(0,0,0,0.55), 0 0 0 0 rgba(234, 166, 44, 0.5); }
+        100% { box-shadow: var(--shadow-lift), inset 0 0 24px rgba(0,0,0,0.55), 0 0 0 24px rgba(234, 166, 44, 0); }
+      }
+
+      .pad {
+        position: absolute;
+        width: 22%;
+        aspect-ratio: 1;
+        transform: translate(-50%, -50%);
+        border-radius: 50%;
+        border: none;
+        background: var(--pad-color);
+        filter: brightness(var(--pad-rest));
+        cursor: pointer;
+        display: grid;
+        place-items: center;
+        font-family: 'Montserrat', sans-serif;
+        color: #2a1a0c;
+        box-shadow: var(--shadow-soft), inset 0 -3px 7px rgba(0, 0, 0, 0.16);
+        transition: filter 0.12s ease, transform 0.12s ease, box-shadow 0.12s ease;
+      }
+      .pad-note { font-weight: 900; font-size: clamp(13px, 3.9vw, 17px); line-height: 1; }
+      .pad-sub { font-weight: 700; font-size: clamp(8px, 2.3vw, 10px); opacity: 0.6; margin-top: 2px; }
+      .pad.lit {
+        filter: brightness(1.16) saturate(1.18);
+        transform: translate(-50%, -50%) scale(1.13);
+        box-shadow: 0 0 0 5px color-mix(in srgb, var(--pad-color) 42%, transparent), 0 0 28px var(--pad-color);
+      }
+      .pad:disabled { cursor: default; }
+      .pad:focus-visible { outline: 3px solid var(--ink); outline-offset: 3px; }
+
+      /* Bảy phím rải đều quanh vòng tròn, cao độ tăng dần theo chiều kim đồng hồ */
+      .pad-1 { left: 50%;   top: 11%;   --pad-color: #f5c044; }
+      .pad-2 { left: 80.5%; top: 25.7%; --pad-color: #f49a45; }
+      .pad-3 { left: 88%;   top: 58.7%; --pad-color: #ee7b6e; }
+      .pad-4 { left: 66.9%; top: 85.1%; --pad-color: #d97bae; }
+      .pad-5 { left: 33.1%; top: 85.1%; --pad-color: #9c8be8; }
+      .pad-6 { left: 12%;   top: 58.7%; --pad-color: #4fc2ac; }
+      .pad-7 { left: 19.5%; top: 25.7%; --pad-color: #a8c554; }
+
+      .status {
+        text-align: center;
+        margin-top: 16px;
+        min-height: 24px;
+        font-size: 14.5px;
+        font-weight: 700;
+        color: var(--ink-dim);
+      }
+      .status.turn { color: var(--gold); }
+      .status.good { color: var(--good); }
+      .status.bad { color: var(--bad); }
+
+      /* Chấm tiến độ: cho biết đã bấm được mấy nốt trên tổng số nốt của vòng */
+      .progress-dots {
+        display: flex;
+        justify-content: center;
+        gap: 6px;
+        margin-top: 10px;
+        min-height: 9px;
+        flex-wrap: wrap;
+      }
+      .progress-dot {
+        width: 8px;
+        height: 8px;
+        border-radius: 50%;
+        background: var(--line-strong);
+        transition: background 0.15s, transform 0.15s;
+      }
+      .progress-dot.done { background: var(--gold-solid); transform: scale(1.15); }
+
+      .replay-row { margin-top: 14px; display: flex; justify-content: center; }
+      #replay-btn {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        font-family: inherit;
+        font-size: 13px;
+        font-weight: 700;
+        color: var(--ink-dim);
+        background: var(--panel);
+        border: 1px solid var(--line-strong);
+        border-radius: 999px;
+        padding: 10px 18px;
+        cursor: pointer;
+        transition: color 0.15s, border-color 0.15s, opacity 0.15s;
+      }
+      #replay-btn:hover:not(:disabled) { color: var(--gold); border-color: var(--gold); }
+      #replay-btn:disabled { opacity: 0.4; cursor: default; }
+      #replay-btn svg { width: 14px; height: 14px; }
+
+      .shake { animation: shake 0.42s ease; }
+      @keyframes shake {
+        10%, 90% { transform: translateX(-3px); }
+        20%, 80% { transform: translateX(5px); }
+        30%, 50%, 70% { transform: translateX(-8px); }
+        40%, 60% { transform: translateX(8px); }
+      }
+
+      /* ===================== Màn hình kết thúc ===================== */
+      .over-card {
+        background: var(--panel);
+        border: 1px solid var(--line);
+        border-radius: 20px;
+        padding: 30px 24px;
+        text-align: center;
+        box-shadow: var(--shadow-soft);
+      }
+      .over-emoji { font-size: 40px; display: block; margin-bottom: 10px; }
+      .over-title {
+        font-family: 'Montserrat', sans-serif;
+        font-weight: 900;
+        font-size: 23px;
+        text-transform: uppercase;
+        letter-spacing: 0.03em;
+        margin: 0 0 6px;
+      }
+      .over-sub { font-size: 13px; color: var(--ink-dim); margin: 0 0 20px; }
+      .over-stats { display: flex; justify-content: center; gap: 32px; margin-bottom: 22px; }
+      .over-stat-val {
+        display: block;
+        font-family: 'Montserrat', sans-serif;
+        font-weight: 900;
+        font-size: 38px;
+        line-height: 1;
+        font-variant-numeric: tabular-nums;
+      }
+      .over-stat-val.gold { color: var(--gold); }
+      .over-stat-key {
+        display: block;
+        margin-top: 6px;
+        font-size: 9.5px;
+        font-weight: 800;
+        letter-spacing: 0.13em;
+        text-transform: uppercase;
+        color: var(--ink-faint);
+      }
+      .over-actions { display: flex; flex-direction: column; gap: 10px; }
+      .new-best {
+        display: inline-block;
+        margin-bottom: 14px;
+        font-size: 11px;
+        font-weight: 800;
+        letter-spacing: 0.1em;
+        text-transform: uppercase;
+        color: var(--gold-solid-ink);
+        background: var(--gold-solid);
+        border-radius: 999px;
+        padding: 5px 13px;
+      }
+
+      .footnote { text-align: center; font-size: 11px; color: var(--ink-faint); padding: 0 18px 20px; }
+
+      @media (prefers-reduced-motion: reduce) {
+        .hero-mark, .record.spinning, .record.pulse, .shake, .screen { animation: none; }
+        .pad, .mode-card { transition: none; }
+      }
+
+      @media (max-width: 370px) {
+        .modes { grid-template-columns: 1fr; }
+        .how { grid-template-columns: 1fr; }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="topbar">
+      <div class="topbar-left">
+        <a class="back-link" href="/index.html">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M15 19l-7-7 7-7" /></svg>
+          <span>Trang chủ</span>
+        </a>
+        <span class="topbar-brand">Guitar By Quang</span>
+      </div>
+      <button type="button" id="theme-toggle-btn" aria-label="Chuyển đổi giao diện Sáng / Tối" title="Chuyển đổi giao diện Sáng / Tối">
+        <svg class="sun-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <circle cx="12" cy="12" r="4"></circle>
+          <path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M6.34 17.66l-1.41 1.41M19.07 4.93l-1.41 1.41"></path>
+        </svg>
+        <svg class="moon-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z"></path>
+        </svg>
+      </button>
+    </div>
+
+    <main>
+      <!-- ============ MÀN HÌNH MỞ ĐẦU ============ -->
+      <section class="screen" id="screen-start">
+        <div class="hero-mark" aria-hidden="true"><span></span></div>
+        <h1>Game Luyện Cảm Âm</h1>
+        <p class="subtitle">Nghe · Nhớ · Lặp lại</p>
+        <p class="lede">Máy phát một chuỗi nốt guitar, bạn bấm lại đúng thứ tự. Lặp lại đúng thì chuỗi dài thêm một nốt. Đi được bao xa?</p>
+
+        <div class="how">
+          <div class="how-step">
+            <span class="how-num">1</span>
+            <span class="how-text">Nghe máy phát chuỗi nốt</span>
+          </div>
+          <div class="how-step">
+            <span class="how-num">2</span>
+            <span class="how-text">Bấm lại đúng thứ tự vừa nghe</span>
+          </div>
+          <div class="how-step">
+            <span class="how-num">3</span>
+            <span class="how-text">Đúng thì chuỗi dài thêm một nốt</span>
+          </div>
+        </div>
+
+        <p class="mode-label">Chọn chế độ</p>
+        <div class="modes">
+          <button type="button" class="mode-card" id="mode-see" aria-pressed="true">
+            <span class="mode-name">Nhìn &amp; Nghe</span>
+            <span class="mode-desc">Phím sáng lên theo từng nốt. Dễ vào, hợp người mới.</span>
+            <span class="mode-best" id="best-see">Kỷ lục: 0 nốt</span>
+          </button>
+          <button type="button" class="mode-card" id="mode-hear" aria-pressed="false">
+            <span class="mode-name">Chỉ Nghe</span>
+            <span class="mode-desc">Phím không sáng — phải mò bằng tai. Kỷ lục tính riêng.</span>
+            <span class="mode-best" id="best-hear">Kỷ lục: 0 nốt</span>
+          </button>
+        </div>
+
+        <button type="button" class="btn-primary" id="start-btn" disabled>Đang tải âm thanh…</button>
+      </section>
+
+      <!-- ============ MÀN HÌNH CHƠI ============ -->
+      <section class="screen" id="screen-game" hidden>
+        <div class="hud">
+          <div class="hud-cell">
+            <span class="hud-key">Vòng</span>
+            <span class="hud-val" id="hud-round">1</span>
+          </div>
+          <div class="hud-cell" style="flex: 0 0 auto"><span class="hud-mode" id="hud-mode">Nhìn &amp; Nghe</span></div>
+          <div class="hud-cell">
+            <span class="hud-key">Kỷ lục</span>
+            <span class="hud-val gold" id="hud-best">0</span>
+          </div>
+        </div>
+
+        <div class="turntable" id="turntable">
+          <div class="record" id="record" aria-hidden="true">
+            <div class="record-label"><span>Cảm<br />Âm</span></div>
+          </div>
+
+          <button type="button" class="pad pad-1" data-note="do"><span class="pad-note">Đồ</span><span class="pad-sub">C</span></button>
+          <button type="button" class="pad pad-2" data-note="re"><span class="pad-note">Rê</span><span class="pad-sub">D</span></button>
+          <button type="button" class="pad pad-3" data-note="mi"><span class="pad-note">Mi</span><span class="pad-sub">E</span></button>
+          <button type="button" class="pad pad-4" data-note="fa"><span class="pad-note">Fa</span><span class="pad-sub">F</span></button>
+          <button type="button" class="pad pad-5" data-note="sol"><span class="pad-note">Sol</span><span class="pad-sub">G</span></button>
+          <button type="button" class="pad pad-6" data-note="la"><span class="pad-note">La</span><span class="pad-sub">A</span></button>
+          <button type="button" class="pad pad-7" data-note="si"><span class="pad-note">Si</span><span class="pad-sub">B</span></button>
+        </div>
+
+        <p class="status" id="status">Nghe kỹ nhé…</p>
+        <div class="progress-dots" id="progress-dots"></div>
+
+        <div class="replay-row">
+          <button type="button" id="replay-btn" disabled>
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M1 4v6h6M23 20v-6h-6" /><path d="M20.49 9A9 9 0 0 0 5.64 5.64L1 10m22 4l-4.64 4.36A9 9 0 0 1 3.51 15" /></svg>
+            <span id="replay-label">Nghe lại (1 lần)</span>
+          </button>
+        </div>
+      </section>
+
+      <!-- ============ MÀN HÌNH KẾT THÚC ============ -->
+      <section class="screen" id="screen-over" hidden>
+        <div class="over-card">
+          <span class="over-emoji" id="over-emoji">🎧</span>
+          <h2 class="over-title">Hết lượt</h2>
+          <p class="over-sub" id="over-sub">Bạn lặp lại đúng chuỗi 4 nốt</p>
+          <span class="new-best" id="new-best" hidden>Kỷ lục mới!</span>
+
+          <div class="over-stats">
+            <div>
+              <span class="over-stat-val gold" id="over-score">0</span>
+              <span class="over-stat-key">Chuỗi dài nhất</span>
+            </div>
+            <div>
+              <span class="over-stat-val" id="over-best">0</span>
+              <span class="over-stat-key">Kỷ lục</span>
+            </div>
+          </div>
+
+          <div class="over-actions">
+            <button type="button" class="btn-primary" id="again-btn">Chơi Lại</button>
+            <button type="button" class="btn-ghost" id="back-menu-btn">Đổi chế độ</button>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <p class="footnote">Tiếng đàn lấy từ bộ mẫu guitar dây thép FluidR3_GM (CC BY 3.0).</p>
+
+    <script type="module" src="/src/luyen-cam-am.js"></script>
+  </body>
+</html>
