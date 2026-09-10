@@ -417,6 +417,9 @@ function startRound() {
 }
 
 function setWarmupUI(active) {
+  // Lớp này để CSS thu nhỏ vòng phím trên màn thấp, vì lúc làm quen có thêm
+  // dải nhãn và nút bấm chiếm chỗ.
+  screens.game.classList.toggle('is-warmup', active)
   warmupBar.hidden = !active
   warmupActions.hidden = !active
   hud.hidden = active
