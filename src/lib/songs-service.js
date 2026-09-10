@@ -631,7 +631,11 @@ export async function saveSong(payload, isEdit = false, songId = null) {
   if (!isEdit && !cleanPayload.order) {
     cleanPayload.order = all.length + 1
   }
-  cleanPayload.created_at = cleanPayload.created_at || new Date().toISOString()
+  // created_at chỉ set khi tạo mới — set lại ở lần edit sẽ làm sai thứ tự
+  // "mới cập nhật" và có thể khiến UPDATE thất bại nếu cột này có ràng buộc.
+  if (!isEdit) {
+    cleanPayload.created_at = cleanPayload.created_at || new Date().toISOString()
+  }
 
   // 1. Write to Supabase
   let supabaseSuccess = false
@@ -666,11 +670,16 @@ export async function saveSong(payload, isEdit = false, songId = null) {
 
   setLocalSongs(all)
 
+  // `success` phải phản ánh đúng kết quả ghi Supabase — vì loadSongs() sau đó
+  // sẽ fetchAllSongs() lại từ Supabase, đè lên LocalStorage vừa cập nhật.
+  // Nếu luôn báo success:true dù Supabase lỗi, admin sẽ thấy toast "thành
+  // công" nhưng dữ liệu thật ra chưa đổi (bị load lại dữ liệu cũ ngay sau đó).
   return {
-    success: true,
+    success: supabaseSuccess,
     savedLocally: true,
     supabaseSaved: supabaseSuccess,
     warning: supabaseWarning,
+    error: supabaseWarning,
     record: fullRecord,
   }
 }
@@ -688,9 +697,13 @@ export async function removeSong(songId) {
     console.warn('[songs-service] Supabase delete warning:', e)
   }
 
+  if (supabaseError) {
+    return { success: false, error: supabaseError.message || 'Không thể xoá bài hát trên Supabase' }
+  }
+
   const all = getLocalSongs().filter((s) => String(s.id) !== String(songId))
   setLocalSongs(all)
-  return { success: true, warning: supabaseError?.message }
+  return { success: true }
 }
 
 /**
@@ -702,7 +715,9 @@ export async function reorderAllSongs(orderedSongIds) {
       return { success: false, error: 'Danh sách bài hát không hợp lệ.' }
     }
 
-    // 1. Update Supabase
+    // 1. Update Supabase — Supabase queries resolve with { error } instead of
+    // rejecting, nên phải kiểm tra từng kết quả thay vì chỉ bắt exception.
+    let supabaseReorderError = null
     try {
       const updates = orderedSongIds.map((id, index) =>
         supabase
@@ -710,9 +725,19 @@ export async function reorderAllSongs(orderedSongIds) {
           .update({ order: index + 1 })
           .eq('id', id)
       )
-      await Promise.all(updates)
+      const results = await Promise.all(updates)
+      const failed = results.find((r) => r.error)
+      if (failed) supabaseReorderError = failed.error
     } catch (e) {
-      console.warn('[songs-service] Supabase reorder warning:', e)
+      supabaseReorderError = e
+    }
+
+    if (supabaseReorderError) {
+      console.warn('[songs-service] Supabase reorder warning:', supabaseReorderError)
+      return {
+        success: false,
+        error: supabaseReorderError.message || 'Không thể cập nhật thứ tự trên Supabase',
+      }
     }
 
     // 2. Update LocalStorage
