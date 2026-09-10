@@ -322,6 +322,19 @@ async function checkAuthAndInit() {
       created_at: currentUser.created_at,
     }
 
+    // Tự vá lại profiles.email nếu thiếu/lệch so với auth thật — trigger tạo
+    // profile lúc đăng ký không copy cột email nên một số tài khoản bị Admin
+    // thấy "Chưa cập nhật email". Cột email bị chặn UPDATE trực tiếp từ client
+    // (tránh user tự sửa email hiển thị khác với email đăng nhập thật), nên
+    // phải qua RPC sync_own_email() — SECURITY DEFINER, tự lấy đúng email thật
+    // từ auth.uid() chứ không nhận giá trị từ client. Xem scripts/fix-profile-email-sync.sql.
+    if (currentUser.email && currentProfile.email !== currentUser.email) {
+      currentProfile.email = currentUser.email
+      supabase.rpc('sync_own_email').then(({ error }) => {
+        if (error) console.warn('Không thể tự vá email hồ sơ:', error.message)
+      })
+    }
+
     // Check if admin
     if (currentProfile.role === 'admin') {
       adminNoticeBanner?.classList.remove('hidden')

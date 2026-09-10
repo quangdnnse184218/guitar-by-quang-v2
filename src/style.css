@@ -1651,6 +1651,16 @@ input[type='range'].metro-slider::-webkit-slider-thumb:hover {
   transform: rotate(180deg) !important;
 }
 
+#admin-header-dropdown-wrap.open #admin-header-dropdown-menu {
+  opacity: 1 !important;
+  visibility: visible !important;
+  pointer-events: auto !important;
+}
+
+#admin-header-dropdown-wrap.open #admin-header-dropdown-arrow {
+  transform: rotate(180deg) !important;
+}
+
 /* ==============================================================================
    FORM INPUT AUTO-SCROLL MARGIN (MOBILE KEYBOARD VISIBILITY)
    ============================================================================== */
