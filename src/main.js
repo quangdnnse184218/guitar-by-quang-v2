@@ -911,8 +911,15 @@ function setupEventListeners() {
 }
 
 // ==========================================================================
-// HERO TILT EFFECT — mouse-follow parallax on desktop, device-tilt on mobile
+// HERO TILT EFFECT — mouse-follow parallax on desktop only
 // ==========================================================================
+// Trước đây có thêm hiệu ứng nghiêng theo con quay hồi chuyển (gyroscope)
+// cho mobile, nhưng công thức giả định điện thoại luôn cầm nghiêng ~45° so
+// với mặt phẳng — trong thực tế đa số người cầm điện thoại gần như thẳng
+// đứng, nên rotX luôn lệch về một phía tối đa, khiến video hiển thị bị
+// "nghiêng" cố định trông như lỗi thay vì hiệu ứng tinh tế. Bỏ hẳn phần
+// gyroscope, chỉ giữ hiệu ứng nghiêng theo con trỏ chuột trên desktop (nơi
+// vị trí luôn xác định chính xác, không phụ thuộc cách cầm máy).
 function initHeroTiltEffect() {
   const card = document.getElementById('hero-tilt-card')
   if (!card) return
@@ -940,36 +947,6 @@ function initHeroTiltEffect() {
     card.style.transition = 'transform 0.4s cubic-bezier(0.16, 1, 0.3, 1)'
     applyTilt(0, 0)
   })
-
-  // Mobile: tilt follows device orientation (gyroscope)
-  let gyroEnabled = false
-  const onOrientation = (e) => {
-    if (e.beta === null || e.gamma === null) return
-    const rotX = Math.max(-MAX_TILT, Math.min(MAX_TILT, (e.beta - 45) * -0.25))
-    const rotY = Math.max(-MAX_TILT, Math.min(MAX_TILT, e.gamma * 0.35))
-    applyTilt(rotX, rotY)
-  }
-
-  const enableGyro = () => {
-    if (gyroEnabled) return
-    gyroEnabled = true
-    window.addEventListener('deviceorientation', onOrientation)
-  }
-
-  if (typeof DeviceOrientationEvent?.requestPermission === 'function') {
-    // iOS 13+ requires an explicit user gesture before the permission prompt can appear
-    const requestOnce = () => {
-      document.removeEventListener('touchend', requestOnce)
-      DeviceOrientationEvent.requestPermission()
-        .then((state) => {
-          if (state === 'granted') enableGyro()
-        })
-        .catch(() => {})
-    }
-    document.addEventListener('touchend', requestOnce, { once: true })
-  } else if (typeof window.DeviceOrientationEvent !== 'undefined') {
-    enableGyro()
-  }
 }
 
 // ==========================================================================

@@ -18,8 +18,20 @@
     <div class="grain-overlay" aria-hidden="true"></div>
     <!-- Nền ambient màu vàng ấm riêng cho khu vực thành viên — tạo điểm nhấn
          khác biệt nhẹ so với các trang khách (không đổi hẳn màu nền để giữ
-         đồng bộ hệ thống theme, chỉ phủ thêm 1 lớp gradient mờ cố định). -->
-    <div class="member-ambient-bg" aria-hidden="true"></div>
+         đồng bộ hệ thống theme). 3 khối màu trôi chậm + hoạ tiết cây đàn mờ
+         ở góc để có chiều sâu và bản sắc riêng, thay vì chỉ gradient trơn. -->
+    <div class="member-ambient-bg" aria-hidden="true">
+      <span class="member-ambient-blob member-ambient-blob-1"></span>
+      <span class="member-ambient-blob member-ambient-blob-2"></span>
+      <span class="member-ambient-blob member-ambient-blob-3"></span>
+      <svg class="member-ambient-guitar" viewBox="0 0 260 480" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <rect x="115" y="0" width="30" height="220" rx="14" fill="currentColor" />
+        <rect x="102" y="0" width="56" height="32" rx="12" fill="currentColor" />
+        <ellipse cx="130" cy="270" rx="72" ry="62" fill="currentColor" />
+        <ellipse cx="130" cy="385" rx="108" ry="92" fill="currentColor" />
+        <circle cx="130" cy="325" r="28" fill="var(--bg-base)" />
+      </svg>
+    </div>
 
     <!-- Header Navigation Bar -->
     <header id="main-nav" class="fixed top-0 left-0 right-0 z-40 bg-glass-bg backdrop-blur-xl border-b border-glass-border shadow-xs transition-transform duration-300 py-2 sm:py-3.5">
