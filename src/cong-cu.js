@@ -4,13 +4,14 @@
  * ==============================================================================
  */
 
-import { initNavbarShrink, initMobileMenu } from './common.js'
+import { initNavbarShrink, initMobileMenu, initHeaderOverlapFix } from './common.js'
 import { initThemeToggle } from './theme-toggle.js'
 import { fetchAllGears } from './lib/gears-service.js'
 
 initNavbarShrink()
 initMobileMenu()
 initThemeToggle()
+initHeaderOverlapFix()
 
 // Toast Notification Helper
 const toastNotification = document.getElementById('toast-notification')

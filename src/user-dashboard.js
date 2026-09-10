@@ -5,7 +5,12 @@
  */
 
 import { supabase } from './lib/supabase.js'
-import { initNavbarShrink, initMobileMenu, initCardTouchFeedback } from './common.js'
+import {
+  initNavbarShrink,
+  initMobileMenu,
+  initCardTouchFeedback,
+  initHeaderOverlapFix,
+} from './common.js'
 import { initThemeToggle } from './theme-toggle.js'
 import {
   fetchAllSongs,
@@ -28,6 +33,7 @@ initNavbarShrink()
 initMobileMenu()
 initThemeToggle()
 initCardTouchFeedback()
+initHeaderOverlapFix()
 
 // ==========================================================================
 // STATE

@@ -474,6 +474,38 @@ export async function initAuthHeader() {
 }
 
 /**
+ * Fix: khi đăng nhập trên mobile, header chèn thêm 2 hàng menu
+ * (#mobile-logged-in-nav — xem updateHeaderForUser ở trên) khiến header cao
+ * hơn mức padding-top cố định (pt-28...) mà mỗi trang đã đặt sẵn cho nội
+ * dung bên dưới, làm phần đầu trang (badge/tiêu đề hero...) bị che mất.
+ * Hàm này bù thêm đúng phần chiều cao dư ra đó vào padding-top của <main>,
+ * chỉ khi hàng menu đó thực sự xuất hiện — không ảnh hưởng gì tới layout
+ * bình thường lúc chưa đăng nhập.
+ */
+export function initHeaderOverlapFix() {
+  const main = document.querySelector('main')
+  const header = document.getElementById('main-nav')
+  if (!main || !header) return
+
+  const apply = () => {
+    const extraNav = document.getElementById('mobile-logged-in-nav')
+    const isShown =
+      extraNav && window.innerWidth < 768 && getComputedStyle(extraNav).display !== 'none'
+    const extra = isShown ? extraNav.getBoundingClientRect().height : 0
+    main.style.paddingTop = extra > 1 ? `${extra}px` : ''
+  }
+
+  apply()
+  window.addEventListener('resize', apply)
+
+  // #mobile-logged-in-nav được chèn bất đồng bộ sau khi kiểm tra đăng nhập
+  // xong (initAuthHeader), nên phải theo dõi thay đổi DOM của header thay vì
+  // gọi apply() một lần lúc tải trang.
+  const observer = new MutationObserver(apply)
+  observer.observe(header, { childList: true, subtree: true, attributes: true })
+}
+
+/**
  * Mobile Auto-Hide Header on Scroll Down & Reveal on Scroll Up
  */
 export function initMobileHeaderScroll() {

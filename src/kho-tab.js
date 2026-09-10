@@ -1,4 +1,9 @@
-import { initNavbarShrink, initMobileMenu, initCardTouchFeedback } from './common.js'
+import {
+  initNavbarShrink,
+  initMobileMenu,
+  initCardTouchFeedback,
+  initHeaderOverlapFix,
+} from './common.js'
 import { initThemeToggle } from './theme-toggle.js'
 import {
   fetchAllSongs,
@@ -13,6 +18,7 @@ import { supabase } from './lib/supabase.js'
 // Initialize UI
 initNavbarShrink()
 initMobileMenu()
+initHeaderOverlapFix()
 initThemeToggle()
 initCardTouchFeedback()
 

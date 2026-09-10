@@ -905,13 +905,24 @@ nav,
   }
 }
 
+/* Biên độ trước (14px, chỉ đổi trục dọc) quá nhỏ nên gần như không nhận ra
+   là đang chuyển động — tăng lên rõ rệt và thêm lắc ngang nhẹ + tự xoay
+   thêm vài độ quanh góc gốc (--rot) để mắt dễ bắt được chuyển động hơn. */
 @keyframes site-ambient-float {
-  0%,
-  100% {
-    transform: rotate(var(--rot)) translateY(0);
+  0% {
+    transform: rotate(var(--rot)) translate(0, 0);
+  }
+  25% {
+    transform: rotate(calc(var(--rot) + 6deg)) translate(6px, -20px);
   }
   50% {
-    transform: rotate(var(--rot)) translateY(-14px);
+    transform: rotate(var(--rot)) translate(-4px, -30px);
+  }
+  75% {
+    transform: rotate(calc(var(--rot) - 6deg)) translate(-8px, -14px);
+  }
+  100% {
+    transform: rotate(var(--rot)) translate(0, 0);
   }
 }
 

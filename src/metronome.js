@@ -6,12 +6,13 @@
  * Guarantees zero-drift timing across background tabs and devices.
  */
 
-import { initNavbarShrink, initMobileMenu } from './common.js'
+import { initNavbarShrink, initMobileMenu, initHeaderOverlapFix } from './common.js'
 import { initThemeToggle } from './theme-toggle.js'
 
 initNavbarShrink()
 initMobileMenu()
 initThemeToggle()
+initHeaderOverlapFix()
 
 // ==========================================================================
 // CONSTANTS & TEMPO MARKINGS
