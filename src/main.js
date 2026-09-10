@@ -6,7 +6,12 @@
  * v2's Glassmorphism & Light/Dark Theme System.
  */
 
-import { initNavbarShrink, initMobileMenu, initCardTouchFeedback } from './common.js'
+import {
+  initNavbarShrink,
+  initMobileMenu,
+  initCardTouchFeedback,
+  initHeaderOverlapFix,
+} from './common.js'
 import { initThemeToggle } from './theme-toggle.js'
 import {
   fetchFeaturedSongs,
@@ -25,6 +30,7 @@ initMobileMenu()
 initThemeToggle()
 initCardTouchFeedback()
 initHeroTiltEffect()
+initHeaderOverlapFix()
 
 // ==========================================================================
 // STATE
