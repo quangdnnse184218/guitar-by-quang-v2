@@ -146,44 +146,55 @@
         </div>
 
         <!-- Member Hero Banner with Gold Luxury Details -->
-        <div class="relative overflow-hidden rounded-2xl sm:rounded-3xl glass-card p-4 sm:p-6 md:p-8 border border-amber-500/30 shadow-xl bg-gradient-to-br from-amber-500/5 via-transparent to-accent-primary/5">
-          <div class="absolute -right-10 -bottom-10 w-48 h-48 bg-accent-primary/10 rounded-full blur-3xl pointer-events-none"></div>
-          
-          <div class="relative z-10 flex flex-col md:flex-row md:items-center justify-between gap-4 sm:gap-6">
+        <div class="relative overflow-hidden rounded-2xl sm:rounded-3xl glass-card p-5 sm:p-7 md:p-8 border border-amber-500/30 shadow-xl bg-gradient-to-br from-amber-500/8 via-transparent to-accent-primary/8">
+          <div class="absolute -right-14 -top-14 w-56 h-56 bg-accent-primary/10 rounded-full blur-3xl pointer-events-none"></div>
+          <div class="absolute -left-10 -bottom-14 w-48 h-48 bg-amber-400/10 rounded-full blur-3xl pointer-events-none"></div>
+
+          <div class="relative z-10 space-y-5 sm:space-y-6">
+            <!-- Avatar + Greeting -->
             <div class="flex items-center gap-3.5 sm:gap-5">
-              <!-- Avatar Display -->
               <div class="relative flex-shrink-0">
-                <div id="user-avatar-container" class="w-13 h-13 sm:w-20 sm:h-20 rounded-2xl sm:rounded-3xl bg-warm-gradient text-white flex items-center justify-center text-xl sm:text-3xl font-black shadow-md border-2 border-amber-400/80 overflow-hidden">
+                <div id="user-avatar-container" class="w-14 h-14 sm:w-16 sm:h-16 rounded-2xl bg-warm-gradient text-white flex items-center justify-center text-xl sm:text-2xl font-black shadow-md border-2 border-amber-400/80 overflow-hidden">
                   <span id="user-avatar-initial">U</span>
                   <img id="user-avatar-img" src="" alt="Avatar" class="w-full h-full object-cover hidden" />
                 </div>
               </div>
 
-              <!-- Greeting & Info -->
-              <div class="space-y-0.5 sm:space-y-1">
-                <h1 class="text-xl sm:text-3xl font-black text-text-primary tracking-tight">
+              <div class="min-w-0 flex-1 space-y-0.5">
+                <h1 class="text-xl sm:text-3xl font-black text-text-primary tracking-tight truncate">
                   <span>Xin chào, </span>
                   <span id="user-display-name" class="text-accent-primary">...</span>
                 </h1>
-                <p id="user-email-display" class="text-[11px] sm:text-xs text-text-muted font-mono font-medium">...</p>
+                <p id="user-email-display" class="text-[11px] sm:text-xs text-text-muted font-mono font-medium truncate">...</p>
               </div>
             </div>
 
-            <!-- Quick Stats Pills (Compact & Clean) -->
-            <div class="grid grid-cols-3 gap-2 sm:gap-3 w-full md:w-auto">
-              <div class="p-2 sm:p-3.5 md:p-4 rounded-xl sm:rounded-2xl glass-card border border-glass-border hover:border-amber-400/50 hover:shadow-md transition-all text-center">
-                <span class="text-[9px] sm:text-[10px] font-bold text-text-muted uppercase block">Yêu Thích</span>
-                <span id="stat-fav-count" class="text-sm sm:text-lg font-mono font-extrabold text-accent-primary block mt-0.5">0</span>
+            <!-- Quick Stats: full-width row, icon + số liệu để cân đối thị giác.
+                 Xếp dọc (icon trên, chữ dưới) ở mobile để tránh chữ bị cắt do
+                 quá chật khi xếp ngang trong 3 cột hẹp; xếp ngang từ sm: trở lên. -->
+            <div class="grid grid-cols-3 gap-2 sm:gap-4">
+              <div class="flex flex-col items-center text-center gap-1.5 sm:flex-row sm:items-center sm:text-left sm:gap-3 p-2.5 sm:p-4 rounded-xl sm:rounded-2xl glass-card border border-glass-border hover:border-rose-400/50 hover:shadow-md transition-all">
+                <span class="w-8 h-8 sm:w-10 sm:h-10 rounded-xl bg-rose-500/15 text-rose-500 flex items-center justify-center text-sm sm:text-lg flex-shrink-0">❤️</span>
+                <div class="min-w-0">
+                  <span id="stat-fav-count" class="text-sm sm:text-xl font-mono font-extrabold text-text-primary block leading-tight">0</span>
+                  <span class="text-[8px] sm:text-[10px] font-bold text-text-muted uppercase tracking-wide block">Yêu Thích</span>
+                </div>
               </div>
 
-              <div class="p-2 sm:p-3.5 md:p-4 rounded-xl sm:rounded-2xl glass-card border border-glass-border hover:border-amber-400/50 hover:shadow-md transition-all text-center">
-                <span class="text-[9px] sm:text-[10px] font-bold text-text-muted uppercase block">Đã Mua</span>
-                <span id="stat-purchased-count" class="text-sm sm:text-lg font-mono font-extrabold text-amber-500 block mt-0.5">0</span>
+              <div class="flex flex-col items-center text-center gap-1.5 sm:flex-row sm:items-center sm:text-left sm:gap-3 p-2.5 sm:p-4 rounded-xl sm:rounded-2xl glass-card border border-glass-border hover:border-amber-400/50 hover:shadow-md transition-all">
+                <span class="w-8 h-8 sm:w-10 sm:h-10 rounded-xl bg-amber-500/15 text-amber-500 flex items-center justify-center text-sm sm:text-lg flex-shrink-0">⚡</span>
+                <div class="min-w-0">
+                  <span id="stat-purchased-count" class="text-sm sm:text-xl font-mono font-extrabold text-text-primary block leading-tight">0</span>
+                  <span class="text-[8px] sm:text-[10px] font-bold text-text-muted uppercase tracking-wide block">Đã Mua</span>
+                </div>
               </div>
 
-              <div class="p-2 sm:p-3.5 md:p-4 rounded-xl sm:rounded-2xl glass-card border border-glass-border hover:border-amber-400/50 hover:shadow-md transition-all text-center">
-                <span class="text-[9px] sm:text-[10px] font-bold text-text-muted uppercase block">Tham Gia</span>
-                <span id="stat-join-date" class="text-[10px] sm:text-xs font-mono font-bold text-text-primary block mt-0.5 truncate">...</span>
+              <div class="flex flex-col items-center text-center gap-1.5 sm:flex-row sm:items-center sm:text-left sm:gap-3 p-2.5 sm:p-4 rounded-xl sm:rounded-2xl glass-card border border-glass-border hover:border-accent-primary/50 hover:shadow-md transition-all">
+                <span class="w-8 h-8 sm:w-10 sm:h-10 rounded-xl bg-accent-primary/15 text-accent-primary flex items-center justify-center text-sm sm:text-lg flex-shrink-0">📅</span>
+                <div class="min-w-0 w-full">
+                  <span id="stat-join-date" class="text-[11px] sm:text-lg font-mono font-extrabold text-text-primary block leading-tight truncate">...</span>
+                  <span class="text-[8px] sm:text-[10px] font-bold text-text-muted uppercase tracking-wide block">Tham Gia</span>
+                </div>
               </div>
             </div>
           </div>
@@ -191,14 +202,14 @@
 
         <!-- Navigation Tabs Bar (Full Width, No Horizontal Scroll) -->
         <div id="dashboard-tab-bar" class="glass-card p-1.5 sm:p-2 rounded-2xl sm:rounded-3xl border border-glass-border grid grid-cols-3 gap-1.5 sm:gap-2 w-full">
-          <button id="nav-tab-overview" class="dashboard-tab-btn w-full py-2.5 sm:py-3 px-2 sm:px-4 rounded-xl sm:rounded-2xl text-[11px] sm:text-xs font-extrabold transition-all cursor-pointer bg-warm-gradient text-white shadow-md text-center">
-            <span>Tổng Quan</span>
+          <button id="nav-tab-overview" class="dashboard-tab-btn w-full py-2.5 sm:py-3 px-2 sm:px-4 rounded-xl sm:rounded-2xl text-[11px] sm:text-xs font-extrabold transition-all cursor-pointer bg-warm-gradient text-white shadow-md text-center flex items-center justify-center gap-1.5">
+            <span>📊</span><span>Tổng Quan</span>
           </button>
-          <button id="nav-tab-favorites" class="dashboard-tab-btn w-full py-2.5 sm:py-3 px-2 sm:px-4 rounded-xl sm:rounded-2xl text-[11px] sm:text-xs font-bold transition-all cursor-pointer text-text-muted hover:text-text-primary hover:bg-black/5 dark:hover:bg-white/5 text-center">
-            <span>Yêu Thích (<span id="tab-fav-counter">0</span>)</span>
+          <button id="nav-tab-favorites" class="dashboard-tab-btn w-full py-2.5 sm:py-3 px-2 sm:px-4 rounded-xl sm:rounded-2xl text-[11px] sm:text-xs font-bold transition-all cursor-pointer bg-black/5 dark:bg-white/5 text-text-muted hover:text-text-primary hover:bg-black/10 dark:hover:bg-white/10 text-center flex items-center justify-center gap-1.5">
+            <span>❤️</span><span>Yêu Thích (<span id="tab-fav-counter">0</span>)</span>
           </button>
-          <button id="nav-tab-purchases" class="dashboard-tab-btn w-full py-2.5 sm:py-3 px-2 sm:px-4 rounded-xl sm:rounded-2xl text-[11px] sm:text-xs font-bold transition-all cursor-pointer text-text-muted hover:text-text-primary hover:bg-black/5 dark:hover:bg-white/5 text-center">
-            <span>Đã Mua (<span id="tab-purchased-counter">0</span>)</span>
+          <button id="nav-tab-purchases" class="dashboard-tab-btn w-full py-2.5 sm:py-3 px-2 sm:px-4 rounded-xl sm:rounded-2xl text-[11px] sm:text-xs font-bold transition-all cursor-pointer bg-black/5 dark:bg-white/5 text-text-muted hover:text-text-primary hover:bg-black/10 dark:hover:bg-white/10 text-center flex items-center justify-center gap-1.5">
+            <span>⚡</span><span>Đã Mua (<span id="tab-purchased-counter">0</span>)</span>
           </button>
         </div>
 

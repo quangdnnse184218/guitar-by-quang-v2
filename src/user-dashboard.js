@@ -169,10 +169,12 @@ function setActiveTab(tab) {
       if (t.key === tab) {
         if (t.btn) {
           t.btn.classList.remove(
+            'bg-black/5',
+            'dark:bg-white/5',
             'text-text-muted',
             'hover:text-text-primary',
-            'hover:bg-black/5',
-            'dark:hover:bg-white/5'
+            'hover:bg-black/10',
+            'dark:hover:bg-white/10'
           )
           t.btn.classList.add('bg-warm-gradient', 'text-white', 'shadow-md')
         }
@@ -180,7 +182,14 @@ function setActiveTab(tab) {
       } else {
         if (t.btn) {
           t.btn.classList.remove('bg-warm-gradient', 'text-white', 'shadow-md')
-          t.btn.classList.add('text-text-muted', 'hover:text-text-primary')
+          t.btn.classList.add(
+            'bg-black/5',
+            'dark:bg-white/5',
+            'text-text-muted',
+            'hover:text-text-primary',
+            'hover:bg-black/10',
+            'dark:hover:bg-white/10'
+          )
         }
         t.sec?.classList.add('hidden')
       }
