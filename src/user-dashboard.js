@@ -612,9 +612,9 @@ function renderOverviewFeatured() {
               <span class="bg-black/50 backdrop-blur px-1.5 sm:px-2 py-0.5 rounded-full text-white/95 text-[8px] sm:text-[10px] font-mono">${song.category || 'NHẠC VIỆT'}</span>
               <div class="flex items-start gap-1 justify-end">
                 ${userActionGroup}
-                <div class="flex flex-col items-end gap-0.5 sm:gap-1">
-                  <span class="px-1.5 sm:px-2 py-0.5 rounded-full text-[8px] sm:text-[9.5px] font-black bg-rose-600 text-white shadow-sm uppercase tracking-wide font-mono tabular-nums">BÁN • ${priceFormatted}</span>
-                  ${discountNote ? `<span class="text-[7px] sm:text-[8.5px] text-white bg-accent-primary px-1.5 py-0.5 rounded-full font-extrabold shadow-xs inline-block leading-none whitespace-nowrap">${discountNote}</span>` : ''}
+                <div class="flex flex-col items-end gap-1 sm:gap-1.5">
+                  <span class="px-2 sm:px-2.5 py-0.5 sm:py-1 rounded-full text-[8px] sm:text-[9.5px] font-black text-white bg-gradient-to-r from-rose-600 via-rose-500 to-red-500 shadow-md shadow-rose-900/40 ring-1 ring-white/25 uppercase tracking-wide font-mono tabular-nums">BÁN • ${priceFormatted}</span>
+                  ${discountNote ? `<span class="px-2 sm:px-2.5 py-0.5 rounded-full text-[7px] sm:text-[8.5px] font-extrabold text-white bg-gradient-to-r from-amber-500 to-accent-primary shadow-sm shadow-amber-900/30 ring-1 ring-white/25 inline-block leading-none whitespace-nowrap">🎓 ${discountNote}</span>` : ''}
                 </div>
               </div>
             </div>
