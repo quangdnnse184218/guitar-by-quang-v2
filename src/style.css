@@ -430,12 +430,74 @@ nav,
 }
 
 /* Bento highlight for pinned (is_featured) songs in the catalog grid */
-#songs-grid {
+#songs-grid,
+#featured-grid {
   grid-auto-flow: dense;
 }
 .song-card.song-card-pinned {
   grid-column: span 2;
   grid-row: span 2;
+}
+
+/* Quick-jump chips under the hero — same visual language as faq-filter-pill */
+.quick-jump-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 14px;
+  border-radius: 9999px;
+  font-size: 0.75rem;
+  font-weight: 700;
+  color: var(--text-muted);
+  background: var(--glass-bg);
+  border: 1px solid var(--glass-border);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.quick-jump-chip:hover {
+  color: var(--text-primary);
+  background: var(--glass-bg-hover);
+  border-color: rgba(232, 168, 85, 0.3);
+  transform: translateY(-1px);
+}
+
+/* Filter chips inside "Bài Hát Nổi Bật" — reuses .faq-filter-pill visuals */
+.featured-filter-pill {
+  position: relative;
+  padding: 6px 14px;
+  border-radius: 9999px;
+  font-size: 0.75rem;
+  font-weight: 700;
+  color: var(--text-muted);
+  background: var(--glass-bg);
+  border: 1px solid var(--glass-border);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  cursor: pointer;
+  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+  user-select: none;
+}
+
+.featured-filter-pill:hover {
+  color: var(--text-primary);
+  background: var(--glass-bg-hover);
+  border-color: rgba(232, 168, 85, 0.3);
+}
+
+.featured-filter-pill.active {
+  color: #0b0e1a;
+  background: var(--accent-primary);
+  border-color: var(--accent-primary);
+  box-shadow: 0 2px 12px rgba(232, 168, 85, 0.3);
+}
+
+[data-theme='light'] .featured-filter-pill.active {
+  color: #ffffff;
+  background: var(--accent-primary);
+  border-color: var(--accent-primary);
+  box-shadow: 0 2px 12px rgba(201, 127, 46, 0.22);
 }
 
 /* ==============================================================================

@@ -310,27 +310,102 @@ function setLocalSongs(songs) {
   }
 }
 
+const FEATURED_LIMIT = 8
+
 /**
- * Fetch 4 featured songs for Home page
+ * Fetch featured songs for Home page — ưu tiên các bài đã được admin ghim
+ * (is_featured = true), bù thêm bài theo `order` nếu chưa đủ FEATURED_LIMIT
+ * bài để trang chủ luôn có nội dung để hiển thị.
  */
 export async function fetchFeaturedSongs() {
+  try {
+    const { data: pinned, error: pinnedError } = await supabase
+      .from('songs')
+      .select('*')
+      .eq('is_featured', true)
+      .order('order', { ascending: true })
+      .limit(FEATURED_LIMIT)
+
+    if (pinnedError) throw pinnedError
+
+    if (pinned && pinned.length >= FEATURED_LIMIT) {
+      return pinned
+    }
+
+    const { data: rest, error: restError } = await supabase
+      .from('songs')
+      .select('*')
+      .order('order', { ascending: true })
+      .limit(FEATURED_LIMIT * 2)
+
+    if (restError) throw restError
+
+    const pinnedIds = new Set((pinned || []).map((s) => s.id))
+    const filler = (rest || []).filter((s) => !pinnedIds.has(s.id))
+    const combined = [...(pinned || []), ...filler].slice(0, FEATURED_LIMIT)
+
+    if (combined.length === 0) {
+      const fallback = getLocalSongs()
+      return fallback.slice(0, FEATURED_LIMIT)
+    }
+
+    return combined
+  } catch (err) {
+    console.error('[songs-service] Ngoại lệ khi tải bài hát nổi bật:', err.message, err)
+    const fallback = getLocalSongs()
+    const fallbackPinned = fallback.filter((s) => s.is_featured)
+    const fallbackRest = fallback.filter((s) => !s.is_featured)
+    return [...fallbackPinned, ...fallbackRest].slice(0, FEATURED_LIMIT)
+  }
+}
+
+/**
+ * Fetch các bài hát mới thêm gần đây nhất (theo created_at) cho dải "Mới cập
+ * nhật" trên trang chủ — tách biệt với danh sách "Nổi bật" (do admin ghim tay)
+ * để khách quay lại vẫn thấy có nội dung mới.
+ */
+export async function fetchRecentSongs(limit = 6) {
   try {
     const { data, error } = await supabase
       .from('songs')
       .select('*')
-      .order('order', { ascending: true })
-      .limit(4)
+      .order('created_at', { ascending: false })
+      .limit(limit)
 
     if (error || !data || data.length === 0) {
       const fallback = getLocalSongs()
-      return fallback.slice(0, 4)
+      return [...fallback].reverse().slice(0, limit)
     }
 
     return data
   } catch (err) {
-    console.error('[songs-service] Ngoại lệ khi tải bài hát nổi bật:', err.message, err)
+    console.error('[songs-service] Ngoại lệ khi tải bài hát mới cập nhật:', err.message, err)
     const fallback = getLocalSongs()
-    return fallback.slice(0, 4)
+    return [...fallback].reverse().slice(0, limit)
+  }
+}
+
+/**
+ * Đếm nhanh tổng số bài & số bài miễn phí để hiển thị dòng số liệu (social
+ * proof) ngay dưới hero trang chủ.
+ */
+export async function fetchSongsStats() {
+  try {
+    const [totalRes, freeRes] = await Promise.all([
+      supabase.from('songs').select('*', { count: 'exact', head: true }),
+      supabase.from('songs').select('*', { count: 'exact', head: true }).eq('is_free', true),
+    ])
+
+    if (totalRes.error || freeRes.error || !totalRes.count) throw new Error('count query failed')
+
+    return { total: totalRes.count, free: freeRes.count || 0 }
+  } catch (err) {
+    console.warn('[songs-service] Không lấy được số liệu songs, dùng dữ liệu mặc định:', err.message)
+    const fallback = getLocalSongs()
+    return {
+      total: fallback.length,
+      free: fallback.filter((s) => s.is_free ?? s.isFree).length,
+    }
   }
 }
 
