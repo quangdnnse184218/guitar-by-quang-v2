@@ -17,13 +17,13 @@ import { initThemeToggle } from './theme-toggle.js'
 initThemeToggle()
 
 const NOTES = [
-  { id: 'do', sample: 'C4' },
-  { id: 're', sample: 'D4' },
-  { id: 'mi', sample: 'E4' },
-  { id: 'fa', sample: 'F4' },
-  { id: 'sol', sample: 'G4' },
-  { id: 'la', sample: 'A4' },
-  { id: 'si', sample: 'B4' },
+  { id: 'do', sample: 'C4', label: 'Đồ', sub: 'C' },
+  { id: 're', sample: 'D4', label: 'Rê', sub: 'D' },
+  { id: 'mi', sample: 'E4', label: 'Mi', sub: 'E' },
+  { id: 'fa', sample: 'F4', label: 'Fa', sub: 'F' },
+  { id: 'sol', sample: 'G4', label: 'Sol', sub: 'G' },
+  { id: 'la', sample: 'A4', label: 'La', sub: 'A' },
+  { id: 'si', sample: 'B4', label: 'Si', sub: 'B' },
 ]
 
 const SAMPLE_DIR = '/assets/audio/guitar-steel'
@@ -149,15 +149,24 @@ const bestHearLabel = document.getElementById('best-hear')
 const startBtn = document.getElementById('start-btn')
 
 const turntable = document.getElementById('turntable')
-const record = document.getElementById('record')
+const hub = document.getElementById('hub')
+const hubLabel = document.getElementById('hub-label')
 const pads = Array.from(document.querySelectorAll('.pad'))
 const statusEl = document.getElementById('status')
 const progressDots = document.getElementById('progress-dots')
+const hud = document.getElementById('hud')
 const hudRound = document.getElementById('hud-round')
 const hudBest = document.getElementById('hud-best')
 const hudMode = document.getElementById('hud-mode')
+const replayRow = document.getElementById('replay-row')
 const replayBtn = document.getElementById('replay-btn')
 const replayLabel = document.getElementById('replay-label')
+
+const warmupBar = document.getElementById('warmup-bar')
+const warmupCount = document.getElementById('warmup-count')
+const warmupActions = document.getElementById('warmup-actions')
+const playNowBtn = document.getElementById('play-now-btn')
+const skipWarmupBtn = document.getElementById('skip-warmup-btn')
 
 const overEmoji = document.getElementById('over-emoji')
 const overSub = document.getElementById('over-sub')
@@ -215,16 +224,25 @@ function litPad(noteId) {
   setTimeout(() => pad.classList.remove('lit'), LIT_MS)
 }
 
-function pulseRecord() {
-  record.classList.remove('pulse')
+function pulseHub() {
+  hub.classList.remove('pulse')
   // Ép trình duyệt tính lại layout để animation chạy lại được từ đầu.
-  void record.offsetWidth
-  record.classList.add('pulse')
+  void hub.offsetWidth
+  hub.classList.add('pulse')
 }
 
-record.addEventListener('animationend', (event) => {
-  if (event.animationName === 'pulse-ring') record.classList.remove('pulse')
+hub.addEventListener('animationend', (event) => {
+  if (event.animationName === 'pulse-ring') hub.classList.remove('pulse')
 })
+
+function setHubLabel(noteId) {
+  if (!noteId) {
+    hubLabel.textContent = ''
+    return
+  }
+  const note = NOTES.find((n) => n.id === noteId)
+  hubLabel.innerHTML = note ? `${note.label}<small>${note.sub}</small>` : ''
+}
 
 function renderProgressDots() {
   progressDots.innerHTML = sequence
@@ -254,7 +272,7 @@ async function playSequence() {
   setPadsEnabled(false)
   replayBtn.disabled = true
   setStatus('Nghe kỹ nhé…')
-  record.classList.add('spinning')
+  hub.classList.add('playing')
 
   const gap = gapForRound()
   await wait(520)
@@ -263,13 +281,13 @@ async function playSequence() {
     if (token !== playToken) return
     playNote(noteId)
     if (mode === 'see') litPad(noteId)
-    else pulseRecord()
+    else pulseHub()
     await wait(gap)
   }
 
   if (token !== playToken) return
 
-  record.classList.remove('spinning')
+  hub.classList.remove('playing')
   phase = 'input'
   playerIndex = 0
   renderProgressDots()
@@ -288,7 +306,56 @@ function startRound() {
   playSequence()
 }
 
-function startGame() {
+function setWarmupUI(active) {
+  warmupBar.hidden = !active
+  warmupActions.hidden = !active
+  hud.hidden = active
+  replayRow.hidden = active
+  progressDots.hidden = active
+}
+
+/**
+ * Nghe qua lần lượt cả 7 nốt từ Đồ đến Si trước khi vào chơi. Giai đoạn này
+ * có dải nhãn màu riêng, ghi rõ "chưa tính điểm", và tên nốt hiện ngay giữa
+ * tai nghe theo từng nốt — để không ai nhầm nó với một vòng chơi thật.
+ */
+async function runWarmup() {
+  const token = ++playToken
+  phase = 'warmup'
+  showScreen('game')
+  setWarmupUI(true)
+  playNowBtn.hidden = true
+  skipWarmupBtn.hidden = false
+  setPadsEnabled(true)
+  setStatus('Đang cho bạn nghe qua từng nốt…')
+  hub.classList.add('playing')
+
+  for (let i = 0; i < NOTES.length; i++) {
+    if (token !== playToken) return
+    const note = NOTES[i]
+    warmupCount.textContent = `${i + 1} / ${NOTES.length}`
+    setHubLabel(note.id)
+    litPad(note.id)
+    playNote(note.id)
+    await wait(760)
+  }
+
+  if (token !== playToken) return
+
+  hub.classList.remove('playing')
+  setHubLabel(null)
+  phase = 'warmup-done'
+  playNowBtn.hidden = false
+  skipWarmupBtn.hidden = true
+  setStatus('Xong! Bấm thử phím nào cũng được, sẵn sàng thì vào chơi.', 'good')
+}
+
+function beginPlaying() {
+  playToken += 1
+  hub.classList.remove('playing')
+  setHubLabel(null)
+  setWarmupUI(false)
+
   sequence = []
   longest = 0
   playerIndex = 0
@@ -300,7 +367,19 @@ function startGame() {
   startRound()
 }
 
+function startGame() {
+  runWarmup()
+}
+
 function handlePadPress(noteId) {
+  // Trong lúc nghe làm quen, bấm phím chỉ để nghe lại nốt đó, không tính gì cả.
+  if (phase === 'warmup' || phase === 'warmup-done') {
+    playNote(noteId)
+    litPad(noteId)
+    setHubLabel(noteId)
+    return
+  }
+
   if (phase !== 'input') return
 
   playNote(noteId)
@@ -330,7 +409,7 @@ function endGame() {
   phase = 'idle'
   setPadsEnabled(false)
   replayBtn.disabled = true
-  record.classList.remove('spinning')
+  hub.classList.remove('playing')
   setStatus('Sai rồi!', 'bad')
   playErrorBuzz()
 
@@ -403,11 +482,16 @@ pads.forEach((pad) => {
 })
 
 replayBtn.addEventListener('click', handleReplay)
-againBtn.addEventListener('click', startGame)
+playNowBtn.addEventListener('click', beginPlaying)
+skipWarmupBtn.addEventListener('click', beginPlaying)
+
+// Chơi lại thì vào thẳng, không bắt nghe làm quen lần nữa.
+againBtn.addEventListener('click', beginPlaying)
 
 backMenuBtn.addEventListener('click', () => {
   playToken += 1
   phase = 'idle'
+  setWarmupUI(false)
   refreshBestLabels()
   showScreen('start')
 })
