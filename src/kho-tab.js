@@ -1,10 +1,4 @@
-import {
-  renderAmbientBlobs,
-  renderMusicNotes,
-  initNavbarShrink,
-  initMobileMenu,
-  initCardTouchFeedback,
-} from './common.js'
+import { initNavbarShrink, initMobileMenu, initCardTouchFeedback } from './common.js'
 import { initThemeToggle } from './theme-toggle.js'
 import {
   fetchAllSongs,
@@ -17,8 +11,6 @@ import { isCompleted, toggleCompleted } from './lib/local-storage-service.js'
 import { supabase } from './lib/supabase.js'
 
 // Initialize UI
-renderAmbientBlobs()
-renderMusicNotes()
 initNavbarShrink()
 initMobileMenu()
 initThemeToggle()

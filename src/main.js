@@ -6,13 +6,7 @@
  * v2's Glassmorphism & Light/Dark Theme System.
  */
 
-import {
-  renderAmbientBlobs,
-  renderMusicNotes,
-  initNavbarShrink,
-  initMobileMenu,
-  initCardTouchFeedback,
-} from './common.js'
+import { initNavbarShrink, initMobileMenu, initCardTouchFeedback } from './common.js'
 import { initThemeToggle } from './theme-toggle.js'
 import {
   fetchFeaturedSongs,
@@ -26,8 +20,6 @@ import { isCompleted, toggleCompleted } from './lib/local-storage-service.js'
 import { supabase } from './lib/supabase.js'
 
 // 1. Initialize UI Globals
-renderAmbientBlobs()
-renderMusicNotes()
 initNavbarShrink()
 initMobileMenu()
 initThemeToggle()
@@ -968,7 +960,7 @@ async function initHome() {
     if (featuredSongs && featuredSongs.length > 0) {
       const songsHtml = featuredSongs
         .slice(0, 4)
-        .map((tab, idx) => renderSongCard(tab, idx, 'shrink-0 snap-start w-[45%] sm:w-[30%] md:w-full'))
+        .map((tab, idx) => renderSongCard(tab, idx, 'shrink-0 snap-start w-[62%] sm:w-[38%] md:w-full'))
         .join('')
 
       featuredContainer.innerHTML = songsHtml
