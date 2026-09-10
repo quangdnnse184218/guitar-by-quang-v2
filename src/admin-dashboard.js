@@ -37,7 +37,10 @@ initPasswordToggles()
 
 // DOM Elements
 const adminUserEmail = document.getElementById('admin-user-email')
+const adminDropdownEmail = document.getElementById('admin-dropdown-email')
 const logoutBtn = document.getElementById('logout-btn')
+const adminHeaderDropdownWrap = document.getElementById('admin-header-dropdown-wrap')
+const adminHeaderDropdownBtn = document.getElementById('admin-header-dropdown-btn')
 const tabNavSongs = document.getElementById('tab-nav-songs')
 const tabNavGears = document.getElementById('tab-nav-gears')
 const tabNavUsers = document.getElementById('tab-nav-users')
@@ -99,6 +102,9 @@ async function checkAuth() {
     if (adminUserEmail) {
       adminUserEmail.textContent = session.user.email || 'Admin'
     }
+    if (adminDropdownEmail) {
+      adminDropdownEmail.textContent = session.user.email || 'Admin'
+    }
     return true
   } catch (err) {
     console.error('Auth verification error:', err)
@@ -121,6 +127,41 @@ async function initDashboard() {
       await supabase.auth.signOut()
       window.location.replace('/admin-login.html')
     })
+  }
+
+  // Account Dropdown (Đổi mật khẩu / Xem Website / Đăng xuất)
+  if (adminHeaderDropdownWrap && adminHeaderDropdownBtn) {
+    adminHeaderDropdownBtn.addEventListener('click', (e) => {
+      e.stopPropagation()
+      const isOpen = adminHeaderDropdownWrap.classList.toggle('open')
+      adminHeaderDropdownBtn.setAttribute('aria-expanded', isOpen ? 'true' : 'false')
+    })
+
+    document.addEventListener('click', (e) => {
+      if (!adminHeaderDropdownWrap.contains(e.target)) {
+        adminHeaderDropdownWrap.classList.remove('open')
+        adminHeaderDropdownBtn.setAttribute('aria-expanded', 'false')
+      }
+    })
+
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape' && adminHeaderDropdownWrap.classList.contains('open')) {
+        adminHeaderDropdownWrap.classList.remove('open')
+        adminHeaderDropdownBtn.setAttribute('aria-expanded', 'false')
+      }
+    })
+
+    // Đóng dropdown khi bấm bất kỳ mục nào bên trong (trừ nút Đổi mật khẩu,
+    // vì nó chỉ mở modal — vẫn nên đóng dropdown lại để không che modal)
+    document
+      .getElementById('admin-header-dropdown-menu')
+      ?.querySelectorAll('a, button')
+      .forEach((item) => {
+        item.addEventListener('click', () => {
+          adminHeaderDropdownWrap.classList.remove('open')
+          adminHeaderDropdownBtn.setAttribute('aria-expanded', 'false')
+        })
+      })
   }
 
   // Tab Switcher Helper
