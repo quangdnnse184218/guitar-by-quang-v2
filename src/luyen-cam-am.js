@@ -38,6 +38,7 @@ const BEST_KEY_PREFIX = 'gbq_camam_best_'
 // ÂM THANH
 // ==========================================================================
 let audioCtx = null
+let audioUnlocked = false
 const rawSamples = new Map()
 const decodedSamples = new Map()
 
@@ -50,6 +51,27 @@ function getAudioContext() {
   return audioCtx
 }
 
+/**
+ * PHẢI gọi đồng bộ ngay trong tác vụ chạm/bấm, trước mọi await.
+ *
+ * Safari trên iPhone chỉ mở khoá AudioContext khi có âm thanh phát ra từ
+ * chính tác vụ chạm đó. Nếu chờ tải/giải mã xong mới phát thì tiếng đầu tiên
+ * rơi sang tick sau, context vẫn khoá, và cả game im ru trong khi giao diện
+ * vẫn chạy bình thường — không có lỗi nào hiện ra để mà biết.
+ */
+function unlockAudio() {
+  const ctx = getAudioContext()
+  if (!ctx) return null
+  if (!audioUnlocked) {
+    const source = ctx.createBufferSource()
+    source.buffer = ctx.createBuffer(1, 1, 22050)
+    source.connect(ctx.destination)
+    source.start(0)
+    audioUnlocked = true
+  }
+  return ctx
+}
+
 async function fetchSamples() {
   await Promise.all(
     NOTES.map(async (note) => {
@@ -60,17 +82,29 @@ async function fetchSamples() {
   )
 }
 
+/** Safari cũ chỉ có decodeAudioData kiểu callback và trả về undefined, không phải promise. */
+function decodeAudio(ctx, arrayBuffer) {
+  return new Promise((resolve, reject) => {
+    const returned = ctx.decodeAudioData(arrayBuffer, resolve, reject)
+    if (returned && typeof returned.then === 'function') returned.then(resolve, reject)
+  })
+}
+
 async function decodeSamples() {
   const ctx = getAudioContext()
   if (!ctx) throw new Error('Trình duyệt không hỗ trợ Web Audio')
   await Promise.all(
     NOTES.map(async (note) => {
-      if (decodedSamples.has(note.id)) return
+      if (decodedSamples.get(note.id)) return
       // slice() để giữ bản gốc: decodeAudioData sẽ "nuốt" mất ArrayBuffer truyền vào.
       const copy = rawSamples.get(note.id).slice(0)
-      decodedSamples.set(note.id, await ctx.decodeAudioData(copy))
+      decodedSamples.set(note.id, await decodeAudio(ctx, copy))
     })
   )
+  // Không để hỏng âm thầm: thiếu nốt nào thì báo lỗi, thay vì chơi mà không kêu.
+  if (NOTES.some((note) => !decodedSamples.get(note.id))) {
+    throw new Error('Giải mã âm thanh thất bại')
+  }
 }
 
 function playNote(noteId) {
@@ -147,6 +181,9 @@ const modeHearBtn = document.getElementById('mode-hear')
 const bestSeeLabel = document.getElementById('best-see')
 const bestHearLabel = document.getElementById('best-hear')
 const startBtn = document.getElementById('start-btn')
+const testSoundBtn = document.getElementById('test-sound-btn')
+const testSoundLabel = document.getElementById('test-sound-label')
+const audioWarn = document.getElementById('audio-warn')
 
 const turntable = document.getElementById('turntable')
 const hub = document.getElementById('hub')
@@ -457,6 +494,9 @@ async function bootstrapAudio() {
 }
 
 startBtn.addEventListener('click', async () => {
+  // Mở khoá trước tiên, trong cùng tác vụ bấm này — xem chú thích ở unlockAudio().
+  const ctx = unlockAudio()
+
   if (rawSamples.size < NOTES.length) {
     bootstrapAudio()
     return
@@ -467,11 +507,30 @@ startBtn.addEventListener('click', async () => {
     await decodeSamples()
     startBtn.textContent = 'Bắt Đầu Chơi'
     startBtn.disabled = false
+    audioWarn.hidden = ctx ? ctx.state === 'running' : false
     startGame()
   } catch {
     startBtn.textContent = 'Không phát được âm thanh'
     startBtn.disabled = false
+    audioWarn.hidden = false
   }
+})
+
+/** Cho người chơi thử loa trước khi vào game — cách nhanh nhất để biết máy mình có tiếng hay không. */
+testSoundBtn.addEventListener('click', async () => {
+  unlockAudio()
+  testSoundBtn.disabled = true
+  try {
+    if (rawSamples.size < NOTES.length) await fetchSamples()
+    await decodeSamples()
+    playNote('do')
+    testSoundLabel.textContent = 'Vừa phát nốt Đồ — nghe thấy chứ?'
+    audioWarn.hidden = false
+  } catch {
+    testSoundLabel.textContent = 'Không phát được âm thanh'
+    audioWarn.hidden = false
+  }
+  testSoundBtn.disabled = false
 })
 
 modeSeeBtn.addEventListener('click', () => setMode('see'))
