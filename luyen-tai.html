@@ -3,18 +3,46 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0, interactive-widget=resizes-content" />
-    <title>Công Cụ Hỗ Trợ Tập Đàn Guitar — Guitar By Quang</title>
-    <meta name="description" content="Bộ công cụ hỗ trợ tập đàn guitar fingerstyle miễn phí của Nhật Quang: Metronome online chuẩn xác, Lên Dây Đàn, Vòng Hợp Âm." />
+    <title>Luyện Tai — Đoán Nốt & Hợp Âm | Guitar By Quang</title>
+    <meta name="description" content="Game luyện tai miễn phí: nghe âm thanh rồi đoán tên nốt nhạc hoặc hợp âm guitar, chia 4 cấp độ từ dễ tới khó, chơi ngay trên trình duyệt không cần cài app." />
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
-    
+
     <!-- Google Fonts: Be Vietnam Pro, Inter, JetBrains Mono -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,400;1,600&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-    
+
     <link rel="stylesheet" href="/src/style.css" />
+    <style>
+      .lt-option-btn {
+        transition: transform 0.12s ease-out, background-color 0.12s ease-out, border-color 0.12s ease-out, box-shadow 0.12s ease-out;
+      }
+      .lt-option-correct {
+        background-color: #10B981 !important;
+        border-color: #10B981 !important;
+        color: #fff !important;
+        box-shadow: 0 0 20px rgba(16,185,129,0.45);
+        transform: scale(1.03);
+      }
+      .lt-option-wrong {
+        background-color: #EF4444 !important;
+        border-color: #EF4444 !important;
+        color: #fff !important;
+        box-shadow: 0 0 20px rgba(239,68,68,0.4);
+      }
+      .lt-option-disabled {
+        opacity: 0.5;
+        pointer-events: none;
+      }
+      .lt-timer-bar {
+        transition: width 0.2s linear, background-color 0.3s ease;
+      }
+      .lt-replay-dot {
+        transition: background-color 0.2s ease, opacity 0.2s ease;
+      }
+    </style>
   </head>
-  <body class="bg-bg-base text-text-primary min-h-screen relative overflow-x-hidden">
+  <body class="bg-bg-base text-text-primary min-h-screen relative flex flex-col justify-between overflow-x-hidden">
     <div class="grain-overlay" aria-hidden="true"></div>
     <!-- Nền ambient dùng chung toàn site: khối màu trôi chậm kiểu aurora +
          guitar mini/nốt nhạc rải rác, tất cả đều bồng bềnh nhẹ nhàng. -->
@@ -147,174 +175,101 @@
     </div>
 
     <!-- Main Content -->
-    <main class="pt-28 pb-20">
-      <div class="max-w-6xl mx-auto px-6 space-y-12">
-        
-        <!-- Breadcrumb & Header -->
-        <div class="space-y-4">
-          <nav class="flex items-center gap-2 text-xs text-text-muted font-semibold">
-            <a href="/" class="hover:text-accent-primary transition-colors">Trang chủ</a>
-            <span>›</span>
-            <span class="text-accent-primary font-bold">Công Cụ & Phụ Kiện</span>
-          </nav>
-          
-          <div class="max-w-2xl space-y-2">
-            <span class="text-xs font-mono font-bold uppercase tracking-wider text-accent-primary">Tiện ích luyện tập</span>
-            <h1 class="text-3xl sm:text-4xl font-extrabold text-text-primary tracking-tight">
-              Công Cụ Hỗ Trợ Tập Đàn 🎸
-            </h1>
-            <p class="text-text-muted text-sm sm:text-base leading-relaxed font-medium">
-              Các công cụ hỗ trợ người chơi guitar fingerstyle luyện tập chuẩn xác, giữ vững nhịp và tối ưu cảm giác tay — hoàn toàn miễn phí trên trình duyệt.
-            </p>
-          </div>
+    <main class="pt-28 pb-16 flex-grow flex flex-col items-center px-4 sm:px-6">
+
+      <div id="web-audio-unsupported" class="hidden max-w-xl w-full mx-auto mb-6 px-6 py-4 rounded-2xl bg-amber-500/15 border border-amber-500/30 text-amber-800 dark:text-amber-300 text-sm font-semibold leading-relaxed text-center">
+        ⚠️ Trình duyệt của bạn chưa bật hoặc chưa hỗ trợ Web Audio API, hãy thử cập nhật hoặc đổi trình duyệt để chơi game nhé!
+      </div>
+
+      <!-- ============ SCREEN 1: LEVEL SELECT ============ -->
+      <section id="level-select-screen" class="w-full max-w-4xl mx-auto space-y-6">
+        <div class="text-center space-y-2">
+          <span class="text-xs font-mono font-bold uppercase tracking-wider text-accent-primary">Luyện Tai Miễn Phí</span>
+          <h1 class="text-2xl sm:text-3xl font-extrabold text-text-primary">🎧 Đoán Nốt & Hợp Âm</h1>
+          <p class="text-text-muted text-sm font-medium max-w-lg mx-auto">Nghe âm thanh rồi đoán đúng tên nốt hoặc hợp âm — chọn cấp độ phù hợp với bạn, chơi lại bao nhiêu lần cũng được!</p>
         </div>
 
-        <!-- Section 1: Software Tools Grid -->
-        <div class="space-y-6">
-          <h2 class="text-lg font-mono font-bold uppercase tracking-wider text-text-primary flex items-center gap-2">
-            <span>⏱️</span>
-            <span>Ứng Dụng Hỗ Trợ Trực Tuyến</span>
-          </h2>
+        <div id="level-cards" class="grid grid-cols-1 sm:grid-cols-2 gap-3.5 sm:gap-5">
+          <!-- Cards injected by JS -->
+        </div>
+      </section>
 
-          <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-            <!-- Card 1: METRONOME -->
-            <a href="/metronome.html" class="group relative p-6 rounded-3xl glass-card border border-glass-border hover:border-accent-primary shadow-sm hover:shadow-lg transition-all duration-300 flex flex-col justify-between gap-5 cursor-pointer">
-              <span class="absolute top-4 right-4 px-2.5 py-0.5 rounded-full bg-emerald-500/15 text-emerald-600 dark:text-emerald-400 text-[10px] font-extrabold tracking-wide uppercase border border-emerald-500/30">Hoạt động</span>
-              
-              <div class="space-y-4">
-                <div class="w-12 h-12 rounded-2xl bg-accent-primary/15 text-accent-primary flex items-center justify-center text-2xl group-hover:scale-105 transition-transform">
-                  ⏱️
-                </div>
-                <div class="space-y-1.5">
-                  <h3 class="text-xl font-bold text-text-primary group-hover:text-accent-primary transition-colors">
-                    Máy Gõ Nhịp (Metronome)
-                  </h3>
-                  <p class="text-xs text-text-muted leading-relaxed font-medium">
-                    Web Audio API Lookahead chuẩn xác, không bị delay trôi nhịp. Hỗ trợ Tap Tempo, flash visual phách và phím tắt tiện lợi.
-                  </p>
-                </div>
-              </div>
+      <!-- ============ SCREEN 2: GAMEPLAY ============ -->
+      <section id="gameplay-screen" class="hidden w-full max-w-xl mx-auto space-y-5">
 
-              <div class="inline-flex items-center gap-2 text-xs font-bold text-accent-primary group-hover:gap-3 transition-all">
-                <span>Mở máy gõ nhịp</span>
-                <span>→</span>
-              </div>
-            </a>
-
-            <!-- Card 2: LUYỆN TAI (game đoán nốt & hợp âm) -->
-            <a href="/luyen-tai.html" class="group relative p-6 rounded-3xl glass-card border border-glass-border hover:border-accent-primary shadow-sm hover:shadow-lg transition-all duration-300 flex flex-col justify-between gap-5 cursor-pointer">
-              <span class="absolute top-4 right-4 px-2.5 py-0.5 rounded-full bg-emerald-500/15 text-emerald-600 dark:text-emerald-400 text-[10px] font-extrabold tracking-wide uppercase border border-emerald-500/30">Hoạt động</span>
-
-              <div class="space-y-4">
-                <div class="w-12 h-12 rounded-2xl bg-accent-primary/15 text-accent-primary flex items-center justify-center text-2xl group-hover:scale-105 transition-transform">
-                  🎧
-                </div>
-                <div class="space-y-1.5">
-                  <h3 class="text-xl font-bold text-text-primary group-hover:text-accent-primary transition-colors">
-                    Luyện Tai: Đoán Nốt & Hợp Âm
-                  </h3>
-                  <p class="text-xs text-text-muted leading-relaxed font-medium">
-                    Nghe âm thanh rồi đoán tên nốt hoặc hợp âm, chia 4 cấp độ tự chọn — càng chơi tai càng thính!
-                  </p>
-                </div>
-              </div>
-
-              <div class="inline-flex items-center gap-2 text-xs font-bold text-accent-primary group-hover:gap-3 transition-all">
-                <span>Chơi ngay</span>
-                <span>→</span>
-              </div>
-            </a>
-
-            <!-- Card 3: TUNER -->
-            <div class="relative p-6 rounded-3xl glass-card border border-glass-border opacity-70 flex flex-col justify-between gap-5">
-              <span class="absolute top-4 right-4 px-2.5 py-0.5 rounded-full bg-glass-bg text-text-muted text-[10px] font-extrabold tracking-wide uppercase border border-glass-border">Sắp ra mắt</span>
-              
-              <div class="space-y-4">
-                <div class="w-12 h-12 rounded-2xl bg-black/5 dark:bg-white/5 text-text-muted flex items-center justify-center text-2xl">
-                  🎛️
-                </div>
-                <div class="space-y-1.5">
-                  <h3 class="text-xl font-bold text-text-primary">
-                    Lên Dây Đàn (Tuner)
-                  </h3>
-                  <p class="text-xs text-text-muted leading-relaxed font-medium">
-                    Nhận diện tần số âm thanh từ microphone, chỉ dẫn trực quan giúp bạn căn chỉnh 6 dây đàn chuẩn xác từng Hz.
-                  </p>
-                </div>
-              </div>
-
-              <span class="text-xs font-bold text-text-muted">Đang phát triển...</span>
-            </div>
-
-            <!-- Card 3: CHORD WHEEL -->
-            <div class="relative p-6 rounded-3xl glass-card border border-glass-border opacity-70 flex flex-col justify-between gap-5">
-              <span class="absolute top-4 right-4 px-2.5 py-0.5 rounded-full bg-glass-bg text-text-muted text-[10px] font-extrabold tracking-wide uppercase border border-glass-border">Sắp ra mắt</span>
-              
-              <div class="space-y-4">
-                <div class="w-12 h-12 rounded-2xl bg-black/5 dark:bg-white/5 text-text-muted flex items-center justify-center text-2xl">
-                  ⭕
-                </div>
-                <div class="space-y-1.5">
-                  <h3 class="text-xl font-bold text-text-primary">
-                    Vòng Hợp Âm (Chord Wheel)
-                  </h3>
-                  <p class="text-xs text-text-muted leading-relaxed font-medium">
-                    Tra cứu vòng hợp âm chuẩn theo giọng, hỗ trợ dịch giọng (transpose) và gợi ý hòa âm cho fingerstyle.
-                  </p>
-                </div>
-              </div>
-
-              <span class="text-xs font-bold text-text-muted">Đang phát triển...</span>
-            </div>
+        <!-- Top bar: back + level name + score -->
+        <div class="flex items-center justify-between gap-2">
+          <button id="back-to-levels-btn" class="p-2 rounded-xl bg-glass-bg hover:bg-glass-bg-hover border border-glass-border text-text-primary transition-colors cursor-pointer flex-shrink-0" aria-label="Quay lại chọn cấp độ" title="Quay lại chọn cấp độ">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M15 19l-7-7 7-7" /></svg>
+          </button>
+          <div class="text-center flex-grow">
+            <span id="game-level-label" class="text-sm font-extrabold text-text-primary block leading-tight">Cấp 1 — Nốt Cơ Bản</span>
+            <span id="game-progress-label" class="text-xs text-text-muted font-mono font-semibold">Câu 1 / 10</span>
           </div>
+          <span id="game-score-badge" class="metro-badge text-xs font-mono font-bold px-3 py-1.5 rounded-full flex-shrink-0 whitespace-nowrap">⭐ 0</span>
         </div>
 
-        <!-- Section 2: Gear & Đồ Nghề Khuyên Dùng -->
-        <div class="space-y-6 pt-6 border-t border-glass-border">
-          <div class="space-y-1">
-            <h2 class="text-lg font-mono font-bold uppercase tracking-wider text-text-primary flex items-center gap-2">
-              <span>🛠️</span>
-              <span>Bộ Đồ Nghề Đang Dùng</span>
-            </h2>
-            <p class="text-xs text-text-muted font-medium">
-              Các thiết bị, dây đàn, capo và phần mềm Nhật Quang tin dùng để thu âm và quay video tab.
-            </p>
+        <!-- Main game box -->
+        <div class="glass-card rounded-3xl p-6 sm:p-8 border border-glass-border shadow-2xl space-y-6">
+
+          <!-- Timer bar -->
+          <div class="w-full h-2 rounded-full bg-glass-bg overflow-hidden border border-glass-border">
+            <div id="lt-timer-bar" class="lt-timer-bar h-full rounded-full bg-emerald-500" style="width:100%"></div>
           </div>
 
-          <!-- 4-col Grid on Desktop / 2-col on Mobile -->
-          <div id="gears-grid" class="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-4 gap-3.5 sm:gap-4 md:gap-5 lg:gap-6 w-full">
-            <!-- Populated dynamically via gears-service -->
-          </div>
-
-          <!-- Nút Xem thêm phụ kiện -->
-          <div id="gears-show-more-wrap" class="mt-8 text-center hidden">
-            <button id="gears-show-more-btn"
-              class="inline-flex items-center gap-2 px-7 py-3 rounded-full bg-glass-bg hover:bg-glass-bg-hover text-text-primary text-xs sm:text-sm font-bold border border-glass-border shadow-md hover:border-accent-primary/50 active:scale-95 transition-all cursor-pointer">
-              <span id="gears-show-more-text">Xem thêm phụ kiện</span>
-              <svg id="gears-show-more-icon" class="w-4 h-4 text-accent-primary transition-transform duration-300" fill="none"
-                stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M19 9l-7 7-7-7"></path>
-              </svg>
+          <!-- Play button + replay counter -->
+          <div class="flex flex-col items-center gap-3">
+            <button id="lt-play-btn" class="w-24 h-24 sm:w-28 sm:h-28 rounded-full bg-warm-gradient text-white flex items-center justify-center shadow-xl active:scale-95 transition-transform cursor-pointer" aria-label="Nghe âm thanh" title="Nghe âm thanh">
+              <svg class="w-10 h-10 sm:w-12 sm:h-12 fill-current" viewBox="0 0 24 24"><path d="M8 5v14l11-7z" /></svg>
             </button>
+            <div class="flex items-center gap-2" id="lt-replay-dots">
+              <!-- dots injected by JS -->
+            </div>
+            <span class="text-xs text-text-muted font-semibold">Nhấn để nghe (tối đa <span id="lt-max-replays">3</span> lần)</span>
+          </div>
+
+          <!-- Answer options grid -->
+          <div id="lt-options-grid" class="grid grid-cols-3 sm:grid-cols-4 gap-2.5">
+            <!-- options injected by JS -->
+          </div>
+
+          <!-- Feedback line -->
+          <div id="lt-feedback" class="min-h-[1.5rem] text-center text-sm font-bold"></div>
+        </div>
+      </section>
+
+      <!-- ============ SCREEN 3: RESULT ============ -->
+      <section id="result-screen" class="hidden w-full max-w-lg mx-auto">
+        <div class="glass-card rounded-3xl p-7 sm:p-9 border border-glass-border shadow-2xl text-center space-y-5">
+          <span class="text-5xl block" id="result-emoji">🎉</span>
+          <div>
+            <h2 class="text-xl sm:text-2xl font-extrabold text-text-primary">Hoàn thành!</h2>
+            <p id="result-level-name" class="text-sm text-text-muted font-semibold mt-1">Cấp 1 — Nốt Cơ Bản</p>
+          </div>
+          <div class="flex items-center justify-center gap-6 sm:gap-10 py-2">
+            <div>
+              <div id="result-score" class="text-3xl font-black text-accent-primary font-mono">8/10</div>
+              <div class="text-xs text-text-muted font-bold uppercase tracking-wide mt-1">Điểm số</div>
+            </div>
+            <div>
+              <div id="result-best" class="text-3xl font-black text-text-primary font-mono">8/10</div>
+              <div class="text-xs text-text-muted font-bold uppercase tracking-wide mt-1">Kỷ lục</div>
+            </div>
+          </div>
+          <div class="flex flex-col sm:flex-row gap-3 pt-2">
+            <button id="result-replay-btn" class="flex-1 py-3 rounded-2xl bg-emerald-600 hover:bg-emerald-500 text-white font-extrabold text-sm transition-all active:scale-95 cursor-pointer shadow-lg shadow-emerald-600/30">Chơi Lại Cấp Này</button>
+            <button id="result-back-btn" class="flex-1 py-3 rounded-2xl bg-glass-bg hover:bg-glass-bg-hover border border-glass-border text-text-primary font-bold text-sm transition-all active:scale-95 cursor-pointer">Chọn Cấp Khác</button>
           </div>
         </div>
+      </section>
 
-      </div>
     </main>
-
-    <div id="toast-notification" class="fixed top-6 right-6 z-[9999] max-w-md px-5 py-4 rounded-2xl shadow-[0_20px_50px_rgba(0,0,0,0.5)] flex items-center gap-3.5 transform -translate-y-4 opacity-0 transition-all duration-300 pointer-events-none border-2" role="alert">
-      <div id="toast-icon" class="w-8 h-8 rounded-full flex items-center justify-center flex-shrink-0 text-sm font-extrabold shadow-md">
-        ✓
-      </div>
-      <p id="toast-message" class="text-sm font-bold text-white leading-snug"></p>
-    </div>
 
     <!-- FOOTER -->
     <footer class="footer-section pt-12 pb-6 border-t border-glass-border">
       <div class="max-w-7xl mx-auto px-6">
         <div class="grid grid-cols-1 md:grid-cols-12 gap-10 sm:gap-8 pb-8">
 
-          <!-- Cột 1: Logo + Tagline + Mô tả + Social icon row (md:col-span-5) -->
           <div class="md:col-span-5 space-y-4 text-left">
             <a href="/" class="inline-flex items-center gap-2.5 text-xl font-extrabold text-text-primary hover:text-accent-primary transition-colors group">
               <span class="w-9 h-9 rounded-xl bg-warm-gradient text-white flex items-center justify-center font-black text-base shadow-sm group-hover:scale-105 transition-transform">🎸</span>
@@ -325,7 +280,6 @@
               <p class="text-xs text-text-muted leading-relaxed font-medium max-w-sm">Nơi chia sẻ video tab guitar fingerstyle, tài liệu học đàn và công cụ hỗ trợ luyện tập chuẩn xác, chất lượng cao dành cho cộng đồng yêu guitar.</p>
             </div>
 
-            <!-- Social icon row gọn: dùng cho theo dõi nhanh, không chiếm nhiều chỗ -->
             <div class="flex items-center gap-2.5 pt-1">
               <a href="https://www.tiktok.com/@quangdnn104" target="_blank" rel="noopener noreferrer" title="TikTok @quangdnn104" class="w-9 h-9 rounded-full bg-glass-bg border border-glass-border hover:border-accent-primary hover:bg-black/10 dark:hover:bg-white/10 flex items-center justify-center text-text-primary transition-all shadow-xs">
                 <svg class="w-4 h-4 fill-current" viewBox="0 0 24 24"><path d="M19.59 6.69a4.83 4.83 0 0 1-3.77-4.25V2h-3.45v13.67a2.89 2.89 0 0 1-5.2 1.74 2.89 2.89 0 0 1 2.31-4.64 2.93 2.93 0 0 1 .88.13V9.4a6.84 6.84 0 0 0-1-.05A6.33 6.33 0 0 0 5 20.1a6.34 6.34 0 0 0 10.86-4.43v-7a8.16 8.16 0 0 0 4.77 1.52v-3.4a4.85 4.85 0 0 1-1.04-.1z"/></svg>
@@ -337,7 +291,6 @@
             </div>
           </div>
 
-          <!-- Cột 2: Khám Phá (sitemap rút gọn) (md:col-span-3) -->
           <div class="md:col-span-3 space-y-3 text-left">
             <h4 class="text-xs font-mono font-bold uppercase tracking-wider text-text-primary">Khám Phá</h4>
             <nav class="flex flex-col gap-2 text-xs font-semibold text-text-muted">
@@ -349,7 +302,6 @@
             </nav>
           </div>
 
-          <!-- Cột 3: Hỗ Trợ & Liên Hệ (md:col-span-4) -->
           <div class="md:col-span-4 space-y-3 text-left">
             <h4 class="text-xs font-mono font-bold uppercase tracking-wider text-text-primary">Hỗ Trợ & Liên Hệ</h4>
             <div class="flex flex-col gap-2 text-xs">
@@ -385,6 +337,6 @@
       </div>
     </footer>
 
-    <script type="module" src="/src/cong-cu.js"></script>
+    <script type="module" src="/src/luyen-tai.js"></script>
   </body>
 </html>
