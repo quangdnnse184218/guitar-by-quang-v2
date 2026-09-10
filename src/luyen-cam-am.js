@@ -290,6 +290,7 @@ const backMenuBtn = document.getElementById('back-menu-btn')
 // TRẠNG THÁI GAME
 // ==========================================================================
 let mode = 'see'
+let audioReady = false
 let sequence = []
 let playerIndex = 0
 let longest = 0
@@ -315,10 +316,21 @@ function refreshBestLabels() {
   bestHearLabel.textContent = `Kỷ lục: ${getBest('hear')} nốt`
 }
 
+const modeName = (which) => (which === 'see' ? 'Nhìn & Nghe' : 'Chỉ Nghe')
+const otherMode = (which) => (which === 'see' ? 'hear' : 'see')
+
+/** Ghi tên chế độ ngay trên nút bắt đầu: người bấm vội bỏ qua hai thẻ chọn
+ *  ở trên thì vẫn đọc được mình sắp chơi chế độ nào, và biết là có lựa chọn. */
+function updateStartLabel() {
+  if (!audioReady) return
+  startBtn.textContent = `Bắt Đầu · ${modeName(mode)}`
+}
+
 function setMode(next) {
   mode = next
   modeSeeBtn.setAttribute('aria-pressed', String(next === 'see'))
   modeHearBtn.setAttribute('aria-pressed', String(next === 'hear'))
+  updateStartLabel()
 }
 
 function setPadsEnabled(enabled) {
@@ -541,6 +553,9 @@ function endGame() {
     overSub.textContent = longest === 0
       ? 'Chưa lặp được nốt nào — thử lại nhé!'
       : `Bạn lặp lại đúng chuỗi ${longest} nốt`
+    // Gợi ý thẳng tên chế độ còn lại: nhiều người chơi hết một lượt rồi mới
+    // biết là có tới hai chế độ.
+    backMenuBtn.textContent = `Thử chế độ ${modeName(otherMode(mode))}`
     refreshBestLabels()
     showScreen('over')
   }, 900)
@@ -562,7 +577,8 @@ async function bootstrapAudio() {
   try {
     await fetchSamples()
     startBtn.disabled = false
-    startBtn.textContent = 'Bắt Đầu Chơi'
+    audioReady = true
+    updateStartLabel()
   } catch {
     startBtn.disabled = false
     startBtn.textContent = 'Tải lại âm thanh'
@@ -581,7 +597,8 @@ startBtn.addEventListener('click', async () => {
   startBtn.textContent = 'Đang chuẩn bị…'
   try {
     await decodeSamples()
-    startBtn.textContent = 'Bắt Đầu Chơi'
+    audioReady = true
+    updateStartLabel()
     startBtn.disabled = false
     audioWarn.hidden = ctx ? ctx.state === 'running' : false
     startGame()
@@ -628,10 +645,13 @@ skipWarmupBtn.addEventListener('click', beginPlaying)
 // Chơi lại thì vào thẳng, không bắt nghe làm quen lần nữa.
 againBtn.addEventListener('click', beginPlaying)
 
+// Bấm nút này là đổi luôn sang chế độ còn lại rồi quay về màn chọn, để người
+// chơi thấy tận mắt là có hai chế độ và mình đang ở chế độ nào.
 backMenuBtn.addEventListener('click', () => {
   playToken += 1
   phase = 'idle'
   setWarmupUI(false)
+  setMode(otherMode(mode))
   refreshBestLabels()
   showScreen('start')
 })
