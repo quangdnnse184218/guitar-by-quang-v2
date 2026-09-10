@@ -797,15 +797,104 @@ nav,
   inset: 0;
   z-index: 0;
   pointer-events: none;
-  background:
-    radial-gradient(ellipse 900px 560px at 12% -8%, rgba(245, 178, 60, 0.14), transparent 60%),
-    radial-gradient(ellipse 800px 560px at 105% 15%, rgba(232, 122, 48, 0.1), transparent 60%);
+  overflow: hidden;
 }
 
-[data-theme='light'] .member-ambient-bg {
-  background:
-    radial-gradient(ellipse 900px 560px at 12% -8%, rgba(219, 158, 62, 0.16), transparent 60%),
-    radial-gradient(ellipse 800px 560px at 105% 15%, rgba(211, 95, 29, 0.1), transparent 60%);
+/* 3 khối màu mờ trôi rất chậm — hiệu ứng "aurora" nhẹ nhàng, không gây rối
+   mắt. Vô hiệu hoá chuyển động khi người dùng bật prefers-reduced-motion. */
+.member-ambient-blob {
+  position: absolute;
+  border-radius: 50%;
+  filter: blur(70px);
+  opacity: 0.6;
+}
+
+.member-ambient-blob-1 {
+  width: 480px;
+  height: 480px;
+  top: -180px;
+  left: -140px;
+  background: radial-gradient(circle, rgba(245, 178, 60, 0.32), transparent 70%);
+}
+
+.member-ambient-blob-2 {
+  width: 420px;
+  height: 420px;
+  top: 8%;
+  right: -160px;
+  background: radial-gradient(circle, rgba(232, 122, 48, 0.26), transparent 70%);
+}
+
+.member-ambient-blob-3 {
+  width: 380px;
+  height: 380px;
+  bottom: -160px;
+  left: 18%;
+  background: radial-gradient(circle, rgba(217, 107, 39, 0.2), transparent 70%);
+}
+
+[data-theme='light'] .member-ambient-blob-1 {
+  background: radial-gradient(circle, rgba(219, 158, 62, 0.28), transparent 70%);
+}
+[data-theme='light'] .member-ambient-blob-2 {
+  background: radial-gradient(circle, rgba(211, 95, 29, 0.2), transparent 70%);
+}
+[data-theme='light'] .member-ambient-blob-3 {
+  background: radial-gradient(circle, rgba(184, 78, 20, 0.16), transparent 70%);
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .member-ambient-blob-1 {
+    animation: member-aurora-drift-1 24s ease-in-out infinite alternate;
+  }
+  .member-ambient-blob-2 {
+    animation: member-aurora-drift-2 28s ease-in-out infinite alternate;
+  }
+  .member-ambient-blob-3 {
+    animation: member-aurora-drift-3 20s ease-in-out infinite alternate;
+  }
+}
+
+@keyframes member-aurora-drift-1 {
+  from {
+    transform: translate(0, 0) scale(1);
+  }
+  to {
+    transform: translate(60px, 50px) scale(1.08);
+  }
+}
+@keyframes member-aurora-drift-2 {
+  from {
+    transform: translate(0, 0) scale(1);
+  }
+  to {
+    transform: translate(-55px, 60px) scale(0.95);
+  }
+}
+@keyframes member-aurora-drift-3 {
+  from {
+    transform: translate(0, 0) scale(1);
+  }
+  to {
+    transform: translate(45px, -55px) scale(1.05);
+  }
+}
+
+/* Hoạ tiết cây đàn silhouette rất mờ ở góc — nhắc bản sắc "fingerstyle
+   diary" thay vì chỉ là màu nền trơn */
+.member-ambient-guitar {
+  position: absolute;
+  bottom: -50px;
+  right: -30px;
+  width: 240px;
+  height: auto;
+  opacity: 0.05;
+  color: var(--accent-primary);
+  transform: rotate(-10deg);
+}
+
+[data-theme='light'] .member-ambient-guitar {
+  opacity: 0.07;
 }
 
 .bg-warm-gradient {
