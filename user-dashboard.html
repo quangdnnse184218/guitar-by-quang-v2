@@ -16,15 +16,38 @@
   </head>
   <body class="bg-bg-base text-text-primary min-h-screen relative overflow-x-hidden flex flex-col justify-between">
     <div class="grain-overlay" aria-hidden="true"></div>
-    <!-- Nền ambient màu vàng ấm riêng cho khu vực thành viên — tạo điểm nhấn
-         khác biệt nhẹ so với các trang khách (không đổi hẳn màu nền để giữ
-         đồng bộ hệ thống theme). 3 khối màu trôi chậm + hoạ tiết cây đàn mờ
-         ở góc để có chiều sâu và bản sắc riêng, thay vì chỉ gradient trơn. -->
+    <!-- Nền ambient riêng cho khu vực thành viên — tạo điểm nhấn khác biệt rõ
+         hơn so với trang khách, mang hoạ tiết âm nhạc & guitar: dải "dây đàn"
+         mờ ở trên, các nốt nhạc rải rác, 2 hình cây đàn silhouette (to mờ ở
+         trên/nhỏ rõ hơn ở dưới), cùng 3 khối màu trôi chậm kiểu aurora. -->
     <div class="member-ambient-bg" aria-hidden="true">
       <span class="member-ambient-blob member-ambient-blob-1"></span>
       <span class="member-ambient-blob member-ambient-blob-2"></span>
       <span class="member-ambient-blob member-ambient-blob-3"></span>
-      <svg class="member-ambient-guitar" viewBox="0 0 260 480" fill="none" xmlns="http://www.w3.org/2000/svg">
+
+      <!-- Dải dây đàn mờ vắt chéo phía trên -->
+      <div class="member-ambient-strings"></div>
+
+      <!-- Nốt nhạc rải rác khắp nền -->
+      <div class="member-ambient-notes">
+        <span style="top:6%;left:10%;font-size:30px;transform:rotate(-8deg);">♪</span>
+        <span style="top:14%;left:82%;font-size:24px;transform:rotate(10deg);">♫</span>
+        <span style="top:38%;left:4%;font-size:22px;transform:rotate(6deg);">♩</span>
+        <span style="top:55%;left:92%;font-size:28px;transform:rotate(-12deg);">♬</span>
+        <span style="top:72%;left:8%;font-size:20px;transform:rotate(14deg);">♪</span>
+        <span style="top:88%;left:78%;font-size:26px;transform:rotate(-6deg);">♫</span>
+        <span style="top:28%;left:60%;font-size:18px;transform:rotate(4deg);">♩</span>
+      </div>
+
+      <!-- Cây đàn silhouette: 1 lớn mờ phía trên-trái, 1 nhỏ rõ hơn góc dưới-phải -->
+      <svg class="member-ambient-guitar member-ambient-guitar-1" viewBox="0 0 260 480" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <rect x="115" y="0" width="30" height="220" rx="14" fill="currentColor" />
+        <rect x="102" y="0" width="56" height="32" rx="12" fill="currentColor" />
+        <ellipse cx="130" cy="270" rx="72" ry="62" fill="currentColor" />
+        <ellipse cx="130" cy="385" rx="108" ry="92" fill="currentColor" />
+        <circle cx="130" cy="325" r="28" fill="var(--bg-base)" />
+      </svg>
+      <svg class="member-ambient-guitar member-ambient-guitar-2" viewBox="0 0 260 480" fill="none" xmlns="http://www.w3.org/2000/svg">
         <rect x="115" y="0" width="30" height="220" rx="14" fill="currentColor" />
         <rect x="102" y="0" width="56" height="32" rx="12" fill="currentColor" />
         <ellipse cx="130" cy="270" rx="72" ry="62" fill="currentColor" />
