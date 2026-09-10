@@ -37,6 +37,35 @@
 
 <body class="bg-bg-base text-text-primary min-h-screen relative overflow-x-hidden">
   <div class="grain-overlay" aria-hidden="true"></div>
+  <!-- Nền ambient dùng chung toàn site: khối màu trôi chậm kiểu aurora +
+       guitar mini/nốt nhạc rải rác, tất cả đều bồng bềnh nhẹ nhàng. -->
+  <div class="site-ambient-bg site-ambient-bg--fixed" aria-hidden="true">
+    <svg width="0" height="0" style="position: absolute">
+      <symbol id="mini-guitar-icon" viewBox="0 0 260 480">
+        <rect x="115" y="0" width="30" height="220" rx="14" fill="currentColor" />
+        <rect x="102" y="0" width="56" height="32" rx="12" fill="currentColor" />
+        <ellipse cx="130" cy="270" rx="72" ry="62" fill="currentColor" />
+        <ellipse cx="130" cy="385" rx="108" ry="92" fill="currentColor" />
+        <circle cx="130" cy="325" r="28" fill="var(--bg-base)" />
+      </symbol>
+    </svg>
+
+    <span class="site-ambient-blob site-ambient-blob-1"></span>
+    <span class="site-ambient-blob site-ambient-blob-2"></span>
+    <span class="site-ambient-blob site-ambient-blob-3"></span>
+
+    <svg class="site-ambient-guitar" style="top:10%;left:8%;--rot:-14deg;animation-duration:9s;animation-delay:0s;" viewBox="0 0 260 480"><use href="#mini-guitar-icon" /></svg>
+    <svg class="site-ambient-guitar" style="top:64%;left:88%;--rot:16deg;animation-duration:7.5s;animation-delay:1.2s;" viewBox="0 0 260 480"><use href="#mini-guitar-icon" /></svg>
+    <svg class="site-ambient-guitar" style="top:84%;left:14%;--rot:8deg;animation-duration:8.4s;animation-delay:0.6s;" viewBox="0 0 260 480"><use href="#mini-guitar-icon" /></svg>
+    <svg class="site-ambient-guitar" style="top:30%;left:92%;--rot:-10deg;animation-duration:6.8s;animation-delay:2s;" viewBox="0 0 260 480"><use href="#mini-guitar-icon" /></svg>
+
+    <span class="site-ambient-note" style="top:6%;left:20%;font-size:28px;--rot:-8deg;animation-duration:6s;animation-delay:0.3s;">♪</span>
+    <span class="site-ambient-note" style="top:16%;left:70%;font-size:22px;--rot:10deg;animation-duration:7s;animation-delay:1s;">♫</span>
+    <span class="site-ambient-note" style="top:40%;left:6%;font-size:20px;--rot:6deg;animation-duration:5.5s;animation-delay:0.8s;">♩</span>
+    <span class="site-ambient-note" style="top:52%;left:80%;font-size:26px;--rot:-12deg;animation-duration:8s;animation-delay:1.6s;">♬</span>
+    <span class="site-ambient-note" style="top:75%;left:40%;font-size:18px;--rot:14deg;animation-duration:6.4s;animation-delay:0.4s;">♪</span>
+    <span class="site-ambient-note" style="top:90%;left:60%;font-size:24px;--rot:-6deg;animation-duration:7.2s;animation-delay:1.4s;">♫</span>
+  </div>
 
   <!-- ====================================================================
          HEADER / NAVIGATION BAR

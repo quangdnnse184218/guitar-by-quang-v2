@@ -31,34 +31,6 @@ import { supabase } from './lib/supabase.js'
 })()
 
 /**
- * Renders the 3 ambient floating blurred blobs in the background.
- */
-export function renderAmbientBlobs() {
-  if (document.getElementById('ambient-blobs-root')) return
-
-  const container = document.createElement('div')
-  container.id = 'ambient-blobs-root'
-  container.className = 'ambient-blobs-container'
-  container.setAttribute('aria-hidden', 'true')
-  container.innerHTML = `
-    <div class="ambient-blob blob-amber"></div>
-    <div class="ambient-blob blob-violet"></div>
-    <div class="ambient-blob blob-rose"></div>
-  `
-  document.body.prepend(container)
-}
-
-/**
- * Music notes removed as per requirement 7d
- */
-export function renderMusicNotes() {
-  const existing = document.getElementById('music-notes-root')
-  if (existing) existing.remove()
-  const existingStyle = document.getElementById('music-notes-style')
-  if (existingStyle) existingStyle.remove()
-}
-
-/**
  * Initializes the sticky glass navbar shrink effect on scroll.
  */
 export function initNavbarShrink() {

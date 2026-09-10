@@ -12,7 +12,10 @@
   --bg-base: #0b0e14;
   --sec-hero-bg: #0b0e14;
   --sec-about-bg: #111520;
-  --sec-featured-bg: #0d1018;
+  /* Trước là #0d1018 — gần như trùng với --sec-hero-bg (#0b0e14), khó nhận ra
+     ranh giới giữa hero và "Bài Hát Nổi Bật" ngay bên dưới. Đổi sang tông ấm
+     (nâu/cam đậm) để 2 khối rõ ràng khác nhau thay vì gần như liền một màu. */
+  --sec-featured-bg: #1a130c;
   --sec-tools-bg: #121723;
   --sec-faq-bg: #0f131d;
   --sec-contact-bg: #131826;
@@ -94,7 +97,9 @@
   --bg-base: #f7f2ea;
   --sec-hero-bg: #f7f2ea;
   --sec-about-bg: #efe8dc;
-  --sec-featured-bg: #faf6ef;
+  /* Trước là #faf6ef — nhạt hơn cả hero, gần như trùng màu. Đổi sang tông ấm
+     đậm hơn (be/cam nhạt) để tách bạch rõ với hero phía trên. */
+  --sec-featured-bg: #f2decc;
   --sec-tools-bg: #ede4d6;
   --sec-faq-bg: #f6efe5;
   --sec-contact-bg: #eae0d1;
@@ -590,34 +595,6 @@ nav,
 }
 
 /* ==============================================================================
-   AMBIENT BACKGROUND GLOW (GPU ACCELERATED — ZERO JANK)
-   ============================================================================== */
-.ambient-blobs-container {
-  position: fixed;
-  inset: 0;
-  overflow: hidden;
-  pointer-events: none;
-  z-index: -1;
-  contain: strict;
-  transform: translateZ(0);
-  background:
-    radial-gradient(circle 500px at 10% 0%, rgba(232, 122, 48, 0.12) 0%, transparent 70%),
-    radial-gradient(circle 600px at 90% 100%, rgba(194, 65, 12, 0.1) 0%, transparent 70%),
-    radial-gradient(circle 450px at 50% 50%, rgba(232, 122, 48, 0.05) 0%, transparent 70%);
-}
-
-[data-theme='light'] .ambient-blobs-container {
-  background:
-    radial-gradient(circle 500px at 10% 0%, rgba(245, 162, 93, 0.14) 0%, transparent 70%),
-    radial-gradient(circle 600px at 90% 100%, rgba(234, 88, 12, 0.1) 0%, transparent 70%),
-    radial-gradient(circle 450px at 50% 50%, rgba(211, 95, 29, 0.06) 0%, transparent 70%);
-}
-
-.ambient-blob {
-  display: none;
-}
-
-/* ==============================================================================
    GRAIN OVERLAY
    ============================================================================== */
 .grain-overlay {
@@ -788,30 +765,35 @@ nav,
 }
 
 /* ==============================================================================
-   MEMBER AREA AMBIENT BACKGROUND (user-dashboard.html) — điểm nhấn màu vàng ấm
-   khác biệt nhẹ so với các trang khách, không đổi hẳn --bg-base để giữ đồng
-   bộ hệ thống theme.
+   AMBIENT SITE BACKGROUND (dùng chung: trang chủ, trang khách, Trang Của Tôi)
+   — hoạ tiết mang chất "âm nhạc & guitar": khối màu trôi chậm kiểu aurora +
+   guitar mini + nốt nhạc rải rác, cả 2 loại đều trôi nổi (float) nhẹ nhàng.
+   Không đổi hẳn --bg-base để giữ đồng bộ hệ thống theme sáng/tối.
    ============================================================================== */
-.member-ambient-bg {
-  position: fixed;
+.site-ambient-bg {
+  position: absolute;
   inset: 0;
   z-index: 0;
   pointer-events: none;
   overflow: hidden;
 }
 
+/* Trên các trang không có section riêng màu (Trang Của Tôi, Kho Tab, Công
+   Cụ, Metronome) dùng position:fixed để phủ toàn khung nhìn kể cả khi cuộn. */
+.site-ambient-bg--fixed {
+  position: fixed;
+}
+
 /* 3 khối màu mờ trôi rất chậm — hiệu ứng "aurora" nhẹ nhàng, không gây rối
-   mắt. Vô hiệu hoá chuyển động khi người dùng bật prefers-reduced-motion.
-   Độ đậm được tăng lên so với bản đầu vì quá nhạt, khó nhận ra khác biệt
-   với nền chung của site. */
-.member-ambient-blob {
+   mắt. Vô hiệu hoá chuyển động khi người dùng bật prefers-reduced-motion. */
+.site-ambient-blob {
   position: absolute;
   border-radius: 50%;
   filter: blur(65px);
   opacity: 0.85;
 }
 
-.member-ambient-blob-1 {
+.site-ambient-blob-1 {
   width: 500px;
   height: 500px;
   top: -180px;
@@ -819,7 +801,7 @@ nav,
   background: radial-gradient(circle, rgba(245, 178, 60, 0.5), transparent 70%);
 }
 
-.member-ambient-blob-2 {
+.site-ambient-blob-2 {
   width: 440px;
   height: 440px;
   top: 8%;
@@ -827,7 +809,7 @@ nav,
   background: radial-gradient(circle, rgba(232, 122, 48, 0.42), transparent 70%);
 }
 
-.member-ambient-blob-3 {
+.site-ambient-blob-3 {
   width: 400px;
   height: 400px;
   bottom: -160px;
@@ -835,29 +817,29 @@ nav,
   background: radial-gradient(circle, rgba(217, 107, 39, 0.34), transparent 70%);
 }
 
-[data-theme='light'] .member-ambient-blob-1 {
+[data-theme='light'] .site-ambient-blob-1 {
   background: radial-gradient(circle, rgba(219, 158, 62, 0.42), transparent 70%);
 }
-[data-theme='light'] .member-ambient-blob-2 {
+[data-theme='light'] .site-ambient-blob-2 {
   background: radial-gradient(circle, rgba(211, 95, 29, 0.32), transparent 70%);
 }
-[data-theme='light'] .member-ambient-blob-3 {
+[data-theme='light'] .site-ambient-blob-3 {
   background: radial-gradient(circle, rgba(184, 78, 20, 0.26), transparent 70%);
 }
 
 @media (prefers-reduced-motion: no-preference) {
-  .member-ambient-blob-1 {
-    animation: member-aurora-drift-1 24s ease-in-out infinite alternate;
+  .site-ambient-blob-1 {
+    animation: site-aurora-drift-1 24s ease-in-out infinite alternate;
   }
-  .member-ambient-blob-2 {
-    animation: member-aurora-drift-2 28s ease-in-out infinite alternate;
+  .site-ambient-blob-2 {
+    animation: site-aurora-drift-2 28s ease-in-out infinite alternate;
   }
-  .member-ambient-blob-3 {
-    animation: member-aurora-drift-3 20s ease-in-out infinite alternate;
+  .site-ambient-blob-3 {
+    animation: site-aurora-drift-3 20s ease-in-out infinite alternate;
   }
 }
 
-@keyframes member-aurora-drift-1 {
+@keyframes site-aurora-drift-1 {
   from {
     transform: translate(0, 0) scale(1);
   }
@@ -865,7 +847,7 @@ nav,
     transform: translate(60px, 50px) scale(1.08);
   }
 }
-@keyframes member-aurora-drift-2 {
+@keyframes site-aurora-drift-2 {
   from {
     transform: translate(0, 0) scale(1);
   }
@@ -873,7 +855,7 @@ nav,
     transform: translate(-55px, 60px) scale(0.95);
   }
 }
-@keyframes member-aurora-drift-3 {
+@keyframes site-aurora-drift-3 {
   from {
     transform: translate(0, 0) scale(1);
   }
@@ -882,83 +864,55 @@ nav,
   }
 }
 
-/* Hoạ tiết cây đàn silhouette — 2 lớp: 1 to đặt phía trên-trái làm nền mờ,
-   1 nhỏ hơn ở góc dưới-phải rõ hơn một chút để mắt dễ nhận ra ngay là hình
-   cây đàn chứ không chỉ là màu loang. */
-.member-ambient-guitar {
+/* Guitar mini + nốt nhạc rải rác — cả 2 đều trôi nổi (bồng bềnh) nhẹ nhàng
+   theo trục dọc, mỗi cái tự set góc xoay riêng qua biến --rot và thời gian/
+   độ trễ animation riêng (khai báo inline) để chuyển động không đồng bộ,
+   trông tự nhiên hơn là nhấp nháy cùng lúc. */
+.site-ambient-guitar,
+.site-ambient-note {
   position: absolute;
-  width: 240px;
+  --rot: 0deg;
+  color: var(--accent-primary);
+  transform: rotate(var(--rot));
+}
+
+.site-ambient-guitar {
+  width: 34px;
   height: auto;
-  color: var(--accent-primary);
+  opacity: 0.14;
 }
 
-.member-ambient-guitar-1 {
-  top: -60px;
-  left: -70px;
-  width: 320px;
-  opacity: 0.07;
-  transform: rotate(18deg);
-}
-
-.member-ambient-guitar-2 {
-  bottom: -40px;
-  right: -20px;
-  width: 220px;
-  opacity: 0.1;
-  transform: rotate(-12deg);
-}
-
-[data-theme='light'] .member-ambient-guitar-1 {
-  opacity: 0.09;
-}
-[data-theme='light'] .member-ambient-guitar-2 {
-  opacity: 0.12;
-}
-
-/* Dải "dây đàn" mờ vắt chéo phía trên nền — vài đường kẻ mảnh song song
-   gợi liên tưởng tới dây guitar mà không quá lộ liễu */
-.member-ambient-strings {
-  position: absolute;
-  top: -8%;
-  left: -10%;
-  width: 130%;
-  height: 42%;
-  transform: rotate(-5deg);
-  background: repeating-linear-gradient(
-    180deg,
-    rgba(232, 122, 48, 0.16) 0px,
-    rgba(232, 122, 48, 0.16) 1.5px,
-    transparent 1.5px,
-    transparent 42px
-  );
-}
-
-[data-theme='light'] .member-ambient-strings {
-  background: repeating-linear-gradient(
-    180deg,
-    rgba(184, 78, 20, 0.14) 0px,
-    rgba(184, 78, 20, 0.14) 1.5px,
-    transparent 1.5px,
-    transparent 42px
-  );
-}
-
-/* Nốt nhạc rải rác — điểm nhấn "âm nhạc" rõ ràng, dễ nhận ra ngay từ xa */
-.member-ambient-notes {
-  position: absolute;
-  inset: 0;
-}
-
-.member-ambient-notes span {
-  position: absolute;
+.site-ambient-note {
   font-family: Georgia, 'Times New Roman', serif;
-  color: var(--accent-primary);
-  opacity: 0.16;
+  opacity: 0.18;
   line-height: 1;
 }
 
-[data-theme='light'] .member-ambient-notes span {
-  opacity: 0.2;
+[data-theme='light'] .site-ambient-guitar {
+  opacity: 0.16;
+}
+[data-theme='light'] .site-ambient-note {
+  opacity: 0.22;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .site-ambient-guitar,
+  .site-ambient-note {
+    animation-name: site-ambient-float;
+    animation-timing-function: ease-in-out;
+    animation-iteration-count: infinite;
+    /* animation-duration/delay riêng cho mỗi phần tử, set inline */
+  }
+}
+
+@keyframes site-ambient-float {
+  0%,
+  100% {
+    transform: rotate(var(--rot)) translateY(0);
+  }
+  50% {
+    transform: rotate(var(--rot)) translateY(-14px);
+  }
 }
 
 .bg-warm-gradient {
