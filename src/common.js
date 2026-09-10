@@ -232,8 +232,15 @@ export async function initAuthHeader() {
 
     const isAdmin = role === 'admin'
 
+    // targetDashboardUrl = "công cụ chính" của tài khoản (nav tab, link nhanh
+    // ở mobile) — admin thì đây là Bảng Quản Trị, thành viên thì là trang cá
+    // nhân. Trong dropdown thì "Trang Của Tôi" luôn trỏ tới user-dashboard.html
+    // (personalDashboardUrl) vì đó là trang hồ sơ/yêu thích/đã mua của CHÍNH
+    // tài khoản đó — kể cả tài khoản admin cũng có thể có yêu thích/đã mua
+    // riêng, và tránh trùng lặp với mục "⚡ Bảng Quản Trị Admin" ở trên.
     const targetDashboardUrl = isAdmin ? '/admin-dashboard.html' : '/user-dashboard.html'
-    const targetDashboardLabel = 'Trang Của Tôi'
+    const targetDashboardLabel = isAdmin ? 'Bảng Quản Trị Admin' : 'Trang Của Tôi'
+    const personalDashboardUrl = '/user-dashboard.html'
 
     const roleBadgeHtml = isAdmin
       ? `<span class="px-1.5 py-0.5 rounded-full bg-purple-500/20 text-purple-600 dark:text-purple-300 text-[10px] font-bold border border-purple-500/30">👑 Admin</span>`
@@ -260,9 +267,9 @@ export async function initAuthHeader() {
             <p class="text-[10px] text-text-muted truncate">${user.email}</p>
           </div>
           ${adminDropdownOption}
-          <a href="${targetDashboardUrl}" class="block px-3 py-2 text-xs font-semibold text-text-primary hover:bg-glass-bg-hover hover:text-accent-primary rounded-xl transition-colors flex items-center gap-2">
+          <a href="${personalDashboardUrl}" class="block px-3 py-2 text-xs font-semibold text-text-primary hover:bg-glass-bg-hover hover:text-accent-primary rounded-xl transition-colors flex items-center gap-2">
             <span>🎸</span>
-            <span>Trang Của Tôi</span>
+            <span>${isAdmin ? 'Trang Cá Nhân' : 'Trang Của Tôi'}</span>
           </a>
           <a href="/user-dashboard.html#favorites" class="block px-3 py-2 text-xs font-semibold text-text-primary hover:bg-glass-bg-hover hover:text-accent-primary rounded-xl transition-colors flex items-center gap-2">
             <span>❤️</span>
