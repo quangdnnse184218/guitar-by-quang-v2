@@ -16,8 +16,6 @@ import {
 import { initThemeToggle } from './theme-toggle.js'
 import {
   fetchFeaturedSongs,
-  fetchRecentSongs,
-  fetchSongsStats,
   extractYoutubeId,
   normalizeVideoPath,
   normalizeAudioPath,
@@ -111,28 +109,22 @@ export function formatCompactDiscount(note) {
   return str
 }
 
-export function renderSongCard(tab, index, extraClass = '', opts = {}) {
+export function renderSongCard(tab, index, extraClass = '') {
   const levelNum = tab.level_num ?? tab.levelNum ?? 5
   const percent = Math.min(100, Math.max(10, (levelNum / 10) * 100))
   const isFree = tab.is_free ?? tab.isFree ?? false
-  const pinnedClass = opts.pinned ? 'song-card-pinned' : ''
-  const pinnedBadge = opts.pinned
-    ? '<span class="px-1.5 sm:px-2 py-0.5 rounded-full text-[8px] sm:text-[10px] font-black bg-amber-400 text-black shadow-sm uppercase tracking-wide">⭐ Nổi bật</span>'
-    : ''
-  const dataAttrs = `data-id="${tab.id}" data-category="${(tab.category || '').replace(/"/g, '&quot;')}" data-free="${isFree ? '1' : '0'}"`
 
   // ========================================================================
   // 1. FREE CARD
   // ========================================================================
   if (isFree) {
     return `
-      <div onclick="window.openFreeTabModal('${tab.id}')" class="song-card glass-card card-interactive p-2.5 sm:p-4 rounded-2xl sm:rounded-3xl border border-glass-border flex flex-col justify-between space-y-2.5 sm:space-y-3.5 group cursor-pointer ${pinnedClass} ${extraClass}" ${dataAttrs}>
+      <div onclick="window.openFreeTabModal('${tab.id}')" class="song-card glass-card card-interactive p-2.5 sm:p-4 rounded-2xl sm:rounded-3xl border border-glass-border flex flex-col justify-between space-y-2.5 sm:space-y-3.5 group cursor-pointer ${extraClass}" data-id="${tab.id}">
         <div class="space-y-2 sm:space-y-3">
           <div class="relative overflow-hidden rounded-xl sm:rounded-2xl aspect-[4/3] sm:aspect-[16/10] bg-gradient-to-br from-[#1E3A2F] via-[#2A4D3E] to-[#172A22] p-2 sm:p-3.5 flex flex-col justify-between text-white shadow-inner group-hover:scale-[1.02] transition-transform duration-500 ease-out">
             <div class="flex justify-between items-start text-xs uppercase font-bold tracking-wider">
               <span class="bg-black/50 backdrop-blur px-1.5 sm:px-2 py-0.5 rounded-full text-white/95 text-[8px] sm:text-[10px] font-mono">${tab.category || 'Fingerstyle'}</span>
               <div class="flex items-center gap-1 flex-wrap justify-end">
-                ${pinnedBadge}
                 <span class="px-1.5 sm:px-2 py-0.5 rounded-full text-[8px] sm:text-[10px] font-black bg-emerald-600 text-white shadow-sm uppercase tracking-wide">FREE</span>
               </div>
             </div>
@@ -205,7 +197,6 @@ export function renderSongCard(tab, index, extraClass = '', opts = {}) {
 
   const badgeHtml = `
     <div class="flex flex-col items-end gap-0.5 sm:gap-1">
-      ${pinnedBadge}
       <span class="px-1.5 sm:px-2 py-0.5 rounded-full text-[8px] sm:text-[9.5px] font-black bg-rose-600 text-white shadow-sm uppercase tracking-wide font-mono tabular-nums">BÁN • ${priceFormatted}</span>
       ${discountNote ? `<span class="text-[7px] sm:text-[8.5px] text-white bg-accent-primary px-1.5 py-0.5 rounded-full font-extrabold shadow-xs inline-block leading-none whitespace-nowrap">${discountNote}</span>` : ''}
     </div>
@@ -242,7 +233,7 @@ export function renderSongCard(tab, index, extraClass = '', opts = {}) {
   }
 
   return `
-    <div onclick="window.openCheckoutModal('${tab.id}')" class="song-card glass-card card-interactive p-2.5 sm:p-4 rounded-2xl sm:rounded-3xl border border-glass-border flex flex-col justify-between space-y-2.5 sm:space-y-3.5 group cursor-pointer ${cardTypeClass} ${pinnedClass} ${extraClass}" ${dataAttrs}>
+    <div onclick="window.openCheckoutModal('${tab.id}')" class="song-card glass-card card-interactive p-2.5 sm:p-4 rounded-2xl sm:rounded-3xl border border-glass-border flex flex-col justify-between space-y-2.5 sm:space-y-3.5 group cursor-pointer ${cardTypeClass} ${extraClass}" data-id="${tab.id}">
       <div class="space-y-2 sm:space-y-3">
         <div class="relative overflow-hidden rounded-xl sm:rounded-2xl aspect-[4/3] sm:aspect-[16/10] bg-gradient-to-br ${thumbnailBg} p-2 sm:p-3.5 flex flex-col justify-between text-white shadow-inner group-hover:scale-[1.02] transition-transform duration-500 ease-out">
           <div class="flex justify-between items-start text-xs uppercase font-bold tracking-wider">
@@ -985,83 +976,6 @@ function initHeroTiltEffect() {
 // INITIALIZATION
 // ==========================================================================
 
-// ==========================================================================
-// FEATURED FILTER CHIPS (Tất cả / theo thể loại / Miễn phí)
-// ==========================================================================
-function initFeaturedFilters(songs) {
-  const wrap = document.getElementById('featured-filters')
-  const grid = document.getElementById('featured-grid')
-  if (!wrap || !grid || !songs || songs.length === 0) return
-
-  const categories = [...new Set(songs.map((s) => s.category).filter(Boolean))]
-  if (categories.length < 2) return // không đủ đa dạng để lọc có ý nghĩa
-
-  const chips = [
-    { key: 'all', label: 'Tất cả' },
-    ...categories.map((c) => ({ key: `cat:${c}`, label: c })),
-    { key: 'free', label: 'Miễn phí' },
-  ]
-
-  wrap.innerHTML = chips
-    .map(
-      (c, i) =>
-        `<button type="button" class="featured-filter-pill${i === 0 ? ' active' : ''}" data-filter-key="${c.key}">${c.label}</button>`
-    )
-    .join('')
-  wrap.classList.remove('hidden')
-  wrap.classList.add('flex', 'flex-wrap')
-
-  const cards = Array.from(grid.querySelectorAll('.song-card'))
-
-  wrap.querySelectorAll('[data-filter-key]').forEach((btn) => {
-    btn.addEventListener('click', () => {
-      wrap.querySelectorAll('[data-filter-key]').forEach((b) => b.classList.remove('active'))
-      btn.classList.add('active')
-      const key = btn.getAttribute('data-filter-key')
-
-      cards.forEach((card) => {
-        let match = true
-        if (key === 'free') match = card.getAttribute('data-free') === '1'
-        else if (key.startsWith('cat:')) match = card.getAttribute('data-category') === key.slice(4)
-        card.classList.toggle('hidden', !match)
-      })
-    })
-  })
-}
-
-// ==========================================================================
-// HERO STATS BAR (social proof)
-// ==========================================================================
-async function initHeroStats() {
-  const totalEl = document.getElementById('hero-stat-total')
-  const freeEl = document.getElementById('hero-stat-free')
-  if (!totalEl || !freeEl) return
-
-  const stats = await fetchSongsStats()
-  totalEl.textContent = stats.total
-  freeEl.textContent = stats.free
-}
-
-// ==========================================================================
-// RECENT SONGS STRIP ("Mới cập nhật gần đây")
-// ==========================================================================
-async function initRecentSongs() {
-  const section = document.getElementById('recent-songs')
-  const container = document.getElementById('recent-songs-grid')
-  if (!section || !container) return
-
-  const recent = await fetchRecentSongs(6)
-  if (!recent || recent.length === 0) return
-
-  featuredSongs = [...featuredSongs, ...recent.filter((s) => !featuredSongs.some((f) => f.id === s.id))]
-
-  container.innerHTML = recent
-    .map((tab, idx) => renderSongCard(tab, idx, 'shrink-0 snap-start w-[42%] sm:w-[26%] md:w-[22%]'))
-    .join('')
-  section.classList.remove('hidden')
-  applyScrollReveal('#recent-songs-grid .song-card')
-}
-
 async function initHome() {
   setupEventListeners()
 
@@ -1076,14 +990,12 @@ async function initHome() {
   if (featuredContainer) {
     if (featuredSongs && featuredSongs.length > 0) {
       const songsHtml = featuredSongs
-        .map((tab, idx) =>
-          renderSongCard(tab, idx, 'shrink-0 snap-start w-[45%] sm:w-[30%] md:w-full', { pinned: idx === 0 })
-        )
+        .slice(0, 4)
+        .map((tab, idx) => renderSongCard(tab, idx, 'shrink-0 snap-start w-[45%] sm:w-[30%] md:w-full'))
         .join('')
 
       featuredContainer.innerHTML = songsHtml
       applyScrollReveal('#featured-grid .song-card')
-      initFeaturedFilters(featuredSongs)
     } else {
       featuredContainer.innerHTML = `
         <div class="col-span-full py-10 text-center text-text-muted glass-card p-6 rounded-3xl">
@@ -1093,15 +1005,11 @@ async function initHome() {
     }
   }
 
-  // 2. Social proof stats + "Mới cập nhật" strip
-  initHeroStats()
-  initRecentSongs()
-
-  // 3. Fetch & Render Gears
+  // 2. Fetch & Render Gears
   const gears = await fetchAllGears()
   renderGears(gears)
 
-  // 4. Initialize FAQ Interactions
+  // 3. Initialize FAQ Interactions
   initFaq()
 }
 
