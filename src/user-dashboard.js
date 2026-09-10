@@ -14,6 +14,7 @@ import {
   normalizeAudioPath,
 } from './lib/songs-service.js'
 import { fetchAllGears, DEFAULT_GEARS } from './lib/gears-service.js'
+import { uploadToStorage, removeFromStorageByUrl, formatBytes, MAX_UPLOAD_BYTES } from './lib/storage-service.js'
 
 // If redirected here with a recovery token, immediately move to reset-password.html
 if (
@@ -86,7 +87,12 @@ const profileForm = document.getElementById('profile-update-form')
 const profileEmailInput = document.getElementById('profile-email-input')
 const profileNameInput = document.getElementById('profile-name-input')
 const profileAvatarInput = document.getElementById('profile-avatar-input')
+const profileAvatarFileInput = document.getElementById('profile-avatar-file')
+const profileAvatarFileName = document.getElementById('profile-avatar-file-name')
+const profileAvatarPreviewImg = document.getElementById('profile-avatar-preview-img')
+const profileAvatarPreviewInitial = document.getElementById('profile-avatar-preview-initial')
 const saveProfileBtn = document.getElementById('save-profile-btn')
+const greetingPrefix = document.getElementById('greeting-prefix')
 
 // Password Form
 const changePasswordForm = document.getElementById('change-password-form')
@@ -385,13 +391,37 @@ async function checkAuthAndInit() {
   }
 }
 
+// Viết hoa chữ cái đầu mỗi từ cho tên hiển thị ở lời chào — chỉ ảnh hưởng
+// phần hiển thị, không sửa lại giá trị full_name thật đã lưu (input trong
+// form Hồ Sơ vẫn giữ nguyên như người dùng đã nhập).
+function toTitleCase(str) {
+  if (!str) return str
+  return str
+    .toLowerCase()
+    .split(' ')
+    .filter(Boolean)
+    .map((w) => w.charAt(0).toUpperCase() + w.slice(1))
+    .join(' ')
+}
+
+function getGreetingPrefix() {
+  const hour = new Date().getHours()
+  if (hour >= 5 && hour < 11) return 'Chào buổi sáng'
+  if (hour >= 11 && hour < 13) return 'Chào buổi trưa'
+  if (hour >= 13 && hour < 18) return 'Chào buổi chiều'
+  return 'Chào buổi tối'
+}
+
 function updateUserInfoUI() {
   const name = currentProfile.full_name || currentUser.email?.split('@')[0] || 'Thành viên'
+  const displayName = toTitleCase(name)
   const initial = name.charAt(0).toUpperCase()
 
-  if (userDisplayName) userDisplayName.textContent = name
+  if (userDisplayName) userDisplayName.textContent = displayName
   if (userEmailDisplay) userEmailDisplay.textContent = currentUser.email
   if (userAvatarInitial) userAvatarInitial.textContent = initial
+  if (greetingPrefix) greetingPrefix.textContent = getGreetingPrefix()
+  if (profileAvatarPreviewInitial) profileAvatarPreviewInitial.textContent = initial
 
   if (currentProfile.avatar_url && userAvatarImg) {
     userAvatarImg.src = currentProfile.avatar_url
@@ -400,6 +430,15 @@ function updateUserInfoUI() {
   } else {
     userAvatarImg?.classList.add('hidden')
     userAvatarInitial?.classList.remove('hidden')
+  }
+
+  if (currentProfile.avatar_url && profileAvatarPreviewImg) {
+    profileAvatarPreviewImg.src = currentProfile.avatar_url
+    profileAvatarPreviewImg.classList.remove('hidden')
+    profileAvatarPreviewInitial?.classList.add('hidden')
+  } else {
+    profileAvatarPreviewImg?.classList.add('hidden')
+    profileAvatarPreviewInitial?.classList.remove('hidden')
   }
 
   // Joined Date
@@ -1649,13 +1688,43 @@ filterPurchasedSelect?.addEventListener('change', (e) => {
 })
 
 // ==========================================================================
+// AVATAR FILE PICKER — chọn ảnh trực tiếp từ máy thay vì chỉ dán link
+// ==========================================================================
+if (profileAvatarFileInput && profileAvatarFileName) {
+  profileAvatarFileInput.addEventListener('change', () => {
+    const file = profileAvatarFileInput.files?.[0]
+    if (!file) {
+      profileAvatarFileName.textContent = ''
+      return
+    }
+    if (file.size > MAX_UPLOAD_BYTES) {
+      profileAvatarFileName.textContent = `⚠️ ${file.name} (${formatBytes(file.size)}) vượt quá 50MB, sẽ không tải lên được.`
+      profileAvatarFileName.className = 'text-[11px] text-rose-500 truncate block'
+      return
+    }
+    profileAvatarFileName.textContent = `✓ ${file.name} (${formatBytes(file.size)})`
+    profileAvatarFileName.className = 'text-[11px] text-emerald-600 dark:text-emerald-400 truncate block'
+
+    // Xem trước ngay lập tức bằng ảnh chọn (chưa upload)
+    const reader = new FileReader()
+    reader.onload = () => {
+      if (profileAvatarPreviewImg) {
+        profileAvatarPreviewImg.src = reader.result
+        profileAvatarPreviewImg.classList.remove('hidden')
+        profileAvatarPreviewInitial?.classList.add('hidden')
+      }
+    }
+    reader.readAsDataURL(file)
+  })
+}
+
+// ==========================================================================
 // PROFILE UPDATE FORM HANDLER
 // ==========================================================================
 if (profileForm) {
   profileForm.addEventListener('submit', async (e) => {
     e.preventDefault()
     const fullName = profileNameInput?.value?.trim()
-    const avatarUrl = profileAvatarInput?.value?.trim()
 
     if (!fullName) {
       showToast('Vui lòng nhập họ và tên của bạn!', 'error')
@@ -1668,6 +1737,26 @@ if (profileForm) {
     }
 
     try {
+      const selectedFile = profileAvatarFileInput?.files?.[0]
+      let avatarUrl
+      if (selectedFile) {
+        if (selectedFile.size > MAX_UPLOAD_BYTES) {
+          showToast(
+            `❌ Ảnh quá lớn (${formatBytes(selectedFile.size)}). Gói Supabase miễn phí chỉ cho phép tối đa 50MB/file.`,
+            'error'
+          )
+          return
+        }
+        const oldAvatar = currentProfile?.avatar_url || ''
+        showToast(`Đang tải ${selectedFile.name} lên...`, 'info')
+        avatarUrl = await uploadToStorage(selectedFile, `avatars/${currentUser.id}`, 'avatar')
+        if (oldAvatar) await removeFromStorageByUrl(oldAvatar)
+        profileAvatarFileInput.value = ''
+        if (profileAvatarFileName) profileAvatarFileName.textContent = ''
+      } else {
+        avatarUrl = profileAvatarInput?.value?.trim() || ''
+      }
+
       const { error } = await supabase.from('profiles').upsert({
         id: currentUser.id,
         full_name: fullName,
