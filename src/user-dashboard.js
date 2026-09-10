@@ -1757,12 +1757,18 @@ if (profileForm) {
         avatarUrl = profileAvatarInput?.value?.trim() || ''
       }
 
-      const { error } = await supabase.from('profiles').upsert({
-        id: currentUser.id,
-        full_name: fullName,
-        avatar_url: avatarUrl,
-        role: currentProfile?.role || 'user',
-      })
+      // Dùng update() thay vì upsert(): hàng profiles luôn đã tồn tại sẵn (do
+      // trigger tạo lúc đăng ký), mà upsert() vẫn cần quyền INSERT trên bảng
+      // dù chỉ đi vào nhánh UPDATE — tài khoản thường không có quyền đó nên
+      // luôn báo "permission denied for table profiles". update() không cần
+      // quyền INSERT nên hoạt động đúng.
+      const { error } = await supabase
+        .from('profiles')
+        .update({
+          full_name: fullName,
+          avatar_url: avatarUrl,
+        })
+        .eq('id', currentUser.id)
 
       if (error) throw error
 
