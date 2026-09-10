@@ -383,8 +383,7 @@ window.editSong = function (id) {
       song.price_formatted ||
       song.priceFormatted ||
       (song.price ? formatCompactPrice(song.price) : '239k')
-    document.getElementById('song-paid-discount').value =
-      song.discount_note || song.discountNote || 'HSSV: 179k'
+    document.getElementById('song-paid-discount').value = song.discount_note || song.discountNote || ''
     document.getElementById('song-paid-demo-url').value =
       song.demo_video_url ||
       song.video_demo ||
@@ -410,9 +409,13 @@ window.deleteSong = async function (id, title) {
   }
 
   try {
-    await removeSong(id)
-    showToast(`✓ Đã xóa thành công bài hát "${title}"!`, 'success')
-    await loadSongs()
+    const res = await removeSong(id)
+    if (res.success) {
+      showToast(`✓ Đã xóa thành công bài hát "${title}"!`, 'success')
+      await loadSongs()
+    } else {
+      showToast(`❌ Xóa thất bại: ${res.error || 'Không thể xoá bài hát trên Supabase'}`, 'error')
+    }
   } catch (err) {
     showToast(`❌ Lỗi khi xóa bài hát: ${err.message}`, 'error')
   }
@@ -568,8 +571,8 @@ if (songForm) {
       const priceFormatted = formatCompactPrice(priceRaw)
       const numericPrice = Number(priceRaw.replace(/[^0-9]/g, '')) || 239000
       const priceVal = numericPrice < 1000 && numericPrice > 0 ? numericPrice * 1000 : numericPrice
-      const discountNoteVal =
-        document.getElementById('song-paid-discount').value.trim() || 'HSSV: 179k'
+      // Để trống mục HSSV -> không lưu discount_note, kho tab sẽ không hiện badge này
+      const discountNoteVal = document.getElementById('song-paid-discount').value.trim()
       let demoUrlVal, paidAudioUrl
       try {
         demoUrlVal = await resolveMediaUrl(
@@ -621,7 +624,7 @@ if (songForm) {
         price: priceVal,
         price_formatted: priceFormatted,
         priceFormatted: priceFormatted,
-        discount_note: discountNoteVal,
+        discount_note: discountNoteVal || null,
         has_demo: hasDemo,
         video_demo: cleanDemo || null,
         demo_video_url: cleanDemo || null,
