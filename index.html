@@ -225,23 +225,6 @@
                 </svg>
               </a>
             </div>
-
-            <!-- Social Proof: số liệu kho tab (điền động bằng JS, số mặc định để tránh layout shift) -->
-            <div id="hero-stats-bar" class="flex flex-wrap items-center gap-x-5 gap-y-1.5 pt-1 text-xs sm:text-sm font-bold text-text-muted">
-              <span class="flex items-center gap-1.5"><strong id="hero-stat-total" class="text-text-primary font-mono tabular-nums">24</strong> Video Tab</span>
-              <span class="w-1 h-1 rounded-full bg-text-faint hidden sm:inline-block"></span>
-              <span class="flex items-center gap-1.5"><strong id="hero-stat-free" class="text-emerald-600 dark:text-emerald-400 font-mono tabular-nums">21</strong> miễn phí</span>
-              <span class="w-1 h-1 rounded-full bg-text-faint hidden sm:inline-block"></span>
-              <span>Cập nhật hàng tuần 🔥</span>
-            </div>
-
-            <!-- Quick-jump chips: cho khách thấy ngay trang có gì mà không cần cuộn mù -->
-            <div class="flex flex-wrap items-center gap-2 pt-1">
-              <a href="#kho-tab" class="quick-jump-chip">🎵 Kho Tab</a>
-              <a href="#tools" class="quick-jump-chip">🛠️ Công Cụ</a>
-              <a href="#faq" class="quick-jump-chip">❓ Hỏi đáp</a>
-              <a href="#contact" class="quick-jump-chip">📞 Liên hệ</a>
-            </div>
           </div>
 
           <!-- Hero Right (5 cols): Cover Video Card -->
@@ -296,9 +279,6 @@
             <h2 class="text-2xl sm:text-3xl lg:text-4xl text-text-primary font-extrabold leading-tight">
               Tự học đàn & <span class="text-accent-primary">chuyện làm tab</span>
             </h2>
-            <p class="text-sm sm:text-base text-text-primary font-bold leading-snug">
-              Tự học 100%, không qua trường lớp — nên mình hiểu rõ người mới cần tab như thế nào để tập không nản.
-            </p>
             <p class="text-text-muted text-xs sm:text-sm leading-relaxed font-medium">
               Không qua trường lớp bài bản, mình tự nghe nốt rồi soạn lại theo thế tay thuận và dễ tiếp cận nhất cho anh em.
             </p>
@@ -391,10 +371,6 @@
           </a>
         </div>
 
-        <!-- Chip lọc nhanh theo thể loại/miễn phí — lọc ngay trong danh sách nổi bật,
-             điền động bằng JS dựa trên dữ liệu thật tải về -->
-        <div id="featured-filters" class="hidden items-center gap-2 mb-5"></div>
-
         <!-- Featured Grid: swipeable horizontal row on mobile (snap-scroll),
              regular 4-col grid from md: up -->
         <div id="featured-grid"
@@ -425,22 +401,6 @@
           </a>
         </div>
 
-      </div>
-    </section>
-
-
-    <!-- ================================================================
-           3B. MỚI CẬP NHẬT GẦN ĐÂY (dải cuộn ngang, tự động theo created_at)
-           ================================================================ -->
-    <section id="recent-songs" class="relative pb-20 overflow-hidden hidden">
-      <div class="relative z-10 max-w-7xl mx-auto px-6 sm:px-8 md:px-12">
-        <div class="flex items-center gap-2 mb-5">
-          <span class="text-lg sm:text-xl">🆕</span>
-          <h3 class="text-lg sm:text-xl font-extrabold text-text-primary">Mới cập nhật gần đây</h3>
-        </div>
-        <div id="recent-songs-grid"
-          class="flex overflow-x-auto scrollbar-none snap-x snap-mandatory -mx-4 px-4 sm:-mx-6 sm:px-6 gap-3 sm:gap-4 w-full pb-1">
-        </div>
       </div>
     </section>
 
