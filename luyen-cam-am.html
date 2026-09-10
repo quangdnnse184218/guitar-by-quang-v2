@@ -420,7 +420,18 @@
       .warmup-actions[hidden] { display: none; }
       .warmup-actions [hidden] { display: none; }
 
-      .turntable { position: relative; width: min(100%, 400px); aspect-ratio: 1; margin: 0 auto; }
+      /* Vòng phím là hình vuông nên nếu chỉ co theo chiều rộng thì trên màn
+         thấp (iPhone SE) nó đẩy mọi thứ tràn xuống dưới. Vì vậy chặn thêm
+         theo chiều cao còn lại của màn hình, nhưng không bao giờ nhỏ hơn
+         210px để các phím vẫn đủ to mà bấm.
+         Dòng vh đứng trước làm phương án dự phòng cho máy chưa hỗ trợ dvh. */
+      .turntable {
+        position: relative;
+        width: min(100%, 400px, max(210px, calc(100vh - 300px)));
+        width: min(100%, 400px, max(210px, calc(100dvh - 300px)));
+        aspect-ratio: 1;
+        margin: 0 auto;
+      }
 
       /* Tai nghe ở giữa vòng phím: vừa là biểu tượng của game, vừa là chỗ
          hiện tên nốt đang phát trong lúc nghe làm quen. */
@@ -634,7 +645,77 @@
 
       @media (max-width: 370px) {
         .modes { grid-template-columns: 1fr; }
-        .how { grid-template-columns: 1fr; }
+      }
+
+      /* Màn thấp (iPhone SE, Android nhỏ): bóp gọn mọi khoảng cách để cả
+         trang lọt trong một màn hình, khỏi phải lướt khi đang chơi. Câu mô tả
+         dài được ẩn đi vì ba bước hướng dẫn ngay dưới đã nói đúng nội dung đó. */
+      @media (max-height: 730px) {
+        main { padding: 12px 16px 16px; }
+        .turntable {
+          width: min(100%, 400px, max(210px, calc(100vh - 262px)));
+          width: min(100%, 400px, max(210px, calc(100dvh - 262px)));
+        }
+
+        .hero-mark { width: 56px; height: 56px; margin-bottom: 9px; }
+        .hero-mark svg { width: 29px; height: 29px; }
+        h1 { font-size: clamp(23px, 7vw, 31px); }
+        .subtitle { font-size: 10.5px; margin-top: 7px; }
+        .lede { display: none; }
+
+        .how { gap: 6px; margin-bottom: 13px; margin-top: 14px; }
+        .how-step { padding: 9px 7px; border-radius: 10px; }
+        .how-num { width: 18px; height: 18px; font-size: 10px; margin-bottom: 4px; }
+        .how-text { font-size: 10.5px; }
+
+        .mode-label { margin-bottom: 7px; }
+        .modes { gap: 8px; margin-bottom: 11px; }
+        .mode-card { padding: 10px 11px; border-radius: 12px; }
+        .mode-name { font-size: 12.5px; margin-bottom: 3px; }
+        .mode-desc { font-size: 10.5px; }
+        .mode-best { margin-top: 5px; font-size: 10px; }
+
+        .btn-primary { padding: 13px; font-size: 14px; }
+        .sound-test { margin-top: 8px; padding: 10px; font-size: 12px; }
+        .audio-warn { margin-top: 9px; padding: 9px 11px; font-size: 11.5px; }
+
+        .hud { margin-bottom: 8px; }
+        .hud-val { font-size: 17px; }
+        .status { margin-top: 9px; min-height: 20px; font-size: 13.5px; }
+        .progress-dots { margin-top: 7px; }
+        .replay-row { margin-top: 9px; }
+        #replay-btn { padding: 8px 15px; font-size: 12px; }
+
+        .warmup-bar { padding: 9px 12px; margin-bottom: 10px; }
+        .warmup-note { font-size: 11.5px; }
+        .warmup-actions { margin-top: 10px; gap: 7px; }
+
+        .over-card { padding: 22px 18px; }
+        .over-emoji { font-size: 34px; margin-bottom: 6px; }
+        .over-title { font-size: 20px; }
+        .over-sub { margin-bottom: 14px; }
+        .over-stats { margin-bottom: 16px; gap: 26px; }
+        .over-stat-val { font-size: 32px; }
+
+        .footnote { padding: 0 16px 11px; font-size: 10px; }
+
+        /* Lúc nghe làm quen có thêm dải nhãn và nút bấm, nên vòng phím phải
+           nhỏ hơn nữa. Giai đoạn này chỉ nghe chứ không cần bấm chính xác. */
+        #screen-game.is-warmup .turntable {
+          width: min(100%, 400px, max(190px, calc(100vh - 322px)));
+          width: min(100%, 400px, max(190px, calc(100dvh - 322px)));
+        }
+      }
+
+      /* Màn rất thấp: bỏ ba bước hướng dẫn để phần chọn chế độ và nút bắt đầu
+         luôn nhìn thấy được ngay, không phải lướt. Phần nghe làm quen ngay sau
+         đó vẫn hướng dẫn đầy đủ nên không mất gì. */
+      @media (max-height: 620px) {
+        .how { display: none; }
+        .subtitle { margin-top: 5px; }
+        .modes { margin-bottom: 10px; }
+        .hero-mark { width: 48px; height: 48px; margin-bottom: 7px; }
+        .hero-mark svg { width: 25px; height: 25px; }
       }
     </style>
   </head>
