@@ -35,8 +35,8 @@
         --gold-solid-ink: #2a1d12;
         --good: #2f8f6d;
         --bad: #cf4630;
-        --record: #241b17;
-        --record-groove: #2f2420;
+        --teach: #1f8aa8;
+        --teach-ink: #ffffff;
         --shadow-soft: 0 10px 30px rgba(74, 52, 26, 0.12);
         --shadow-lift: 0 16px 40px rgba(74, 52, 26, 0.18);
         --pad-rest: 0.86;
@@ -57,8 +57,8 @@
         --gold-solid-ink: #1e1713;
         --good: #4fc2a0;
         --bad: #f0705a;
-        --record: #14100e;
-        --record-groove: #1e1815;
+        --teach: #49b8d4;
+        --teach-ink: #10262d;
         --shadow-soft: 0 10px 30px rgba(0, 0, 0, 0.4);
         --shadow-lift: 0 16px 40px rgba(0, 0, 0, 0.5);
         --pad-rest: 0.82;
@@ -66,6 +66,9 @@
 
       * { box-sizing: border-box; }
       html, body { height: 100%; }
+      /* Các khối dưới đây đặt display riêng (flex/grid), nếu không có dòng này
+         thì thuộc tính hidden của chúng bị đè và vẫn hiện ra. */
+      [hidden] { display: none !important; }
 
       body {
         margin: 0;
@@ -149,17 +152,23 @@
 
       /* ===================== Màn hình mở đầu ===================== */
       .hero-mark {
-        width: 88px;
-        height: 88px;
+        width: 92px;
+        height: 92px;
         margin: 0 auto 18px;
         border-radius: 50%;
-        background: repeating-radial-gradient(circle at center, var(--record) 0 2px, var(--record-groove) 2px 4px);
+        background: linear-gradient(150deg, var(--panel), var(--panel-hi));
+        border: 1px solid var(--line);
         display: grid;
         place-items: center;
+        color: var(--gold);
         box-shadow: var(--shadow-lift);
-        animation: spin 9s linear infinite;
+        animation: bob 3.6s ease-in-out infinite;
       }
-      .hero-mark span { width: 30px; height: 30px; border-radius: 50%; background: var(--gold-solid); }
+      .hero-mark svg { width: 46px; height: 46px; }
+      @keyframes bob {
+        0%, 100% { transform: translateY(0); }
+        50% { transform: translateY(-6px); }
+      }
 
       h1 {
         font-family: 'Montserrat', sans-serif;
@@ -339,9 +348,53 @@
         white-space: nowrap;
       }
 
+      /* Dải báo đang ở phần nghe làm quen. Dùng màu xanh ngọc khác hẳn màu
+         vàng của lúc chơi thật, để không ai nhầm hai giai đoạn với nhau. */
+      .warmup-bar {
+        background: color-mix(in srgb, var(--teach) 12%, var(--panel));
+        border: 1.5px solid color-mix(in srgb, var(--teach) 45%, transparent);
+        border-radius: 14px;
+        padding: 12px 14px;
+        margin-bottom: 14px;
+      }
+      .warmup-bar[hidden] { display: none; }
+      .warmup-top {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 10px;
+        margin-bottom: 6px;
+      }
+      .warmup-chip {
+        font-family: 'Montserrat', sans-serif;
+        font-weight: 900;
+        font-size: 10.5px;
+        letter-spacing: 0.12em;
+        text-transform: uppercase;
+        color: var(--teach-ink);
+        background: var(--teach);
+        border-radius: 999px;
+        padding: 4px 11px;
+      }
+      .warmup-count {
+        font-family: 'Montserrat', sans-serif;
+        font-weight: 900;
+        font-size: 14px;
+        color: var(--teach);
+        font-variant-numeric: tabular-nums;
+      }
+      .warmup-note { margin: 0; font-size: 12.5px; line-height: 1.5; color: var(--ink-dim); }
+      .warmup-note strong { color: var(--teach); font-weight: 800; }
+
+      .warmup-actions { margin-top: 16px; display: flex; flex-direction: column; gap: 9px; }
+      .warmup-actions[hidden] { display: none; }
+      .warmup-actions [hidden] { display: none; }
+
       .turntable { position: relative; width: min(100%, 400px); aspect-ratio: 1; margin: 0 auto; }
 
-      .record {
+      /* Tai nghe ở giữa vòng phím: vừa là biểu tượng của game, vừa là chỗ
+         hiện tên nốt đang phát trong lúc nghe làm quen. */
+      .hub {
         position: absolute;
         left: 50%;
         top: 50%;
@@ -349,36 +402,51 @@
         aspect-ratio: 1;
         transform: translate(-50%, -50%);
         border-radius: 50%;
-        background: repeating-radial-gradient(circle at center, var(--record) 0 2.5px, var(--record-groove) 2.5px 5px);
-        box-shadow: var(--shadow-lift), inset 0 0 24px rgba(0, 0, 0, 0.55);
-        display: grid;
-        place-items: center;
+        background: linear-gradient(150deg, var(--panel), var(--panel-hi));
+        border: 1px solid var(--line);
+        box-shadow: var(--shadow-lift);
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        gap: 5px;
+        color: var(--gold);
       }
-      .record.spinning { animation: spin 2.6s linear infinite; }
-      @keyframes spin { to { transform: translate(-50%, -50%) rotate(360deg); } }
-
-      .record-label {
-        width: 48%;
-        aspect-ratio: 1;
-        border-radius: 50%;
-        background: radial-gradient(circle at 34% 28%, #f6c65e, var(--gold-solid) 62%, #c9871b);
-        display: grid;
-        place-items: center;
-        text-align: center;
-      }
-      .record-label span {
+      .hub-icon { width: 36%; height: auto; flex-shrink: 0; }
+      .hub-label {
         font-family: 'Montserrat', sans-serif;
         font-weight: 900;
-        font-size: 10px;
-        letter-spacing: 0.05em;
-        text-transform: uppercase;
-        color: #4a2f08;
-        line-height: 1.15;
+        font-size: clamp(13px, 3.7vw, 16px);
+        color: var(--ink);
+        line-height: 1;
+        text-align: center;
       }
-      .record.pulse { animation: pulse-ring 0.34s ease-out; }
+      .hub-label small {
+        display: block;
+        font-size: 0.64em;
+        font-weight: 700;
+        color: var(--ink-faint);
+        margin-top: 3px;
+      }
+      .hub.playing { animation: breathe 1.7s ease-in-out infinite; }
+      @keyframes breathe {
+        0%, 100% { transform: translate(-50%, -50%) scale(1); }
+        50% { transform: translate(-50%, -50%) scale(1.045); }
+      }
+      /* Vòng sáng lan ra mỗi khi một nốt vang lên — ở chế độ Chỉ Nghe đây là
+         dấu hiệu duy nhất báo có nốt, mà không tiết lộ đó là phím nào.
+         Đặt trên ::after để không giành thuộc tính animation với .playing. */
+      .hub::after {
+        content: '';
+        position: absolute;
+        inset: 0;
+        border-radius: 50%;
+        pointer-events: none;
+      }
+      .hub.pulse::after { animation: pulse-ring 0.34s ease-out; }
       @keyframes pulse-ring {
-        0% { box-shadow: var(--shadow-lift), inset 0 0 24px rgba(0,0,0,0.55), 0 0 0 0 rgba(234, 166, 44, 0.5); }
-        100% { box-shadow: var(--shadow-lift), inset 0 0 24px rgba(0,0,0,0.55), 0 0 0 24px rgba(234, 166, 44, 0); }
+        0% { box-shadow: 0 0 0 0 rgba(234, 166, 44, 0.5); }
+        100% { box-shadow: 0 0 0 24px rgba(234, 166, 44, 0); }
       }
 
       .pad {
@@ -530,7 +598,7 @@
       .footnote { text-align: center; font-size: 11px; color: var(--ink-faint); padding: 0 18px 20px; }
 
       @media (prefers-reduced-motion: reduce) {
-        .hero-mark, .record.spinning, .record.pulse, .shake, .screen { animation: none; }
+        .hero-mark, .hub.playing, .hub.pulse::after, .shake, .screen { animation: none; }
         .pad, .mode-card { transition: none; }
       }
 
@@ -563,7 +631,13 @@
     <main>
       <!-- ============ MÀN HÌNH MỞ ĐẦU ============ -->
       <section class="screen" id="screen-start">
-        <div class="hero-mark" aria-hidden="true"><span></span></div>
+        <div class="hero-mark" aria-hidden="true">
+          <svg viewBox="0 0 64 64" fill="none">
+            <path d="M13 40V32a19 19 0 0 1 38 0v8" stroke="currentColor" stroke-width="5" stroke-linecap="round" />
+            <rect x="6" y="35" width="14" height="21" rx="7" fill="currentColor" />
+            <rect x="44" y="35" width="14" height="21" rx="7" fill="currentColor" />
+          </svg>
+        </div>
         <h1>Game Luyện Cảm Âm</h1>
         <p class="subtitle">Nghe · Nhớ · Lặp lại</p>
         <p class="lede">Máy phát một chuỗi nốt guitar, bạn bấm lại đúng thứ tự. Lặp lại đúng thì chuỗi dài thêm một nốt. Đi được bao xa?</p>
@@ -602,7 +676,16 @@
 
       <!-- ============ MÀN HÌNH CHƠI ============ -->
       <section class="screen" id="screen-game" hidden>
-        <div class="hud">
+        <!-- Dải này chỉ hiện lúc nghe làm quen, thay chỗ cho bảng điểm -->
+        <div class="warmup-bar" id="warmup-bar" hidden>
+          <div class="warmup-top">
+            <span class="warmup-chip">Nghe làm quen</span>
+            <span class="warmup-count" id="warmup-count">1 / 7</span>
+          </div>
+          <p class="warmup-note">Nghe qua 7 nốt một lượt cho quen mặt nốt — phần này <strong>chưa tính điểm</strong>.</p>
+        </div>
+
+        <div class="hud" id="hud">
           <div class="hud-cell">
             <span class="hud-key">Vòng</span>
             <span class="hud-val" id="hud-round">1</span>
@@ -615,8 +698,13 @@
         </div>
 
         <div class="turntable" id="turntable">
-          <div class="record" id="record" aria-hidden="true">
-            <div class="record-label"><span>Cảm<br />Âm</span></div>
+          <div class="hub" id="hub">
+            <svg class="hub-icon" viewBox="0 0 64 64" fill="none" aria-hidden="true">
+              <path d="M13 40V32a19 19 0 0 1 38 0v8" stroke="currentColor" stroke-width="5" stroke-linecap="round" />
+              <rect x="6" y="35" width="14" height="21" rx="7" fill="currentColor" />
+              <rect x="44" y="35" width="14" height="21" rx="7" fill="currentColor" />
+            </svg>
+            <span class="hub-label" id="hub-label"></span>
           </div>
 
           <button type="button" class="pad pad-1" data-note="do"><span class="pad-note">Đồ</span><span class="pad-sub">C</span></button>
@@ -631,7 +719,12 @@
         <p class="status" id="status">Nghe kỹ nhé…</p>
         <div class="progress-dots" id="progress-dots"></div>
 
-        <div class="replay-row">
+        <div class="warmup-actions" id="warmup-actions" hidden>
+          <button type="button" class="btn-primary" id="play-now-btn" hidden>Vào Chơi</button>
+          <button type="button" class="btn-ghost" id="skip-warmup-btn">Bỏ qua, chơi luôn</button>
+        </div>
+
+        <div class="replay-row" id="replay-row">
           <button type="button" id="replay-btn" disabled>
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M1 4v6h6M23 20v-6h-6" /><path d="M20.49 9A9 9 0 0 0 5.64 5.64L1 10m22 4l-4.64 4.36A9 9 0 0 1 3.51 15" /></svg>
             <span id="replay-label">Nghe lại (1 lần)</span>
