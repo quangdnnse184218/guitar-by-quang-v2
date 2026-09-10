@@ -1,0 +1,616 @@
+<!DOCTYPE html>
+<html lang="vi">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Vọng Âm — Game Luyện Cảm Âm | Guitar By Quang</title>
+    <meta name="description" content="Game luyện cảm âm miễn phí: nghe chuỗi nốt guitar rồi nhại lại đúng thứ tự, chuỗi càng dài càng khó. Có chế độ Chỉ Nghe để luyện tai thật sự." />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;500;600;700;800&family=Montserrat:wght@700;800;900&display=swap" rel="stylesheet" />
+
+    <style>
+      /* =====================================================================
+         VỌNG ÂM — bảng màu đĩa than thập niên 70, cố tình tách hẳn khỏi tông
+         sáng ấm của phần còn lại trong site để người chơi thấy rõ "đây là game".
+         Trang này KHÔNG dùng /src/style.css và KHÔNG import common.js.
+         ===================================================================== */
+      :root {
+        --ground: #191110;
+        --ground-deep: #100b0a;
+        --panel: #241a17;
+        --panel-hi: #2e211c;
+        --line: #3d2c26;
+        --ink: #f4e7ce;
+        --ink-dim: #b3a184;
+        --ink-faint: #7d6d59;
+        --gold: #e0a526;
+        --rust: #c4562a;
+        --teal: #3e8c7a;
+        --plum: #9a4470;
+        --olive: #8a9440;
+        --danger: #d9482f;
+      }
+
+      * { box-sizing: border-box; }
+
+      html, body { height: 100%; }
+
+      body {
+        margin: 0;
+        background:
+          radial-gradient(120% 90% at 50% -10%, #2a1d19 0%, var(--ground) 55%, var(--ground-deep) 100%);
+        color: var(--ink);
+        font-family: 'Be Vietnam Pro', system-ui, sans-serif;
+        min-height: 100vh;
+        display: flex;
+        flex-direction: column;
+      }
+
+      /* Hạt nhiễu mờ gợi cảm giác bìa đĩa cũ */
+      body::before {
+        content: '';
+        position: fixed;
+        inset: 0;
+        pointer-events: none;
+        opacity: 0.35;
+        background-image: radial-gradient(circle at 1px 1px, rgba(244, 231, 206, 0.06) 1px, transparent 0);
+        background-size: 4px 4px;
+        z-index: 0;
+      }
+
+      /* ===================== Thanh trên ===================== */
+      .topbar {
+        position: relative;
+        z-index: 2;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 12px;
+        padding: 14px 18px;
+        border-bottom: 1px solid var(--line);
+      }
+      .back-link {
+        display: inline-flex;
+        align-items: center;
+        gap: 7px;
+        color: var(--ink-dim);
+        text-decoration: none;
+        font-size: 13px;
+        font-weight: 600;
+        padding: 7px 12px 7px 9px;
+        border: 1px solid var(--line);
+        border-radius: 999px;
+        transition: color 0.15s, border-color 0.15s;
+      }
+      .back-link:hover { color: var(--gold); border-color: var(--gold); }
+      .back-link svg { width: 15px; height: 15px; }
+      .topbar-brand {
+        font-family: 'Montserrat', sans-serif;
+        font-weight: 900;
+        font-size: 13px;
+        letter-spacing: 0.16em;
+        text-transform: uppercase;
+        color: var(--ink-faint);
+      }
+
+      main {
+        position: relative;
+        z-index: 2;
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        padding: 26px 18px 40px;
+      }
+
+      .screen { width: 100%; max-width: 480px; }
+      .screen[hidden] { display: none; }
+
+      /* ===================== Màn hình mở đầu ===================== */
+      .hero-mark {
+        width: 96px;
+        height: 96px;
+        margin: 0 auto 20px;
+        border-radius: 50%;
+        background: repeating-radial-gradient(circle at center, #0b0807 0 2px, #16100e 2px 4px);
+        display: grid;
+        place-items: center;
+        box-shadow: 0 0 0 1px var(--line), 0 14px 34px rgba(0, 0, 0, 0.5);
+        animation: spin 8s linear infinite;
+      }
+      .hero-mark span {
+        width: 34px;
+        height: 34px;
+        border-radius: 50%;
+        background: var(--gold);
+      }
+
+      h1 {
+        font-family: 'Montserrat', sans-serif;
+        font-weight: 900;
+        font-size: clamp(38px, 12vw, 56px);
+        letter-spacing: 0.02em;
+        text-transform: uppercase;
+        text-align: center;
+        margin: 0;
+        line-height: 0.92;
+        color: var(--ink);
+        text-wrap: balance;
+      }
+      .subtitle {
+        text-align: center;
+        font-size: 12px;
+        font-weight: 700;
+        letter-spacing: 0.22em;
+        text-transform: uppercase;
+        color: var(--gold);
+        margin: 12px 0 0;
+      }
+      .lede {
+        text-align: center;
+        font-size: 14px;
+        line-height: 1.65;
+        color: var(--ink-dim);
+        margin: 16px auto 26px;
+        max-width: 40ch;
+      }
+
+      .mode-label {
+        font-size: 11px;
+        font-weight: 700;
+        letter-spacing: 0.14em;
+        text-transform: uppercase;
+        color: var(--ink-faint);
+        text-align: center;
+        margin-bottom: 10px;
+      }
+      .modes {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 10px;
+        margin-bottom: 22px;
+      }
+      .mode-card {
+        position: relative;
+        border: 1px solid var(--line);
+        background: var(--panel);
+        border-radius: 12px;
+        padding: 15px 13px;
+        text-align: left;
+        cursor: pointer;
+        color: var(--ink-dim);
+        font-family: inherit;
+        transition: border-color 0.15s, background 0.15s, color 0.15s;
+      }
+      .mode-card:hover { background: var(--panel-hi); }
+      .mode-card[aria-pressed='true'] {
+        border-color: var(--gold);
+        background: var(--panel-hi);
+        color: var(--ink);
+      }
+      .mode-card[aria-pressed='true']::after {
+        content: '';
+        position: absolute;
+        top: 11px;
+        right: 11px;
+        width: 8px;
+        height: 8px;
+        border-radius: 50%;
+        background: var(--gold);
+        box-shadow: 0 0 10px var(--gold);
+      }
+      .mode-name {
+        display: block;
+        font-family: 'Montserrat', sans-serif;
+        font-weight: 800;
+        font-size: 14px;
+        letter-spacing: 0.03em;
+        text-transform: uppercase;
+        margin-bottom: 5px;
+        color: inherit;
+      }
+      .mode-desc { display: block; font-size: 11.5px; line-height: 1.5; color: var(--ink-faint); }
+      .mode-best {
+        display: block;
+        margin-top: 8px;
+        font-size: 11px;
+        font-weight: 700;
+        color: var(--gold);
+      }
+
+      .btn-primary {
+        display: block;
+        width: 100%;
+        font-family: 'Montserrat', sans-serif;
+        font-weight: 900;
+        font-size: 15px;
+        letter-spacing: 0.1em;
+        text-transform: uppercase;
+        color: var(--ground);
+        background: var(--gold);
+        border: none;
+        border-radius: 999px;
+        padding: 16px;
+        cursor: pointer;
+        transition: filter 0.15s, transform 0.1s;
+      }
+      .btn-primary:hover:not(:disabled) { filter: brightness(1.08); }
+      .btn-primary:active:not(:disabled) { transform: scale(0.98); }
+      .btn-primary:disabled { opacity: 0.5; cursor: default; }
+
+      .btn-ghost {
+        display: block;
+        width: 100%;
+        font-family: inherit;
+        font-weight: 700;
+        font-size: 13.5px;
+        color: var(--ink-dim);
+        background: transparent;
+        border: 1px solid var(--line);
+        border-radius: 999px;
+        padding: 13px;
+        cursor: pointer;
+        transition: color 0.15s, border-color 0.15s;
+      }
+      .btn-ghost:hover { color: var(--ink); border-color: var(--ink-faint); }
+
+      /* ===================== Màn hình chơi ===================== */
+      .hud {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 10px;
+        margin-bottom: 16px;
+      }
+      .hud-cell { text-align: center; flex: 1; }
+      .hud-cell:first-child { text-align: left; }
+      .hud-cell:last-child { text-align: right; }
+      .hud-key {
+        display: block;
+        font-size: 9.5px;
+        font-weight: 700;
+        letter-spacing: 0.14em;
+        text-transform: uppercase;
+        color: var(--ink-faint);
+        margin-bottom: 3px;
+      }
+      .hud-val {
+        display: block;
+        font-family: 'Montserrat', sans-serif;
+        font-weight: 800;
+        font-size: 19px;
+        color: var(--ink);
+        font-variant-numeric: tabular-nums;
+      }
+      .hud-val.gold { color: var(--gold); }
+      .hud-mode {
+        font-size: 11px;
+        font-weight: 700;
+        color: var(--gold);
+        border: 1px solid var(--gold);
+        border-radius: 999px;
+        padding: 4px 11px;
+        white-space: nowrap;
+      }
+
+      .turntable {
+        position: relative;
+        width: min(100%, 400px);
+        aspect-ratio: 1;
+        margin: 0 auto;
+      }
+
+      .record {
+        position: absolute;
+        left: 50%;
+        top: 50%;
+        width: 46%;
+        aspect-ratio: 1;
+        transform: translate(-50%, -50%);
+        border-radius: 50%;
+        background: repeating-radial-gradient(circle at center, #0b0807 0 2.5px, #17100e 2.5px 5px);
+        box-shadow: 0 0 0 1px #050303, 0 18px 40px rgba(0, 0, 0, 0.55), inset 0 0 30px rgba(0, 0, 0, 0.8);
+        display: grid;
+        place-items: center;
+      }
+      .record.spinning { animation: spin 2.4s linear infinite; }
+      @keyframes spin { to { transform: translate(-50%, -50%) rotate(360deg); } }
+
+      .record-label {
+        width: 46%;
+        aspect-ratio: 1;
+        border-radius: 50%;
+        background: radial-gradient(circle at 35% 30%, #f0bd4c, var(--gold) 60%, #b47d15);
+        display: grid;
+        place-items: center;
+        text-align: center;
+        box-shadow: inset 0 0 0 1px rgba(0, 0, 0, 0.25);
+      }
+      .record-label span {
+        font-family: 'Montserrat', sans-serif;
+        font-weight: 900;
+        font-size: 11px;
+        letter-spacing: 0.06em;
+        text-transform: uppercase;
+        color: #4a2f08;
+        line-height: 1.1;
+      }
+      /* Nhịp sáng ở tâm đĩa: ở chế độ Chỉ Nghe đây là dấu hiệu duy nhất cho
+         biết vừa có một nốt vang lên, mà không tiết lộ đó là phím nào. */
+      .record.pulse { animation: pulse-ring 0.32s ease-out; }
+      @keyframes pulse-ring {
+        0% { box-shadow: 0 0 0 1px #050303, 0 18px 40px rgba(0,0,0,0.55), inset 0 0 30px rgba(0,0,0,0.8), 0 0 0 0 rgba(224,165,38,0.55); }
+        100% { box-shadow: 0 0 0 1px #050303, 0 18px 40px rgba(0,0,0,0.55), inset 0 0 30px rgba(0,0,0,0.8), 0 0 0 26px rgba(224,165,38,0); }
+      }
+
+      .pad {
+        position: absolute;
+        width: 23%;
+        aspect-ratio: 1;
+        transform: translate(-50%, -50%);
+        border-radius: 50%;
+        border: 2px solid rgba(0, 0, 0, 0.45);
+        background: var(--pad-color);
+        filter: brightness(0.78) saturate(0.92);
+        cursor: pointer;
+        display: grid;
+        place-items: center;
+        gap: 0;
+        font-family: 'Montserrat', sans-serif;
+        color: #1c1310;
+        box-shadow: 0 6px 16px rgba(0, 0, 0, 0.45), inset 0 -3px 8px rgba(0, 0, 0, 0.28);
+        transition: filter 0.12s ease, transform 0.12s ease, box-shadow 0.12s ease;
+      }
+      .pad-note {
+        font-weight: 900;
+        font-size: clamp(15px, 4.4vw, 20px);
+        line-height: 1;
+      }
+      .pad-sub {
+        font-weight: 700;
+        font-size: clamp(9px, 2.6vw, 11px);
+        opacity: 0.62;
+        margin-top: 2px;
+      }
+      .pad.lit {
+        filter: brightness(1.32) saturate(1.2);
+        transform: translate(-50%, -50%) scale(1.09);
+        box-shadow: 0 0 26px var(--pad-color), 0 6px 18px rgba(0, 0, 0, 0.45);
+      }
+      .pad:disabled { cursor: default; }
+      .pad:focus-visible { outline: 3px solid var(--ink); outline-offset: 3px; }
+
+      .pad-1 { left: 50%; top: 11%; --pad-color: var(--gold); }
+      .pad-2 { left: 87%; top: 38%; --pad-color: var(--rust); }
+      .pad-3 { left: 73%; top: 81.5%; --pad-color: var(--teal); }
+      .pad-4 { left: 27%; top: 81.5%; --pad-color: var(--plum); }
+      .pad-5 { left: 13%; top: 38%; --pad-color: var(--olive); }
+
+      .status {
+        text-align: center;
+        margin-top: 18px;
+        min-height: 26px;
+        font-size: 14.5px;
+        font-weight: 700;
+        color: var(--ink-dim);
+      }
+      .status.turn { color: var(--gold); }
+      .status.bad { color: var(--danger); }
+
+      .replay-row { margin-top: 14px; display: flex; justify-content: center; }
+      #replay-btn {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        font-family: inherit;
+        font-size: 13px;
+        font-weight: 700;
+        color: var(--ink);
+        background: var(--panel-hi);
+        border: 1px solid var(--line);
+        border-radius: 999px;
+        padding: 10px 18px;
+        cursor: pointer;
+        transition: color 0.15s, border-color 0.15s, opacity 0.15s;
+      }
+      #replay-btn:hover:not(:disabled) { color: var(--gold); border-color: var(--gold); }
+      #replay-btn:disabled { opacity: 0.35; cursor: default; }
+      #replay-btn svg { width: 14px; height: 14px; }
+
+      .shake { animation: shake 0.42s ease; }
+      @keyframes shake {
+        10%, 90% { transform: translateX(-3px); }
+        20%, 80% { transform: translateX(5px); }
+        30%, 50%, 70% { transform: translateX(-8px); }
+        40%, 60% { transform: translateX(8px); }
+      }
+
+      /* ===================== Màn hình kết thúc ===================== */
+      .over-card {
+        background: var(--panel);
+        border: 1px solid var(--line);
+        border-radius: 18px;
+        padding: 30px 24px;
+        text-align: center;
+      }
+      .over-emoji { font-size: 42px; display: block; margin-bottom: 10px; }
+      .over-title {
+        font-family: 'Montserrat', sans-serif;
+        font-weight: 900;
+        font-size: 24px;
+        text-transform: uppercase;
+        letter-spacing: 0.04em;
+        margin: 0 0 6px;
+      }
+      .over-sub { font-size: 13px; color: var(--ink-dim); margin: 0 0 22px; }
+      .over-stats { display: flex; justify-content: center; gap: 34px; margin-bottom: 24px; }
+      .over-stat-val {
+        display: block;
+        font-family: 'Montserrat', sans-serif;
+        font-weight: 900;
+        font-size: 40px;
+        line-height: 1;
+        font-variant-numeric: tabular-nums;
+      }
+      .over-stat-val.gold { color: var(--gold); }
+      .over-stat-key {
+        display: block;
+        margin-top: 6px;
+        font-size: 10px;
+        font-weight: 700;
+        letter-spacing: 0.14em;
+        text-transform: uppercase;
+        color: var(--ink-faint);
+      }
+      .over-actions { display: flex; flex-direction: column; gap: 10px; }
+      .new-best {
+        display: inline-block;
+        margin-bottom: 16px;
+        font-size: 11.5px;
+        font-weight: 800;
+        letter-spacing: 0.1em;
+        text-transform: uppercase;
+        color: var(--ground);
+        background: var(--gold);
+        border-radius: 999px;
+        padding: 5px 13px;
+      }
+
+      .footnote {
+        position: relative;
+        z-index: 2;
+        text-align: center;
+        font-size: 11px;
+        color: var(--ink-faint);
+        padding: 0 18px 22px;
+      }
+      .footnote a { color: var(--ink-faint); }
+
+      @media (prefers-reduced-motion: reduce) {
+        .hero-mark, .record.spinning { animation: none; }
+        .record.pulse, .shake { animation: none; }
+        .pad, .tonearm { transition: none; }
+      }
+
+      @media (max-width: 380px) {
+        .modes { grid-template-columns: 1fr; }
+        .over-stats { gap: 24px; }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="topbar">
+      <a class="back-link" href="/index.html">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M15 19l-7-7 7-7" /></svg>
+        <span>Trang chủ</span>
+      </a>
+      <span class="topbar-brand">Guitar By Quang</span>
+    </div>
+
+    <main>
+      <!-- ============ MÀN HÌNH MỞ ĐẦU ============ -->
+      <section class="screen" id="screen-start">
+        <div class="hero-mark" aria-hidden="true"><span></span></div>
+        <h1>Vọng Âm</h1>
+        <p class="subtitle">Nghe · Nhớ · Nhại lại</p>
+        <p class="lede">Máy phát một chuỗi nốt guitar, bạn bấm lại đúng thứ tự. Nhại đúng thì chuỗi dài thêm một nốt. Đi được bao xa?</p>
+
+        <p class="mode-label">Chọn chế độ</p>
+        <div class="modes">
+          <button type="button" class="mode-card" id="mode-see" aria-pressed="true">
+            <span class="mode-name">Nhìn &amp; Nghe</span>
+            <span class="mode-desc">Phím sáng lên theo từng nốt. Dễ vào, hợp người mới.</span>
+            <span class="mode-best" id="best-see">Kỷ lục: 0 nốt</span>
+          </button>
+          <button type="button" class="mode-card" id="mode-hear" aria-pressed="false">
+            <span class="mode-name">Chỉ Nghe</span>
+            <span class="mode-desc">Phím không sáng — phải mò bằng tai. Kỷ lục tính riêng.</span>
+            <span class="mode-best" id="best-hear">Kỷ lục: 0 nốt</span>
+          </button>
+        </div>
+
+        <button type="button" class="btn-primary" id="start-btn" disabled>Đang tải âm thanh…</button>
+      </section>
+
+      <!-- ============ MÀN HÌNH CHƠI ============ -->
+      <section class="screen" id="screen-game" hidden>
+        <div class="hud">
+          <div class="hud-cell">
+            <span class="hud-key">Vòng</span>
+            <span class="hud-val" id="hud-round">1</span>
+          </div>
+          <div class="hud-cell"><span class="hud-mode" id="hud-mode">Nhìn &amp; Nghe</span></div>
+          <div class="hud-cell">
+            <span class="hud-key">Kỷ lục</span>
+            <span class="hud-val gold" id="hud-best">0</span>
+          </div>
+        </div>
+
+        <div class="turntable" id="turntable">
+          <div class="record" id="record" aria-hidden="true">
+            <div class="record-label"><span>Vọng<br />Âm</span></div>
+          </div>
+
+          <button type="button" class="pad pad-1" data-note="do">
+            <span class="pad-note">Đô</span><span class="pad-sub">C</span>
+          </button>
+          <button type="button" class="pad pad-2" data-note="re">
+            <span class="pad-note">Rê</span><span class="pad-sub">D</span>
+          </button>
+          <button type="button" class="pad pad-3" data-note="mi">
+            <span class="pad-note">Mi</span><span class="pad-sub">E</span>
+          </button>
+          <button type="button" class="pad pad-4" data-note="sol">
+            <span class="pad-note">Sol</span><span class="pad-sub">G</span>
+          </button>
+          <button type="button" class="pad pad-5" data-note="la">
+            <span class="pad-note">La</span><span class="pad-sub">A</span>
+          </button>
+        </div>
+
+        <p class="status" id="status">Nghe kỹ nhé…</p>
+
+        <div class="replay-row">
+          <button type="button" id="replay-btn" disabled>
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M1 4v6h6M23 20v-6h-6" /><path d="M20.49 9A9 9 0 0 0 5.64 5.64L1 10m22 4l-4.64 4.36A9 9 0 0 1 3.51 15" /></svg>
+            <span id="replay-label">Nghe lại (1 lần)</span>
+          </button>
+        </div>
+      </section>
+
+      <!-- ============ MÀN HÌNH KẾT THÚC ============ -->
+      <section class="screen" id="screen-over" hidden>
+        <div class="over-card">
+          <span class="over-emoji" id="over-emoji">🎧</span>
+          <h2 class="over-title">Hết lượt</h2>
+          <p class="over-sub" id="over-sub">Chuỗi bị đứt ở nốt thứ 4</p>
+          <span class="new-best" id="new-best" hidden>Kỷ lục mới!</span>
+
+          <div class="over-stats">
+            <div>
+              <span class="over-stat-val gold" id="over-score">0</span>
+              <span class="over-stat-key">Nốt nhại được</span>
+            </div>
+            <div>
+              <span class="over-stat-val" id="over-best">0</span>
+              <span class="over-stat-key">Kỷ lục</span>
+            </div>
+          </div>
+
+          <div class="over-actions">
+            <button type="button" class="btn-primary" id="again-btn">Chơi Lại</button>
+            <button type="button" class="btn-ghost" id="back-menu-btn">Đổi chế độ</button>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <p class="footnote">Tiếng đàn lấy từ bộ mẫu guitar dây thép FluidR3_GM (CC BY 3.0).</p>
+
+    <script type="module" src="/src/vong-am.js"></script>
+  </body>
+</html>

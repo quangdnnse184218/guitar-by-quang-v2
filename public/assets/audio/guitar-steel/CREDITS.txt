@@ -1,0 +1,10 @@
+Nguồn: FluidR3_GM soundfont (nhạc cụ "Acoustic Guitar (steel)"), lấy qua
+dự án midi-js-soundfonts của Josh Gleitze — https://github.com/gleitz/midi-js-soundfonts
+
+Giấy phép: Creative Commons Attribution 3.0 (CC BY 3.0)
+https://creativecommons.org/licenses/by/3.0/
+
+24 file mp3 trong thư mục này là các nốt guitar dây thép đơn lẻ (2 quãng
+tám: 3 và 4, đủ 12 nốt mỗi quãng), dùng làm nguyên liệu để game "Luyện
+Cảm Âm" ghép lại thành hợp âm (phát nhiều nốt cùng lúc) hoặc phát riêng
+lẻ cho phần đoán nốt — không có sẵn file thu hợp âm quét dây thật.
