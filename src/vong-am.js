@@ -1,0 +1,413 @@
+/**
+ * ==============================================================================
+ * GUITAR BY QUANG v2 — VỌNG ÂM (vong-am.js)
+ * ==============================================================================
+ * Game luyện cảm âm kiểu "nghe rồi nhại lại": máy phát một chuỗi nốt guitar,
+ * người chơi bấm lại đúng thứ tự, nhại đúng thì chuỗi dài thêm một nốt.
+ *
+ * Năm phím là thang ngũ cung Đô - Rê - Mi - Sol - La, nhờ vậy mọi chuỗi ngẫu
+ * nhiên đều nghe ra giai điệu chứ không chói tai.
+ *
+ * Trang này cố tình KHÔNG import common.js: nó có thanh điều hướng riêng, và
+ * common.js chạy initAuthHeader() như một side effect trên mọi trang import nó.
+ */
+
+const NOTES = [
+  { id: 'do', sample: 'C4' },
+  { id: 're', sample: 'D4' },
+  { id: 'mi', sample: 'E4' },
+  { id: 'sol', sample: 'G4' },
+  { id: 'la', sample: 'A4' },
+]
+
+const SAMPLE_DIR = '/assets/audio/guitar-steel'
+const START_LENGTH = 2
+const BASE_GAP_MS = 620
+const MIN_GAP_MS = 400
+const GAP_STEP_MS = 18
+const LIT_MS = 340
+const BEST_KEY_PREFIX = 'gbq_vongam_best_'
+
+// ==========================================================================
+// ÂM THANH
+// ==========================================================================
+let audioCtx = null
+const rawSamples = new Map()
+const decodedSamples = new Map()
+
+function getAudioContext() {
+  if (!audioCtx) {
+    const AudioContextClass = window.AudioContext || window.webkitAudioContext
+    if (AudioContextClass) audioCtx = new AudioContextClass()
+  }
+  if (audioCtx && audioCtx.state === 'suspended') audioCtx.resume()
+  return audioCtx
+}
+
+async function fetchSamples() {
+  await Promise.all(
+    NOTES.map(async (note) => {
+      const res = await fetch(`${SAMPLE_DIR}/${note.sample}.mp3`)
+      if (!res.ok) throw new Error(`Không tải được ${note.sample}`)
+      rawSamples.set(note.id, await res.arrayBuffer())
+    })
+  )
+}
+
+async function decodeSamples() {
+  const ctx = getAudioContext()
+  if (!ctx) throw new Error('Trình duyệt không hỗ trợ Web Audio')
+  await Promise.all(
+    NOTES.map(async (note) => {
+      if (decodedSamples.has(note.id)) return
+      // slice() để giữ bản gốc: decodeAudioData sẽ "nuốt" mất ArrayBuffer truyền vào.
+      const copy = rawSamples.get(note.id).slice(0)
+      decodedSamples.set(note.id, await ctx.decodeAudioData(copy))
+    })
+  )
+}
+
+function playNote(noteId) {
+  const ctx = getAudioContext()
+  const buffer = decodedSamples.get(noteId)
+  if (!ctx || !buffer) return
+
+  const source = ctx.createBufferSource()
+  const gain = ctx.createGain()
+  source.buffer = buffer
+  source.connect(gain)
+  gain.connect(ctx.destination)
+  gain.gain.setValueAtTime(0.85, ctx.currentTime)
+  source.start()
+}
+
+function playBlip(frequency, startOffset, duration, type = 'triangle', peak = 0.2) {
+  const ctx = getAudioContext()
+  if (!ctx) return
+  const at = ctx.currentTime + startOffset
+  const osc = ctx.createOscillator()
+  const gain = ctx.createGain()
+  osc.connect(gain)
+  gain.connect(ctx.destination)
+  osc.type = type
+  osc.frequency.setValueAtTime(frequency, at)
+  gain.gain.setValueAtTime(0, at)
+  gain.gain.linearRampToValueAtTime(peak, at + 0.01)
+  gain.gain.exponentialRampToValueAtTime(0.0001, at + duration)
+  osc.start(at)
+  osc.stop(at + duration + 0.02)
+}
+
+function playSuccessChime() {
+  playBlip(784, 0, 0.16)
+  playBlip(1175, 0.09, 0.24)
+}
+
+function playErrorBuzz() {
+  playBlip(150, 0, 0.32, 'sawtooth', 0.16)
+  playBlip(96, 0.06, 0.4, 'sawtooth', 0.16)
+}
+
+// ==========================================================================
+// KỶ LỤC (localStorage)
+// ==========================================================================
+function getBest(mode) {
+  try {
+    return Number(localStorage.getItem(BEST_KEY_PREFIX + mode)) || 0
+  } catch {
+    return 0
+  }
+}
+
+function saveBest(mode, score) {
+  try {
+    localStorage.setItem(BEST_KEY_PREFIX + mode, String(score))
+  } catch {
+    // Trình duyệt chặn localStorage (ẩn danh nghiêm ngặt) — vẫn chơi được, chỉ là không lưu kỷ lục.
+  }
+}
+
+// ==========================================================================
+// DOM
+// ==========================================================================
+const screens = {
+  start: document.getElementById('screen-start'),
+  game: document.getElementById('screen-game'),
+  over: document.getElementById('screen-over'),
+}
+
+const modeSeeBtn = document.getElementById('mode-see')
+const modeHearBtn = document.getElementById('mode-hear')
+const bestSeeLabel = document.getElementById('best-see')
+const bestHearLabel = document.getElementById('best-hear')
+const startBtn = document.getElementById('start-btn')
+
+const turntable = document.getElementById('turntable')
+const record = document.getElementById('record')
+const pads = Array.from(document.querySelectorAll('.pad'))
+const statusEl = document.getElementById('status')
+const hudRound = document.getElementById('hud-round')
+const hudBest = document.getElementById('hud-best')
+const hudMode = document.getElementById('hud-mode')
+const replayBtn = document.getElementById('replay-btn')
+const replayLabel = document.getElementById('replay-label')
+
+const overEmoji = document.getElementById('over-emoji')
+const overSub = document.getElementById('over-sub')
+const overScore = document.getElementById('over-score')
+const overBest = document.getElementById('over-best')
+const newBestTag = document.getElementById('new-best')
+const againBtn = document.getElementById('again-btn')
+const backMenuBtn = document.getElementById('back-menu-btn')
+
+// ==========================================================================
+// TRẠNG THÁI GAME
+// ==========================================================================
+let mode = 'see'
+let sequence = []
+let playerIndex = 0
+let longest = 0
+let replayUsed = false
+let phase = 'idle' // 'idle' | 'playing' | 'input'
+let playToken = 0
+
+const wait = (ms) => new Promise((resolve) => setTimeout(resolve, ms))
+
+function showScreen(name) {
+  Object.entries(screens).forEach(([key, el]) => {
+    el.hidden = key !== name
+  })
+}
+
+function setStatus(text, tone = '') {
+  statusEl.textContent = text
+  statusEl.className = 'status' + (tone ? ' ' + tone : '')
+}
+
+function refreshBestLabels() {
+  bestSeeLabel.textContent = `Kỷ lục: ${getBest('see')} nốt`
+  bestHearLabel.textContent = `Kỷ lục: ${getBest('hear')} nốt`
+}
+
+function setMode(next) {
+  mode = next
+  modeSeeBtn.setAttribute('aria-pressed', String(next === 'see'))
+  modeHearBtn.setAttribute('aria-pressed', String(next === 'hear'))
+}
+
+function setPadsEnabled(enabled) {
+  pads.forEach((pad) => {
+    pad.disabled = !enabled
+  })
+}
+
+function litPad(noteId) {
+  const pad = pads.find((p) => p.dataset.note === noteId)
+  if (!pad) return
+  pad.classList.add('lit')
+  setTimeout(() => pad.classList.remove('lit'), LIT_MS)
+}
+
+function pulseRecord() {
+  record.classList.remove('pulse')
+  // Ép trình duyệt tính lại layout để animation chạy lại được từ đầu.
+  void record.offsetWidth
+  record.classList.add('pulse')
+}
+
+record.addEventListener('animationend', (event) => {
+  if (event.animationName === 'pulse-ring') record.classList.remove('pulse')
+})
+
+function gapForRound() {
+  const round = sequence.length - START_LENGTH + 1
+  return Math.max(MIN_GAP_MS, BASE_GAP_MS - (round - 1) * GAP_STEP_MS)
+}
+
+function randomNoteId() {
+  const last = sequence[sequence.length - 1]
+  let candidates = NOTES.map((n) => n.id)
+  // Tránh lặp lại ngay nốt vừa phát: hai nốt giống hệt liền nhau rất khó đếm bằng tai.
+  if (last) candidates = candidates.filter((id) => id !== last)
+  return candidates[Math.floor(Math.random() * candidates.length)]
+}
+
+// ==========================================================================
+// LUỒNG CHƠI
+// ==========================================================================
+async function playSequence() {
+  const token = ++playToken
+  phase = 'playing'
+  setPadsEnabled(false)
+  replayBtn.disabled = true
+  setStatus('Nghe kỹ nhé…')
+  turntable.classList.add('playing')
+  record.classList.add('spinning')
+
+  const gap = gapForRound()
+  await wait(520)
+
+  for (const noteId of sequence) {
+    if (token !== playToken) return
+    playNote(noteId)
+    if (mode === 'see') litPad(noteId)
+    else pulseRecord()
+    await wait(gap)
+  }
+
+  if (token !== playToken) return
+
+  turntable.classList.remove('playing')
+  record.classList.remove('spinning')
+  phase = 'input'
+  playerIndex = 0
+  setPadsEnabled(true)
+  replayBtn.disabled = replayUsed
+  setStatus('Tới lượt bạn!', 'turn')
+}
+
+function startRound() {
+  sequence.push(randomNoteId())
+  replayUsed = false
+  replayLabel.textContent = 'Nghe lại (1 lần)'
+  hudRound.textContent = String(sequence.length - START_LENGTH + 1)
+  playSequence()
+}
+
+function startGame() {
+  sequence = []
+  longest = 0
+  playerIndex = 0
+  hudBest.textContent = String(getBest(mode))
+  hudMode.textContent = mode === 'see' ? 'Nhìn & Nghe' : 'Chỉ Nghe'
+  showScreen('game')
+
+  for (let i = 0; i < START_LENGTH - 1; i++) sequence.push(randomNoteId())
+  startRound()
+}
+
+function handlePadPress(noteId) {
+  if (phase !== 'input') return
+
+  playNote(noteId)
+  litPad(noteId)
+
+  if (noteId !== sequence[playerIndex]) {
+    endGame()
+    return
+  }
+
+  playerIndex += 1
+  if (playerIndex < sequence.length) return
+
+  // Nhại xong trọn chuỗi của vòng này.
+  phase = 'idle'
+  longest = sequence.length
+  setPadsEnabled(false)
+  replayBtn.disabled = true
+  setStatus('Chuẩn luôn!', 'turn')
+  playSuccessChime()
+  setTimeout(startRound, 900)
+}
+
+function endGame() {
+  playToken += 1
+  phase = 'idle'
+  setPadsEnabled(false)
+  replayBtn.disabled = true
+  turntable.classList.remove('playing')
+  record.classList.remove('spinning')
+  setStatus('Trượt rồi!', 'bad')
+  playErrorBuzz()
+
+  turntable.classList.add('shake')
+  setTimeout(() => turntable.classList.remove('shake'), 450)
+
+  const previousBest = getBest(mode)
+  const isNewBest = longest > previousBest
+  if (isNewBest) saveBest(mode, longest)
+
+  setTimeout(() => {
+    overScore.textContent = String(longest)
+    overBest.textContent = String(Math.max(previousBest, longest))
+    newBestTag.hidden = !isNewBest
+    overEmoji.textContent = longest >= 10 ? '🏆' : longest >= 6 ? '🎧' : '🎸'
+    overSub.textContent = longest === 0
+      ? 'Chưa nhại được nốt nào — thử lại nhé!'
+      : `Bạn nhại đúng chuỗi ${longest} nốt trước khi trượt`
+    refreshBestLabels()
+    showScreen('over')
+  }, 900)
+}
+
+function handleReplay() {
+  if (phase !== 'input' || replayUsed) return
+  replayUsed = true
+  replayLabel.textContent = 'Đã dùng lượt nghe lại'
+  playSequence()
+}
+
+// ==========================================================================
+// NẠP ÂM THANH & SỰ KIỆN
+// ==========================================================================
+async function bootstrapAudio() {
+  startBtn.disabled = true
+  startBtn.textContent = 'Đang tải âm thanh…'
+  try {
+    await fetchSamples()
+    startBtn.disabled = false
+    startBtn.textContent = 'Bắt Đầu'
+  } catch {
+    startBtn.disabled = false
+    startBtn.textContent = 'Tải lại âm thanh'
+  }
+}
+
+startBtn.addEventListener('click', async () => {
+  if (rawSamples.size < NOTES.length) {
+    bootstrapAudio()
+    return
+  }
+  startBtn.disabled = true
+  startBtn.textContent = 'Đang chuẩn bị…'
+  try {
+    await decodeSamples()
+    startBtn.textContent = 'Bắt Đầu'
+    startBtn.disabled = false
+    startGame()
+  } catch {
+    startBtn.textContent = 'Không phát được âm thanh'
+    startBtn.disabled = false
+  }
+})
+
+modeSeeBtn.addEventListener('click', () => setMode('see'))
+modeHearBtn.addEventListener('click', () => setMode('hear'))
+
+pads.forEach((pad) => {
+  pad.addEventListener('click', () => handlePadPress(pad.dataset.note))
+})
+
+replayBtn.addEventListener('click', handleReplay)
+
+againBtn.addEventListener('click', startGame)
+
+backMenuBtn.addEventListener('click', () => {
+  playToken += 1
+  phase = 'idle'
+  refreshBestLabels()
+  showScreen('start')
+})
+
+// Phím 1-5 cho người chơi trên máy tính.
+document.addEventListener('keydown', (event) => {
+  if (phase !== 'input') return
+  const index = Number(event.key) - 1
+  if (Number.isInteger(index) && index >= 0 && index < pads.length) {
+    event.preventDefault()
+    handlePadPress(pads[index].dataset.note)
+  }
+})
+
+refreshBestLabels()
+bootstrapAudio()
