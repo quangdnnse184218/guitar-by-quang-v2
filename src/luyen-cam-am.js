@@ -562,6 +562,9 @@ let playToken = 0
 let lcLevel = 0
 let lcPending = 0
 let lcSecret = null
+// Nốt ẩn đã ra ở các vòng trước trong CÙNG một lượt Cơ Hội Cuối — 5 vòng
+// phải là 5 nốt khác nhau, trùng nốt thì chẳng còn ý nghĩa "đoán" gì nữa.
+let lcUsedNoteIds = []
 let lcTimeoutId = null
 let lcTickId = null
 let lcDeadline = 0
@@ -1225,6 +1228,7 @@ async function startLastChance() {
   lastChanceUsed = true
   lcLevel = 0
   lcPending = 0
+  lcUsedNoteIds = []
   const token = ++playToken
 
   setLastChanceUI(true)
@@ -1248,7 +1252,11 @@ async function runLastChanceLevel() {
   const token = ++playToken
 
   phase = 'lc-listen'
-  lcSecret = NOTES[Math.floor(Math.random() * NOTES.length)].id
+  // Loại các nốt đã ra ở những vòng trước trong lượt này — LC_TOTAL_LEVELS
+  // (5) luôn nhỏ hơn số nốt (7) nên chắc chắn còn nốt để chọn.
+  const availableNotes = NOTES.filter((note) => !lcUsedNoteIds.includes(note.id))
+  lcSecret = availableNotes[Math.floor(Math.random() * availableNotes.length)].id
+  lcUsedNoteIds.push(lcSecret)
 
   const seconds = secondsForLevel(lcLevel)
   lcLevelEl.textContent = `Vòng ${lcLevel + 1} / ${LC_TOTAL_LEVELS}`
