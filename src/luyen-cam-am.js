@@ -490,6 +490,8 @@ const boardLinkOver = document.getElementById('board-link-over')
 const nicknameModal = document.getElementById('nickname-modal')
 const nicknameForm = document.getElementById('nickname-form')
 const nicknameInput = document.getElementById('nickname-input')
+const nicknameError = document.getElementById('nickname-error')
+const nicknameSubmitBtn = document.getElementById('nickname-submit-btn')
 
 const boardModal = document.getElementById('board-modal')
 const boardTitle = document.getElementById('board-title')
@@ -604,6 +606,7 @@ const otherMode = (which) => (which === 'see' ? 'hear' : 'see')
 const PLAYER_ID_KEY = 'gbq_camam_player_id'
 const PLAYER_NAME_KEY = 'gbq_camam_player_name'
 const LEADERBOARD_TABLE = 'cam_am_leaderboard'
+const PLAYERS_TABLE = 'cam_am_players'
 const LEADERBOARD_LIMIT = 20
 
 function getPlayerId() {
@@ -638,6 +641,26 @@ function savePlayerName(name) {
   }
 }
 
+/** So khớp không phân biệt hoa/thường — "Quang" và "quang" tính là trùng. */
+async function isNameTaken(name, myPlayerId) {
+  const { data, error } = await supabase
+    .from(PLAYERS_TABLE)
+    .select('player_id')
+    .ilike('player_name', name)
+    .neq('player_id', myPlayerId)
+    .limit(1)
+  if (error) throw error
+  return data.length > 0
+}
+
+/** Mỗi player_id đúng một dòng tên — đăng ký lại (upsert) nếu đổi tên. */
+async function registerPlayerName(name, myPlayerId) {
+  const { error } = await supabase
+    .from(PLAYERS_TABLE)
+    .upsert({ player_id: myPlayerId, player_name: name }, { onConflict: 'player_id' })
+  if (error) throw error
+}
+
 /** Chỉ hỏi tên đúng một lần trước khi vào chơi lần đầu; đã có tên thì bỏ qua. */
 function ensurePlayerName() {
   const existing = getPlayerName()
@@ -645,16 +668,52 @@ function ensurePlayerName() {
 
   return new Promise((resolve) => {
     nicknameInput.value = ''
+    nicknameError.hidden = true
     nicknameModal.hidden = false
     nicknameInput.focus()
 
-    const onSubmit = (event) => {
+    const showError = (message) => {
+      nicknameError.textContent = message
+      nicknameError.hidden = false
+      nicknameSubmitBtn.disabled = false
+      nicknameSubmitBtn.textContent = 'Vào Chơi'
+    }
+
+    const onSubmit = async (event) => {
       event.preventDefault()
       const name = nicknameInput.value.trim().slice(0, 24)
       if (!name) return
+
+      nicknameError.hidden = true
+      nicknameSubmitBtn.disabled = true
+      nicknameSubmitBtn.textContent = 'Đang kiểm tra…'
+
+      const myId = getPlayerId()
+      try {
+        // Truy thẳng bảng cam_am_players để so sánh — không cho trùng tên
+        // với bất kỳ ai đã đăng ký trước đó.
+        if (await isNameTaken(name, myId)) {
+          showError('Tên này đã có người dùng — chọn tên khác nhé.')
+          return
+        }
+        await registerPlayerName(name, myId)
+      } catch (err) {
+        // Hai người cùng chốt một tên gần như cùng lúc — DB tự chặn trùng
+        // (unique index) dù client đã kiểm tra trước đó không thấy trùng.
+        if (err && err.code === '23505') {
+          showError('Tên vừa bị người khác lấy mất — thử tên khác nhé.')
+          return
+        }
+        // Lỗi khác (mất mạng, bảng chưa tạo…) thì vẫn cho chơi bình thường —
+        // không vì bảng xếp hạng mà chặn người chơi vào game, chỉ là có thể
+        // trùng tên với ai đó cho tới lần kiểm tra thành công kế tiếp.
+      }
+
       savePlayerName(name)
       nicknameModal.hidden = true
       nicknameForm.removeEventListener('submit', onSubmit)
+      nicknameSubmitBtn.disabled = false
+      nicknameSubmitBtn.textContent = 'Vào Chơi'
       // Người chơi cũ đã có kỷ lục lưu sẵn trong localStorage TRƯỚC KHI tính
       // năng bảng xếp hạng ra đời — nếu đợi "phá kỷ lục mới" mới nộp thì kỷ
       // lục cũ đó sẽ không bao giờ lên bảng. Đồng bộ luôn cả hai chế độ ngay
@@ -1594,6 +1653,10 @@ function syncExistingBestsOnce() {
   }
   submitScoreIfBest('see', getBest('see'))
   submitScoreIfBest('hear', getBest('hear'))
+  // Người chơi cũ đặt tên từ trước khi có bảng cam_am_players (chặn trùng
+  // tên) — đăng ký bù lại, cố gắng hết sức chứ không chặn gì nếu lỗi (có
+  // thể tên đã bị người khác lấy mất trong lúc chưa đăng ký, chấp nhận được).
+  registerPlayerName(name, getPlayerId()).catch(() => {})
 }
 
 claimPlaybackSession()
