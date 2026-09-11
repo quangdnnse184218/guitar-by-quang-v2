@@ -88,7 +88,7 @@
         touch-action: manipulation;
         -webkit-tap-highlight-color: transparent;
       }
-      .pad, .nav-btn, .mode-card, .mode-board-link, .btn-primary, .btn-ghost, .board-row {
+      .pad, .nav-btn, .mode-card, .mode-board-link, .btn-primary, .btn-ghost, .btn-board, .board-row {
         -webkit-user-select: none;
         user-select: none;
       }
@@ -326,19 +326,31 @@
       }
       .mode-desc { display: block; font-size: 11.5px; line-height: 1.5; color: var(--ink-faint); }
       .mode-best { display: block; margin-top: 8px; font-size: 11px; font-weight: 700; color: var(--gold); }
+      /* Trước đây chỉ là chữ nhạt gần như vô hình — đổi hẳn thành thẻ có nền,
+         viền, để mắt bắt được ngay là có thể bấm vào xem, không lướt qua mất. */
       .mode-board-link {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 6px;
         font-family: inherit;
-        font-size: 10.5px;
-        font-weight: 700;
-        color: var(--ink-faint);
-        background: transparent;
-        border: none;
-        padding: 3px 2px;
+        font-size: 11.5px;
+        font-weight: 800;
+        color: var(--gold);
+        background: color-mix(in srgb, var(--gold-solid) 12%, var(--panel));
+        border: 1.5px solid color-mix(in srgb, var(--gold-solid) 45%, transparent);
+        border-radius: 999px;
+        padding: 7px 10px;
         text-align: center;
         cursor: pointer;
-        transition: color 0.15s;
+        transition: color 0.15s, border-color 0.15s, background 0.15s, transform 0.1s;
       }
-      .mode-board-link:hover { color: var(--gold-solid); }
+      .mode-board-link:hover {
+        color: var(--gold-solid-ink);
+        background: var(--gold-solid);
+        border-color: var(--gold-solid);
+      }
+      .mode-board-link:active { transform: scale(0.97); }
 
       .btn-primary {
         display: block;
@@ -376,6 +388,30 @@
         transition: color 0.15s, border-color 0.15s;
       }
       .btn-ghost:hover { color: var(--ink); border-color: var(--ink-faint); }
+
+      /* Nút xem bảng xếp hạng ở màn kết thúc — tách khỏi .btn-ghost xám
+         thường, tô vàng để nổi bật hẳn lên giữa hai nút còn lại, đúng ý là
+         "dễ thấy". */
+      .btn-board {
+        display: block;
+        width: 100%;
+        font-family: inherit;
+        font-weight: 800;
+        font-size: 13.5px;
+        color: var(--gold);
+        background: color-mix(in srgb, var(--gold-solid) 12%, var(--panel));
+        border: 1.5px solid color-mix(in srgb, var(--gold-solid) 45%, transparent);
+        border-radius: 999px;
+        padding: 12.5px;
+        cursor: pointer;
+        transition: color 0.15s, border-color 0.15s, background 0.15s, transform 0.1s;
+      }
+      .btn-board:hover {
+        color: var(--gold-solid-ink);
+        background: var(--gold-solid);
+        border-color: var(--gold-solid);
+      }
+      .btn-board:active { transform: scale(0.985); }
 
       /* ===================== Màn hình chơi ===================== */
       /* Bảng điểm xây thành thẻ thật (nền + viền + bóng) kể cả trên điện
@@ -1454,7 +1490,7 @@
               <span class="mode-desc">Phím sáng lên theo từng nốt. Dễ vào, hợp người mới.</span>
               <span class="mode-best" id="best-see">Kỷ lục: 0 vòng</span>
             </button>
-            <button type="button" class="mode-board-link" id="board-link-see">Xem bảng xếp hạng →</button>
+            <button type="button" class="mode-board-link" id="board-link-see">🏆 Xem bảng xếp hạng</button>
           </div>
           <div class="mode-slot">
             <button type="button" class="mode-card" id="mode-hear" aria-pressed="false">
@@ -1468,7 +1504,7 @@
               <span class="mode-desc">Phím không sáng — phải mò bằng tai. Kỷ lục tính riêng.</span>
               <span class="mode-best" id="best-hear">Kỷ lục: 0 vòng</span>
             </button>
-            <button type="button" class="mode-board-link" id="board-link-hear">Xem bảng xếp hạng →</button>
+            <button type="button" class="mode-board-link" id="board-link-hear">🏆 Xem bảng xếp hạng</button>
           </div>
         </div>
 
@@ -1651,7 +1687,7 @@
 
           <div class="over-actions">
             <button type="button" class="btn-primary" id="again-btn">Chơi Lại</button>
-            <button type="button" class="btn-ghost" id="board-link-over">Xem bảng xếp hạng</button>
+            <button type="button" class="btn-board" id="board-link-over">🏆 Xem bảng xếp hạng</button>
             <button type="button" class="btn-ghost" id="back-menu-btn">Đổi chế độ</button>
           </div>
         </div>
