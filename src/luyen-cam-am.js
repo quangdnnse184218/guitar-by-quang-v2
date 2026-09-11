@@ -764,6 +764,12 @@ function renderBoardRows(rows) {
       `
     })
     .join('')
+
+  // Cuộn thẳng tới dòng của mình — nhất là lúc bảng tự bật lên sau khi vừa
+  // phá kỷ lục, người chơi phải thấy ngay vị trí của mình chứ không phải tự
+  // dò trong danh sách.
+  const myRow = boardList.querySelector('.board-row.is-me')
+  if (myRow) myRow.scrollIntoView({ block: 'center' })
 }
 
 async function openLeaderboard(modeToShow) {
@@ -791,9 +797,12 @@ async function openLeaderboard(modeToShow) {
       return
     }
 
-    renderBoardRows(data)
+    // Hiện danh sách TRƯỚC rồi mới render+cuộn — scrollIntoView không tính
+    // được vị trí gì cả nếu phần tử còn nằm trong nhánh đang bị [hidden]
+    // (display:none), nên cuộn-tới-dòng-của-mình sẽ lặng lẽ không làm gì.
     boardStatus.hidden = true
     boardList.hidden = false
+    renderBoardRows(data)
   } catch {
     boardStatus.textContent = 'Không tải được bảng xếp hạng — thử lại sau nhé.'
     boardStatus.hidden = false
@@ -1471,6 +1480,14 @@ function endGame() {
       playRecordFanfare()
       burstConfetti()
       vibrate([40, 60, 40, 60, 90])
+      // Đợi pháo hoa ruy băng rơi hết (xem burstConfetti — mảnh cuối dọn
+      // sau 2300ms) rồi mới bật bảng xếp hạng, cuộn thẳng tới dòng của
+      // mình — thay cho việc chỉ báo "Kỷ lục mới!" suông như trước. Chỉ mở
+      // nếu người chơi vẫn còn đứng ở màn kết thúc (chưa bấm "Chơi lại"
+      // hay "Đổi chế độ" đi nơi khác trong lúc chờ).
+      setTimeout(() => {
+        if (!screens.over.hidden) openLeaderboard(mode)
+      }, 2300)
     }
   }, 900)
 }
