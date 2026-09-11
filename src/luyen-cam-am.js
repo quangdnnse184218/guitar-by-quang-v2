@@ -46,12 +46,15 @@ const HEART_CAP = 5
 
 /**
  * Cơ Hội Cuối: nghe nốt ẩn đúng MỘT lần, không được nghe lại, không được bấm
- * thử — bấm phím nào là chốt đáp án đó ngay, đúng/sai biết liền. Cả 5 vòng
- * cùng một mức thời gian; độ khó tăng dần thuần tuý qua số tim đang cược
- * (dừng lại hay liều đi tiếp), không qua việc bài toán tự nó khó hơn.
+ * thử — bấm phím nào là chốt đáp án đó ngay, đúng/sai biết liền. Vòng 1 rộng
+ * rãi 3 giây để làm quen, các vòng sau siết còn 2 giây vì độ khó lúc này
+ * chủ yếu tới từ số tim đang cược (dừng lại hay liều đi tiếp), không phải
+ * từ bài toán tự nó khó hơn.
  */
 const LC_TOTAL_LEVELS = 5
-const LC_SECONDS = 3
+const LC_SECONDS_FIRST = 3
+const LC_SECONDS_LATER = 2
+const secondsForLevel = (level) => (level === 0 ? LC_SECONDS_FIRST : LC_SECONDS_LATER)
 
 // ==========================================================================
 // ÂM THANH
@@ -414,58 +417,6 @@ function playRecordFanfare() {
   const rise = [1046.5, 1318.51, 1567.98, 2093, 2637.02]
   rise.forEach((freq, i) => playBlip(freq, i * 0.1, 0.55, 'triangle', 0.15))
   ;[1046.5, 1318.51, 1567.98, 2093].forEach((freq) => playBlip(freq, 0.54, 1, 'sine', 0.1))
-}
-
-// Tiếng ù nền của Cơ Hội Cuối, dâng cao dần theo bậc leo.
-let droneNodes = null
-
-function startDrone(level = 0) {
-  const ctx = getAudioContext()
-  if (!ctx) return
-  stopDrone()
-  const t = ctx.currentTime
-  const freq = 55 * Math.pow(2, (level * 2) / 12)
-  const osc = ctx.createOscillator()
-  const osc2 = ctx.createOscillator()
-  const filter = ctx.createBiquadFilter()
-  const gain = ctx.createGain()
-  osc.type = 'sawtooth'
-  osc.frequency.value = freq
-  osc2.type = 'sine'
-  osc2.frequency.value = freq * 2
-  filter.type = 'lowpass'
-  filter.frequency.value = 340
-  gain.gain.setValueAtTime(0, t)
-  gain.gain.linearRampToValueAtTime(0.1, t + 0.55)
-  osc.connect(filter)
-  osc2.connect(filter)
-  filter.connect(gain)
-  gain.connect(getMasterBus(ctx))
-  osc.start(t)
-  osc2.start(t)
-  droneNodes = { osc, osc2, gain }
-}
-
-function setDroneVolume(volume) {
-  if (!droneNodes || !audioCtx) return
-  droneNodes.gain.gain.setTargetAtTime(volume, audioCtx.currentTime, 0.12)
-}
-
-function stopDrone() {
-  if (!droneNodes) return
-  const { osc, osc2, gain } = droneNodes
-  droneNodes = null
-  if (!audioCtx) return
-  const t = audioCtx.currentTime
-  try {
-    gain.gain.cancelScheduledValues(t)
-    gain.gain.setValueAtTime(Math.max(gain.gain.value, 0.0001), t)
-    gain.gain.exponentialRampToValueAtTime(0.0001, t + 0.25)
-    osc.stop(t + 0.3)
-    osc2.stop(t + 0.3)
-  } catch {
-    // Nguồn đã dừng từ trước — không sao.
-  }
 }
 
 // Nhịp tim chậm ở bước chọn "dừng hay đi tiếp": im ắng, căng, không hối thúc.
@@ -1109,13 +1060,12 @@ async function startLastChance() {
   const token = ++playToken
 
   setLastChanceUI(true)
-  startDrone(0)
   await wait(350)
   if (token !== playToken) return
 
   phase = 'lc-intro'
   lcLevelEl.textContent = `Vòng 1 / ${LC_TOTAL_LEVELS}`
-  lcNote.innerHTML = `Mỗi vòng nghe một nốt ẩn — chỉ nghe được đúng <strong>1 lần</strong>, không được nghe lại. Bấm phím nào là chốt đáp án đó ngay, trong <strong>${LC_SECONDS} giây</strong>.`
+  lcNote.innerHTML = `Mỗi vòng nghe một nốt ẩn — chỉ nghe được đúng <strong>1 lần</strong>, không được nghe lại. Bấm phím nào là chốt đáp án đó ngay: thắng một vòng là nhận <strong>1 tim</strong>. Vòng 1 có <strong>${LC_SECONDS_FIRST} giây</strong>, các vòng sau còn <strong>${LC_SECONDS_LATER} giây</strong>.`
   lcTimerBar.hidden = true
   lcStartBtn.hidden = false
   setHubLabel('')
@@ -1132,11 +1082,12 @@ async function runLastChanceLevel() {
   phase = 'lc-listen'
   lcSecret = NOTES[Math.floor(Math.random() * NOTES.length)].id
 
+  const seconds = secondsForLevel(lcLevel)
   lcLevelEl.textContent = `Vòng ${lcLevel + 1} / ${LC_TOTAL_LEVELS}`
   lcNote.innerHTML =
     lcLevel === 0
       ? `Nghe kỹ nốt ẩn nhé…`
-      : `Đang giữ <strong>${lcPending} tim</strong> — bấm đúng phím trong ${LC_SECONDS} giây, sai là mất sạch.`
+      : `Đang giữ <strong>${lcPending} tim</strong> — bấm đúng phím trong ${seconds} giây, sai là mất sạch.`
   lcChoice.hidden = true
   lcTimerBar.hidden = true
   setPadsEnabled(false)
@@ -1159,7 +1110,7 @@ async function runLastChanceLevel() {
   phase = 'lc-input'
   setPadsEnabled(true)
   setStatus('Bấm đúng phím ngay!', 'turn')
-  startLcTimer(LC_SECONDS)
+  startLcTimer(seconds)
 }
 
 function handleLastChancePad(noteId) {
@@ -1199,8 +1150,6 @@ function onLcWin() {
     lcStake.textContent = `${lcPending} tim`
     lcNextBtn.textContent = `Đi tiếp · vòng ${lcLevel + 2}`
     setStatus('Dừng lại hay liều thêm?', 'turn')
-    // Tiếng ù hạ xuống, chỉ còn nhịp tim chậm: im ắng, căng, không hối thúc.
-    setDroneVolume(0.035)
     startHeartbeatLoop()
   }, 1000)
 }
@@ -1221,7 +1170,6 @@ function onLcLose(reason) {
   setTimeout(() => playNote(lcSecret), 520)
 
   setTimeout(() => {
-    stopDrone()
     setLastChanceUI(false)
     endGame()
   }, 2000)
@@ -1229,7 +1177,6 @@ function onLcLose(reason) {
 
 function finishLastChance() {
   stopHeartbeatLoop()
-  stopDrone()
   const won = lcPending
   lcPending = 0
   setLastChanceUI(false)
@@ -1247,8 +1194,6 @@ function goToNextLcLevel() {
   if (phase !== 'lc-choice') return
   stopHeartbeatLoop()
   lcLevel += 1
-  // Tiếng ù dâng cao lên theo bậc: tai tự biết mình đang liều tới đâu.
-  startDrone(lcLevel)
   lcChoice.hidden = true
   runLastChanceLevel()
 }
@@ -1260,7 +1205,6 @@ function endGame() {
   playToken += 1
   phase = 'idle'
   setPadsEnabled(false)
-  stopDrone()
   stopHeartbeatLoop()
   hub.classList.remove('playing')
   streak = 0
@@ -1297,7 +1241,6 @@ function endGame() {
 function abortGame() {
   playToken += 1
   phase = 'idle'
-  stopDrone()
   stopHeartbeatLoop()
   stopLcTimer()
   setLastChanceUI(false)
