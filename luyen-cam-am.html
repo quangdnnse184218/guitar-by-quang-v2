@@ -45,6 +45,8 @@
         --lc-red: #ff4433;
         --lc-red-deep: #e21c0f;
         --lc-black: #170302;
+        --lc-green: #3ee878;
+        --lc-green-deep: #1fae5c;
       }
 
       :root.dark {
@@ -152,6 +154,10 @@
       }
 
       .screen { width: 100%; max-width: 470px; animation: fade-in 0.32s ease both; }
+      /* Chừa chỗ cho cặp nút quay lại/chơi lại + thanh âm lượng ghim cố định
+         ở hai góc trên màn hình trên điện thoại (xem .game-nav/.volume-box),
+         để chúng không đè lên dải nhãn hay bảng điểm ngay bên dưới. */
+      #screen-game { padding-top: 48px; }
       .screen[hidden] { display: none; }
       @keyframes fade-in { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: none; } }
 
@@ -431,11 +437,11 @@
          Dòng vh đứng trước làm phương án dự phòng cho máy chưa hỗ trợ dvh. */
       .turntable {
         position: relative;
-        /* Trừ thêm chỗ cho thanh âm lượng nằm dưới so với trước đây. */
+        /* Trừ thêm chỗ cho trạng thái + chấm tiến độ nằm phía trên. */
         width: min(100%, 400px, max(210px, calc(100vh - 345px)));
         width: min(100%, 400px, max(210px, calc(100dvh - 345px)));
         aspect-ratio: 1;
-        margin: 0 auto;
+        margin: 10px auto 0;
       }
 
       /* Tai nghe ở giữa vòng phím: vừa là biểu tượng của game, vừa là chỗ
@@ -533,7 +539,7 @@
 
       .status {
         text-align: center;
-        margin-top: 16px;
+        margin-top: 0;
         min-height: 24px;
         font-size: 14.5px;
         font-weight: 700;
@@ -543,12 +549,14 @@
       .status.good { color: var(--good); }
       .status.bad { color: var(--bad); }
 
-      /* Chấm tiến độ: cho biết đã bấm được mấy nốt trên tổng số nốt của vòng */
+      /* Chấm tiến độ: cho biết đã bấm được mấy nốt trên tổng số nốt của vòng.
+         Đèn sáng lên màu xanh lá — tách bạch với vàng gold dùng khắp nơi khác
+         trong game, dễ nhận ra ngay đây là bộ đếm riêng. */
       .progress-dots {
         display: flex;
         justify-content: center;
         gap: 6px;
-        margin-top: 10px;
+        margin-top: 6px;
         min-height: 9px;
         flex-wrap: wrap;
       }
@@ -557,26 +565,41 @@
         height: 8px;
         border-radius: 50%;
         background: var(--line-strong);
-        transition: background 0.15s, transform 0.15s;
+        transition: background 0.15s, transform 0.15s, box-shadow 0.15s;
       }
-      .progress-dot.done { background: var(--gold-solid); transform: scale(1.15); }
+      .progress-dot.done {
+        background: var(--good);
+        box-shadow: 0 0 6px color-mix(in srgb, var(--good) 70%, transparent);
+        transform: scale(1.15);
+      }
 
-      /* Hai lối thoát trong lúc chơi, đặt lên đầu cột: quay về màn chọn (giữ
-         nguyên chế độ) và chơi lại ván mới. Chỉ icon — gọn và đủ quen thuộc
-         (mũi tên quay lại, vòng xoay chơi lại) để không cần chữ. */
-      .game-nav { display: flex; gap: 8px; }
+      /* Hai lối thoát trong lúc chơi: quay về màn chọn (giữ nguyên chế độ) và
+         chơi lại ván mới. Chỉ icon — gọn và đủ quen thuộc (mũi tên quay lại,
+         vòng xoay chơi lại) để không cần chữ.
+         Trên điện thoại ghim cố định ở góc trên-trái màn hình, ngay dưới
+         "Guitar By Quang" — không phụ thuộc thứ tự cuộn trang, bấm được bất
+         cứ lúc nào kể cả giữa lúc chơi hay Cơ Hội Cuối. */
+      .game-nav {
+        position: fixed;
+        top: 58px;
+        left: 14px;
+        z-index: 40;
+        display: flex;
+        gap: 8px;
+      }
       .nav-btn {
         display: inline-flex;
         align-items: center;
         justify-content: center;
-        width: 38px;
-        height: 38px;
+        width: 36px;
+        height: 36px;
         flex-shrink: 0;
         color: var(--ink-dim);
         background: var(--panel);
         border: 1px solid var(--line-strong);
         border-radius: 50%;
         cursor: pointer;
+        box-shadow: var(--shadow-soft);
         transition: color 0.15s, border-color 0.15s;
       }
       .nav-btn:hover { color: var(--gold); border-color: var(--gold); }
@@ -644,32 +667,51 @@
 
       .footnote { text-align: center; font-size: 11px; color: var(--ink-faint); padding: 0 18px 20px; }
 
-      /* ===================== Âm lượng ===================== */
+      /* ===================== Âm lượng =====================
+         Thanh dọc thay cho thanh ngang — dùng chung một mẹo cho mọi cỡ màn
+         hình: bọc input (vẫn nằm ngang về mặt kỹ thuật) trong một khung
+         ".volume-track" đúng kích thước sau khi xoay, rồi xoay -90deg và
+         định vị tuyệt đối giữa khung đó. Trên điện thoại ghim cố định ở góc
+         trên-phải màn hình, ngay dưới nút sáng/tối. */
       .volume-box {
+        position: fixed;
+        top: 58px;
+        right: 14px;
+        z-index: 40;
         display: flex;
+        flex-direction: column;
         align-items: center;
-        gap: 10px;
+        gap: 7px;
         background: var(--panel);
         border: 1px solid var(--line);
         border-radius: 14px;
-        padding: 9px 13px;
-        margin-top: 14px;
+        padding: 10px 9px;
+        box-shadow: var(--shadow-soft);
       }
-      .volume-icon { width: 17px; height: 17px; flex-shrink: 0; color: var(--gold); }
+      .volume-icon { width: 15px; height: 15px; flex-shrink: 0; color: var(--gold); }
       .volume-val {
-        font-size: 11px;
+        font-size: 10px;
         font-weight: 800;
         color: var(--ink-faint);
-        min-width: 33px;
-        text-align: right;
+        text-align: center;
         font-variant-numeric: tabular-nums;
+      }
+      .volume-track {
+        width: 6px;
+        height: 56px;
+        position: relative;
       }
       .volume-slider {
         -webkit-appearance: none;
         appearance: none;
-        flex: 1;
-        min-width: 0;
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        width: 56px;
         height: 6px;
+        margin: 0;
+        transform: translate(-50%, -50%) rotate(-90deg);
+        transform-origin: center;
         border-radius: 999px;
         background: linear-gradient(
           to right,
@@ -816,53 +858,34 @@
       .lc-note { margin: 0; font-size: 12.5px; line-height: 1.5; color: #e8c9c5; }
       .lc-note strong { color: #fff; font-weight: 800; }
 
-      /* Đồng hồ vòng sáng quanh tai nghe. Xoay -90deg để vạch bắt đầu ở đỉnh. */
-      .lc-ring {
-        position: absolute;
-        inset: 0;
-        width: 100%;
+      /* Thanh đèn xanh lá tuột dần — thay cho ô tròn có số. Đặt ngay trong
+         dải nhãn, dưới dòng chữ luật chơi, thay vì đè lên vòng phím như bản
+         cũ: dễ liếc hơn hẳn, và không phải rời mắt khỏi chỗ cần bấm quá xa.
+         Cố tình giữ nguyên xanh lá suốt 3 giây (không chuyển đỏ) — tương phản
+         rõ với tông đỏ-đen xung quanh nên tự nó đã đủ nổi bật. */
+      .lc-timerbar {
+        margin-top: 10px;
+        height: 9px;
+        border-radius: 999px;
+        background: rgba(255, 255, 255, 0.08);
+        box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.08);
+        overflow: hidden;
+      }
+      .lc-timerbar-fill {
         height: 100%;
-        transform: rotate(-90deg);
-        pointer-events: none;
-      }
-      .lc-ring-track { fill: none; stroke: var(--line-strong); stroke-width: 1.6; opacity: 0.5; }
-      .lc-ring-fill {
-        fill: none;
-        stroke: var(--lc-red);
-        stroke-width: 2.8;
-        stroke-linecap: round;
-        /* Chu vi vòng bán kính 25 = 2·π·25 ≈ 157,08 */
-        stroke-dasharray: 157.08;
-        stroke-dashoffset: 0;
+        width: 100%;
+        border-radius: 999px;
+        background: linear-gradient(90deg, var(--lc-green-deep), var(--lc-green));
+        box-shadow: 0 0 10px 1px color-mix(in srgb, var(--lc-green) 65%, transparent);
       }
 
-      /* Ô tròn nhỏ ghi số giây, nổi ở đỉnh vòng sáng (không xoay theo vòng) */
-      .lc-countdown {
-        position: absolute;
-        top: -6px;
-        left: 50%;
-        transform: translate(-50%, -50%);
-        width: 30px;
-        height: 30px;
-        border-radius: 50%;
-        background: var(--lc-red-deep);
-        color: #fff;
-        border: 2px solid var(--panel);
-        display: grid;
-        place-items: center;
-        font-family: 'Montserrat', sans-serif;
-        font-weight: 900;
-        font-size: 14px;
-        font-variant-numeric: tabular-nums;
-        box-shadow: 0 3px 10px rgba(0, 0, 0, 0.4);
-        z-index: 2;
-      }
+      .lc-start-btn { margin-top: 12px; width: 100%; }
 
-      /* Lúc Cơ Hội Cuối chỉ còn dải nhãn phía trên, không còn hàng chấm lượt
-         dò hay nút chốt như trước, nên vòng phím nhỏ lại ít hơn hẳn bản cũ. */
+      /* Lúc Cơ Hội Cuối chỉ còn dải nhãn phía trên, không còn ô tròn đè lên
+         vòng phím như bản cũ, nên vòng phím có thể to gần như lúc chơi thường. */
       #screen-game.is-lastchance .turntable {
-        width: min(100%, 400px, max(190px, calc(100vh - 400px)));
-        width: min(100%, 400px, max(190px, calc(100dvh - 400px)));
+        width: min(100%, 400px, max(190px, calc(100vh - 380px)));
+        width: min(100%, 400px, max(190px, calc(100dvh - 380px)));
       }
       /* Quầng đỏ thay cho quầng vàng của streak trong lúc Cơ Hội Cuối */
       #screen-game.is-lastchance .turntable::after {
@@ -912,21 +935,6 @@
         0%, 100% { transform: translate(0, 0); }
         35% { transform: translate(-2px, 1px); }
         70% { transform: translate(2px, -1px); }
-      }
-
-      /* Chớp sáng khi chạm mốc chuỗi */
-      .flash {
-        position: fixed;
-        inset: 0;
-        z-index: 7;
-        pointer-events: none;
-        background: var(--gold-solid);
-        opacity: 0;
-      }
-      .flash.go { animation: flash-out 0.55s ease-out; }
-      @keyframes flash-out {
-        0% { opacity: 0.4; }
-        100% { opacity: 0; }
       }
 
       /* Pháo hoa ruy băng khi phá kỷ lục: nổ toả tròn từ tâm màn hình rồi rơi
@@ -1001,7 +1009,9 @@
         }
         .start-panel .btn-ghost { background: var(--panel-hi); }
 
-        #screen-game { max-width: 1020px; }
+        /* Không còn cần chừa chỗ cho nút/thanh âm lượng ghim cố định — trên
+           máy tính cả hai trở về nằm trong luồng bình thường của cột. */
+        #screen-game { padding-top: 0; max-width: 1020px; }
         .game-grid {
           display: grid;
           grid-template-columns: 224px minmax(0, 1fr) 224px;
@@ -1009,6 +1019,13 @@
           align-items: center;
         }
         .panel-side { align-self: center; }
+
+        /* Trở về luồng bình thường, nằm ngay trên bảng điểm nhờ thứ tự HTML. */
+        .game-nav {
+          position: static;
+          justify-content: center;
+          margin-bottom: 14px;
+        }
 
         .hud {
           flex-direction: column;
@@ -1025,12 +1042,16 @@
         .hud-val { font-size: 26px; }
         .hud-mode { display: inline-block; }
 
+        /* Quay về đúng chỗ cũ trong cột phải, chỉ đổi hướng thanh trượt
+           thành dọc và cao hơn hẳn bản ghim tạm trên điện thoại. */
         .volume-box {
-          margin-top: 10px;
+          position: static;
           border-radius: 18px;
-          padding: 12px 15px;
+          padding: 16px 15px;
           box-shadow: var(--shadow-soft);
         }
+        .volume-track { height: 100px; }
+        .volume-slider { width: 100px; }
 
         .key-hint {
           display: block;
@@ -1070,14 +1091,14 @@
         .hud-cell-mode { display: block; }
         .hud-cell-hearts { text-align: left; }
 
-        .status { font-size: 16px; margin-top: 18px; }
+        .status { font-size: 16px; margin-top: 0; }
         #screen-over { max-width: 520px; }
       }
 
       @media (prefers-reduced-motion: reduce) {
         .hero-mark, .hub.playing, .hub.pulse::after, .shake, .screen,
         .heart.last, .heart.gained, .heart.lost, .pad.reveal,
-        .flash.go, .tick-shake, .lc-vignette, .lc-bar, .new-best,
+        .tick-shake, .lc-vignette, .lc-bar, .new-best,
         .hud-val.score-flash { animation: none; }
         .confetti { display: none; }
         .pad, .mode-card, .tt-glow { transition: none; }
@@ -1127,9 +1148,12 @@
         .hud-val { font-size: 17px; }
         .status { margin-top: 9px; min-height: 20px; font-size: 13.5px; }
         .progress-dots { margin-top: 7px; }
-        .game-nav { margin-top: 9px; gap: 7px; }
-        .nav-btn { padding: 8px 6px; font-size: 12px; }
-        .volume-box { margin-top: 9px; padding: 7px 11px; gap: 9px; }
+        .game-nav { gap: 6px; }
+        .nav-btn { width: 32px; height: 32px; }
+        .nav-btn svg { width: 13px; height: 13px; }
+        .volume-box { padding: 8px 7px; gap: 6px; }
+        .volume-track { height: 46px; }
+        .volume-slider { width: 46px; }
 
         .heart { width: 17px; height: 17px; }
         .hearts { gap: 4px; min-height: 19px; }
@@ -1139,8 +1163,8 @@
         .lc-choice { margin-top: 10px; gap: 7px; }
         .lc-choice-q { font-size: 13px; }
         #screen-game.is-lastchance .turntable {
-          width: min(100%, 380px, max(170px, calc(100vh - 355px)));
-          width: min(100%, 380px, max(170px, calc(100dvh - 355px)));
+          width: min(100%, 380px, max(170px, calc(100vh - 330px)));
+          width: min(100%, 380px, max(170px, calc(100dvh - 330px)));
         }
 
         .warmup-bar { padding: 9px 12px; margin-bottom: 10px; }
@@ -1201,8 +1225,6 @@
     <!-- Làm tối mọi thứ trừ vòng phím trong lúc Cơ Hội Cuối, để báo rằng luật
          đã đổi. Vòng phím nổi lên trên nhờ z-index của .game-center. -->
     <div class="lc-vignette" id="lc-vignette" hidden aria-hidden="true"></div>
-    <!-- Chớp sáng khi chạm mốc chuỗi -->
-    <div class="flash" id="flash" aria-hidden="true"></div>
     <!-- Pháo giấy khi phá kỷ lục -->
     <div class="confetti" id="confetti" aria-hidden="true"></div>
 
@@ -1232,7 +1254,7 @@
           </div>
           <div class="how-step">
             <span class="how-num">3</span>
-            <span class="how-text">Qua mốc 5 nốt được thêm một tim</span>
+            <span class="how-text">Sai thì mất tim, hết tim còn Cơ Hội Cuối</span>
           </div>
         </div>
         </div>
@@ -1285,12 +1307,37 @@
             <span class="lc-chip">Cơ hội cuối</span>
             <span class="lc-level" id="lc-level">Vòng 1 / 5</span>
           </div>
-          <p class="lc-note" id="lc-note">Nghe nốt ẩn rồi bấm đúng phím đó — <strong>không có gợi ý cao thấp, không được nghe lại</strong>.</p>
+          <p class="lc-note" id="lc-note">Nghe nốt ẩn rồi bấm đúng phím đó.</p>
+          <!-- Thanh đèn xanh tuột dần thay cho ô tròn có số — đổi vị trí xuống
+               ngay dưới dòng chữ, dễ liếc hơn hẳn so với nằm đè lên vòng phím. -->
+          <div class="lc-timerbar" id="lc-timerbar" hidden>
+            <div class="lc-timerbar-fill" id="lc-timerbar-fill"></div>
+          </div>
+          <!-- Chỉ hiện đúng 1 lần trước vòng 1, cho người chơi đọc luật rồi tự
+               bấm vào chơi — vừa mất tim cuối xong không nên dí thẳng vào một
+               luật chơi hoàn toàn mới. -->
+          <button type="button" class="btn-primary lc-start-btn" id="lc-start-btn" hidden>Bắt Đầu</button>
         </div>
 
         <div class="game-grid">
           <!-- Cột trái trên máy tính; trên điện thoại vẫn là dải điểm nằm trên cùng -->
           <div class="panel-side panel-left">
+            <!-- Trước đây chỗ này là nút "Nghe lại". Chức năng đó nay gắn vào
+                 việc mất tim, nên thay bằng hai lối thoát mà game đang thiếu:
+                 quay về màn chọn (giữ nguyên chế độ) và chơi lại ván mới,
+                 không phải chơi cho tới chết. Chỉ để icon cho gọn, có title
+                 để vẫn đọc được tên nút khi cần. Trên điện thoại được ghim
+                 cố định ở góc trên màn hình (xem CSS), không phụ thuộc chỗ
+                 đặt trong HTML này. -->
+            <div class="game-nav" id="game-nav">
+              <button type="button" class="nav-btn" id="back-modes-btn" title="Quay lại" aria-label="Quay lại màn chọn chế độ">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M19 12H5M12 19l-7-7 7-7" /></svg>
+              </button>
+              <button type="button" class="nav-btn" id="restart-btn" title="Chơi lại" aria-label="Chơi lại từ đầu">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M1 4v6h6M23 20v-6h-6" /><path d="M20.49 9A9 9 0 0 0 5.64 5.64L1 10m22 4l-4.64 4.36A9 9 0 0 1 3.51 15" /></svg>
+              </button>
+            </div>
+
             <div class="hud" id="hud">
               <div class="hud-cell">
                 <span class="hud-key">Điểm</span>
@@ -1313,6 +1360,11 @@
           </div>
 
           <div class="game-center">
+        <!-- Trạng thái + chấm tiến độ lên trước bánh xe: đọc được ngay không
+             phải nhìn xuống dưới vòng phím. -->
+        <p class="status" id="status">Nghe kỹ nhé…</p>
+        <div class="progress-dots" id="progress-dots"></div>
+
         <div class="turntable" id="turntable">
           <div class="tt-glow" id="tt-glow" aria-hidden="true"></div>
           <div class="hub" id="hub">
@@ -1324,16 +1376,6 @@
             <span class="hub-label" id="hub-label"></span>
           </div>
 
-          <!-- Đồng hồ Cơ Hội Cuối: vòng sáng chạy quanh tai nghe, nằm vừa
-               khít khoảng trống giữa tai nghe và bảy phím. Nhìn vòng teo dần
-               căng hơn đọc số, mà mắt không phải rời khỏi chỗ cần bấm. -->
-          <svg class="lc-ring" id="lc-ring" viewBox="0 0 100 100" aria-hidden="true" hidden>
-            <circle class="lc-ring-track" cx="50" cy="50" r="25" />
-            <circle class="lc-ring-fill" id="lc-ring-fill" cx="50" cy="50" r="25" />
-          </svg>
-          <!-- Ô tròn nhỏ ghi rõ số giây còn lại, nổi ngay đỉnh vòng sáng -->
-          <span class="lc-countdown" id="lc-countdown" hidden>3</span>
-
           <button type="button" class="pad pad-1" data-note="do"><span class="pad-note">Đồ</span><span class="pad-sub">C</span></button>
           <button type="button" class="pad pad-2" data-note="re"><span class="pad-note">Rê</span><span class="pad-sub">D</span></button>
           <button type="button" class="pad pad-3" data-note="mi"><span class="pad-note">Mi</span><span class="pad-sub">E</span></button>
@@ -1343,17 +1385,14 @@
           <button type="button" class="pad pad-7" data-note="si"><span class="pad-note">Si</span><span class="pad-sub">B</span></button>
         </div>
 
-        <p class="status" id="status">Nghe kỹ nhé…</p>
-        <div class="progress-dots" id="progress-dots"></div>
-
         <div class="warmup-actions" id="warmup-actions" hidden>
           <button type="button" class="btn-primary" id="play-now-btn" hidden>Vào Chơi</button>
           <button type="button" class="btn-ghost" id="skip-warmup-btn">Bỏ qua, chơi luôn</button>
         </div>
 
-        <!-- Ngã ba: ăn non hay đi tiếp. Cố ý KHÔNG có đồng hồ ở bước này. -->
+        <!-- Ngã ba: dừng lại hay liều thêm. Cố ý KHÔNG có đồng hồ ở bước này. -->
         <div class="lc-choice" id="lc-choice" hidden>
-          <p class="lc-choice-q">Đang giữ <b id="lc-stake">1 tim</b> — ăn non hay đi tiếp?</p>
+          <p class="lc-choice-q">Đang giữ <b id="lc-stake">1 tim</b> — dừng lại hay liều thêm?</p>
           <div class="lc-choice-btns">
             <button type="button" class="btn-primary" id="lc-stop-btn">Dừng lại</button>
             <button type="button" class="btn-ghost" id="lc-next-btn">Đi tiếp</button>
@@ -1362,39 +1401,30 @@
         </div>
           </div>
 
-          <!-- Cột phải trên máy tính; trên điện thoại nằm dưới vòng phím -->
+          <!-- Cột phải trên máy tính; trên điện thoại nằm dưới vòng phím.
+               Thanh âm lượng dọc được ghim cố định ở góc trên màn hình trên
+               điện thoại (xem CSS); trên máy tính trở về đúng chỗ cũ trong
+               cột này, chỉ đổi hướng thành dọc. -->
           <div class="panel-side panel-right">
-            <!-- Trước đây chỗ này là nút "Nghe lại". Chức năng đó nay gắn vào
-                 việc mất tim, nên thay bằng hai lối thoát mà game đang thiếu:
-                 quay về màn chọn (giữ nguyên chế độ) và chơi lại ván mới,
-                 không phải chơi cho tới chết. Chỉ để icon cho gọn, có title
-                 để vẫn đọc được tên nút khi cần. -->
-            <div class="game-nav" id="game-nav">
-              <button type="button" class="nav-btn" id="back-modes-btn" title="Quay lại" aria-label="Quay lại màn chọn chế độ">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M15 19l-7-7 7-7" /></svg>
-              </button>
-              <button type="button" class="nav-btn" id="restart-btn" title="Chơi lại" aria-label="Chơi lại từ đầu">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M1 4v6h6M23 20v-6h-6" /><path d="M20.49 9A9 9 0 0 0 5.64 5.64L1 10m22 4l-4.64 4.36A9 9 0 0 1 3.51 15" /></svg>
-              </button>
-            </div>
-
-            <div class="volume-box">
+            <div class="volume-box" id="volume-box">
               <svg class="volume-icon" id="volume-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
                 <path d="M11 5 6 9H2v6h4l5 4V5Z" />
                 <path class="volume-wave" d="M15.5 8.5a5 5 0 0 1 0 7" />
                 <path class="volume-wave" d="M18.5 5.5a9 9 0 0 1 0 13" />
                 <path class="volume-cross" d="m16.5 9 5 6M21.5 9l-5 6" hidden />
               </svg>
-              <input
-                type="range"
-                class="volume-slider"
-                id="volume-slider"
-                min="0"
-                max="100"
-                step="1"
-                value="85"
-                aria-label="Âm lượng tiếng đàn"
-              />
+              <div class="volume-track">
+                <input
+                  type="range"
+                  class="volume-slider"
+                  id="volume-slider"
+                  min="0"
+                  max="100"
+                  step="1"
+                  value="85"
+                  aria-label="Âm lượng tiếng đàn"
+                />
+              </div>
               <span class="volume-val" id="volume-val">85%</span>
             </div>
 
