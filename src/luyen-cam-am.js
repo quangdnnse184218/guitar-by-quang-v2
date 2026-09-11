@@ -512,7 +512,6 @@ const heartsEl = document.getElementById('hearts')
 const gameNav = document.getElementById('game-nav')
 const keyHint = document.querySelector('.key-hint')
 const backModesBtn = document.getElementById('back-modes-btn')
-const restartBtn = document.getElementById('restart-btn')
 
 const volumeSlider = document.getElementById('volume-slider')
 const volumeVal = document.getElementById('volume-val')
@@ -525,7 +524,6 @@ const playNowBtn = document.getElementById('play-now-btn')
 const skipWarmupBtn = document.getElementById('skip-warmup-btn')
 
 const lcBar = document.getElementById('lc-bar')
-const lcExitBtn = document.getElementById('lc-exit-btn')
 const lcLevelEl = document.getElementById('lc-level')
 const lcNote = document.getElementById('lc-note')
 const lcTimerBar = document.getElementById('lc-timerbar')
@@ -535,7 +533,6 @@ const lcChoice = document.getElementById('lc-choice')
 const lcStake = document.getElementById('lc-stake')
 const lcStopBtn = document.getElementById('lc-stop-btn')
 const lcNextBtn = document.getElementById('lc-next-btn')
-const lcVignette = document.getElementById('lc-vignette')
 
 const confettiEl = document.getElementById('confetti')
 
@@ -994,7 +991,6 @@ function setWarmupUI(active) {
   warmupBar.hidden = !active
   warmupActions.hidden = !active
   hud.hidden = active
-  gameNav.hidden = active
   if (keyHint) keyHint.hidden = active
   progressDots.hidden = active
 }
@@ -1166,10 +1162,8 @@ function handleMistake() {
 function setLastChanceUI(active) {
   screens.game.classList.toggle('is-lastchance', active)
   lcBar.hidden = !active
-  lcVignette.hidden = !active
   lcChoice.hidden = true
   hud.hidden = active
-  gameNav.hidden = active
   if (keyHint) keyHint.hidden = active
   progressDots.hidden = active
 
@@ -1532,24 +1526,12 @@ lcStartBtn.addEventListener('click', () => {
   runLastChanceLevel()
 })
 
-// Hai lối thoát ngay trong lúc chơi, thay cho việc phải chơi cho tới chết.
+// Lối thoát duy nhất ngay trong lúc chơi — luôn hiện (kể cả nghe làm quen
+// hay Cơ Hội Cuối) vì game-nav không còn bị ẩn theo trạng thái nữa.
 backModesBtn.addEventListener('click', () => {
   abortGame()
   refreshBestLabels()
   showScreen('start')
-})
-
-// Cơ Hội Cuối ẩn game-nav đi (xem setLastChanceUI/beginPlaying), nên cần lối
-// thoát riêng ngay trong dải nhãn đỏ — cùng hành vi với backModesBtn.
-lcExitBtn.addEventListener('click', () => {
-  abortGame()
-  refreshBestLabels()
-  showScreen('start')
-})
-
-restartBtn.addEventListener('click', () => {
-  abortGame()
-  beginPlaying()
 })
 
 // Chơi lại thì vào thẳng, không bắt nghe làm quen lần nữa.
