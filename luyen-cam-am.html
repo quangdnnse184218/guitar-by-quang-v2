@@ -842,6 +842,7 @@
         margin-bottom: 12px;
       }
       .modal-input:focus-visible { outline: 2px solid var(--gold); outline-offset: 1px; }
+      .modal-error { margin: -6px 0 12px; font-size: 12px; font-weight: 700; color: var(--bad); }
 
       .modal-head { display: flex; align-items: center; justify-content: space-between; gap: 10px; margin-bottom: 14px; }
       .modal-close {
@@ -1668,7 +1669,8 @@
         <p class="modal-note">Đặt tên để hiện trên bảng xếp hạng — chỉ hỏi đúng một lần, không cần đăng nhập.</p>
         <form id="nickname-form">
           <input type="text" class="modal-input" id="nickname-input" maxlength="24" placeholder="Tên của bạn" autocomplete="off" required />
-          <button type="submit" class="btn-primary">Vào Chơi</button>
+          <p class="modal-error" id="nickname-error" hidden></p>
+          <button type="submit" class="btn-primary" id="nickname-submit-btn">Vào Chơi</button>
         </form>
       </div>
     </div>
