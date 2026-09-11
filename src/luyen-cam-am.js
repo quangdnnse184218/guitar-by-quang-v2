@@ -51,8 +51,24 @@ const sampleGains = new Map()
 // chồng lên nhau.
 const NORMALIZE_PEAK = 0.75
 const MAX_SAMPLE_GAIN = 14
-const MASTER_GAIN = 0.85
+const DEFAULT_VOLUME = 0.85
 const NOTE_HOLD_SEC = 1.6
+const VOLUME_KEY = 'gbq_camam_volume'
+
+function loadVolume() {
+  try {
+    const raw = localStorage.getItem(VOLUME_KEY)
+    if (raw === null) return DEFAULT_VOLUME
+    const value = Number(raw)
+    return Number.isFinite(value) ? Math.min(1, Math.max(0, value)) : DEFAULT_VOLUME
+  } catch {
+    return DEFAULT_VOLUME
+  }
+}
+
+// Mức âm lượng người chơi tự chỉnh, dùng lại cho lần sau. Đây là hệ số của cả
+// đường ra chung nên áp dụng cho mọi tiếng: nốt đàn, chuông đúng, tiếng báo sai.
+let masterVolume = loadVolume()
 
 function getAudioContext() {
   if (!audioCtx) {
@@ -68,7 +84,7 @@ function getMasterBus(ctx) {
   if (masterBus) return masterBus
   const gain = ctx.createGain()
   const compressor = ctx.createDynamicsCompressor()
-  gain.gain.value = MASTER_GAIN
+  gain.gain.value = masterVolume
   compressor.threshold.value = -8
   compressor.knee.value = 6
   compressor.ratio.value = 10
@@ -78,6 +94,26 @@ function getMasterBus(ctx) {
   compressor.connect(ctx.destination)
   masterBus = gain
   return masterBus
+}
+
+/**
+ * Đổi âm lượng chung. Dùng setTargetAtTime thay vì gán thẳng để lúc kéo thanh
+ * trong khi một nốt đang ngân thì mức lớn nhỏ chuyển mượt, không nghe "rắc".
+ */
+function setMasterVolume(value, { persist = true } = {}) {
+  masterVolume = Math.min(1, Math.max(0, value))
+  if (masterBus && audioCtx) {
+    masterBus.gain.setTargetAtTime(masterVolume, audioCtx.currentTime, 0.015)
+  } else if (masterBus) {
+    masterBus.gain.value = masterVolume
+  }
+  if (persist) {
+    try {
+      localStorage.setItem(VOLUME_KEY, String(masterVolume))
+    } catch {
+      // Trình duyệt chặn localStorage — vẫn chỉnh được, chỉ là không nhớ cho lần sau.
+    }
+  }
 }
 
 function peakOf(buffer) {
@@ -271,6 +307,11 @@ const hudMode = document.getElementById('hud-mode')
 const replayRow = document.getElementById('replay-row')
 const replayBtn = document.getElementById('replay-btn')
 const replayLabel = document.getElementById('replay-label')
+
+const volumeSlider = document.getElementById('volume-slider')
+const volumeVal = document.getElementById('volume-val')
+const volumeValTop = document.getElementById('volume-val-top')
+const volumeIcon = document.getElementById('volume-icon')
 
 const warmupBar = document.getElementById('warmup-bar')
 const warmupCount = document.getElementById('warmup-count')
@@ -631,6 +672,34 @@ testSoundBtn.addEventListener('click', async () => {
   testSoundBtn.disabled = false
 })
 
+/** Cập nhật con số, phần tô của thanh trượt và biểu tượng loa theo mức hiện tại. */
+function renderVolumeUI() {
+  const percent = Math.round(masterVolume * 100)
+  volumeSlider.value = String(percent)
+  volumeSlider.style.setProperty('--fill', `${percent}%`)
+  volumeVal.textContent = `${percent}%`
+  volumeValTop.textContent = `${percent}%`
+
+  const muted = percent === 0
+  volumeIcon.querySelectorAll('.volume-wave').forEach((el) => {
+    el.toggleAttribute('hidden', muted)
+  })
+  volumeIcon.querySelector('.volume-cross').toggleAttribute('hidden', !muted)
+}
+
+volumeSlider.addEventListener('input', () => {
+  setMasterVolume(Number(volumeSlider.value) / 100)
+  renderVolumeUI()
+})
+
+// Thả tay ra thì phát thử một nốt để nghe ngay mức vừa chỉnh. Chỉ phát khi máy
+// không đang phát chuỗi và không đến lượt người chơi bấm — nếu không, ở chế độ
+// Chỉ Nghe người chơi sẽ tưởng đó là một nốt trong chuỗi cần nhớ.
+volumeSlider.addEventListener('change', () => {
+  if (phase === 'playing' || phase === 'input') return
+  if (masterVolume > 0 && decodedSamples.size > 0) playNote('do')
+})
+
 modeSeeBtn.addEventListener('click', () => setMode('see'))
 modeHearBtn.addEventListener('click', () => setMode('hear'))
 
@@ -681,4 +750,5 @@ document.addEventListener(
 
 claimPlaybackSession()
 refreshBestLabels()
+renderVolumeUI()
 bootstrapAudio()

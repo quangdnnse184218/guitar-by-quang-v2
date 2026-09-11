@@ -454,8 +454,9 @@
          Dòng vh đứng trước làm phương án dự phòng cho máy chưa hỗ trợ dvh. */
       .turntable {
         position: relative;
-        width: min(100%, 400px, max(210px, calc(100vh - 300px)));
-        width: min(100%, 400px, max(210px, calc(100dvh - 300px)));
+        /* Trừ thêm chỗ cho thanh âm lượng nằm dưới so với trước đây. */
+        width: min(100%, 400px, max(210px, calc(100vh - 345px)));
+        width: min(100%, 400px, max(210px, calc(100dvh - 345px)));
         aspect-ratio: 1;
         margin: 0 auto;
       }
@@ -665,6 +666,208 @@
 
       .footnote { text-align: center; font-size: 11px; color: var(--ink-faint); padding: 0 18px 20px; }
 
+      /* ===================== Âm lượng ===================== */
+      .volume-box {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        background: var(--panel);
+        border: 1px solid var(--line);
+        border-radius: 14px;
+        padding: 9px 13px;
+        margin-top: 14px;
+      }
+      .volume-head { display: none; }
+      .volume-icon { width: 17px; height: 17px; flex-shrink: 0; color: var(--gold); }
+      .volume-val {
+        font-size: 11px;
+        font-weight: 800;
+        color: var(--ink-faint);
+        min-width: 33px;
+        text-align: right;
+        font-variant-numeric: tabular-nums;
+      }
+      .volume-slider {
+        -webkit-appearance: none;
+        appearance: none;
+        flex: 1;
+        min-width: 0;
+        height: 6px;
+        border-radius: 999px;
+        background: linear-gradient(
+          to right,
+          var(--gold-solid) var(--fill, 85%),
+          var(--line-strong) var(--fill, 85%)
+        );
+        cursor: pointer;
+      }
+      .volume-slider::-webkit-slider-thumb {
+        -webkit-appearance: none;
+        appearance: none;
+        width: 17px;
+        height: 17px;
+        border-radius: 50%;
+        background: var(--gold-solid);
+        border: 2px solid var(--panel);
+        box-shadow: 0 2px 6px rgba(0, 0, 0, 0.28);
+        cursor: pointer;
+      }
+      .volume-slider::-moz-range-thumb {
+        width: 15px;
+        height: 15px;
+        border-radius: 50%;
+        background: var(--gold-solid);
+        border: 2px solid var(--panel);
+        box-shadow: 0 2px 6px rgba(0, 0, 0, 0.28);
+        cursor: pointer;
+      }
+      .volume-slider:focus-visible { outline: 3px solid var(--gold); outline-offset: 3px; }
+
+      /* Gợi ý phím tắt chỉ có nghĩa khi có bàn phím, nên ẩn trên máy nhỏ. */
+      .key-hint { display: none; }
+
+      /* Vòng quỹ đạo nối bảy phím lại thành một mặt đàn, thay vì bảy chấm rời
+         rạc trôi giữa khoảng trống — và quầng sáng ấm phía sau cho đỡ trơ. */
+      .turntable {
+        background: radial-gradient(
+          circle at 50% 50%,
+          color-mix(in srgb, var(--gold-solid) 11%, transparent) 0%,
+          transparent 62%
+        );
+      }
+      .turntable::before {
+        content: '';
+        position: absolute;
+        inset: 11%;
+        border-radius: 50%;
+        border: 1px dashed color-mix(in srgb, var(--line-strong) 90%, transparent);
+        pointer-events: none;
+      }
+
+      /* ===================== Bố cục màn rộng (máy tính) =====================
+         Trên máy tính, cột đơn 470px giữa màn hình 1920px trông vừa bé vừa
+         trống. Màn mở đầu tách làm hai cột (giới thiệu | bảng chọn), màn chơi
+         thành ba cột (bảng điểm | vòng phím | điều khiển) để hai bên có nội
+         dung thật chứ không phải khoảng trống. */
+      @media (min-width: 900px) {
+        main { padding: 30px 28px 34px; }
+
+        #screen-start {
+          max-width: 980px;
+          display: grid;
+          grid-template-columns: minmax(0, 1.02fr) minmax(0, 0.98fr);
+          gap: 46px;
+          align-items: center;
+        }
+        .start-intro { text-align: left; }
+        .start-intro .hero-mark { width: 80px; height: 80px; margin: 0 0 20px; }
+        .start-intro .hero-mark svg { width: 40px; height: 40px; }
+        .start-intro h1 { text-align: left; font-size: clamp(38px, 3.5vw, 50px); }
+        .start-intro .subtitle { text-align: left; }
+        .start-intro .lede { text-align: left; margin: 14px 0 24px; max-width: 44ch; }
+        .how { margin-bottom: 0; }
+
+        .start-panel {
+          background: var(--panel);
+          border: 1px solid var(--line);
+          border-radius: 22px;
+          padding: 26px 24px 24px;
+          box-shadow: var(--shadow-soft);
+        }
+        /* Thẻ chế độ nằm trong bảng trắng rồi, nên nền trắng của chúng phải
+           đổi sang tông ngà để còn phân biệt được với nền bảng. */
+        .start-panel .mode-card { background: var(--panel-hi); }
+        .start-panel .mode-card[aria-pressed='true'] {
+          background: color-mix(in srgb, var(--gold-solid) 15%, var(--panel-hi));
+        }
+        .start-panel .btn-ghost { background: var(--panel-hi); }
+
+        #screen-game { max-width: 1020px; }
+        .game-grid {
+          display: grid;
+          grid-template-columns: 224px minmax(0, 1fr) 224px;
+          gap: 30px;
+          align-items: center;
+        }
+        .panel-side { align-self: center; }
+
+        .hud {
+          flex-direction: column;
+          align-items: stretch;
+          gap: 15px;
+          margin-bottom: 0;
+          background: var(--panel);
+          border: 1px solid var(--line);
+          border-radius: 18px;
+          padding: 18px 17px;
+          box-shadow: var(--shadow-soft);
+        }
+        .hud-cell, .hud-cell:last-child { text-align: left; }
+        .hud-val { font-size: 26px; }
+        .hud-mode { display: inline-block; }
+
+        .volume-box {
+          flex-wrap: wrap;
+          margin-top: 0;
+          border-radius: 18px;
+          padding: 15px 16px;
+          box-shadow: var(--shadow-soft);
+        }
+        .volume-head {
+          display: flex;
+          align-items: center;
+          justify-content: space-between;
+          width: 100%;
+          margin-bottom: 3px;
+        }
+        .volume-label {
+          font-size: 9.5px;
+          font-weight: 800;
+          letter-spacing: 0.13em;
+          text-transform: uppercase;
+          color: var(--ink-faint);
+        }
+        .volume-box .volume-val { min-width: 0; }
+        .volume-head .volume-val { font-size: 13px; color: var(--gold); }
+        .volume-box > .volume-val { display: none; }
+
+        .replay-row { margin-top: 14px; }
+        #replay-btn { width: 100%; justify-content: center; }
+
+        .key-hint {
+          display: block;
+          margin: 14px 0 0;
+          font-size: 11px;
+          line-height: 1.6;
+          color: var(--ink-faint);
+          text-align: center;
+        }
+        .key-hint kbd {
+          font-family: 'Montserrat', sans-serif;
+          font-size: 10px;
+          font-weight: 800;
+          color: var(--ink-dim);
+          background: var(--panel);
+          border: 1px solid var(--line-strong);
+          border-radius: 5px;
+          padding: 1px 5px;
+        }
+
+        /* Vòng phím to hơn hẳn trên máy tính, nhưng vẫn tự bó lại theo chiều
+           cao còn trống để laptop màn thấp không phải lướt. */
+        .turntable {
+          width: min(100%, 440px, calc(100vh - 280px));
+          width: min(100%, 440px, calc(100dvh - 280px));
+        }
+        #screen-game.is-warmup .turntable {
+          width: min(100%, 420px, calc(100vh - 385px));
+          width: min(100%, 420px, calc(100dvh - 385px));
+        }
+
+        .status { font-size: 16px; margin-top: 18px; }
+        #screen-over { max-width: 520px; }
+      }
+
       @media (prefers-reduced-motion: reduce) {
         .hero-mark, .hub.playing, .hub.pulse::after, .shake, .screen { animation: none; }
         .pad, .mode-card { transition: none; }
@@ -674,14 +877,18 @@
         .modes { grid-template-columns: 1fr; }
       }
 
-      /* Màn thấp (iPhone SE, Android nhỏ): bóp gọn mọi khoảng cách để cả
-         trang lọt trong một màn hình, khỏi phải lướt khi đang chơi. Câu mô tả
-         dài được ẩn đi vì ba bước hướng dẫn ngay dưới đã nói đúng nội dung đó. */
-      @media (max-height: 730px) {
+      /* Máy cầm tay: bóp gọn mọi khoảng cách để cả trang lọt trong một màn
+         hình, khỏi phải lướt khi đang chơi. Câu mô tả dài được ẩn đi vì ba
+         bước hướng dẫn ngay dưới đã nói đúng nội dung đó.
+         Ngưỡng để ở 850px vì phần lớn điện thoại chỉ còn khoảng 700-800px
+         chiều cao thật sau khi trừ thanh địa chỉ — ngưỡng 730px cũ bỏ sót
+         đúng nhóm máy đó nên chúng vẫn phải lướt. Giới hạn thêm theo chiều
+         rộng để không đụng vào bố cục nhiều cột của máy tính. */
+      @media (max-width: 899px) and (max-height: 850px) {
         main { padding: 12px 16px 16px; }
         .turntable {
-          width: min(100%, 400px, max(210px, calc(100vh - 262px)));
-          width: min(100%, 400px, max(210px, calc(100dvh - 262px)));
+          width: min(100%, 400px, max(200px, calc(100vh - 300px)));
+          width: min(100%, 400px, max(200px, calc(100dvh - 300px)));
         }
 
         .hero-mark { width: 56px; height: 56px; margin-bottom: 9px; }
@@ -712,6 +919,7 @@
         .progress-dots { margin-top: 7px; }
         .replay-row { margin-top: 9px; }
         #replay-btn { padding: 8px 15px; font-size: 12px; }
+        .volume-box { margin-top: 9px; padding: 7px 11px; gap: 9px; }
 
         .warmup-bar { padding: 9px 12px; margin-bottom: 10px; }
         .warmup-note { font-size: 11.5px; }
@@ -729,15 +937,15 @@
         /* Lúc nghe làm quen có thêm dải nhãn và nút bấm, nên vòng phím phải
            nhỏ hơn nữa. Giai đoạn này chỉ nghe chứ không cần bấm chính xác. */
         #screen-game.is-warmup .turntable {
-          width: min(100%, 400px, max(190px, calc(100vh - 322px)));
-          width: min(100%, 400px, max(190px, calc(100dvh - 322px)));
+          width: min(100%, 400px, max(180px, calc(100vh - 360px)));
+          width: min(100%, 400px, max(180px, calc(100dvh - 360px)));
         }
       }
 
       /* Màn rất thấp: bỏ ba bước hướng dẫn để phần chọn chế độ và nút bắt đầu
          luôn nhìn thấy được ngay, không phải lướt. Phần nghe làm quen ngay sau
          đó vẫn hướng dẫn đầy đủ nên không mất gì. */
-      @media (max-height: 620px) {
+      @media (max-width: 899px) and (max-height: 660px) {
         .how { display: none; }
         .subtitle { margin-top: 5px; }
         .modes { margin-bottom: 10px; }
@@ -769,6 +977,7 @@
     <main>
       <!-- ============ MÀN HÌNH MỞ ĐẦU ============ -->
       <section class="screen" id="screen-start">
+        <div class="start-intro">
         <div class="hero-mark" aria-hidden="true">
           <svg viewBox="0 0 64 64" fill="none">
             <path d="M13 40V32a19 19 0 0 1 38 0v8" stroke="currentColor" stroke-width="5" stroke-linecap="round" />
@@ -794,7 +1003,9 @@
             <span class="how-text">Đúng thì chuỗi dài thêm một nốt</span>
           </div>
         </div>
+        </div>
 
+        <div class="start-panel">
         <p class="mode-label">Có 2 chế độ — chọn 1 rồi bấm chơi</p>
         <div class="modes">
           <button type="button" class="mode-card" id="mode-see" aria-pressed="true">
@@ -834,6 +1045,7 @@
           to âm lượng máy.
           <span class="audio-state" id="audio-state"></span>
         </p>
+        </div>
       </section>
 
       <!-- ============ MÀN HÌNH CHƠI ============ -->
@@ -847,18 +1059,23 @@
           <p class="warmup-note">Nghe qua 7 nốt một lượt cho quen mặt nốt — phần này <strong>chưa tính điểm</strong>.</p>
         </div>
 
-        <div class="hud" id="hud">
-          <div class="hud-cell">
-            <span class="hud-key">Vòng</span>
-            <span class="hud-val" id="hud-round">1</span>
+        <div class="game-grid">
+          <!-- Cột trái trên máy tính; trên điện thoại vẫn là dải điểm nằm trên cùng -->
+          <div class="panel-side panel-left">
+            <div class="hud" id="hud">
+              <div class="hud-cell">
+                <span class="hud-key">Vòng</span>
+                <span class="hud-val" id="hud-round">1</span>
+              </div>
+              <div class="hud-cell" style="flex: 0 0 auto"><span class="hud-mode" id="hud-mode">Nhìn &amp; Nghe</span></div>
+              <div class="hud-cell">
+                <span class="hud-key">Kỷ lục</span>
+                <span class="hud-val gold" id="hud-best">0</span>
+              </div>
+            </div>
           </div>
-          <div class="hud-cell" style="flex: 0 0 auto"><span class="hud-mode" id="hud-mode">Nhìn &amp; Nghe</span></div>
-          <div class="hud-cell">
-            <span class="hud-key">Kỷ lục</span>
-            <span class="hud-val gold" id="hud-best">0</span>
-          </div>
-        </div>
 
+          <div class="game-center">
         <div class="turntable" id="turntable">
           <div class="hub" id="hub">
             <svg class="hub-icon" viewBox="0 0 64 64" fill="none" aria-hidden="true">
@@ -885,12 +1102,43 @@
           <button type="button" class="btn-primary" id="play-now-btn" hidden>Vào Chơi</button>
           <button type="button" class="btn-ghost" id="skip-warmup-btn">Bỏ qua, chơi luôn</button>
         </div>
+          </div>
 
-        <div class="replay-row" id="replay-row">
-          <button type="button" id="replay-btn" disabled>
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M1 4v6h6M23 20v-6h-6" /><path d="M20.49 9A9 9 0 0 0 5.64 5.64L1 10m22 4l-4.64 4.36A9 9 0 0 1 3.51 15" /></svg>
-            <span id="replay-label">Nghe lại (1 lần)</span>
-          </button>
+          <!-- Cột phải trên máy tính; trên điện thoại nằm dưới vòng phím -->
+          <div class="panel-side panel-right">
+            <div class="volume-box">
+              <div class="volume-head">
+                <span class="volume-label">Âm lượng</span>
+                <span class="volume-val" id="volume-val-top">85%</span>
+              </div>
+              <svg class="volume-icon" id="volume-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                <path d="M11 5 6 9H2v6h4l5 4V5Z" />
+                <path class="volume-wave" d="M15.5 8.5a5 5 0 0 1 0 7" />
+                <path class="volume-wave" d="M18.5 5.5a9 9 0 0 1 0 13" />
+                <path class="volume-cross" d="m16.5 9 5 6M21.5 9l-5 6" hidden />
+              </svg>
+              <input
+                type="range"
+                class="volume-slider"
+                id="volume-slider"
+                min="0"
+                max="100"
+                step="1"
+                value="85"
+                aria-label="Âm lượng tiếng đàn"
+              />
+              <span class="volume-val" id="volume-val">85%</span>
+            </div>
+
+            <div class="replay-row" id="replay-row">
+              <button type="button" id="replay-btn" disabled>
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M1 4v6h6M23 20v-6h-6" /><path d="M20.49 9A9 9 0 0 0 5.64 5.64L1 10m22 4l-4.64 4.36A9 9 0 0 1 3.51 15" /></svg>
+                <span id="replay-label">Nghe lại (1 lần)</span>
+              </button>
+            </div>
+
+            <p class="key-hint">Bấm phím <kbd>1</kbd>…<kbd>7</kbd> trên bàn phím cũng được — theo thứ tự Đồ → Si</p>
+          </div>
         </div>
       </section>
 
