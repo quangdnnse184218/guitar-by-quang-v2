@@ -17,6 +17,7 @@
  */
 
 import { initThemeToggle } from './theme-toggle.js'
+import { supabase } from './lib/supabase.js'
 
 initThemeToggle()
 
@@ -482,6 +483,19 @@ const modeHearBtn = document.getElementById('mode-hear')
 const bestSeeLabel = document.getElementById('best-see')
 const bestHearLabel = document.getElementById('best-hear')
 const startBtn = document.getElementById('start-btn')
+const boardLinkSee = document.getElementById('board-link-see')
+const boardLinkHear = document.getElementById('board-link-hear')
+const boardLinkOver = document.getElementById('board-link-over')
+
+const nicknameModal = document.getElementById('nickname-modal')
+const nicknameForm = document.getElementById('nickname-form')
+const nicknameInput = document.getElementById('nickname-input')
+
+const boardModal = document.getElementById('board-modal')
+const boardTitle = document.getElementById('board-title')
+const boardStatus = document.getElementById('board-status')
+const boardList = document.getElementById('board-list')
+const boardCloseBtn = document.getElementById('board-close-btn')
 
 const turntable = document.getElementById('turntable')
 const ttGlow = document.getElementById('tt-glow')
@@ -579,6 +593,158 @@ function refreshBestLabels() {
 
 const modeName = (which) => (which === 'see' ? 'Nhìn & Nghe' : 'Chỉ Nghe')
 const otherMode = (which) => (which === 'see' ? 'hear' : 'see')
+
+// ==========================================================================
+// BẢNG XẾP HẠNG (ẩn danh, không cần đăng nhập)
+// ==========================================================================
+// Mỗi trình duyệt tự sinh một player_id ngẫu nhiên, lưu cố định trong
+// localStorage — đủ để "nhớ mình là ai" giữa các lần chơi và tô sáng đúng
+// dòng của mình trong bảng, không cần tài khoản thật. Đây chỉ là sân chơi
+// nhỏ nên không có lớp chống gian lận nào ở tầng này.
+const PLAYER_ID_KEY = 'gbq_camam_player_id'
+const PLAYER_NAME_KEY = 'gbq_camam_player_name'
+const LEADERBOARD_TABLE = 'cam_am_leaderboard'
+const LEADERBOARD_LIMIT = 20
+
+function getPlayerId() {
+  try {
+    let id = localStorage.getItem(PLAYER_ID_KEY)
+    if (!id) {
+      id = crypto.randomUUID()
+      localStorage.setItem(PLAYER_ID_KEY, id)
+    }
+    return id
+  } catch {
+    // Không lưu được thì vẫn phát một id tạm cho phiên này, chỉ là sẽ đổi
+    // id ở lần chơi kế — không nộp được điểm cũng không sao, chỉ mất phần
+    // "tô sáng dòng của mình" trong bảng.
+    return crypto.randomUUID()
+  }
+}
+
+function getPlayerName() {
+  try {
+    return (localStorage.getItem(PLAYER_NAME_KEY) || '').trim()
+  } catch {
+    return ''
+  }
+}
+
+function savePlayerName(name) {
+  try {
+    localStorage.setItem(PLAYER_NAME_KEY, name)
+  } catch {
+    // Không lưu được thì lần chơi sau lại phải hỏi tên — chấp nhận được.
+  }
+}
+
+/** Chỉ hỏi tên đúng một lần trước khi vào chơi lần đầu; đã có tên thì bỏ qua. */
+function ensurePlayerName() {
+  const existing = getPlayerName()
+  if (existing) return Promise.resolve(existing)
+
+  return new Promise((resolve) => {
+    nicknameInput.value = ''
+    nicknameModal.hidden = false
+    nicknameInput.focus()
+
+    const onSubmit = (event) => {
+      event.preventDefault()
+      const name = nicknameInput.value.trim().slice(0, 24)
+      if (!name) return
+      savePlayerName(name)
+      nicknameModal.hidden = true
+      nicknameForm.removeEventListener('submit', onSubmit)
+      // Người chơi cũ đã có kỷ lục lưu sẵn trong localStorage TRƯỚC KHI tính
+      // năng bảng xếp hạng ra đời — nếu đợi "phá kỷ lục mới" mới nộp thì kỷ
+      // lục cũ đó sẽ không bao giờ lên bảng. Đồng bộ luôn cả hai chế độ ngay
+      // lúc vừa có tên, coi như lần "phá kỷ lục" đầu tiên.
+      submitScoreIfBest('see', getBest('see'))
+      submitScoreIfBest('hear', getBest('hear'))
+      resolve(name)
+    }
+    nicknameForm.addEventListener('submit', onSubmit)
+  })
+}
+
+/** Chỉ nộp điểm lên bảng xếp hạng đúng lúc vừa phá kỷ lục cá nhân — tránh
+ *  ghi đè liên tục mỗi ván, và mỗi người chỉ giữ đúng một dòng tốt nhất mỗi
+ *  chế độ nhờ upsert theo (player_id, mode). */
+async function submitScoreIfBest(modeToSubmit, score) {
+  const name = getPlayerName()
+  if (!name || score <= 0) return
+  try {
+    await supabase.from(LEADERBOARD_TABLE).upsert(
+      {
+        player_id: getPlayerId(),
+        mode: modeToSubmit,
+        player_name: name,
+        score,
+        updated_at: new Date().toISOString(),
+      },
+      { onConflict: 'player_id,mode' },
+    )
+  } catch {
+    // Không nộp được (mất mạng, bảng chưa tạo…) thì bỏ qua — kỷ lục vẫn còn
+    // nguyên trong localStorage, không ảnh hưởng gì tới việc chơi tiếp.
+  }
+}
+
+function renderBoardRows(rows) {
+  const myId = getPlayerId()
+  boardList.innerHTML = rows
+    .map((row, index) => {
+      const isMe = row.player_id === myId
+      const name = (row.player_name || '').replace(/[<>]/g, '')
+      return `
+        <li class="board-row${isMe ? ' is-me' : ''}">
+          <span class="board-rank">${index + 1}</span>
+          <span class="board-name">${name}${isMe ? ' (bạn)' : ''}</span>
+          <span class="board-score">${row.score}</span>
+        </li>
+      `
+    })
+    .join('')
+}
+
+async function openLeaderboard(modeToShow) {
+  boardTitle.textContent = `Bảng xếp hạng · ${modeName(modeToShow)}`
+  boardList.hidden = true
+  boardStatus.hidden = false
+  boardStatus.textContent = 'Đang tải…'
+  boardModal.hidden = false
+
+  try {
+    const { data, error } = await supabase
+      .from(LEADERBOARD_TABLE)
+      .select('player_id, player_name, score')
+      .eq('mode', modeToShow)
+      .order('score', { ascending: false })
+      .order('updated_at', { ascending: true })
+      .limit(LEADERBOARD_LIMIT)
+
+    if (error) throw error
+
+    if (!data || data.length === 0) {
+      boardStatus.textContent = 'Chưa có ai lập kỷ lục ở chế độ này — làm người đầu tiên nhé!'
+      boardStatus.hidden = false
+      boardList.hidden = true
+      return
+    }
+
+    renderBoardRows(data)
+    boardStatus.hidden = true
+    boardList.hidden = false
+  } catch {
+    boardStatus.textContent = 'Không tải được bảng xếp hạng — thử lại sau nhé.'
+    boardStatus.hidden = false
+    boardList.hidden = true
+  }
+}
+
+function closeLeaderboard() {
+  boardModal.hidden = true
+}
 
 /** Ghi tên chế độ ngay trên nút bắt đầu: người bấm vội bỏ qua hai thẻ chọn
  *  ở trên thì vẫn đọc được mình sắp chơi chế độ nào, và biết là có lựa chọn. */
@@ -1220,7 +1386,10 @@ function endGame() {
 
   const previousBest = getBest(mode)
   const isNewBest = longest > previousBest
-  if (isNewBest) saveBest(mode, longest)
+  if (isNewBest) {
+    saveBest(mode, longest)
+    submitScoreIfBest(mode, longest)
+  }
 
   setTimeout(() => {
     overScore.textContent = String(longest)
@@ -1290,6 +1459,10 @@ startBtn.addEventListener('click', async () => {
     audioReady = true
     updateStartLabel()
     startBtn.disabled = false
+    // Hỏi biệt danh trước khi vào chơi lần đầu — âm thanh đã mở khoá và giải
+    // mã xong rồi nên đợi thêm một lượt bấm nữa (nộp form tên) không ảnh
+    // hưởng gì tới việc phát tiếng.
+    await ensurePlayerName()
     runWarmup()
   } catch {
     startBtn.textContent = 'Không phát được âm thanh'
@@ -1326,6 +1499,16 @@ volumeSlider.addEventListener('change', () => {
 
 modeSeeBtn.addEventListener('click', () => setMode('see'))
 modeHearBtn.addEventListener('click', () => setMode('hear'))
+
+// Bảng xếp hạng: mở đúng chế độ của thẻ vừa bấm (màn chọn), hoặc chế độ vừa
+// chơi xong (màn kết thúc) — không cần chọn lại vì đã đứng sẵn đúng chỗ rồi.
+boardLinkSee.addEventListener('click', () => openLeaderboard('see'))
+boardLinkHear.addEventListener('click', () => openLeaderboard('hear'))
+boardLinkOver.addEventListener('click', () => openLeaderboard(mode))
+boardCloseBtn.addEventListener('click', closeLeaderboard)
+boardModal.addEventListener('click', (event) => {
+  if (event.target === boardModal) closeLeaderboard()
+})
 
 pads.forEach((pad) => {
   pad.addEventListener('click', () => handlePadPress(pad.dataset.note))
@@ -1404,8 +1587,28 @@ document.addEventListener(
   { passive: true }
 )
 
+// Người chơi đã có tên (đặt hồi trước khi có tính năng đồng bộ ngay lúc nhập
+// tên ở trên) nhưng kỷ lục cũ vẫn chưa từng lên bảng — đồng bộ đúng một lần
+// duy nhất mỗi trình duyệt (đánh dấu bằng SYNCED_KEY), không phải mỗi lần
+// vào trang, để khỏi gọi mạng vô ích cho người đã đồng bộ rồi.
+const SYNCED_KEY = 'gbq_camam_synced_v1'
+function syncExistingBestsOnce() {
+  const name = getPlayerName()
+  if (!name) return
+  try {
+    if (localStorage.getItem(SYNCED_KEY)) return
+    localStorage.setItem(SYNCED_KEY, '1')
+  } catch {
+    // Không đọc/ghi được cờ thì cứ đồng bộ luôn cho chắc, không sao cả vì
+    // submitScoreIfBest chỉ upsert (ghi đè), gọi lại nhiều lần vẫn an toàn.
+  }
+  submitScoreIfBest('see', getBest('see'))
+  submitScoreIfBest('hear', getBest('hear'))
+}
+
 claimPlaybackSession()
 refreshBestLabels()
+syncExistingBestsOnce()
 renderVolumeUI()
 resetHearts(START_HEARTS)
 updateGlow()
