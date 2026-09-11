@@ -248,7 +248,9 @@
         margin-bottom: 10px;
       }
       .modes { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 20px; }
+      .mode-slot { display: flex; flex-direction: column; gap: 6px; }
       .mode-card {
+        flex: 1;
         position: relative;
         border: 2px solid var(--line);
         background: var(--panel);
@@ -312,6 +314,19 @@
       }
       .mode-desc { display: block; font-size: 11.5px; line-height: 1.5; color: var(--ink-faint); }
       .mode-best { display: block; margin-top: 8px; font-size: 11px; font-weight: 700; color: var(--gold); }
+      .mode-board-link {
+        font-family: inherit;
+        font-size: 10.5px;
+        font-weight: 700;
+        color: var(--ink-faint);
+        background: transparent;
+        border: none;
+        padding: 3px 2px;
+        text-align: center;
+        cursor: pointer;
+        transition: color 0.15s;
+      }
+      .mode-board-link:hover { color: var(--gold-solid); }
 
       .btn-primary {
         display: block;
@@ -744,6 +759,98 @@
 
       /* Gợi ý phím tắt chỉ có nghĩa khi có bàn phím, nên ẩn trên máy nhỏ. */
       .key-hint { display: none; }
+
+      /* ===================== Modal: hỏi tên & bảng xếp hạng =====================
+         Dùng chung một khung cho cả hai — nền mờ toàn màn hình, thẻ trắng nổi
+         giữa. z-index cao hơn hẳn mọi lớp phủ khác trong game (lc-vignette 5,
+         confetti 8, volume-box/game-nav 40) vì đây là lớp trên cùng, chặn hết
+         thao tác bên dưới cho tới khi đóng lại. */
+      .modal-backdrop {
+        position: fixed;
+        inset: 0;
+        z-index: 100;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 20px;
+        background: rgba(20, 13, 5, 0.55);
+        animation: fade-in-soft 0.2s ease both;
+      }
+      .modal-card {
+        width: 100%;
+        max-width: 360px;
+        max-height: calc(100dvh - 40px);
+        overflow-y: auto;
+        background: var(--panel);
+        border: 1px solid var(--line);
+        border-radius: 20px;
+        padding: 22px 20px;
+        box-shadow: var(--shadow-soft);
+      }
+      .modal-title {
+        font-family: 'Montserrat', sans-serif;
+        font-weight: 900;
+        font-size: 17px;
+        color: var(--ink);
+        margin: 0;
+      }
+      .modal-note { margin: 8px 0 16px; font-size: 12.5px; line-height: 1.5; color: var(--ink-faint); }
+      .modal-input {
+        display: block;
+        width: 100%;
+        font-family: inherit;
+        font-size: 14px;
+        color: var(--ink);
+        background: var(--panel-hi);
+        border: 1.5px solid var(--line-strong);
+        border-radius: 12px;
+        padding: 11px 13px;
+        margin-bottom: 12px;
+      }
+      .modal-input:focus-visible { outline: 2px solid var(--gold); outline-offset: 1px; }
+
+      .modal-head { display: flex; align-items: center; justify-content: space-between; gap: 10px; margin-bottom: 14px; }
+      .modal-close {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        width: 30px;
+        height: 30px;
+        flex-shrink: 0;
+        color: var(--ink-dim);
+        background: var(--panel-hi);
+        border: 1px solid var(--line-strong);
+        border-radius: 50%;
+        cursor: pointer;
+      }
+      .modal-close:hover { color: var(--gold); border-color: var(--gold); }
+      .modal-close svg { width: 13px; height: 13px; }
+
+      .board-status { margin: 0; padding: 18px 0; text-align: center; font-size: 13px; color: var(--ink-faint); }
+      .board-list { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 6px; }
+      .board-row {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        padding: 9px 11px;
+        border-radius: 12px;
+        background: var(--panel-hi);
+      }
+      /* Dòng của chính người đang xem — viền vàng để tự tìm ra mình ngay,
+         khỏi phải dò tên trong danh sách. */
+      .board-row.is-me { background: color-mix(in srgb, var(--gold-solid) 16%, var(--panel-hi)); border: 1.5px solid var(--gold-solid); padding: 7.5px 9.5px; }
+      .board-rank {
+        flex-shrink: 0;
+        width: 22px;
+        font-family: 'Montserrat', sans-serif;
+        font-weight: 900;
+        font-size: 13px;
+        color: var(--ink-faint);
+        text-align: center;
+      }
+      .board-row:nth-child(1) .board-rank { color: var(--gold-solid); }
+      .board-name { flex: 1; min-width: 0; font-weight: 700; font-size: 13.5px; color: var(--ink); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+      .board-score { flex-shrink: 0; font-family: 'Montserrat', sans-serif; font-weight: 900; font-size: 14px; color: var(--gold); }
 
       /* Vòng quỹ đạo nối bảy phím lại thành một mặt đàn, thay vì bảy chấm rời
          rạc trôi giữa khoảng trống — và quầng sáng ấm phía sau cho đỡ trơ. */
@@ -1292,28 +1399,37 @@
         <div class="start-panel">
         <p class="mode-label">Có 2 chế độ — chọn 1 rồi bấm chơi</p>
         <div class="modes">
-          <button type="button" class="mode-card" id="mode-see" aria-pressed="true">
-            <span class="mode-top">
-              <span class="mode-badge easy">Dễ</span>
-              <span class="mode-check" aria-hidden="true">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5" /></svg>
+          <!-- Nút xem bảng xếp hạng nằm NGOÀI mode-card (mode-card vốn đã là
+               <button>, không được lồng thêm phần tử tương tác bên trong) —
+               bọc chung một .mode-slot để gắn liền ngay dưới thẻ. -->
+          <div class="mode-slot">
+            <button type="button" class="mode-card" id="mode-see" aria-pressed="true">
+              <span class="mode-top">
+                <span class="mode-badge easy">Dễ</span>
+                <span class="mode-check" aria-hidden="true">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5" /></svg>
+                </span>
               </span>
-            </span>
-            <span class="mode-name">Nhìn &amp; Nghe</span>
-            <span class="mode-desc">Phím sáng lên theo từng nốt. Dễ vào, hợp người mới.</span>
-            <span class="mode-best" id="best-see">Kỷ lục: 0 nốt</span>
-          </button>
-          <button type="button" class="mode-card" id="mode-hear" aria-pressed="false">
-            <span class="mode-top">
-              <span class="mode-badge hard">Khó</span>
-              <span class="mode-check" aria-hidden="true">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5" /></svg>
+              <span class="mode-name">Nhìn &amp; Nghe</span>
+              <span class="mode-desc">Phím sáng lên theo từng nốt. Dễ vào, hợp người mới.</span>
+              <span class="mode-best" id="best-see">Kỷ lục: 0 vòng</span>
+            </button>
+            <button type="button" class="mode-board-link" id="board-link-see">Xem bảng xếp hạng →</button>
+          </div>
+          <div class="mode-slot">
+            <button type="button" class="mode-card" id="mode-hear" aria-pressed="false">
+              <span class="mode-top">
+                <span class="mode-badge hard">Khó</span>
+                <span class="mode-check" aria-hidden="true">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5" /></svg>
+                </span>
               </span>
-            </span>
-            <span class="mode-name">Chỉ Nghe</span>
-            <span class="mode-desc">Phím không sáng — phải mò bằng tai. Kỷ lục tính riêng.</span>
-            <span class="mode-best" id="best-hear">Kỷ lục: 0 nốt</span>
-          </button>
+              <span class="mode-name">Chỉ Nghe</span>
+              <span class="mode-desc">Phím không sáng — phải mò bằng tai. Kỷ lục tính riêng.</span>
+              <span class="mode-best" id="best-hear">Kỷ lục: 0 vòng</span>
+            </button>
+            <button type="button" class="mode-board-link" id="board-link-hear">Xem bảng xếp hạng →</button>
+          </div>
         </div>
 
         <button type="button" class="btn-primary" id="start-btn" disabled>Đang tải âm thanh…</button>
@@ -1491,6 +1607,7 @@
 
           <div class="over-actions">
             <button type="button" class="btn-primary" id="again-btn">Chơi Lại</button>
+            <button type="button" class="btn-ghost" id="board-link-over">Xem bảng xếp hạng</button>
             <button type="button" class="btn-ghost" id="back-menu-btn">Đổi chế độ</button>
           </div>
         </div>
@@ -1498,6 +1615,35 @@
     </main>
 
     <p class="footnote">Tiếng đàn lấy từ bộ mẫu guitar dây thép FluidR3_GM (CC BY 3.0).</p>
+
+    <!-- Hỏi biệt danh đúng MỘT lần trước khi vào chơi lần đầu — biệt danh
+         này gắn với điểm nộp lên bảng xếp hạng ẩn danh (không cần đăng nhập,
+         chỉ cần một tên hiển thị). -->
+    <div class="modal-backdrop" id="nickname-modal" hidden>
+      <div class="modal-card">
+        <h2 class="modal-title">Bạn tên gì?</h2>
+        <p class="modal-note">Đặt tên để hiện trên bảng xếp hạng — chỉ hỏi đúng một lần, không cần đăng nhập.</p>
+        <form id="nickname-form">
+          <input type="text" class="modal-input" id="nickname-input" maxlength="24" placeholder="Tên của bạn" autocomplete="off" required />
+          <button type="submit" class="btn-primary">Vào Chơi</button>
+        </form>
+      </div>
+    </div>
+
+    <!-- Bảng xếp hạng ẩn danh, tách riêng theo từng chế độ. Mở từ nút dưới
+         mỗi thẻ chế độ ở màn chọn, hoặc từ màn kết thúc sau khi chơi xong. -->
+    <div class="modal-backdrop" id="board-modal" hidden>
+      <div class="modal-card">
+        <div class="modal-head">
+          <h2 class="modal-title" id="board-title">Bảng xếp hạng</h2>
+          <button type="button" class="modal-close" id="board-close-btn" aria-label="Đóng bảng xếp hạng">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6 6 18M6 6l12 12" /></svg>
+          </button>
+        </div>
+        <p class="board-status" id="board-status">Đang tải…</p>
+        <ol class="board-list" id="board-list" hidden></ol>
+      </div>
+    </div>
 
     <script type="module" src="/src/luyen-cam-am.js"></script>
   </body>
