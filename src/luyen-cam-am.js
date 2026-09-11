@@ -47,14 +47,18 @@ const HEART_CAP = 5
 /**
  * Cơ Hội Cuối: nghe nốt ẩn đúng MỘT lần, không được nghe lại, không được bấm
  * thử — bấm phím nào là chốt đáp án đó ngay, đúng/sai biết liền. Vòng 1 rộng
- * rãi 3 giây để làm quen, các vòng sau siết còn 2 giây vì độ khó lúc này
- * chủ yếu tới từ số tim đang cược (dừng lại hay liều đi tiếp), không phải
- * từ bài toán tự nó khó hơn.
+ * rãi 3 giây để làm quen, vòng 2-3 siết còn 2 giây, vòng 4-5 chỉ còn 1 giây
+ * — phản xạ tức thì, gần như không kịp nghĩ, đúng chất "cơ hội cuối".
  */
 const LC_TOTAL_LEVELS = 5
 const LC_SECONDS_FIRST = 3
 const LC_SECONDS_LATER = 2
-const secondsForLevel = (level) => (level === 0 ? LC_SECONDS_FIRST : LC_SECONDS_LATER)
+const LC_SECONDS_FAST = 1
+const secondsForLevel = (level) => {
+  if (level === 0) return LC_SECONDS_FIRST
+  if (level >= 3) return LC_SECONDS_FAST
+  return LC_SECONDS_LATER
+}
 
 // ==========================================================================
 // ÂM THANH
@@ -507,6 +511,7 @@ const playNowBtn = document.getElementById('play-now-btn')
 const skipWarmupBtn = document.getElementById('skip-warmup-btn')
 
 const lcBar = document.getElementById('lc-bar')
+const lcExitBtn = document.getElementById('lc-exit-btn')
 const lcLevelEl = document.getElementById('lc-level')
 const lcNote = document.getElementById('lc-note')
 const lcTimerBar = document.getElementById('lc-timerbar')
@@ -568,8 +573,8 @@ function setStatus(text, tone = '') {
 }
 
 function refreshBestLabels() {
-  bestSeeLabel.textContent = `Kỷ lục: ${getBest('see')} nốt`
-  bestHearLabel.textContent = `Kỷ lục: ${getBest('hear')} nốt`
+  bestSeeLabel.textContent = `Kỷ lục: ${getBest('see')} vòng`
+  bestHearLabel.textContent = `Kỷ lục: ${getBest('hear')} vòng`
 }
 
 const modeName = (which) => (which === 'see' ? 'Nhìn & Nghe' : 'Chỉ Nghe')
@@ -924,7 +929,6 @@ function handlePadPress(noteId) {
 
 function completeRound() {
   phase = 'idle'
-  longest = sequence.length
   streak += 1
   setPadsEnabled(false)
   updateGlow()
@@ -932,7 +936,11 @@ function completeRound() {
   // không đợi tới lúc bắt đầu vòng kế mới cập nhật. +1 vì sequence.length -
   // START_LENGTH đếm số nốt CHUỖI ĐÃ DÀI RA, còn vòng vừa qua (từ độ dài
   // START_LENGTH) cũng phải tính là một vòng đã hoàn thành.
-  setPoints(sequence.length - START_LENGTH + 1)
+  // longest dùng chung đúng công thức này — trước đây gán thẳng bằng
+  // sequence.length nên luôn lệch 1 so với con số Điểm hiển thị lúc chơi.
+  const round = sequence.length - START_LENGTH + 1
+  longest = round
+  setPoints(round)
   celebrateRound()
   setStatus('Chuẩn luôn!', 'good')
   setTimeout(startRound, 1400)
@@ -1065,7 +1073,7 @@ async function startLastChance() {
 
   phase = 'lc-intro'
   lcLevelEl.textContent = `Vòng 1 / ${LC_TOTAL_LEVELS}`
-  lcNote.innerHTML = `Mỗi vòng nghe một nốt ẩn — chỉ nghe được đúng <strong>1 lần</strong>, không được nghe lại. Bấm phím nào là chốt đáp án đó ngay: thắng một vòng là nhận <strong>1 tim</strong>. Vòng 1 có <strong>${LC_SECONDS_FIRST} giây</strong>, các vòng sau còn <strong>${LC_SECONDS_LATER} giây</strong>.`
+  lcNote.innerHTML = `Mỗi vòng nghe một nốt ẩn — chỉ nghe được đúng <strong>1 lần</strong>, không được nghe lại. Bấm phím nào là chốt đáp án đó ngay: thắng một vòng là nhận <strong>1 tim</strong>. Vòng 1 có <strong>${LC_SECONDS_FIRST} giây</strong>, vòng 2-3 còn <strong>${LC_SECONDS_LATER} giây</strong>, vòng 4-5 chỉ còn <strong>${LC_SECONDS_FAST} giây</strong>.`
   lcTimerBar.hidden = true
   lcStartBtn.hidden = false
   setHubLabel('')
@@ -1221,8 +1229,8 @@ function endGame() {
     overEmoji.textContent = longest >= 10 ? '🏆' : longest >= 6 ? '🎧' : '🎸'
     overSub.textContent =
       longest === 0
-        ? 'Chưa lặp được nốt nào — thử lại nhé!'
-        : `Bạn lặp lại đúng chuỗi ${longest} nốt`
+        ? 'Chưa qua được vòng nào — thử lại nhé!'
+        : `Bạn qua được ${longest} vòng`
     // Gợi ý thẳng tên chế độ còn lại: nhiều người chơi hết một lượt rồi mới
     // biết là có tới hai chế độ.
     backMenuBtn.textContent = `Thử chế độ ${modeName(otherMode(mode))}`
@@ -1343,6 +1351,14 @@ lcStartBtn.addEventListener('click', () => {
 
 // Hai lối thoát ngay trong lúc chơi, thay cho việc phải chơi cho tới chết.
 backModesBtn.addEventListener('click', () => {
+  abortGame()
+  refreshBestLabels()
+  showScreen('start')
+})
+
+// Cơ Hội Cuối ẩn game-nav đi (xem setLastChanceUI/beginPlaying), nên cần lối
+// thoát riêng ngay trong dải nhãn đỏ — cùng hành vi với backModesBtn.
+lcExitBtn.addEventListener('click', () => {
   abortGame()
   refreshBestLabels()
   showScreen('start')

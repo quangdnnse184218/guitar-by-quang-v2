@@ -837,6 +837,23 @@
         gap: 10px;
         margin-bottom: 6px;
       }
+      .lc-bar-top-left { display: flex; align-items: center; gap: 10px; min-width: 0; }
+      .lc-exit-btn {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        width: 26px;
+        height: 26px;
+        flex-shrink: 0;
+        color: #e8c9c5;
+        background: transparent;
+        border: 1.5px solid color-mix(in srgb, var(--lc-red) 55%, transparent);
+        border-radius: 50%;
+        cursor: pointer;
+        transition: color 0.15s, border-color 0.15s;
+      }
+      .lc-exit-btn:hover { color: #fff; border-color: var(--lc-red); }
+      .lc-exit-btn svg { width: 12px; height: 12px; flex-shrink: 0; }
       .lc-chip {
         font-family: 'Montserrat', sans-serif;
         font-weight: 900;
@@ -898,6 +915,14 @@
         background: radial-gradient(circle, color-mix(in srgb, var(--lc-red) 30%, transparent) 0%, transparent 64%);
       }
       #screen-game.is-lastchance .status.turn { color: var(--lc-red); }
+
+      /* Trên điện thoại, thanh âm lượng ghim cố định ở góc trên-phải đè lên
+         dải nhãn đỏ của Cơ Hội Cuối (vì dải nhãn nằm ngay sát mép trên) —
+         ẩn hẳn nó đi lúc này, giờ đã có nút thoát riêng trong dải nhãn nên
+         không mất lối ra nào cả. Trên máy tính thanh âm lượng nằm cố định
+         trong cột bên, không đè lên gì nên vẫn hiện bình thường (xem
+         @media min-width: 900px bên dưới). */
+      #screen-game.is-lastchance .volume-box { display: none; }
 
       .lc-choice { margin-top: 13px; display: flex; flex-direction: column; gap: 9px; }
       .lc-choice-q { margin: 0; text-align: center; font-size: 14px; color: #e8c9c5; }
@@ -1046,10 +1071,15 @@
            thành dọc và cao hơn hẳn bản ghim tạm trên điện thoại. */
         .volume-box {
           position: static;
+          width: fit-content;
+          margin: 0 auto;
           border-radius: 18px;
           padding: 16px 15px;
           box-shadow: var(--shadow-soft);
         }
+        /* Trên máy tính thanh này nằm cố định trong cột bên, không đè lên
+           dải nhãn Cơ Hội Cuối như trên điện thoại — luôn hiện bình thường. */
+        #screen-game.is-lastchance .volume-box { display: flex; }
         .volume-track { height: 100px; }
         .volume-slider { width: 100px; }
 
@@ -1304,8 +1334,15 @@
         <!-- Dải Cơ Hội Cuối, thay chỗ bảng điểm y như dải nghe làm quen -->
         <div class="lc-bar" id="lc-bar" hidden>
           <div class="lc-bar-top">
-            <span class="lc-chip">Cơ hội cuối</span>
-            <span class="lc-level" id="lc-level">Vòng 1 / 5</span>
+            <div class="lc-bar-top-left">
+              <span class="lc-chip">Cơ hội cuối</span>
+              <span class="lc-level" id="lc-level">Vòng 1 / 5</span>
+            </div>
+            <!-- game-nav (nút quay lại) bị ẩn suốt lúc Cơ Hội Cuối, nên cần
+                 lối thoát riêng ngay trong dải nhãn đỏ này. -->
+            <button type="button" class="lc-exit-btn" id="lc-exit-btn" title="Thoát" aria-label="Thoát Cơ Hội Cuối, quay lại chọn chế độ">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6 6 18M6 6l12 12" /></svg>
+            </button>
           </div>
           <p class="lc-note" id="lc-note">Nghe nốt ẩn rồi bấm đúng phím đó.</p>
           <!-- Thanh đèn xanh tuột dần thay cho ô tròn có số — đổi vị trí xuống
