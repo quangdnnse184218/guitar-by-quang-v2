@@ -42,22 +42,16 @@ const BEST_KEY_PREFIX = 'gbq_camam_best_'
 // LUẬT CHƠI — mấy con số này là thứ cần vặn nhiều nhất khi chơi thử
 // ==========================================================================
 const START_HEARTS = 1
-/** Trần tim cộng từ mốc chuỗi. Chỉ Cơ Hội Cuối mới đẩy được lên HEART_CAP. */
-const MILESTONE_HEART_CAP = 3
 const HEART_CAP = 5
-/** Cứ qua mốc chuỗi bội số của số này thì được thêm một tim. */
-const MILESTONE_EVERY = 5
 
 /**
  * Cơ Hội Cuối: nghe nốt ẩn đúng MỘT lần, không được nghe lại, không được bấm
  * thử — bấm phím nào là chốt đáp án đó ngay, đúng/sai biết liền. Cả 5 vòng
  * cùng một mức thời gian; độ khó tăng dần thuần tuý qua số tim đang cược
- * (ăn non hay liều đi tiếp), không qua việc bài toán tự nó khó hơn.
+ * (dừng lại hay liều đi tiếp), không qua việc bài toán tự nó khó hơn.
  */
 const LC_TOTAL_LEVELS = 5
 const LC_SECONDS = 3
-/** Chu vi vòng đồng hồ bán kính 25 trong viewBox 100 = 2·π·25 */
-const RING_CIRCUMFERENCE = 157.08
 
 // ==========================================================================
 // ÂM THANH
@@ -311,24 +305,8 @@ function playNoise({ at = 0, duration = 0.08, peak = 0.2, filterType = 'bandpass
   source.stop(t + duration + 0.03)
 }
 
-/**
- * Thang ngũ cung từ C6 trở lên. Mỗi vòng qua được thì tiếng thưởng leo lên một
- * bậc — tai muốn nghe nốt tiếp theo, mà muốn nghe thì phải qua thêm một vòng
- * nữa. Ngũ cung nên leo bao nhiêu bậc cũng không bao giờ nghịch tai.
- */
-const STREAK_SCALE = [
-  1046.5, 1174.66, 1318.51, 1567.98, 1760, 2093, 2349.32, 2637.02, 3135.96, 3520, 4186.01, 4698.64,
-]
-
-function playStreakNote(step) {
-  const index = Math.min(Math.max(step, 0), STREAK_SCALE.length - 1)
-  const freq = STREAK_SCALE[index]
-  playBlip(freq, 0, 0.22, 'triangle', 0.17)
-  playBlip(freq * 2, 0.014, 0.13, 'sine', 0.05)
-}
-
-/** Chuỗi âm leo mãi cuối cùng được giải quyết: rải hợp âm kết về quãng tám. */
-function playMilestoneChord() {
+/** Qua mỗi vòng: rải một hợp âm sáng về quãng tám, đúng kiểu tiếng "chuẩn luôn". */
+function playRoundChord() {
   const chord = [1046.5, 1318.51, 1567.98, 2093]
   chord.forEach((freq, i) => playBlip(freq, i * 0.075, 0.55, 'triangle', 0.15))
   playBlip(2093, 0.34, 0.7, 'sine', 0.09)
@@ -580,16 +558,15 @@ const skipWarmupBtn = document.getElementById('skip-warmup-btn')
 const lcBar = document.getElementById('lc-bar')
 const lcLevelEl = document.getElementById('lc-level')
 const lcNote = document.getElementById('lc-note')
-const lcRing = document.getElementById('lc-ring')
-const lcRingFill = document.getElementById('lc-ring-fill')
-const lcCountdown = document.getElementById('lc-countdown')
+const lcTimerBar = document.getElementById('lc-timerbar')
+const lcTimerFill = document.getElementById('lc-timerbar-fill')
+const lcStartBtn = document.getElementById('lc-start-btn')
 const lcChoice = document.getElementById('lc-choice')
 const lcStake = document.getElementById('lc-stake')
 const lcStopBtn = document.getElementById('lc-stop-btn')
 const lcNextBtn = document.getElementById('lc-next-btn')
 const lcVignette = document.getElementById('lc-vignette')
 
-const flashEl = document.getElementById('flash')
 const confettiEl = document.getElementById('confetti')
 
 const overEmoji = document.getElementById('over-emoji')
@@ -621,7 +598,6 @@ let lcSecret = null
 let lcTimeoutId = null
 let lcTickId = null
 let lcDeadline = 0
-let lcCountdownId = null
 
 const wait = (ms) => new Promise((resolve) => setTimeout(resolve, ms))
 const noteLabel = (id) => (NOTES.find((n) => n.id === id) || {}).label || ''
@@ -706,11 +682,30 @@ function gapForRound() {
   return Math.max(MIN_GAP_MS, BASE_GAP_MS - (round - 1) * GAP_STEP_MS)
 }
 
-function randomNoteId(exclude) {
-  let candidates = NOTES.map((n) => n.id)
-  // Tránh lặp lại ngay nốt vừa phát: hai nốt giống hệt liền nhau rất khó đếm bằng tai.
-  if (exclude) candidates = candidates.filter((id) => id !== exclude)
-  return candidates[Math.floor(Math.random() * candidates.length)]
+/**
+ * Chọn nốt kế tiếp cho chuỗi. Hai luật:
+ * 1. Không lặp lại ngay nốt vừa phát — hai nốt giống hệt liền nhau rất khó
+ *    đếm bằng tai.
+ * 2. Kiểu đổi qua đổi lại giữa hai nốt (A-B-A) chỉ được phép đúng một lần:
+ *    nếu ba nốt cuối đã là A-B-A rồi thì nốt thứ tư không được là A hay B
+ *    nữa, bắt buộc phải là một nốt khác hẳn — tránh kiểu "đô rê đô rê đô fa"
+ *    quá dễ đoán và không công bằng.
+ */
+function pickNextNote(sequence) {
+  const ids = NOTES.map((n) => n.id)
+  const last = sequence[sequence.length - 1]
+  const prev = sequence[sequence.length - 2]
+  const prev2 = sequence[sequence.length - 3]
+
+  const exclude = new Set()
+  if (last) exclude.add(last)
+  if (prev2 !== undefined && prev !== undefined && prev2 === last && prev !== last) {
+    exclude.add(prev)
+  }
+
+  const candidates = ids.filter((id) => !exclude.has(id))
+  const pool = candidates.length > 0 ? candidates : ids.filter((id) => id !== last)
+  return pool[Math.floor(Math.random() * pool.length)]
 }
 
 // ==========================================================================
@@ -762,9 +757,6 @@ function resetHearts(count) {
 function gainHeart(amount = 1, cap = HEART_CAP) {
   const before = hearts
   // Trần chỉ chặn việc cộng thêm, tuyệt đối không được cắt bớt số tim đang có.
-  // Nếu dùng thẳng Math.min(cap, ...) thì ai ăn đủ 5 tim ở Cơ Hội Cuối rồi chạm
-  // mốc chuỗi (trần 3) sẽ bị tụt từ 5 xuống 3, mà số tim vẽ trên màn hình vẫn
-  // là 5 — trạng thái và giao diện lệch nhau.
   hearts = Math.max(before, Math.min(cap, before + amount))
   for (let i = 0; i < hearts - before; i++) addHeartEl(true)
   return hearts - before
@@ -793,12 +785,6 @@ function setPoints(value) {
 /** Chuỗi càng dài, vòng phím càng "nóng" lên. */
 function updateGlow() {
   ttGlow.style.opacity = String(Math.min(1, streak / 8) * 0.85)
-}
-
-function flashScreen() {
-  flashEl.classList.remove('go')
-  void flashEl.offsetWidth
-  flashEl.classList.add('go')
 }
 
 /** Bảy phím sáng lần lượt vòng quanh, như pháo hoa. */
@@ -873,7 +859,7 @@ async function playSequence() {
 }
 
 function startRound() {
-  sequence.push(randomNoteId(sequence[sequence.length - 1]))
+  sequence.push(pickNextNote(sequence))
   playerIndex = 0
   renderProgressDots()
   playSequence()
@@ -948,7 +934,7 @@ function beginPlaying() {
   showScreen('game')
 
   for (let i = 0; i < START_LENGTH - 1; i++) {
-    sequence.push(randomNoteId(sequence[sequence.length - 1]))
+    sequence.push(pickNextNote(sequence))
   }
   startRound()
 }
@@ -991,35 +977,21 @@ function completeRound() {
   streak += 1
   setPadsEnabled(false)
   updateGlow()
-  playStreakNote(streak - 1)
   // Điểm = số vòng đã qua trót lọt, ghi và nháy sáng ngay lúc vừa ghi được —
-  // không đợi tới lúc bắt đầu vòng kế mới cập nhật.
-  setPoints(sequence.length - START_LENGTH)
-
-  const reachedMilestone = sequence.length % MILESTONE_EVERY === 0
-  if (reachedMilestone) {
-    celebrateMilestone()
-    setTimeout(startRound, 1500)
-  } else {
-    setStatus('Chuẩn luôn!', 'good')
-    setTimeout(startRound, 900)
-  }
+  // không đợi tới lúc bắt đầu vòng kế mới cập nhật. +1 vì sequence.length -
+  // START_LENGTH đếm số nốt CHUỖI ĐÃ DÀI RA, còn vòng vừa qua (từ độ dài
+  // START_LENGTH) cũng phải tính là một vòng đã hoàn thành.
+  setPoints(sequence.length - START_LENGTH + 1)
+  celebrateRound()
+  setStatus('Chuẩn luôn!', 'good')
+  setTimeout(startRound, 1400)
 }
 
-function celebrateMilestone() {
-  flashScreen()
+/** Sau mỗi vòng qua được: pháo hoa bảy phím sáng vòng quanh, kèm hợp âm kết. */
+function celebrateRound() {
   ripplePads()
-  playMilestoneChord()
+  playRoundChord()
   vibrate([30, 50, 30])
-
-  const gained = gainHeart(1, MILESTONE_HEART_CAP)
-  if (gained > 0) {
-    playHeartThump(0.55, 0.24)
-    playHeartThump(0.74, 0.16)
-    setStatus(`Mốc ${sequence.length} nốt — thêm một tim!`, 'good')
-  } else {
-    setStatus(`Mốc ${sequence.length} nốt — tim đã đầy!`, 'good')
-  }
 }
 
 function handleMistake() {
@@ -1070,8 +1042,6 @@ function setLastChanceUI(active) {
   screens.game.classList.toggle('is-lastchance', active)
   lcBar.hidden = !active
   lcVignette.hidden = !active
-  lcRing.hidden = !active
-  lcCountdown.hidden = !active
   lcChoice.hidden = true
   hud.hidden = active
   gameNav.hidden = active
@@ -1081,40 +1051,29 @@ function setLastChanceUI(active) {
   if (!active) {
     setHubLabel('')
     stopLcTimer()
+    lcTimerBar.hidden = true
+    lcStartBtn.hidden = true
   }
 }
 
-function resetRing() {
-  lcRingFill.style.transition = 'none'
-  lcRingFill.style.strokeDashoffset = '0'
-}
-
 /**
- * Đồng hồ 3 giây phẳng cho cả 5 vòng. Vòng sáng chạy quanh tai nghe (nhìn
- * trực quan) cộng ô số đếm ngược nguyên giây (biết chính xác còn bao lâu) —
- * cả hai cùng dựa trên một lcDeadline duy nhất nên luôn khớp nhau.
+ * Đồng hồ 3 giây phẳng cho cả 5 vòng. Thanh đèn xanh lá tuột dần từ đầy về
+ * hết dựa trên một lcDeadline duy nhất, nên luôn khớp chính xác với thời
+ * điểm hết giờ thật.
  */
 function startLcTimer(seconds) {
   stopLcTimer()
   lcDeadline = performance.now() + seconds * 1000
 
-  lcRingFill.style.transition = 'none'
-  lcRingFill.style.strokeDashoffset = '0'
-  void lcRingFill.getBoundingClientRect()
-  lcRingFill.style.transition = `stroke-dashoffset ${seconds}s linear`
-  lcRingFill.style.strokeDashoffset = String(RING_CIRCUMFERENCE)
+  lcTimerBar.hidden = false
+  lcTimerFill.style.transition = 'none'
+  lcTimerFill.style.width = '100%'
+  void lcTimerFill.getBoundingClientRect()
+  lcTimerFill.style.transition = `width ${seconds}s linear`
+  lcTimerFill.style.width = '0%'
 
-  lcCountdown.textContent = String(seconds)
   scheduleClockTick()
-  updateLcCountdownNumber()
   lcTimeoutId = setTimeout(handleLcTimeout, seconds * 1000)
-}
-
-function updateLcCountdownNumber() {
-  const remain = lcDeadline - performance.now()
-  lcCountdown.textContent = String(Math.max(0, Math.ceil(remain / 1000)))
-  if (remain <= 50) return
-  lcCountdownId = setTimeout(updateLcCountdownNumber, 100)
 }
 
 function scheduleClockTick() {
@@ -1131,16 +1090,18 @@ function scheduleClockTick() {
 function stopLcTimer() {
   clearTimeout(lcTimeoutId)
   clearTimeout(lcTickId)
-  clearTimeout(lcCountdownId)
   lcTimeoutId = null
   lcTickId = null
-  lcCountdownId = null
-  // Đóng băng vòng sáng đúng chỗ nó đang chạy tới.
-  const current = getComputedStyle(lcRingFill).strokeDashoffset
-  lcRingFill.style.transition = 'none'
-  lcRingFill.style.strokeDashoffset = current
+  // Đóng băng thanh đèn đúng chỗ nó đang tuột tới.
+  const current = getComputedStyle(lcTimerFill).width
+  lcTimerFill.style.transition = 'none'
+  lcTimerFill.style.width = current
 }
 
+/**
+ * Trước khi vào vòng 1, dừng lại ở màn hình luật chơi (chữ "Bắt Đầu") để
+ * người chơi đọc kỹ trước khi bấm — tránh vào thẳng mà chưa hiểu luật.
+ */
 async function startLastChance() {
   lastChanceUsed = true
   lcLevel = 0
@@ -1151,7 +1112,14 @@ async function startLastChance() {
   startDrone(0)
   await wait(350)
   if (token !== playToken) return
-  runLastChanceLevel()
+
+  phase = 'lc-intro'
+  lcLevelEl.textContent = `Vòng 1 / ${LC_TOTAL_LEVELS}`
+  lcNote.innerHTML = `Mỗi vòng nghe một nốt ẩn — chỉ nghe được đúng <strong>1 lần</strong>, không được nghe lại. Bấm phím nào là chốt đáp án đó ngay, trong <strong>${LC_SECONDS} giây</strong>.`
+  lcTimerBar.hidden = true
+  lcStartBtn.hidden = false
+  setHubLabel('')
+  setStatus('Đọc kỹ luật rồi bấm Bắt Đầu', 'turn')
 }
 
 /**
@@ -1167,10 +1135,10 @@ async function runLastChanceLevel() {
   lcLevelEl.textContent = `Vòng ${lcLevel + 1} / ${LC_TOTAL_LEVELS}`
   lcNote.innerHTML =
     lcLevel === 0
-      ? `Nghe kỹ nốt ẩn — chỉ nghe được đúng 1 lần. Bấm đúng phím trong ${LC_SECONDS} giây, <strong>không có gợi ý cao thấp</strong>.`
+      ? `Nghe kỹ nốt ẩn nhé…`
       : `Đang giữ <strong>${lcPending} tim</strong> — bấm đúng phím trong ${LC_SECONDS} giây, sai là mất sạch.`
   lcChoice.hidden = true
-  resetRing()
+  lcTimerBar.hidden = true
   setPadsEnabled(false)
   setHubLabel('Nghe<small>nốt ẩn</small>')
   setStatus('Nghe kỹ nốt ẩn…')
@@ -1198,6 +1166,7 @@ function handleLastChancePad(noteId) {
   stopLcTimer()
   phase = 'idle'
   setPadsEnabled(false)
+  playNote(noteId)
   litPad(noteId)
   if (noteId === lcSecret) onLcWin()
   else onLcLose('Sai rồi')
@@ -1229,7 +1198,7 @@ function onLcWin() {
     lcChoice.hidden = false
     lcStake.textContent = `${lcPending} tim`
     lcNextBtn.textContent = `Đi tiếp · vòng ${lcLevel + 2}`
-    setStatus('Ăn non hay liều thêm?', 'turn')
+    setStatus('Dừng lại hay liều thêm?', 'turn')
     // Tiếng ù hạ xuống, chỉ còn nhịp tim chậm: im ắng, căng, không hối thúc.
     setDroneVolume(0.035)
     startHeartbeatLoop()
@@ -1264,7 +1233,7 @@ function finishLastChance() {
   const won = lcPending
   lcPending = 0
   setLastChanceUI(false)
-  gainHeart(won, HEART_CAP)
+  gainHeart(won)
   phase = 'idle'
   setStatus(won === 1 ? 'Được cứu — chơi tiếp!' : `Được cứu với ${won} tim — chơi tiếp!`, 'good')
   setTimeout(() => {
@@ -1422,6 +1391,12 @@ lcStopBtn.addEventListener('click', () => {
   finishLastChance()
 })
 lcNextBtn.addEventListener('click', goToNextLcLevel)
+
+lcStartBtn.addEventListener('click', () => {
+  if (phase !== 'lc-intro') return
+  lcStartBtn.hidden = true
+  runLastChanceLevel()
+})
 
 // Hai lối thoát ngay trong lúc chơi, thay cho việc phải chơi cho tới chết.
 backModesBtn.addEventListener('click', () => {
