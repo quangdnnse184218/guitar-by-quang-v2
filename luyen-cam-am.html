@@ -3,8 +3,8 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Game Luyện Cảm Âm — Nghe Rồi Lặp Lại | Guitar By Quang</title>
-    <meta name="description" content="Game luyện cảm âm miễn phí: nghe chuỗi nốt guitar rồi lặp lại đúng thứ tự, chuỗi càng dài càng khó. Đủ 7 nốt Đồ Rê Mi Fa Sol La Si, có chế độ Chỉ Nghe để luyện tai thật sự." />
+    <title>Game Luyện Cảm Âm Và Trí Nhớ | Guitar By Quang</title>
+    <meta name="description" content="Game luyện cảm âm và trí nhớ: nghe chuỗi nốt guitar rồi lặp lại đúng thứ tự, chuỗi càng dài càng khó. Đủ 7 nốt Đồ Rê Mi Fa Sol La Si, có chế độ Chỉ Nghe để luyện tai thật sự." />
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
 
     <link rel="preconnect" href="https://fonts.googleapis.com" />
@@ -151,9 +151,11 @@
       @keyframes fade-in { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: none; } }
 
       /* ===================== Màn hình mở đầu ===================== */
+      /* Tai nghe cố tình to: đây là thứ nói ngay từ cái nhìn đầu tiên rằng
+         game này chơi bằng tai chứ không phải bằng mắt. */
       .hero-mark {
-        width: 92px;
-        height: 92px;
+        width: 118px;
+        height: 118px;
         margin: 0 auto 18px;
         border-radius: 50%;
         background: linear-gradient(150deg, var(--panel), var(--panel-hi));
@@ -164,7 +166,7 @@
         box-shadow: var(--shadow-lift);
         animation: bob 3.6s ease-in-out infinite;
       }
-      .hero-mark svg { width: 46px; height: 46px; }
+      .hero-mark svg { width: 60px; height: 60px; }
       @keyframes bob {
         0%, 100% { transform: translateY(0); }
         50% { transform: translateY(-6px); }
@@ -173,7 +175,7 @@
       h1 {
         font-family: 'Montserrat', sans-serif;
         font-weight: 900;
-        font-size: clamp(29px, 8.6vw, 41px);
+        font-size: clamp(25px, 7.4vw, 36px);
         letter-spacing: 0.01em;
         text-transform: uppercase;
         text-align: center;
@@ -336,36 +338,6 @@
         transition: color 0.15s, border-color 0.15s;
       }
       .btn-ghost:hover { color: var(--ink); border-color: var(--ink-faint); }
-
-      .sound-test {
-        margin-top: 10px;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        gap: 8px;
-      }
-      .sound-test svg { width: 16px; height: 16px; flex-shrink: 0; }
-      .sound-test:disabled { opacity: 0.5; cursor: default; }
-
-      .audio-warn {
-        margin: 12px 0 0;
-        padding: 11px 13px;
-        border-radius: 12px;
-        background: color-mix(in srgb, var(--teach) 10%, var(--panel));
-        border: 1px solid color-mix(in srgb, var(--teach) 38%, transparent);
-        font-size: 12.5px;
-        line-height: 1.55;
-        color: var(--ink-dim);
-      }
-      .audio-warn strong { color: var(--ink); font-weight: 800; }
-      .audio-state {
-        display: block;
-        margin-top: 7px;
-        font-size: 11.5px;
-        font-weight: 700;
-        color: var(--teach);
-      }
-      .audio-state:empty { display: none; }
 
       /* ===================== Màn hình chơi ===================== */
       .hud {
@@ -584,25 +556,26 @@
       }
       .progress-dot.done { background: var(--gold-solid); transform: scale(1.15); }
 
-      .replay-row { margin-top: 14px; display: flex; justify-content: center; }
-      #replay-btn {
+      /* Hai lối thoát trong lúc chơi: đổi chế độ và chơi lại ván mới */
+      .game-nav { margin-top: 14px; display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+      .nav-btn {
         display: inline-flex;
         align-items: center;
-        gap: 8px;
+        justify-content: center;
+        gap: 6px;
         font-family: inherit;
-        font-size: 13px;
+        font-size: 12.5px;
         font-weight: 700;
         color: var(--ink-dim);
         background: var(--panel);
         border: 1px solid var(--line-strong);
         border-radius: 999px;
-        padding: 10px 18px;
+        padding: 10px 8px;
         cursor: pointer;
-        transition: color 0.15s, border-color 0.15s, opacity 0.15s;
+        transition: color 0.15s, border-color 0.15s;
       }
-      #replay-btn:hover:not(:disabled) { color: var(--gold); border-color: var(--gold); }
-      #replay-btn:disabled { opacity: 0.4; cursor: default; }
-      #replay-btn svg { width: 14px; height: 14px; }
+      .nav-btn:hover { color: var(--gold); border-color: var(--gold); }
+      .nav-btn svg { width: 13px; height: 13px; flex-shrink: 0; }
 
       .shake { animation: shake 0.42s ease; }
       @keyframes shake {
@@ -744,6 +717,214 @@
         pointer-events: none;
       }
 
+      /* Quầng sáng đậm dần theo chuỗi: đặt thành phần tử riêng nằm trước các
+         phím trong DOM để nó luôn vẽ phía dưới phím, chứ dùng ::after thì nó
+         phủ lên trên và làm đục màu phím. */
+      .tt-glow {
+        position: absolute;
+        inset: -7%;
+        border-radius: 50%;
+        pointer-events: none;
+        opacity: 0;
+        background: radial-gradient(circle, color-mix(in srgb, var(--gold-solid) 34%, transparent) 0%, transparent 62%);
+        transition: opacity 0.6s ease;
+      }
+
+      /* ===================== Tim ===================== */
+      .hearts { display: inline-flex; align-items: center; gap: 5px; min-height: 21px; }
+      .heart { width: 19px; height: 19px; color: var(--bad); flex-shrink: 0; }
+      .heart svg { display: block; width: 100%; height: 100%; }
+      .heart.gained { animation: heart-gain 0.55s cubic-bezier(0.2, 1.5, 0.5, 1) both; }
+      .heart.lost { animation: heart-break 0.5s ease forwards; }
+      /* Còn đúng một tim thì nó đập đều như nhịp tim thật — lời nhắc thường
+         trực rằng đang đi trên dây, không cần một chữ nào. */
+      .heart.last { animation: heart-beat 1.15s ease-in-out infinite; }
+
+      @keyframes heart-gain {
+        from { transform: scale(0) translateY(9px); opacity: 0; }
+        to { transform: scale(1) translateY(0); opacity: 1; }
+      }
+      @keyframes heart-break {
+        0% { transform: scale(1) rotate(0); opacity: 1; }
+        28% { transform: scale(1.22) rotate(-7deg); }
+        100% { transform: scale(0.45) rotate(24deg) translateY(15px); opacity: 0; }
+      }
+      @keyframes heart-beat {
+        0%, 100% { transform: scale(1); }
+        12% { transform: scale(1.24); }
+        24% { transform: scale(1); }
+        36% { transform: scale(1.13); }
+        50% { transform: scale(1); }
+      }
+
+      .hud-cell-hearts { text-align: center; }
+      .hud-cell-mode { display: none; }
+
+      /* ===================== Cơ Hội Cuối ===================== */
+      .lc-bar {
+        background: color-mix(in srgb, var(--bad) 12%, var(--panel));
+        border: 1.5px solid color-mix(in srgb, var(--bad) 48%, transparent);
+        border-radius: 14px;
+        padding: 12px 14px;
+        margin-bottom: 14px;
+      }
+      .lc-bar-top {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 10px;
+        margin-bottom: 6px;
+      }
+      .lc-chip {
+        font-family: 'Montserrat', sans-serif;
+        font-weight: 900;
+        font-size: 10.5px;
+        letter-spacing: 0.12em;
+        text-transform: uppercase;
+        color: #fff;
+        background: var(--bad);
+        border-radius: 999px;
+        padding: 4px 11px;
+      }
+      .lc-level {
+        font-family: 'Montserrat', sans-serif;
+        font-weight: 900;
+        font-size: 13px;
+        color: var(--bad);
+        font-variant-numeric: tabular-nums;
+      }
+      .lc-note { margin: 0; font-size: 12.5px; line-height: 1.5; color: var(--ink-dim); }
+      .lc-note strong { color: var(--bad); font-weight: 800; }
+
+      /* Đồng hồ vòng sáng quanh tai nghe. Xoay -90deg để vạch bắt đầu ở đỉnh. */
+      .lc-ring {
+        position: absolute;
+        inset: 0;
+        width: 100%;
+        height: 100%;
+        transform: rotate(-90deg);
+        pointer-events: none;
+      }
+      .lc-ring-track { fill: none; stroke: var(--line-strong); stroke-width: 1.6; opacity: 0.5; }
+      .lc-ring-fill {
+        fill: none;
+        stroke: var(--gold-solid);
+        stroke-width: 2.8;
+        stroke-linecap: round;
+        /* Chu vi vòng bán kính 25 = 2·π·25 ≈ 157,08 */
+        stroke-dasharray: 157.08;
+        stroke-dashoffset: 0;
+      }
+      .lc-ring-fill.danger { stroke: var(--bad); }
+
+      .lc-probe {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 10px;
+        margin-top: 11px;
+      }
+      .lc-probe-key {
+        font-size: 9.5px;
+        font-weight: 800;
+        letter-spacing: 0.13em;
+        text-transform: uppercase;
+        color: var(--ink-faint);
+      }
+      .lc-probe-dots { display: inline-flex; gap: 6px; }
+      .probe-dot {
+        width: 9px;
+        height: 9px;
+        border-radius: 50%;
+        background: var(--gold-solid);
+        transition: background 0.2s, transform 0.2s;
+      }
+      .probe-dot.used { background: var(--line-strong); transform: scale(0.7); }
+
+      .lc-actions { margin-top: 12px; }
+
+      /* Lúc Cơ Hội Cuối có thêm dải nhãn, hàng chấm lượt dò và nút chốt, nên
+         vòng phím phải nhỏ lại để mọi thứ vẫn lọt trong một màn. */
+      #screen-game.is-lastchance .turntable {
+        width: min(100%, 380px, max(180px, calc(100vh - 430px)));
+        width: min(100%, 380px, max(180px, calc(100dvh - 430px)));
+      }
+
+      .lc-choice { margin-top: 13px; display: flex; flex-direction: column; gap: 9px; }
+      .lc-choice-q { margin: 0; text-align: center; font-size: 14px; color: var(--ink-dim); }
+      .lc-choice-q b { color: var(--gold); font-weight: 800; }
+      .lc-choice-btns { display: grid; grid-template-columns: 1fr 1fr; gap: 9px; }
+      .lc-choice-warn { margin: 0; text-align: center; font-size: 11.5px; color: var(--ink-faint); }
+
+      .pad.picked { outline: 3px solid var(--gold-solid); outline-offset: 4px; }
+      /* Nốt đúng hiện ra sau khi bấm sai — chỉ dùng ở chế độ Nhìn & Nghe */
+      .pad.reveal { animation: pad-reveal 0.85s ease 2; }
+      @keyframes pad-reveal {
+        0%, 100% { filter: brightness(var(--pad-rest)); transform: translate(-50%, -50%) scale(1); }
+        50% {
+          filter: brightness(1.2) saturate(1.2);
+          transform: translate(-50%, -50%) scale(1.11);
+          box-shadow: 0 0 0 5px color-mix(in srgb, var(--good) 52%, transparent), 0 0 26px var(--good);
+        }
+      }
+
+      .lc-vignette {
+        position: fixed;
+        inset: 0;
+        z-index: 5;
+        pointer-events: none;
+        background: radial-gradient(circle at 50% 47%, transparent 0%, transparent 24%, rgba(12, 6, 2, 0.66) 76%);
+        animation: fade-in-soft 0.5s ease both;
+      }
+      @keyframes fade-in-soft { from { opacity: 0; } to { opacity: 1; } }
+
+      /* Vòng phím và dải nhãn phải nổi lên trên lớp tối, mọi thứ khác chìm xuống */
+      #screen-game.is-lastchance .game-center,
+      #screen-game.is-lastchance .lc-bar { position: relative; z-index: 6; }
+
+      .tick-shake { animation: tick-shake 0.15s ease; }
+      @keyframes tick-shake {
+        0%, 100% { transform: translate(0, 0); }
+        35% { transform: translate(-2px, 1px); }
+        70% { transform: translate(2px, -1px); }
+      }
+
+      /* Chớp sáng khi chạm mốc chuỗi */
+      .flash {
+        position: fixed;
+        inset: 0;
+        z-index: 7;
+        pointer-events: none;
+        background: var(--gold-solid);
+        opacity: 0;
+      }
+      .flash.go { animation: flash-out 0.55s ease-out; }
+      @keyframes flash-out {
+        0% { opacity: 0.4; }
+        100% { opacity: 0; }
+      }
+
+      /* Pháo giấy khi phá kỷ lục */
+      .confetti { position: fixed; inset: 0; z-index: 8; pointer-events: none; overflow: hidden; }
+      .confetti:empty { display: none; }
+      .confetti i {
+        position: absolute;
+        top: -14px;
+        width: 8px;
+        height: 13px;
+        border-radius: 2px;
+        animation: confetti-fall linear forwards;
+      }
+      @keyframes confetti-fall {
+        to { transform: translateY(104vh) rotate(760deg); opacity: 0.1; }
+      }
+
+      .new-best { animation: best-pop 0.6s cubic-bezier(0.2, 1.5, 0.5, 1) both; }
+      @keyframes best-pop {
+        from { transform: scale(0.4); opacity: 0; }
+        to { transform: scale(1); opacity: 1; }
+      }
+
       /* ===================== Bố cục màn rộng (máy tính) =====================
          Trên máy tính, cột đơn 470px giữa màn hình 1920px trông vừa bé vừa
          trống. Màn mở đầu tách làm hai cột (giới thiệu | bảng chọn), màn chơi
@@ -760,9 +941,9 @@
           align-items: center;
         }
         .start-intro { text-align: left; }
-        .start-intro .hero-mark { width: 80px; height: 80px; margin: 0 0 20px; }
-        .start-intro .hero-mark svg { width: 40px; height: 40px; }
-        .start-intro h1 { text-align: left; font-size: clamp(38px, 3.5vw, 50px); }
+        .start-intro .hero-mark { width: 108px; height: 108px; margin: 0 0 20px; }
+        .start-intro .hero-mark svg { width: 55px; height: 55px; }
+        .start-intro h1 { text-align: left; font-size: clamp(30px, 2.8vw, 40px); }
         .start-intro .subtitle { text-align: left; }
         .start-intro .lede { text-align: left; margin: 14px 0 24px; max-width: 44ch; }
         .how { margin-bottom: 0; }
@@ -863,14 +1044,27 @@
           width: min(100%, 420px, calc(100vh - 385px));
           width: min(100%, 420px, calc(100dvh - 385px));
         }
+        #screen-game.is-lastchance .turntable {
+          width: min(100%, 400px, calc(100vh - 430px));
+          width: min(100%, 400px, calc(100dvh - 430px));
+        }
+
+        /* Tên chế độ có chỗ nằm riêng dưới bảng điểm trên máy tính */
+        .hud-cell-mode { display: block; }
+        .hud-cell-hearts { text-align: left; }
 
         .status { font-size: 16px; margin-top: 18px; }
         #screen-over { max-width: 520px; }
       }
 
       @media (prefers-reduced-motion: reduce) {
-        .hero-mark, .hub.playing, .hub.pulse::after, .shake, .screen { animation: none; }
-        .pad, .mode-card { transition: none; }
+        .hero-mark, .hub.playing, .hub.pulse::after, .shake, .screen,
+        .heart.last, .heart.gained, .heart.lost, .pad.reveal,
+        .flash.go, .tick-shake, .lc-vignette, .new-best { animation: none; }
+        .confetti { display: none; }
+        .pad, .mode-card, .tt-glow { transition: none; }
+        /* Tim mất đi vẫn phải biến mất, nếu không nó nằm lại vĩnh viễn */
+        .heart.lost { opacity: 0; }
       }
 
       @media (max-width: 370px) {
@@ -891,9 +1085,9 @@
           width: min(100%, 400px, max(200px, calc(100dvh - 300px)));
         }
 
-        .hero-mark { width: 56px; height: 56px; margin-bottom: 9px; }
-        .hero-mark svg { width: 29px; height: 29px; }
-        h1 { font-size: clamp(23px, 7vw, 31px); }
+        .hero-mark { width: 72px; height: 72px; margin-bottom: 9px; }
+        .hero-mark svg { width: 37px; height: 37px; }
+        h1 { font-size: clamp(21px, 6.2vw, 28px); }
         .subtitle { font-size: 10.5px; margin-top: 7px; }
         .lede { display: none; }
 
@@ -917,9 +1111,23 @@
         .hud-val { font-size: 17px; }
         .status { margin-top: 9px; min-height: 20px; font-size: 13.5px; }
         .progress-dots { margin-top: 7px; }
-        .replay-row { margin-top: 9px; }
-        #replay-btn { padding: 8px 15px; font-size: 12px; }
+        .game-nav { margin-top: 9px; gap: 7px; }
+        .nav-btn { padding: 8px 6px; font-size: 12px; }
         .volume-box { margin-top: 9px; padding: 7px 11px; gap: 9px; }
+
+        .heart { width: 17px; height: 17px; }
+        .hearts { gap: 4px; min-height: 19px; }
+
+        .lc-bar { padding: 9px 12px; margin-bottom: 10px; }
+        .lc-note { font-size: 11.5px; }
+        .lc-probe { margin-top: 8px; }
+        .lc-actions { margin-top: 9px; }
+        .lc-choice { margin-top: 10px; gap: 7px; }
+        .lc-choice-q { font-size: 13px; }
+        #screen-game.is-lastchance .turntable {
+          width: min(100%, 380px, max(170px, calc(100vh - 400px)));
+          width: min(100%, 380px, max(170px, calc(100dvh - 400px)));
+        }
 
         .warmup-bar { padding: 9px 12px; margin-bottom: 10px; }
         .warmup-note { font-size: 11.5px; }
@@ -949,8 +1157,8 @@
         .how { display: none; }
         .subtitle { margin-top: 5px; }
         .modes { margin-bottom: 10px; }
-        .hero-mark { width: 48px; height: 48px; margin-bottom: 7px; }
-        .hero-mark svg { width: 25px; height: 25px; }
+        .hero-mark { width: 58px; height: 58px; margin-bottom: 7px; }
+        .hero-mark svg { width: 30px; height: 30px; }
       }
     </style>
   </head>
@@ -974,6 +1182,14 @@
       </button>
     </div>
 
+    <!-- Làm tối mọi thứ trừ vòng phím trong lúc Cơ Hội Cuối, để báo rằng luật
+         đã đổi. Vòng phím nổi lên trên nhờ z-index của .game-center. -->
+    <div class="lc-vignette" id="lc-vignette" hidden aria-hidden="true"></div>
+    <!-- Chớp sáng khi chạm mốc chuỗi -->
+    <div class="flash" id="flash" aria-hidden="true"></div>
+    <!-- Pháo giấy khi phá kỷ lục -->
+    <div class="confetti" id="confetti" aria-hidden="true"></div>
+
     <main>
       <!-- ============ MÀN HÌNH MỞ ĐẦU ============ -->
       <section class="screen" id="screen-start">
@@ -985,9 +1201,9 @@
             <rect x="44" y="35" width="14" height="21" rx="7" fill="currentColor" />
           </svg>
         </div>
-        <h1>Game Luyện Cảm Âm</h1>
+        <h1>Game Luyện Cảm Âm Và Trí Nhớ</h1>
         <p class="subtitle">Nghe · Nhớ · Lặp lại</p>
-        <p class="lede">Máy phát một chuỗi nốt guitar, bạn bấm lại đúng thứ tự. Lặp lại đúng thì chuỗi dài thêm một nốt. Đi được bao xa?</p>
+        <p class="lede">Máy phát một chuỗi nốt guitar, bạn bấm lại đúng thứ tự. Đúng thì chuỗi dài thêm một nốt. Bạn có một trái tim — bấm sai là mất tim, nhưng được nghe lại chuỗi và làm lại chính vòng đó.</p>
 
         <div class="how">
           <div class="how-step">
@@ -1000,7 +1216,7 @@
           </div>
           <div class="how-step">
             <span class="how-num">3</span>
-            <span class="how-text">Đúng thì chuỗi dài thêm một nốt</span>
+            <span class="how-text">Qua mốc 5 nốt được thêm một tim</span>
           </div>
         </div>
         </div>
@@ -1033,18 +1249,6 @@
         </div>
 
         <button type="button" class="btn-primary" id="start-btn" disabled>Đang tải âm thanh…</button>
-
-        <button type="button" class="btn-ghost sound-test" id="test-sound-btn">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 5 6 9H2v6h4l5 4V5Z" /><path d="M15.5 8.5a5 5 0 0 1 0 7" /><path d="M18.5 5.5a9 9 0 0 1 0 13" /></svg>
-          <span id="test-sound-label">Nghe thử tiếng đàn</span>
-        </button>
-
-        <p class="audio-warn" id="audio-warn" hidden>
-          Không nghe thấy gì? <strong>Dùng iPhone thì gạt nút chuông ra khỏi chế độ im lặng</strong> rồi tải lại trang —
-          ở chế độ im lặng iPhone chặn luôn tiếng của trang web, dù xem video vẫn có tiếng bình thường. Ngoài ra nhớ vặn
-          to âm lượng máy.
-          <span class="audio-state" id="audio-state"></span>
-        </p>
         </div>
       </section>
 
@@ -1059,6 +1263,15 @@
           <p class="warmup-note">Nghe qua 7 nốt một lượt cho quen mặt nốt — phần này <strong>chưa tính điểm</strong>.</p>
         </div>
 
+        <!-- Dải Cơ Hội Cuối, thay chỗ bảng điểm y như dải nghe làm quen -->
+        <div class="lc-bar" id="lc-bar" hidden>
+          <div class="lc-bar-top">
+            <span class="lc-chip">Cơ hội cuối</span>
+            <span class="lc-level" id="lc-level">Bậc 1 / 5</span>
+          </div>
+          <p class="lc-note" id="lc-note">Nghe nốt ẩn rồi bấm thử các phím để so bằng tai — <strong>không có gợi ý cao thấp</strong>.</p>
+        </div>
+
         <div class="game-grid">
           <!-- Cột trái trên máy tính; trên điện thoại vẫn là dải điểm nằm trên cùng -->
           <div class="panel-side panel-left">
@@ -1067,16 +1280,25 @@
                 <span class="hud-key">Vòng</span>
                 <span class="hud-val" id="hud-round">1</span>
               </div>
-              <div class="hud-cell" style="flex: 0 0 auto"><span class="hud-mode" id="hud-mode">Nhìn &amp; Nghe</span></div>
+              <!-- Tim nằm chính giữa dải điểm trên điện thoại: đây là thứ
+                   người chơi phải liếc nhiều nhất trong lúc chơi. -->
+              <div class="hud-cell hud-cell-hearts">
+                <span class="hud-key">Tim</span>
+                <span class="hearts" id="hearts"></span>
+              </div>
               <div class="hud-cell">
                 <span class="hud-key">Kỷ lục</span>
                 <span class="hud-val gold" id="hud-best">0</span>
               </div>
+              <!-- Tên chế độ chỉ hiện trên máy tính: trên điện thoại nó chiếm
+                   mất chỗ của tim, mà người chơi vừa tự chọn chế độ xong. -->
+              <div class="hud-cell hud-cell-mode"><span class="hud-mode" id="hud-mode">Nhìn &amp; Nghe</span></div>
             </div>
           </div>
 
           <div class="game-center">
         <div class="turntable" id="turntable">
+          <div class="tt-glow" id="tt-glow" aria-hidden="true"></div>
           <div class="hub" id="hub">
             <svg class="hub-icon" viewBox="0 0 64 64" fill="none" aria-hidden="true">
               <path d="M13 40V32a19 19 0 0 1 38 0v8" stroke="currentColor" stroke-width="5" stroke-linecap="round" />
@@ -1085,6 +1307,14 @@
             </svg>
             <span class="hub-label" id="hub-label"></span>
           </div>
+
+          <!-- Đồng hồ Cơ Hội Cuối: vòng sáng chạy quanh tai nghe, nằm vừa
+               khít khoảng trống giữa tai nghe và bảy phím. Nhìn vòng teo dần
+               căng hơn đọc số, mà mắt không phải rời khỏi chỗ cần bấm. -->
+          <svg class="lc-ring" id="lc-ring" viewBox="0 0 100 100" aria-hidden="true" hidden>
+            <circle class="lc-ring-track" cx="50" cy="50" r="25" />
+            <circle class="lc-ring-fill" id="lc-ring-fill" cx="50" cy="50" r="25" />
+          </svg>
 
           <button type="button" class="pad pad-1" data-note="do"><span class="pad-note">Đồ</span><span class="pad-sub">C</span></button>
           <button type="button" class="pad pad-2" data-note="re"><span class="pad-note">Rê</span><span class="pad-sub">D</span></button>
@@ -1101,6 +1331,27 @@
         <div class="warmup-actions" id="warmup-actions" hidden>
           <button type="button" class="btn-primary" id="play-now-btn" hidden>Vào Chơi</button>
           <button type="button" class="btn-ghost" id="skip-warmup-btn">Bỏ qua, chơi luôn</button>
+        </div>
+
+        <!-- ====== CƠ HỘI CUỐI: lượt nghe thử còn lại ====== -->
+        <div class="lc-probe" id="lc-probe" hidden>
+          <span class="lc-probe-key">Lượt nghe thử</span>
+          <span class="lc-probe-dots" id="lc-probe-dots"></span>
+        </div>
+
+        <!-- Nút chốt riêng, vì phải phân biệt "bấm để nghe thử" với "bấm để trả lời" -->
+        <div class="lc-actions" id="lc-actions" hidden>
+          <button type="button" class="btn-primary" id="lc-commit-btn" disabled>Chọn một phím rồi chốt</button>
+        </div>
+
+        <!-- Ngã ba: ăn non hay đi tiếp. Cố ý KHÔNG có đồng hồ ở bước này. -->
+        <div class="lc-choice" id="lc-choice" hidden>
+          <p class="lc-choice-q">Đang giữ <b id="lc-stake">1 tim</b> — ăn non hay đi tiếp?</p>
+          <div class="lc-choice-btns">
+            <button type="button" class="btn-primary" id="lc-stop-btn">Dừng lại</button>
+            <button type="button" class="btn-ghost" id="lc-next-btn">Đi tiếp</button>
+          </div>
+          <p class="lc-choice-warn">Sai là mất cả số tim vừa ăn.</p>
         </div>
           </div>
 
@@ -1130,10 +1381,17 @@
               <span class="volume-val" id="volume-val">85%</span>
             </div>
 
-            <div class="replay-row" id="replay-row">
-              <button type="button" id="replay-btn" disabled>
+            <!-- Trước đây chỗ này là nút "Nghe lại". Chức năng đó nay gắn vào
+                 việc mất tim, nên thay bằng hai lối thoát mà game đang thiếu:
+                 đổi chế độ và chơi lại ván mới, không phải chơi cho tới chết. -->
+            <div class="game-nav" id="game-nav">
+              <button type="button" class="nav-btn" id="back-modes-btn">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M15 19l-7-7 7-7" /></svg>
+                <span>Đổi chế độ</span>
+              </button>
+              <button type="button" class="nav-btn" id="restart-btn">
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M1 4v6h6M23 20v-6h-6" /><path d="M20.49 9A9 9 0 0 0 5.64 5.64L1 10m22 4l-4.64 4.36A9 9 0 0 1 3.51 15" /></svg>
-                <span id="replay-label">Nghe lại (1 lần)</span>
+                <span>Chơi lại</span>
               </button>
             </div>
 
