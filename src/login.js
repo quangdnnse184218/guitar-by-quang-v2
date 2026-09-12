@@ -69,6 +69,12 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   }
 
+  // Cùng regex với register.js/common.js (initForgotPasswordModal) — form
+  // có novalidate nên type="email"/required trên input không tự chặn gì cả,
+  // phải tự kiểm tra định dạng ở đây, không thì "asdf" cũng lọt xuống thẳng
+  // Supabase và chỉ nhận được lỗi chung chung "Invalid login credentials".
+  const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/
+
   form.addEventListener('submit', async (e) => {
     e.preventDefault()
     hideAlert()
@@ -78,6 +84,11 @@ document.addEventListener('DOMContentLoaded', () => {
 
     if (!email || !password) {
       return showAlert('Vui lòng điền đầy đủ Email và Mật khẩu.')
+    }
+
+    if (!emailRegex.test(email)) {
+      emailInput.focus()
+      return showAlert('Địa chỉ Email không đúng định dạng (Ví dụ đúng: tenban@gmail.com).')
     }
 
     setLoading(true)
