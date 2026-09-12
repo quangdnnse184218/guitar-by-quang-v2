@@ -17,6 +17,8 @@ export default defineConfig({
         userDashboard: resolve(import.meta.dirname, 'user-dashboard.html'),
         resetPassword: resolve(import.meta.dirname, 'reset-password.html'),
         adminResetPassword: resolve(import.meta.dirname, 'admin-reset-password.html'),
+        notFound: resolve(import.meta.dirname, '404.html'),
+        privacyPolicy: resolve(import.meta.dirname, 'chinh-sach-bao-mat.html'),
       },
     },
   },

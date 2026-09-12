@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html lang="vi">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, interactive-widget=resizes-content" />
+    <title>Chính Sách Bảo Mật — Guitar By Quang</title>
+    <meta name="description" content="Chính sách bảo mật của Guitar By Quang: dữ liệu nào được thu thập, lưu ở đâu, dùng để làm gì, và quyền của bạn với dữ liệu cá nhân." />
+    <meta name="robots" content="noindex, follow" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+
+    <!-- Prevent theme flash & sync with localStorage -->
+    <script>
+      (function () {
+        try {
+          var saved = localStorage.getItem('gbq_theme');
+          if (saved !== 'dark') {
+            document.documentElement.setAttribute('data-theme', 'light');
+          } else {
+            document.documentElement.removeAttribute('data-theme');
+          }
+        } catch (e) { }
+      })();
+    </script>
+
+    <!-- Google Fonts: Be Vietnam Pro, Inter, JetBrains Mono -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,400;1,600&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+
+    <link rel="stylesheet" href="/src/style.css" />
+  </head>
+  <body class="bg-bg-base text-text-primary min-h-screen relative flex flex-col overflow-x-hidden">
+    <div class="grain-overlay" aria-hidden="true"></div>
+
+    <!-- Header — bản gọn giống login.html, trang này chỉ cần đọc chứ không
+         thao tác tài khoản gì nên không cần đầy đủ nav. -->
+    <header class="py-5 px-6 sm:px-12 flex items-center justify-between border-b border-glass-border">
+      <a href="/" class="flex items-center gap-3 group">
+        <div class="w-9 h-9 rounded-xl bg-warm-gradient text-white flex items-center justify-center font-black text-base shadow-sm group-hover:scale-105 transition-transform">
+          🎸
+        </div>
+        <div>
+          <span class="text-base font-extrabold text-text-primary tracking-tight block leading-tight">Guitar By Quang</span>
+          <span class="text-[11px] font-semibold text-text-muted">Nền Tảng Tự Học Guitar</span>
+        </div>
+      </a>
+      <div class="flex items-center gap-3">
+        <button id="theme-toggle-btn" aria-label="Chuyển đổi giao diện Sáng / Tối"
+          title="Chuyển đổi giao diện Sáng / Tối"
+          class="p-2 rounded-full bg-glass-bg hover:bg-glass-bg-hover text-text-primary border border-glass-border flex items-center justify-center transition-colors cursor-pointer flex-shrink-0">
+          <svg class="sun-icon w-4 h-4 text-accent-primary" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+            stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="12" cy="12" r="4"></circle>
+            <path
+              d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M6.34 17.66l-1.41 1.41M19.07 4.93l-1.41 1.41">
+            </path>
+          </svg>
+          <svg class="moon-icon w-4 h-4 text-accent-primary" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+            stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z"></path>
+          </svg>
+        </button>
+        <a href="/" class="text-xs font-bold text-text-muted hover:text-accent-primary transition-colors flex items-center gap-1">
+          <span>← Về trang chủ</span>
+        </a>
+      </div>
+    </header>
+
+    <!-- Nội dung chính -->
+    <main class="flex-grow px-6 py-12 sm:py-16">
+      <div class="max-w-3xl mx-auto space-y-10">
+        <div class="space-y-3 text-center">
+          <p class="text-xs font-mono font-bold uppercase tracking-widest text-accent-primary">Pháp lý</p>
+          <h1 class="text-3xl sm:text-4xl font-extrabold text-text-primary tracking-tight">Chính Sách Bảo Mật</h1>
+          <p class="text-sm text-text-muted font-medium">Cập nhật lần cuối: tháng 9/2026</p>
+        </div>
+
+        <p class="text-sm sm:text-base text-text-muted leading-relaxed">
+          Guitar By Quang là một trang cá nhân do Nhật Quang xây dựng và vận hành, chia sẻ video tab guitar
+          fingerstyle cùng vài công cụ/trò chơi hỗ trợ tập đàn. Trang này giải thích rõ dữ liệu nào được thu thập khi
+          bạn dùng site, dùng để làm gì, lưu ở đâu, và bạn có những quyền gì với dữ liệu của mình.
+        </p>
+
+        <section class="space-y-3">
+          <h2 class="text-lg font-extrabold text-text-primary">1. Dữ liệu nào được thu thập</h2>
+          <ul class="list-disc list-outside pl-5 space-y-2 text-sm sm:text-base text-text-muted leading-relaxed">
+            <li><strong class="text-text-primary font-bold">Tài khoản thành viên</strong>: nếu bạn đăng ký/đăng nhập, hệ thống lưu email và mật khẩu (đã mã hoá, không ai kể cả Quang đọc được mật khẩu gốc) để xác thực, cùng danh sách bài hát bạn đã lưu yêu thích.</li>
+            <li><strong class="text-text-primary font-bold">Bảng xếp hạng game</strong>: ở game Luyện Cảm Âm, nếu bạn đặt biệt danh để lên bảng xếp hạng, biệt danh và điểm số đó sẽ hiển thị công khai cho mọi người xem — không cần đăng nhập tài khoản, không gắn với email của bạn.</li>
+            <li><strong class="text-text-primary font-bold">Cài đặt cá nhân</strong>: giao diện sáng/tối, mức âm lượng, kỷ lục trò chơi… được lưu ngay trên trình duyệt của bạn (localStorage), không gửi lên máy chủ nào cả.</li>
+            <li><strong class="text-text-primary font-bold">Dữ liệu truy cập</strong>: nếu có bật Google Analytics, một số thông tin ẩn danh về lượt xem trang, thiết bị, khu vực địa lý gần đúng sẽ được ghi nhận để hiểu site đang được dùng ra sao — không thu thập tên hay thông tin định danh cá nhân qua kênh này.</li>
+          </ul>
+        </section>
+
+        <section class="space-y-3">
+          <h2 class="text-lg font-extrabold text-text-primary">2. Dùng dữ liệu để làm gì</h2>
+          <p class="text-sm sm:text-base text-text-muted leading-relaxed">
+            Chỉ để vận hành đúng chức năng của site: đăng nhập tài khoản, lưu bài hát yêu thích, hiển thị bảng xếp
+            hạng, ghi nhớ cài đặt của bạn giữa các lần ghé thăm, và hiểu site đang được dùng nhiều/ít ở đâu để cải
+            thiện dần. Không dùng cho quảng cáo nhắm mục tiêu, không bán hay cho thuê dữ liệu cho bất kỳ ai.
+          </p>
+        </section>
+
+        <section class="space-y-3">
+          <h2 class="text-lg font-extrabold text-text-primary">3. Dữ liệu được lưu ở đâu</h2>
+          <p class="text-sm sm:text-base text-text-muted leading-relaxed">
+            Tài khoản, danh sách yêu thích và bảng xếp hạng được lưu trên hạ tầng của
+            <a href="https://supabase.com" target="_blank" rel="noopener noreferrer" class="text-accent-primary font-semibold hover:underline">Supabase</a>
+            (dịch vụ backend bên thứ ba, có mã hoá và kiểm soát truy cập ở tầng cơ sở dữ liệu) — Guitar By Quang không
+            tự đặt máy chủ riêng để giữ dữ liệu này. Cài đặt cá nhân (theme, âm lượng…) chỉ nằm trên trình duyệt của
+            bạn, tự xoá nếu bạn xoá dữ liệu duyệt web.
+          </p>
+        </section>
+
+        <section class="space-y-3">
+          <h2 class="text-lg font-extrabold text-text-primary">4. Cookie & Local Storage</h2>
+          <p class="text-sm sm:text-base text-text-muted leading-relaxed">
+            Site dùng localStorage của trình duyệt (không phải cookie theo dõi quảng cáo) để nhớ trạng thái đăng
+            nhập, giao diện sáng/tối, và tiến trình trò chơi. Không có cookie bên thứ ba nào dùng để theo dõi bạn
+            qua các trang web khác.
+          </p>
+        </section>
+
+        <section class="space-y-3">
+          <h2 class="text-lg font-extrabold text-text-primary">5. Chia sẻ dữ liệu với bên thứ ba</h2>
+          <p class="text-sm sm:text-base text-text-muted leading-relaxed">
+            Không chia sẻ, bán hay trao đổi dữ liệu cá nhân với bên thứ ba cho mục đích thương mại. Dữ liệu chỉ đi
+            qua Supabase (nơi lưu trữ, xem mục 3) và Google Analytics (nếu bật, chỉ ở dạng thống kê ẩn danh, xem mục
+            1) — cả hai đều là công cụ vận hành, không phải bên nhận dữ liệu để khai thác riêng.
+          </p>
+        </section>
+
+        <section class="space-y-3">
+          <h2 class="text-lg font-extrabold text-text-primary">6. Quyền của bạn</h2>
+          <p class="text-sm sm:text-base text-text-muted leading-relaxed">
+            Bạn có thể yêu cầu xem, sửa hoặc xoá hoàn toàn dữ liệu tài khoản của mình (bao gồm cả xoá biệt danh khỏi
+            bảng xếp hạng) bất cứ lúc nào — liên hệ theo thông tin ở mục 8, Quang sẽ xử lý trực tiếp vì đây là site cá
+            nhân quy mô nhỏ, không qua bộ phận trung gian nào.
+          </p>
+        </section>
+
+        <section class="space-y-3">
+          <h2 class="text-lg font-extrabold text-text-primary">7. Thay đổi chính sách</h2>
+          <p class="text-sm sm:text-base text-text-muted leading-relaxed">
+            Chính sách này có thể được cập nhật khi site có thêm tính năng mới liên quan đến dữ liệu người dùng.
+            Ngày cập nhật gần nhất luôn hiển thị ở đầu trang.
+          </p>
+        </section>
+
+        <section class="space-y-3">
+          <h2 class="text-lg font-extrabold text-text-primary">8. Liên hệ</h2>
+          <p class="text-sm sm:text-base text-text-muted leading-relaxed">
+            Có thắc mắc về dữ liệu cá nhân hoặc muốn yêu cầu xoá dữ liệu, nhắn trực tiếp cho Quang qua:
+          </p>
+          <div class="flex flex-col sm:flex-row gap-3 pt-1">
+            <a href="https://zalo.me/0326768885" target="_blank" rel="noopener noreferrer"
+              class="inline-flex items-center gap-2 px-4 py-2.5 rounded-full bg-glass-bg border border-glass-border text-sm font-bold text-text-primary hover:border-accent-primary hover:text-accent-primary transition-colors w-fit">
+              <span class="w-5 h-5 rounded-md bg-[#0068FF] text-white flex items-center justify-center font-black text-[9px] flex-shrink-0">Z</span>
+              Zalo: 0326.768.885
+            </a>
+            <a href="https://www.facebook.com/quang.doan.969429" target="_blank" rel="noopener noreferrer"
+              class="inline-flex items-center gap-2 px-4 py-2.5 rounded-full bg-glass-bg border border-glass-border text-sm font-bold text-text-primary hover:border-accent-primary hover:text-accent-primary transition-colors w-fit">
+              <span class="w-5 h-5 rounded-md bg-[#1877F2] text-white flex items-center justify-center flex-shrink-0">
+                <svg class="w-3 h-3 fill-current" viewBox="0 0 24 24"><path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/></svg>
+              </span>
+              Facebook: Nhật Quang
+            </a>
+          </div>
+        </section>
+      </div>
+    </main>
+
+    <!-- Footer -->
+    <footer class="py-5 text-center text-xs text-text-muted border-t border-glass-border">
+      © 2026 Guitar By Quang • Mọi bản quyền được bảo hộ
+    </footer>
+
+    <script type="module">
+      import { initThemeToggle } from '/src/theme-toggle.js'
+      initThemeToggle()
+    </script>
+  </body>
+</html>
