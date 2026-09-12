@@ -844,10 +844,10 @@
                 <span class="text-[11px] text-text-muted font-bold">TpBank QR 24/7</span>
               </div>
 
-              <div class="flex flex-col sm:flex-row items-center gap-3 sm:gap-3.5 pt-0.5">
+              <div class="flex flex-row items-start gap-2.5 sm:gap-3.5 pt-0.5">
                 <!-- Khung Mã QR (Có Quiet-zone trắng, bo góc êm, nhãn Phóng to dạng overlay không che cố định) -->
                 <div id="qr-preview-trigger"
-                  class="relative group/qr w-28 h-28 sm:w-32 sm:h-32 bg-white p-2 rounded-2xl border border-glass-border flex flex-col items-center justify-center shadow-sm flex-shrink-0 cursor-zoom-in overflow-hidden"
+                  class="relative group/qr w-24 h-24 sm:w-32 sm:h-32 bg-white p-1.5 sm:p-2 rounded-2xl border border-glass-border flex flex-col items-center justify-center shadow-sm flex-shrink-0 cursor-zoom-in overflow-hidden"
                   onclick="window.openImageModal('/assets/qr.jpg', 'Mã QR Chuyển Khoản TpBank (03970202801)', 'Quét mã QR bằng App Ngân hàng bất kỳ để nhận bản Video Tab và hỗ trợ 1-1 qua Zalo.')">
                   <img id="modal-qr-img" src="/assets/qr.jpg" alt="Mã QR Chuyển Khoản TpBank"
                     class="w-full h-full object-contain group-hover/qr:scale-105 transition-transform duration-200" />
@@ -867,34 +867,35 @@
                   </button>
                 </div>
 
-                <!-- Khung Thông tin tài khoản -->
-                <div class="flex-1 w-full min-w-0 space-y-2 text-xs">
-                  <div class="bg-glass-bg/50 dark:bg-white/[0.04] p-2.5 rounded-xl border border-glass-border/60">
-                    <span class="text-text-muted block text-[10px] font-bold uppercase tracking-wider">Số tài
-                      khoản:</span>
+                <!-- Khung Thông tin tài khoản (đặt cạnh QR ngay cả trên mobile để tận dụng
+                     khoảng trống 2 bên — nhãn rút gọn để đủ chỗ trên màn hẹp) -->
+                <div class="flex-1 w-full min-w-0 space-y-1.5 sm:space-y-2 text-xs">
+                  <div class="bg-glass-bg/50 dark:bg-white/[0.04] p-2 sm:p-2.5 rounded-xl border border-glass-border/60">
+                    <span class="text-text-muted block text-[9px] sm:text-[10px] font-bold uppercase tracking-wider">Số
+                      TK:</span>
                     <div class="flex items-center justify-between gap-1.5 mt-0.5">
-                      <span class="font-mono text-sm sm:text-base font-black text-accent-primary tracking-wide"
+                      <span class="font-mono text-xs sm:text-base font-black text-accent-primary tracking-wide"
                         id="bank-acc-num">03970202801</span>
                       <button id="copy-stk-btn"
-                        class="px-2.5 py-1 rounded-lg bg-accent-primary/10 hover:bg-accent-primary hover:text-white text-[10px] font-extrabold text-accent-primary border border-accent-primary/30 transition-all cursor-pointer shadow-xs active:scale-95 flex-shrink-0">Copy</button>
+                        class="px-2 sm:px-2.5 py-1 rounded-lg bg-accent-primary/10 hover:bg-accent-primary hover:text-white text-[9px] sm:text-[10px] font-extrabold text-accent-primary border border-accent-primary/30 transition-all cursor-pointer shadow-xs active:scale-95 flex-shrink-0">Copy</button>
                     </div>
                   </div>
-                  <div class="bg-glass-bg/50 dark:bg-white/[0.04] p-2.5 rounded-xl border border-glass-border/60">
-                    <span class="text-text-muted block text-[10px] font-bold uppercase tracking-wider">Chủ tài
-                      khoản:</span>
+                  <div class="bg-glass-bg/50 dark:bg-white/[0.04] p-2 sm:p-2.5 rounded-xl border border-glass-border/60">
+                    <span class="text-text-muted block text-[9px] sm:text-[10px] font-bold uppercase tracking-wider">Chủ
+                      TK:</span>
                     <span
-                      class="font-extrabold text-text-primary text-xs sm:text-[13px] block mt-0.5 tracking-wide break-words leading-tight">DOAN
+                      class="font-extrabold text-text-primary text-[11px] sm:text-[13px] block mt-0.5 tracking-wide break-words leading-tight">DOAN
                       NGUYEN NHAT QUANG</span>
                   </div>
-                  <div class="bg-glass-bg/50 dark:bg-white/[0.04] p-2.5 rounded-xl border border-glass-border/60">
-                    <span class="text-text-muted block text-[10px] font-bold uppercase tracking-wider">Nội dung chuyển
-                      khoản:</span>
+                  <div class="bg-glass-bg/50 dark:bg-white/[0.04] p-2 sm:p-2.5 rounded-xl border border-glass-border/60">
+                    <span class="text-text-muted block text-[9px] sm:text-[10px] font-bold uppercase tracking-wider">Nội
+                      dung CK:</span>
                     <div class="flex items-center justify-between gap-1.5 mt-0.5">
                       <span id="modal-transfer-syntax"
-                        class="font-mono font-black text-accent-primary bg-accent-primary/15 px-2 py-0.5 rounded text-[10px] sm:text-[11px] border border-accent-primary/20 break-all leading-tight">VIDEOTAB
+                        class="font-mono font-black text-accent-primary bg-accent-primary/15 px-1.5 sm:px-2 py-0.5 rounded text-[9px] sm:text-[11px] border border-accent-primary/20 break-all leading-tight">VIDEOTAB
                         TAB</span>
                       <button id="copy-syntax-btn"
-                        class="px-2.5 py-1 rounded-lg bg-accent-primary/10 hover:bg-accent-primary hover:text-white text-[10px] font-extrabold text-accent-primary border border-accent-primary/30 transition-all cursor-pointer shadow-xs active:scale-95 flex-shrink-0">Copy</button>
+                        class="px-2 sm:px-2.5 py-1 rounded-lg bg-accent-primary/10 hover:bg-accent-primary hover:text-white text-[9px] sm:text-[10px] font-extrabold text-accent-primary border border-accent-primary/30 transition-all cursor-pointer shadow-xs active:scale-95 flex-shrink-0">Copy</button>
                     </div>
                   </div>
                 </div>
@@ -967,49 +968,63 @@
                 </div>
               </div>
 
-              <!-- 3. Trọn bộ tài liệu bạn sẽ nhận -->
-              <div class="p-4 rounded-2xl modal-inner-card space-y-2.5 text-xs shadow-xs border border-glass-border">
-                <span class="font-extrabold text-accent-primary block text-[11px] uppercase tracking-wider">Trọn bộ tài
-                  liệu bạn sẽ nhận:</span>
-                <ul class="space-y-2 text-text-muted font-medium text-xs">
-                  <li class="flex items-start gap-2.5 text-text-primary"><span
-                      class="w-4 h-4 rounded-full bg-emerald-500/20 text-emerald-500 flex items-center justify-center font-bold text-[10px] flex-shrink-0 mt-0.5">✓</span>
-                    <span><strong>Full Video Tab</strong> chạy nốt chuẩn xác 60fps đồng bộ âm thanh & nhịp gõ</span></li>
-                  <li class="flex items-start gap-2.5 text-text-primary"><span
-                      class="w-4 h-4 rounded-full bg-emerald-500/20 text-emerald-500 flex items-center justify-center font-bold text-[10px] flex-shrink-0 mt-0.5">✓</span>
-                    <span><strong>File PDF</strong> in ấn sắc nét, đầy đủ nốt nhạc và số ngăn bấm</span></li>
-                  <li class="flex items-start gap-2.5 text-text-primary"><span
-                      class="w-4 h-4 rounded-full bg-emerald-500/20 text-emerald-500 flex items-center justify-center font-bold text-[10px] flex-shrink-0 mt-0.5">✓</span>
-                    <span><strong>Hỗ trợ giải thích kỹ thuật 1-1 qua Zalo</strong> khi có đoạn khó tập</span></li>
-                </ul>
-              </div>
+              <!-- 3/4. Tài liệu nhận được + Thông số chi tiết + Metronome — gom vào 1
+                   khối thu gọn để màn thanh toán không quá dài, bấm mới cần xem thêm -->
+              <details class="group rounded-2xl modal-inner-card border border-glass-border shadow-xs overflow-hidden">
+                <summary
+                  class="list-none [&::-webkit-details-marker]:hidden cursor-pointer select-none flex items-center justify-between gap-2 p-4 text-[11px] font-extrabold text-accent-primary uppercase tracking-wider">
+                  <span>Xem tài liệu nhận được & thông số chi tiết</span>
+                  <svg class="w-4 h-4 flex-shrink-0 transition-transform duration-200 group-open:rotate-180"
+                    fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7" />
+                  </svg>
+                </summary>
 
-              <!-- 4. Bảng thông số chi tiết khi tập -->
-              <div
-                class="space-y-2.5 text-xs text-text-primary modal-inner-card p-4 rounded-2xl shadow-xs border border-glass-border">
-                <div class="flex items-center justify-between border-b border-glass-border/60 pb-1.5">
-                  <span class="text-text-muted font-semibold">Độ khó bài tập:</span>
-                  <span id="modal-tab-level" class="font-extrabold text-accent-primary">4/10</span>
-                </div>
-                <div class="flex items-center justify-between border-b border-glass-border/60 pb-1.5">
-                  <span class="text-text-muted font-semibold">Tông / Tuning:</span>
-                  <span id="modal-tab-tuning" class="font-bold text-text-primary">Standard</span>
-                </div>
-                <div class="flex items-center justify-between border-b border-glass-border/60 pb-1.5">
-                  <span class="text-text-muted font-semibold">Vị trí kẹp Capo:</span>
-                  <span id="modal-tab-capo" class="font-bold text-success">Không kẹp</span>
-                </div>
-                <div class="flex items-center justify-between">
-                  <span class="text-text-muted font-semibold">Tempo bản gốc:</span>
-                  <span id="modal-tab-tempo" class="font-bold text-accent-primary">~95 BPM</span>
-                </div>
-              </div>
+                <div class="px-4 pb-4 space-y-3.5">
+                  <!-- Trọn bộ tài liệu bạn sẽ nhận -->
+                  <div class="space-y-2.5 text-xs pt-1 border-t border-glass-border/60">
+                    <span class="font-extrabold text-accent-primary block text-[11px] uppercase tracking-wider pt-3">Trọn
+                      bộ tài liệu bạn sẽ nhận:</span>
+                    <ul class="space-y-2 text-text-muted font-medium text-xs">
+                      <li class="flex items-start gap-2.5 text-text-primary"><span
+                          class="w-4 h-4 rounded-full bg-emerald-500/20 text-emerald-500 flex items-center justify-center font-bold text-[10px] flex-shrink-0 mt-0.5">✓</span>
+                        <span><strong>Full Video Tab</strong> chạy nốt chuẩn xác 60fps đồng bộ âm thanh & nhịp gõ</span></li>
+                      <li class="flex items-start gap-2.5 text-text-primary"><span
+                          class="w-4 h-4 rounded-full bg-emerald-500/20 text-emerald-500 flex items-center justify-center font-bold text-[10px] flex-shrink-0 mt-0.5">✓</span>
+                        <span><strong>File PDF</strong> in ấn sắc nét, đầy đủ nốt nhạc và số ngăn bấm</span></li>
+                      <li class="flex items-start gap-2.5 text-text-primary"><span
+                          class="w-4 h-4 rounded-full bg-emerald-500/20 text-emerald-500 flex items-center justify-center font-bold text-[10px] flex-shrink-0 mt-0.5">✓</span>
+                        <span><strong>Hỗ trợ giải thích kỹ thuật 1-1 qua Zalo</strong> khi có đoạn khó tập</span></li>
+                    </ul>
+                  </div>
 
-              <!-- Nút mở nhanh Metronome -->
-              <a href="/metronome.html"
-                class="btn-metronome-link inline-flex items-center gap-1.5 text-xs font-bold px-4 py-2.5 rounded-xl transition-all w-full justify-center shadow-xs cursor-pointer active:scale-98">
-                <svg class="w-3.5 h-3.5 flex-shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="M8 20h8l-2-14h-4z"/><path stroke-linecap="round" d="M12 18V8"/></svg><span>Mở Metronome luyện bài này →</span>
-              </a>
+                  <!-- Bảng thông số chi tiết khi tập -->
+                  <div class="space-y-2.5 text-xs text-text-primary">
+                    <div class="flex items-center justify-between border-b border-glass-border/60 pb-1.5">
+                      <span class="text-text-muted font-semibold">Độ khó bài tập:</span>
+                      <span id="modal-tab-level" class="font-extrabold text-accent-primary">4/10</span>
+                    </div>
+                    <div class="flex items-center justify-between border-b border-glass-border/60 pb-1.5">
+                      <span class="text-text-muted font-semibold">Tông / Tuning:</span>
+                      <span id="modal-tab-tuning" class="font-bold text-text-primary">Standard</span>
+                    </div>
+                    <div class="flex items-center justify-between border-b border-glass-border/60 pb-1.5">
+                      <span class="text-text-muted font-semibold">Vị trí kẹp Capo:</span>
+                      <span id="modal-tab-capo" class="font-bold text-success">Không kẹp</span>
+                    </div>
+                    <div class="flex items-center justify-between">
+                      <span class="text-text-muted font-semibold">Tempo bản gốc:</span>
+                      <span id="modal-tab-tempo" class="font-bold text-accent-primary">~95 BPM</span>
+                    </div>
+                  </div>
+
+                  <!-- Nút mở nhanh Metronome -->
+                  <a href="/metronome.html"
+                    class="btn-metronome-link inline-flex items-center gap-1.5 text-xs font-bold px-4 py-2.5 rounded-xl transition-all w-full justify-center shadow-xs cursor-pointer active:scale-98">
+                    <svg class="w-3.5 h-3.5 flex-shrink-0" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="M8 20h8l-2-14h-4z"/><path stroke-linecap="round" d="M12 18V8"/></svg><span>Mở Metronome luyện bài này →</span>
+                  </a>
+                </div>
+              </details>
             </div>
 
             <!-- 5. Hướng dẫn mở khoá tự động (qua SePay webhook, xem sepay-ipn Edge Function) -->
