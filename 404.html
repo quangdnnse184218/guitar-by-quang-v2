@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="vi">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, interactive-widget=resizes-content" />
+    <title>Không Tìm Thấy Trang — Guitar By Quang</title>
+    <meta name="description" content="Trang bạn tìm không tồn tại hoặc đã bị di chuyển. Quay lại trang chủ Guitar By Quang để tiếp tục tìm kho Video Tab, công cụ tập đàn và các trò chơi luyện tai." />
+    <meta name="robots" content="noindex, follow" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+
+    <!-- Prevent theme flash & sync with localStorage -->
+    <script>
+      (function () {
+        try {
+          var saved = localStorage.getItem('gbq_theme');
+          if (saved !== 'dark') {
+            document.documentElement.setAttribute('data-theme', 'light');
+          } else {
+            document.documentElement.removeAttribute('data-theme');
+          }
+        } catch (e) { }
+      })();
+    </script>
+
+    <!-- Google Fonts: Be Vietnam Pro, Inter, JetBrains Mono -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,400;1,600&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+
+    <link rel="stylesheet" href="/src/style.css" />
+  </head>
+  <body class="bg-bg-base text-text-primary min-h-screen relative flex flex-col justify-between overflow-x-hidden">
+    <div class="grain-overlay" aria-hidden="true"></div>
+
+    <!-- Header — bản gọn giống login.html, không cần đầy đủ nav/đăng nhập
+         vì đây là trang lỗi, chỉ cần lối thoát rõ ràng về trang chủ. -->
+    <header class="py-5 px-6 sm:px-12 flex items-center justify-between border-b border-glass-border">
+      <a href="/" class="flex items-center gap-3 group">
+        <div class="w-9 h-9 rounded-xl bg-warm-gradient text-white flex items-center justify-center font-black text-base shadow-sm group-hover:scale-105 transition-transform">
+          🎸
+        </div>
+        <div>
+          <span class="text-base font-extrabold text-text-primary tracking-tight block leading-tight">Guitar By Quang</span>
+          <span class="text-[11px] font-semibold text-text-muted">Nền Tảng Tự Học Guitar</span>
+        </div>
+      </a>
+      <div class="flex items-center gap-3">
+        <button id="theme-toggle-btn" aria-label="Chuyển đổi giao diện Sáng / Tối"
+          title="Chuyển đổi giao diện Sáng / Tối"
+          class="p-2 rounded-full bg-glass-bg hover:bg-glass-bg-hover text-text-primary border border-glass-border flex items-center justify-center transition-colors cursor-pointer flex-shrink-0">
+          <svg class="sun-icon w-4 h-4 text-accent-primary" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+            stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="12" cy="12" r="4"></circle>
+            <path
+              d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M6.34 17.66l-1.41 1.41M19.07 4.93l-1.41 1.41">
+            </path>
+          </svg>
+          <svg class="moon-icon w-4 h-4 text-accent-primary" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+            stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z"></path>
+          </svg>
+        </button>
+      </div>
+    </header>
+
+    <!-- Nội dung chính -->
+    <main class="flex-grow flex items-center justify-center p-4 sm:p-6 my-auto">
+      <div class="w-full max-w-lg glass-card rounded-3xl p-8 sm:p-10 border border-glass-border shadow-2xl text-center space-y-6">
+        <div class="w-16 h-16 mx-auto rounded-2xl bg-accent-primary/15 text-accent-primary border border-accent-primary/30 flex items-center justify-center text-3xl shadow-inner">
+          🎸
+        </div>
+        <div class="space-y-2">
+          <p class="text-xs font-mono font-bold uppercase tracking-widest text-accent-primary">Lỗi 404</p>
+          <h1 class="text-2xl sm:text-3xl font-extrabold text-text-primary">Không tìm thấy trang này</h1>
+          <p class="text-sm text-text-muted font-medium leading-relaxed max-w-sm mx-auto">
+            Trang bạn tìm có thể đã bị di chuyển, đổi tên hoặc chưa từng tồn tại. Thử một trong các lối sau nhé.
+          </p>
+        </div>
+
+        <div class="grid grid-cols-1 sm:grid-cols-3 gap-2.5 text-sm">
+          <a href="/index.html"
+            class="px-4 py-3 rounded-2xl bg-warm-gradient text-white font-extrabold shadow-md hover:brightness-105 active:scale-95 transition-all">
+            Trang chủ
+          </a>
+          <a href="/kho-tab.html"
+            class="px-4 py-3 rounded-2xl bg-glass-bg border border-glass-border text-text-primary font-bold hover:border-accent-primary hover:text-accent-primary transition-all">
+            Kho Video Tab
+          </a>
+          <a href="/cong-cu.html"
+            class="px-4 py-3 rounded-2xl bg-glass-bg border border-glass-border text-text-primary font-bold hover:border-accent-primary hover:text-accent-primary transition-all">
+            Công Cụ
+          </a>
+        </div>
+      </div>
+    </main>
+
+    <!-- Footer -->
+    <footer class="py-5 text-center text-xs text-text-muted border-t border-glass-border">
+      © 2026 Guitar By Quang • Mọi bản quyền được bảo hộ
+    </footer>
+
+    <script type="module">
+      import { initThemeToggle } from '/src/theme-toggle.js'
+      initThemeToggle()
+    </script>
+  </body>
+</html>

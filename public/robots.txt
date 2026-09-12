@@ -1,0 +1,9 @@
+User-agent: *
+Allow: /
+
+# Admin and private account pages -- already self-marked noindex in <head> too.
+Disallow: /admin-login.html
+Disallow: /admin-dashboard.html
+Disallow: /admin-reset-password.html
+Disallow: /user-dashboard.html
+Disallow: /reset-password.html
