@@ -96,6 +96,33 @@ document.addEventListener('DOMContentLoaded', () => {
       )
     }
 
+    // 2b. Kiểm tra domain email có thực sự tồn tại (chặn gõ nhầm kiểu
+    // "gmlai.con" thay vì "gmail.com") — không bắt xác minh qua email,
+    // chỉ tra nhanh domain có nhận được thư hay không.
+    setLoading(true)
+    try {
+      const { data: domainCheck, error: domainCheckErr } = await supabase.functions.invoke(
+        'check-email-domain',
+        { body: { email } }
+      )
+
+      if (!domainCheckErr && domainCheck && domainCheck.valid === false) {
+        setLoading(false)
+        emailInput?.focus()
+        const suggestion = domainCheck.suggestion
+        return showAlert(
+          suggestion
+            ? `Domain email "${email.split('@')[1]}" có vẻ không tồn tại. Có phải bạn muốn nhập "${email.split('@')[0]}@${suggestion}" không?`
+            : `Domain email "${email.split('@')[1]}" không tồn tại hoặc không nhận được thư. Vui lòng kiểm tra lại email.`
+        )
+      }
+      // Nếu domainCheckErr (lỗi mạng/edge function), không chặn đăng ký —
+      // fail-open để tránh chặn nhầm người dùng hợp lệ vì sự cố hạ tầng.
+    } catch (domainCheckException) {
+      console.warn('Lưu ý kiểm tra domain email:', domainCheckException)
+    }
+    setLoading(false)
+
     // 3. Kiểm tra Mật khẩu
     if (!password) {
       passwordInput?.focus()
