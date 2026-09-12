@@ -364,6 +364,11 @@
                   </svg>
                   <span>Ấn để phóng to</span>
                 </div>
+                <button type="button" id="qr-download-btn" title="Tải ảnh QR về máy" aria-label="Tải ảnh QR về máy"
+                  onclick="event.stopPropagation(); window.downloadCheckoutQr()"
+                  class="absolute bottom-1 right-1 w-6 h-6 rounded-full bg-accent-primary text-white flex items-center justify-center shadow-md hover:brightness-110 active:scale-95 transition-all cursor-pointer">
+                  <svg class="w-3 h-3" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M4 16v2a2 2 0 002 2h12a2 2 0 002-2v-2M7 10l5 5 5-5M12 15V3"/></svg>
+                </button>
               </div>
 
               <!-- Khung Thông tin tài khoản (Hiển thị đầy đủ tên, không bị ... hay tràn viền) -->
@@ -447,6 +452,25 @@
               <span id="modal-tab-price" class="text-2xl sm:text-3xl font-black text-accent-primary">239.000 VNĐ</span>
             </div>
 
+            <!-- 2b. HSSV: tick + upload ảnh thẻ để AI tự kiểm tra và đổi sang giá ưu đãi -->
+            <div id="modal-hssv-block" class="p-3.5 rounded-2xl modal-inner-card border border-glass-border space-y-2.5 text-xs">
+              <label class="flex items-center gap-2.5 cursor-pointer select-none">
+                <input type="checkbox" id="modal-hssv-checkbox"
+                  class="w-4 h-4 rounded accent-accent-primary cursor-pointer flex-shrink-0">
+                <span class="font-bold text-text-primary">Tôi là Học sinh/Sinh viên — áp dụng giá ưu đãi</span>
+              </label>
+              <div id="modal-hssv-upload-panel" class="hidden space-y-2.5 pt-1">
+                <p class="text-text-muted leading-relaxed">Chụp/tải ảnh thẻ HSSV còn hiệu lực năm nay — hệ thống tự
+                  kiểm tra và đổi sang giá ưu đãi ngay nếu hợp lệ, không cần chờ admin duyệt.</p>
+                <input type="file" accept="image/*" id="modal-hssv-file-input"
+                  class="block w-full text-[11px] text-text-muted file:mr-3 file:px-3 file:py-1.5 file:rounded-lg file:border-0 file:bg-accent-primary/15 file:text-accent-primary file:font-bold file:cursor-pointer cursor-pointer" />
+                <button type="button" id="modal-hssv-verify-btn" disabled
+                  class="w-full py-2 rounded-xl bg-accent-primary text-white font-bold text-[11px] transition-all active:scale-98 disabled:opacity-50 disabled:cursor-not-allowed">Xác
+                  minh thẻ HSSV</button>
+                <p id="modal-hssv-status" class="hidden font-bold text-[11px] leading-relaxed"></p>
+              </div>
+            </div>
+
             <!-- 3. Trọn bộ tài liệu bạn sẽ nhận (Đưa lên ngay sau giá để tăng chuyển đổi) -->
             <div class="p-4 rounded-2xl modal-inner-card space-y-2.5 text-xs shadow-xs border border-glass-border">
               <span class="font-extrabold text-accent-primary block text-[11px] uppercase tracking-wider">Trọn bộ tài
@@ -492,17 +516,17 @@
             </a>
           </div>
 
-          <!-- 5. Hướng dẫn Mua / Cấp quyền -->
+          <!-- 5. Hướng dẫn Mua / Cấp quyền (tự động qua SePay webhook, xem sepay-ipn Edge Function) -->
           <div class="space-y-2 pt-2">
-            <div class="p-3 rounded-xl bg-amber-500/10 border border-amber-500/20 text-[11px] text-text-primary leading-relaxed">
-              <span class="font-bold text-amber-500 block mb-1">📌 Hướng dẫn mở khoá Tab:</span>
-              Để mở khoá Tab này (không giới hạn thời gian xem), bạn hãy Chuyển khoản số tiền tương ứng, sau đó <strong>CHỤP BILL + GỬI KÈM EMAIL TÀI KHOẢN ĐĂNG KÝ VÀ TÊN BÀI HÁT</strong> qua Zalo Admin: <span class="font-bold text-accent-primary">0326.768.885</span>. Admin sẽ cấp quyền thủ công vào tài khoản của bạn trong vòng 2-4 tiếng.
+            <div class="p-3 rounded-xl bg-emerald-500/10 border border-emerald-500/20 text-[11px] text-text-primary leading-relaxed">
+              <span class="font-bold text-emerald-600 dark:text-emerald-400 block mb-1">⚡ Tự động mở khoá, không cần chờ:</span>
+              Chuyển khoản đúng số tiền, giữ nguyên nội dung đã điền sẵn trong mã QR ở trên — hệ thống tự nhận diện và mở khoá ngay khi ngân hàng báo có tiền vào (thường trong 1 phút). Sau đó vào <strong>Trang Của Tôi → Đã Mua</strong> để xem Video Tab; quyền xem file Google Drive cũng được cấp tự động theo email tài khoản của bạn, không cần làm thêm gì.
             </div>
             <a href="https://zalo.me/0326768885" target="_blank" rel="noopener noreferrer"
-              class="w-full py-3.5 rounded-2xl bg-[#0068FF] hover:bg-[#0052cc] text-white text-xs sm:text-sm font-extrabold transition-all shadow-md active:scale-98 flex items-center justify-center gap-2 mt-2">
+              class="w-full py-2.5 rounded-2xl bg-glass-bg hover:bg-glass-bg-hover border border-glass-border text-text-primary text-[11px] sm:text-xs font-bold transition-all active:scale-98 flex items-center justify-center gap-2 mt-2">
               <span
-                class="w-5 h-5 rounded-full bg-white text-[#0068FF] font-black flex items-center justify-center text-[10px]">Z</span>
-              <span>Mở Zalo Admin ngay →</span>
+                class="w-5 h-5 rounded-full bg-[#0068FF] text-white font-black flex items-center justify-center text-[10px] flex-shrink-0">Z</span>
+              <span>Chưa nhận được Tab sau vài phút? Nhắn Zalo Admin</span>
             </a>
           </div>
 

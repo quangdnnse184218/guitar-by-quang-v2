@@ -15,6 +15,13 @@ import { applyScrollReveal } from './animations/scroll-reveal.js'
 import { isCompleted, toggleCompleted } from './lib/local-storage-service.js'
 import { supabase } from './lib/supabase.js'
 import { iconHeadphones, iconGuitar, iconHeart } from './icons.js'
+import {
+  createOrderAndBuildQr,
+  downloadQrImage,
+  watchOrderPayment,
+  uploadAndVerifyHssvCard,
+  buildVietQrUrl,
+} from './lib/checkout-order.js'
 
 // Initialize UI
 initNavbarShrink()
@@ -30,6 +37,10 @@ let allSongs = []
 let activeFilter = 'all' // all, free, paid
 let searchQuery = ''
 let activeCheckoutSyntax = ''
+// Đơn hàng + user của lượt thanh toán đang mở — cần để nút "Xác minh thẻ
+// HSSV" biết đang xác minh cho đơn nào, xem initModalInteractions().
+let activeOrder = null
+let activeUserId = null
 
 // Favorites are an account feature — no localStorage fallback for guests.
 // Populated from Supabase on load (empty for anonymous visitors).
@@ -49,6 +60,34 @@ async function loadFavoriteIds() {
     return
   }
   favoriteSongIds = new Set((data || []).map((r) => String(r.song_id)))
+}
+
+// Songs the logged-in user already bought — used to block re-purchase and
+// show an "Đã Mua" state on the card instead of the checkout flow.
+let purchasedSongIds = new Set()
+
+// Hàm hủy theo dõi đơn hàng đang chờ thanh toán (xem watchOrderPayment) —
+// chỉ có 1 đơn được theo dõi tại 1 thời điểm (modal thanh toán chỉ mở 1 lúc).
+let stopOrderWatch = null
+
+async function loadPurchasedIds() {
+  const {
+    data: { session },
+  } = await supabase.auth.getSession()
+  if (!session?.user) {
+    purchasedSongIds = new Set()
+    return
+  }
+  const { data, error } = await supabase.from('purchases').select('song_id').eq('user_id', session.user.id)
+  if (error) {
+    console.warn('[kho-tab] Không thể tải danh sách đã mua:', error.message)
+    return
+  }
+  purchasedSongIds = new Set((data || []).map((r) => String(r.song_id)))
+}
+
+window.navigateToPurchasesTab = function () {
+  window.location.href = '/user-dashboard.html#purchases'
 }
 
 // Toast Notification
@@ -215,6 +254,7 @@ function renderSongCard(tab, index, extraClass = '') {
 
   // 2. PAID CARD
   const compActive = isCompleted(tab.id)
+  const isPurchased = purchasedSongIds.has(String(tab.id))
 
   const priceFormatted = tab.price_formatted || tab.priceFormatted || '239k'
   const discountNote = tab.discount_note || tab.discountNote || ''
@@ -239,7 +279,14 @@ function renderSongCard(tab, index, extraClass = '') {
   const hasDemo = Boolean(normalizedVideo || normalizedAudio)
   const thumbnailBg = tab.thumbnail_bg || tab.thumbnailBg || 'from-[#C1602F] to-[#6E3B1F]'
 
-  const badgeHtml = `
+  const badgeHtml = isPurchased
+    ? `
+    <span class="px-2 sm:px-2.5 py-0.5 sm:py-1 rounded-full text-[8px] sm:text-[9.5px] font-black bg-emerald-600 text-white shadow-sm uppercase tracking-wide flex items-center gap-0.5">
+      <svg class="w-2.5 h-2.5 sm:w-3 sm:h-3" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/></svg>
+      <span>ĐÃ MUA</span>
+    </span>
+  `
+    : `
     <div class="flex flex-col items-end gap-1 sm:gap-1.5">
       <span class="px-2 sm:px-2.5 py-0.5 sm:py-1 rounded-full text-[8px] sm:text-[9.5px] font-black text-white bg-gradient-to-r from-rose-600 via-rose-500 to-red-500 shadow-md shadow-rose-900/40 ring-1 ring-white/25 uppercase tracking-wide font-mono tabular-nums">BÁN • ${priceFormatted}</span>
       ${discountNote ? `<span class="px-2 sm:px-2.5 py-0.5 rounded-full text-[7px] sm:text-[8.5px] font-extrabold text-white bg-gradient-to-r from-amber-500 to-accent-primary shadow-sm shadow-amber-900/30 ring-1 ring-white/25 inline-block leading-none whitespace-nowrap">🎓 ${discountNote}</span>` : ''}
@@ -247,7 +294,16 @@ function renderSongCard(tab, index, extraClass = '') {
   `
 
   let artworkCenterHtml = ''
-  if (normalizedVideo) {
+  if (isPurchased) {
+    artworkCenterHtml = `
+      <div class="my-auto text-center flex flex-col items-center justify-center py-0.5" onclick="event.stopPropagation(); window.navigateToPurchasesTab()">
+        <button class="w-7 h-7 sm:w-10 sm:h-10 rounded-full bg-white text-[#0B0E1A] flex items-center justify-center shadow-lg transform group-hover:scale-110 transition-transform cursor-pointer" aria-label="Mở tab đã mua">
+          <svg class="w-3.5 h-3.5 sm:w-4.5 sm:h-4.5 fill-current ml-0.5 text-accent-primary" viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
+        </button>
+        <span class="text-[8px] sm:text-[10px] font-bold mt-1 text-white/95 tracking-wide bg-black/60 px-2 py-0.5 rounded-full backdrop-blur-xs leading-none whitespace-nowrap">Xem Trong Tab Đã Mua</span>
+      </div>
+    `
+  } else if (normalizedVideo) {
     artworkCenterHtml = `
       <div class="my-auto text-center flex flex-col items-center justify-center py-0.5" onclick="event.stopPropagation(); window.openVideoDemoModal('${tab.title.replace(/'/g, "\\'")}', '${normalizedVideo.replace(/'/g, "\\'")}', false)">
         <button class="w-7 h-7 sm:w-10 sm:h-10 rounded-full bg-white text-[#0B0E1A] flex items-center justify-center shadow-lg transform group-hover:scale-110 transition-transform cursor-pointer" aria-label="Nhấn để xem">
@@ -277,7 +333,7 @@ function renderSongCard(tab, index, extraClass = '') {
   }
 
   return `
-    <div onclick="window.openCheckoutModal('${tab.id}')" class="song-card glass-card card-interactive p-2.5 sm:p-4 rounded-2xl sm:rounded-3xl border border-glass-border flex flex-col justify-between space-y-2.5 sm:space-y-3.5 group cursor-pointer ${cardTypeClass} ${pinnedClass} ${extraClass}" data-id="${tab.id}">
+    <div onclick="${isPurchased ? 'window.navigateToPurchasesTab()' : `window.openCheckoutModal('${tab.id}')`}" class="song-card glass-card card-interactive p-2.5 sm:p-4 rounded-2xl sm:rounded-3xl border ${isPurchased ? 'border-amber-500/40 hover:border-amber-400' : 'border-glass-border'} flex flex-col justify-between space-y-2.5 sm:space-y-3.5 group cursor-pointer ${cardTypeClass} ${pinnedClass} ${extraClass}" data-id="${tab.id}">
       ${swipeFavOverlay}
       <div class="space-y-2 sm:space-y-3">
         <div class="relative overflow-hidden rounded-xl sm:rounded-2xl aspect-[4/3] sm:aspect-[16/10] bg-gradient-to-br ${thumbnailBg} p-2 sm:p-3.5 flex flex-col justify-between text-white shadow-inner group-hover:scale-[1.02] transition-transform duration-500 ease-out">
@@ -320,9 +376,15 @@ function renderSongCard(tab, index, extraClass = '') {
       </div>
 
       <div class="pt-1 sm:pt-2">
-        <div class="w-full py-1.5 sm:py-2.5 px-1.5 rounded-full bg-warm-gradient hover:opacity-90 text-white font-bold text-[10px] sm:text-xs transition-all shadow-md shadow-accent-primary/20 flex items-center justify-center gap-1 active:scale-95 text-center cursor-pointer">
+        ${
+          isPurchased
+            ? `<div class="w-full py-1.5 sm:py-2.5 px-1.5 rounded-full bg-amber-500/15 border border-amber-500/30 hover:bg-amber-500/25 text-amber-600 dark:text-amber-300 font-extrabold text-[10px] sm:text-xs transition-all shadow-xs flex items-center justify-center gap-1 active:scale-95 text-center cursor-pointer">
+          <span class="truncate">Mở Tab Đã Mua</span>
+        </div>`
+            : `<div class="w-full py-1.5 sm:py-2.5 px-1.5 rounded-full bg-warm-gradient hover:opacity-90 text-white font-bold text-[10px] sm:text-xs transition-all shadow-md shadow-accent-primary/20 flex items-center justify-center gap-1 active:scale-95 text-center cursor-pointer">
           <span class="truncate">Nhận Video Tab</span>
-        </div>
+        </div>`
+        }
       </div>
     </div>
   `
@@ -485,7 +547,7 @@ function initSwipeToFavorite() {
 // LOAD DATA
 // ==========================================================================
 async function loadData() {
-  const [songs] = await Promise.all([fetchAllSongs(), loadFavoriteIds()])
+  const [songs] = await Promise.all([fetchAllSongs(), loadFavoriteIds(), loadPurchasedIds()])
   allSongs = songs
   updateGrid()
 }
@@ -595,6 +657,11 @@ export function toggleModal(modalId, show) {
     const iframe = modal.querySelector('iframe')
     if (iframe) iframe.src = ''
 
+    if (modalId === 'checkout-modal' && stopOrderWatch) {
+      stopOrderWatch()
+      stopOrderWatch = null
+    }
+
     modal.classList.add('opacity-0', 'pointer-events-none')
     modal.classList.remove('opacity-100', 'pointer-events-auto')
     if (dialog) {
@@ -686,12 +753,22 @@ window.openImageModal = function openImageModal(src, title, caption) {
   toggleModal('image-preview-modal', true)
 }
 
+window.downloadCheckoutQr = function downloadCheckoutQr() {
+  const qrImgEl = document.getElementById('modal-qr-img')
+  if (!qrImgEl?.src) return
+  downloadQrImage(qrImgEl.src).catch((err) => {
+    console.error('Không tải được ảnh QR:', err)
+    showToast('Không tải được ảnh QR, thử lại nhé!', 'error')
+  })
+}
+
 window.openCheckoutModal = async function openCheckoutModal(tabId) {
   if (!allSongs || !allSongs.length) return
   const tab = allSongs.find((t) => t.id === tabId)
   if (!tab) return
 
   // Gate Check for paid cards: MUST BE LOGGED IN
+  let currentUserId = null
   try {
     const {
       data: { session },
@@ -704,14 +781,24 @@ window.openCheckoutModal = async function openCheckoutModal(tabId) {
       toggleModal('auth-required-modal', true)
       return
     }
+    currentUserId = session.user.id
+    activeUserId = currentUserId
   } catch (e) {
     console.warn('Auth check error in openCheckoutModal:', e)
+  }
+
+  // Already owns this tab — send to purchases instead of re-selling it.
+  if (purchasedSongIds.has(String(tabId))) {
+    window.navigateToPurchasesTab()
+    return
   }
 
   const titleEl = document.getElementById('modal-tab-title')
   const metaEl = document.getElementById('modal-tab-meta')
   const priceEl = document.getElementById('modal-tab-price')
   const syntaxEl = document.getElementById('modal-transfer-syntax')
+  const qrImgEl = document.getElementById('modal-qr-img')
+  const qrTriggerEl = document.getElementById('qr-preview-trigger')
   const discountTag = document.getElementById('modal-discount-tag')
   const levelEl = document.getElementById('modal-tab-level')
   const tuningEl = document.getElementById('modal-tab-tuning')
@@ -745,12 +832,73 @@ window.openCheckoutModal = async function openCheckoutModal(tabId) {
     }
   }
 
+  // Reset khối HSSV về trạng thái ban đầu mỗi lần mở modal cho 1 bài mới —
+  // chỉ hiện nếu bài có giá ưu đãi (discount_note), ẩn hẳn nếu không.
+  activeOrder = null
+  const hssvBlock = document.getElementById('modal-hssv-block')
+  const hssvCheckbox = document.getElementById('modal-hssv-checkbox')
+  const hssvPanel = document.getElementById('modal-hssv-upload-panel')
+  const hssvFileInput = document.getElementById('modal-hssv-file-input')
+  const hssvVerifyBtn = document.getElementById('modal-hssv-verify-btn')
+  const hssvStatus = document.getElementById('modal-hssv-status')
+  if (hssvBlock) hssvBlock.classList.toggle('hidden', !discountNote)
+  if (hssvCheckbox) hssvCheckbox.checked = false
+  if (hssvPanel) hssvPanel.classList.add('hidden')
+  if (hssvFileInput) hssvFileInput.value = ''
+  if (hssvVerifyBtn) {
+    hssvVerifyBtn.disabled = true
+    hssvVerifyBtn.textContent = 'Xác minh thẻ HSSV'
+  }
+  if (hssvStatus) {
+    hssvStatus.classList.add('hidden')
+    hssvStatus.textContent = ''
+  }
+
   const cleanSongCode = tab.title
     .replace(/[^a-zA-Z0-9]/g, '')
     .toUpperCase()
     .slice(0, 10)
   activeCheckoutSyntax = `VIDEOTAB ${cleanSongCode}`
   if (syntaxEl) syntaxEl.textContent = activeCheckoutSyntax
+
+  // Tạo đơn hàng riêng + QR nhúng sẵn số tiền/nội dung — để SePay webhook tự
+  // đối chiếu đúng người-đúng bài khi có tiền vào, thay vì phải cấp quyền tay.
+  if (stopOrderWatch) {
+    stopOrderWatch()
+    stopOrderWatch = null
+  }
+
+  if (currentUserId) {
+    createOrderAndBuildQr(currentUserId, tab)
+      .then(({ orderCode, qrUrl, order }) => {
+        if (!orderCode) return
+        activeOrder = order
+        activeCheckoutSyntax = orderCode
+        if (syntaxEl) syntaxEl.textContent = activeCheckoutSyntax
+        if (qrImgEl) qrImgEl.src = qrUrl
+        if (qrTriggerEl) {
+          qrTriggerEl.onclick = () =>
+            window.openImageModal(
+              qrUrl,
+              'Mã QR Chuyển Khoản TPBank (03970202801)',
+              'Quét mã QR bằng App Ngân hàng bất kỳ — số tiền và nội dung đã được điền sẵn, chỉ cần xác nhận chuyển khoản.'
+            )
+        }
+
+        // Tự động phát hiện khi SePay webhook xác nhận thanh toán — không cần
+        // người dùng tự bấm làm mới hay đoán xem đã cấp quyền chưa.
+        stopOrderWatch = watchOrderPayment(orderCode, {
+          onPaid: () => {
+            stopOrderWatch = null
+            purchasedSongIds.add(String(tab.id))
+            toggleModal('checkout-modal', false)
+            window.showToast(`Chuyển khoản thành công! Đã mở khoá "${tab.title}" 🎉`, 'success')
+            setTimeout(() => window.navigateToPurchasesTab(), 1200)
+          },
+        })
+      })
+      .catch((err) => console.warn('Không tạo được đơn hàng tự động:', err))
+  }
 
   const videoDemo = tab.demo_video_url || tab.video_demo || tab.videoDemo || tab.youtube_id || ''
   const audioDemo = tab.audio_demo || tab.demo_audio_url || tab.audio_url || ''
@@ -954,6 +1102,94 @@ function initModalInteractions() {
         .catch(() => {
           showToast('Lỗi khi copy', 'error')
         })
+    })
+  }
+
+  initHssvVerification()
+}
+
+// Checkbox "Tôi là HSSV" → hiện panel upload ảnh thẻ. Chọn ảnh xong bấm "Xác
+// minh" → upload lên bucket riêng tư + gọi Edge Function verify-hssv-card
+// (AI kiểm tra thẻ). Nếu đạt, đổi luôn giá + QR sang giá HSSV — không cần
+// admin duyệt tay.
+function initHssvVerification() {
+  const hssvCheckbox = document.getElementById('modal-hssv-checkbox')
+  const hssvPanel = document.getElementById('modal-hssv-upload-panel')
+  const hssvFileInput = document.getElementById('modal-hssv-file-input')
+  const hssvVerifyBtn = document.getElementById('modal-hssv-verify-btn')
+  const hssvStatus = document.getElementById('modal-hssv-status')
+
+  if (hssvCheckbox && hssvPanel) {
+    hssvCheckbox.addEventListener('change', () => {
+      hssvPanel.classList.toggle('hidden', !hssvCheckbox.checked)
+    })
+  }
+
+  if (hssvFileInput && hssvVerifyBtn) {
+    hssvFileInput.addEventListener('change', () => {
+      hssvVerifyBtn.disabled = !hssvFileInput.files?.length
+    })
+  }
+
+  if (hssvVerifyBtn) {
+    hssvVerifyBtn.addEventListener('click', async () => {
+      const file = hssvFileInput?.files?.[0]
+      if (!file || !activeOrder?.id || !activeUserId) return
+
+      hssvVerifyBtn.disabled = true
+      hssvVerifyBtn.textContent = 'Đang xác minh...'
+      if (hssvStatus) {
+        hssvStatus.classList.remove('hidden')
+        hssvStatus.className = 'font-bold text-[11px] leading-relaxed text-text-muted'
+        hssvStatus.textContent = 'Đang gửi ảnh cho AI kiểm tra, chờ chút nhé...'
+      }
+
+      try {
+        const result = await uploadAndVerifyHssvCard(activeUserId, activeOrder.id, file)
+
+        if (result?.approved) {
+          activeOrder.amount = result.newAmount || activeOrder.amount
+          const qrImgEl = document.getElementById('modal-qr-img')
+          const priceEl = document.getElementById('modal-tab-price')
+          const discountTag = document.getElementById('modal-discount-tag')
+          const newQrUrl = buildVietQrUrl(activeOrder.amount, activeCheckoutSyntax)
+          if (qrImgEl) qrImgEl.src = newQrUrl
+          const qrTriggerEl = document.getElementById('qr-preview-trigger')
+          if (qrTriggerEl) {
+            qrTriggerEl.onclick = () =>
+              window.openImageModal(
+                newQrUrl,
+                'Mã QR Chuyển Khoản TPBank (03970202801)',
+                'Quét mã QR bằng App Ngân hàng bất kỳ — số tiền và nội dung đã được điền sẵn, chỉ cần xác nhận chuyển khoản.'
+              )
+          }
+          if (priceEl) priceEl.textContent = `${activeOrder.amount.toLocaleString('vi-VN')} VNĐ`
+          if (discountTag) discountTag.textContent = '✓ Đã xác minh HSSV'
+
+          if (hssvStatus) {
+            hssvStatus.className = 'font-bold text-[11px] leading-relaxed text-emerald-600 dark:text-emerald-400'
+            hssvStatus.textContent = '✓ Đã xác minh! Mã QR đã đổi sang giá HSSV.'
+          }
+          hssvVerifyBtn.textContent = 'Đã xác minh ✓'
+          if (hssvFileInput) hssvFileInput.disabled = true
+        } else {
+          if (hssvStatus) {
+            hssvStatus.className = 'font-bold text-[11px] leading-relaxed text-rose-600 dark:text-rose-400'
+            hssvStatus.textContent =
+              result?.reason || 'Không xác minh được thẻ HSSV, bạn có thể thử ảnh khác hoặc thanh toán giá thường.'
+          }
+          hssvVerifyBtn.disabled = false
+          hssvVerifyBtn.textContent = 'Xác minh thẻ HSSV'
+        }
+      } catch (err) {
+        console.error('Lỗi xác minh HSSV:', err)
+        if (hssvStatus) {
+          hssvStatus.className = 'font-bold text-[11px] leading-relaxed text-rose-600 dark:text-rose-400'
+          hssvStatus.textContent = 'Có lỗi khi xác minh, thử lại giúp mình nhé.'
+        }
+        hssvVerifyBtn.disabled = false
+        hssvVerifyBtn.textContent = 'Xác minh thẻ HSSV'
+      }
     })
   }
 }

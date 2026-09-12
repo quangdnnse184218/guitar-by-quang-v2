@@ -475,7 +475,7 @@
                 </summary>
                 <p
                   class="pt-2.5 text-xs text-text-muted font-medium leading-relaxed border-t border-glass-border/40 mt-2.5">
-                  Bạn chuyển khoản xong chụp lại ảnh giao dịch rồi gửi qua Zalo (0326.768.885) cho mình kèm email tài khoản đăng ký. Mình check xong sẽ mở quyền truy cập và tab sẽ tự động xuất hiện trong mục "Tab Đã Mua" của bạn ngay.</p>
+                  Hệ thống tự động nhận diện giao dịch và mở khoá ngay trong mục "Tab Đã Mua", thường chỉ trong vòng 1 phút sau khi chuyển khoản — không cần chụp bill hay nhắn Zalo. Nếu quá 15 phút vẫn chưa thấy, nhắn Zalo (0326.768.885) kèm ảnh giao dịch để mình kiểm tra và cấp quyền giúp bạn.</p>
               </details>
 
               <!-- Item 2: Thanh toán -->
@@ -485,14 +485,14 @@
                   <div class="flex items-start gap-2.5 flex-1 min-w-0">
                     <span
                       class="text-[9px] font-mono font-bold uppercase tracking-wider px-1.5 py-0.5 rounded bg-accent-primary/10 text-accent-primary border border-accent-primary/20 flex-shrink-0 mt-0.5">Thanh toán</span>
-                    <span class="leading-snug flex-1">Nếu chuyển khoản nhầm cú pháp hoặc mua nhiều bài thì sao?</span>
+                    <span class="leading-snug flex-1">Nếu chuyển khoản nhầm nội dung hoặc mua nhiều bài thì sao?</span>
                   </div>
                   <span
                     class="faq-icon flex-shrink-0 w-6 h-6 rounded-full bg-accent-primary/20 text-accent-primary flex items-center justify-center text-base font-black mt-0.5">+</span>
                 </summary>
                 <p
                   class="pt-2.5 text-xs text-text-muted font-medium leading-relaxed border-t border-glass-border/40 mt-2.5">
-                  Bạn chỉ cần gửi ảnh chụp biên lai giao dịch qua Zalo (0326.768.885) kèm tên các bài hát bạn muốn lấy và email. Mình sẽ đối soát thông tin tài khoản và kích hoạt đầy đủ tài liệu cho bạn trong vòng vài phút.</p>
+                  Mỗi lần bấm "Mua" hệ thống tạo 1 mã đơn hàng riêng, quét mã QR là app ngân hàng tự điền đúng số tiền và nội dung nên khó nhầm. Mua nhiều bài thì mỗi bài bấm "Mua" và chuyển khoản riêng theo đúng mã hiện lên lúc đó, không dùng lại QR của bài khác. Lỡ chuyển sai nội dung/thiếu tiền khiến hệ thống không tự khớp được, nhắn Zalo (0326.768.885) kèm ảnh giao dịch để mình đối chiếu và cấp quyền tay giúp bạn.</p>
               </details>
 
               <!-- Item 3: Kỹ thuật -->
@@ -860,6 +860,11 @@
                     </svg>
                     <span>Ấn để phóng to</span>
                   </div>
+                  <button type="button" id="qr-download-btn" title="Tải ảnh QR về máy" aria-label="Tải ảnh QR về máy"
+                    onclick="event.stopPropagation(); window.downloadCheckoutQr()"
+                    class="absolute bottom-1 right-1 w-6 h-6 rounded-full bg-accent-primary text-white flex items-center justify-center shadow-md hover:brightness-110 active:scale-95 transition-all cursor-pointer">
+                    <svg class="w-3 h-3" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M4 16v2a2 2 0 002 2h12a2 2 0 002-2v-2M7 10l5 5 5-5M12 15V3"/></svg>
+                  </button>
                 </div>
 
                 <!-- Khung Thông tin tài khoản -->
@@ -943,6 +948,25 @@
                 <span id="modal-tab-price" class="text-2xl sm:text-3xl font-black text-accent-primary">239.000 VNĐ</span>
               </div>
 
+              <!-- 2b. HSSV: tick + upload ảnh thẻ để AI tự kiểm tra và đổi sang giá ưu đãi -->
+              <div id="modal-hssv-block" class="p-3.5 rounded-2xl modal-inner-card border border-glass-border space-y-2.5 text-xs">
+                <label class="flex items-center gap-2.5 cursor-pointer select-none">
+                  <input type="checkbox" id="modal-hssv-checkbox"
+                    class="w-4 h-4 rounded accent-accent-primary cursor-pointer flex-shrink-0">
+                  <span class="font-bold text-text-primary">Tôi là Học sinh/Sinh viên — áp dụng giá ưu đãi</span>
+                </label>
+                <div id="modal-hssv-upload-panel" class="hidden space-y-2.5 pt-1">
+                  <p class="text-text-muted leading-relaxed">Chụp/tải ảnh thẻ HSSV còn hiệu lực năm nay — hệ thống tự
+                    kiểm tra và đổi sang giá ưu đãi ngay nếu hợp lệ, không cần chờ admin duyệt.</p>
+                  <input type="file" accept="image/*" id="modal-hssv-file-input"
+                    class="block w-full text-[11px] text-text-muted file:mr-3 file:px-3 file:py-1.5 file:rounded-lg file:border-0 file:bg-accent-primary/15 file:text-accent-primary file:font-bold file:cursor-pointer cursor-pointer" />
+                  <button type="button" id="modal-hssv-verify-btn" disabled
+                    class="w-full py-2 rounded-xl bg-accent-primary text-white font-bold text-[11px] transition-all active:scale-98 disabled:opacity-50 disabled:cursor-not-allowed">Xác
+                    minh thẻ HSSV</button>
+                  <p id="modal-hssv-status" class="hidden font-bold text-[11px] leading-relaxed"></p>
+                </div>
+              </div>
+
               <!-- 3. Trọn bộ tài liệu bạn sẽ nhận -->
               <div class="p-4 rounded-2xl modal-inner-card space-y-2.5 text-xs shadow-xs border border-glass-border">
                 <span class="font-extrabold text-accent-primary block text-[11px] uppercase tracking-wider">Trọn bộ tài
@@ -988,17 +1012,18 @@
               </a>
             </div>
 
-            <!-- 5. Nút Zalo gửi bill nhận link -->
+            <!-- 5. Hướng dẫn mở khoá tự động (qua SePay webhook, xem sepay-ipn Edge Function) -->
             <div class="space-y-2 pt-2">
+              <div class="p-3 rounded-xl bg-emerald-500/10 border border-emerald-500/20 text-[11px] text-text-primary leading-relaxed">
+                <span class="font-bold text-emerald-600 dark:text-emerald-400 block mb-1">⚡ Tự động mở khoá, không cần chờ:</span>
+                Chuyển khoản đúng số tiền, giữ nguyên nội dung đã điền sẵn trong mã QR ở trên — hệ thống tự nhận diện và mở khoá ngay khi ngân hàng báo có tiền vào (thường trong 1 phút). Đóng cửa sổ này rồi bấm sang tab <strong>"Đã Mua"</strong> ở trên để xem Video Tab; quyền xem file Google Drive cũng được cấp tự động theo email tài khoản của bạn, không cần làm thêm gì.
+              </div>
               <a href="https://zalo.me/0326768885" target="_blank" rel="noopener noreferrer"
-                class="w-full py-3.5 rounded-2xl bg-[#0068FF] hover:bg-[#0052cc] text-white text-xs sm:text-sm font-extrabold transition-all shadow-md active:scale-98 flex items-center justify-center gap-2">
+                class="w-full py-2.5 rounded-2xl bg-glass-bg hover:bg-glass-bg-hover border border-glass-border text-text-primary text-[11px] sm:text-xs font-bold transition-all active:scale-98 flex items-center justify-center gap-2 mt-2">
                 <span
-                  class="w-5 h-5 rounded-full bg-white text-[#0068FF] font-black flex items-center justify-center text-[10px]">Z</span>
-                <span>Gửi bill qua Zalo nhận file ngay: 0326.768.885 →</span>
+                  class="w-5 h-5 rounded-full bg-[#0068FF] text-white font-black flex items-center justify-center text-[10px] flex-shrink-0">Z</span>
+                <span>Chưa nhận được Tab sau vài phút? Nhắn Zalo Admin</span>
               </a>
-              <p class="text-center text-[11px] text-text-muted font-medium">
-                Chuyển khoản xong chụp lại bill nhắn Zalo để mình gửi link Google Drive tốc độ cao nhé! 🎸
-              </p>
             </div>
 
           </div>

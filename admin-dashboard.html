@@ -318,15 +318,50 @@
       <!-- VIEW 4: QUẢN LÝ ĐƠN MUA & CẤP QUYỀN TAB                     -->
       <!-- ============================================================ -->
       <div id="section-grant" class="space-y-6 hidden">
+
+        <!-- Block 0: Đơn Hàng Tự Động Gần Đây (SePay webhook tự khớp + cấp quyền,
+             xem Edge Function sepay-ipn) — đây là luồng chính từ khi có tự động hoá. -->
+        <div class="glass-card p-5 rounded-3xl border border-glass-border space-y-4 shadow-sm">
+          <div class="flex items-center justify-between pb-2 border-b border-glass-border flex-wrap gap-2">
+            <div>
+              <h3 class="text-sm font-extrabold text-text-primary flex items-center gap-2">
+                <svg class="w-4 h-4 text-emerald-500" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M13 2L4.5 14h6L9 22l10-13h-6.5L13 2z"/></svg>
+                <span>Đơn Hàng Tự Động Gần Đây</span>
+              </h3>
+              <p class="text-[11px] text-text-muted">Chuyển khoản khớp mã đơn → tự cấp quyền mua + quyền Drive, không cần thao tác gì.</p>
+            </div>
+            <button id="refresh-orders-btn" class="text-xs text-accent-primary hover:underline font-bold flex items-center gap-1 cursor-pointer">
+              <svg class="w-3 h-3" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/></svg>
+              <span>Tải lại</span>
+            </button>
+          </div>
+          <div class="overflow-x-auto">
+            <table class="w-full text-left border-collapse admin-responsive-table">
+              <thead>
+                <tr class="bg-black/5 dark:bg-white/5 border-b border-glass-border text-[10px] font-mono uppercase tracking-wider text-text-muted">
+                  <th class="p-3">Mã đơn</th>
+                  <th class="p-3">Khách / Bài hát</th>
+                  <th class="p-3">Số tiền</th>
+                  <th class="p-3">Trạng thái</th>
+                  <th class="p-3 text-right">Thời gian tạo</th>
+                </tr>
+              </thead>
+              <tbody id="recent-orders-tbody" class="divide-y divide-glass-border text-xs">
+                <!-- Populated via admin-dashboard.js -->
+              </tbody>
+            </table>
+          </div>
+        </div>
+
         <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
-          
-          <!-- Left Col (1 Col): Form Cấp Quyền -->
+
+          <!-- Left Col (1 Col): Form Cấp Quyền (dự phòng thủ công) -->
           <div class="lg:col-span-1">
             <div class="glass-card p-6 rounded-3xl border border-glass-border space-y-5 shadow-sm sticky top-24">
               <div>
-                <span class="px-2.5 py-1 rounded-full bg-accent-primary/10 text-accent-primary text-[10px] font-bold tracking-wider uppercase border border-accent-primary/20 block w-fit mb-2">Thủ Công</span>
+                <span class="px-2.5 py-1 rounded-full bg-amber-500/10 text-amber-600 dark:text-amber-400 text-[10px] font-bold tracking-wider uppercase border border-amber-500/20 block w-fit mb-2">Dự phòng thủ công</span>
                 <h2 class="text-xl font-black text-text-primary">Cấp Quyền Cho User</h2>
-                <p class="text-xs text-text-muted font-medium mt-1">Dán UUID của khách hàng từ tab "Quản Lý User" sau khi nhận được bill chuyển khoản qua Zalo.</p>
+                <p class="text-xs text-text-muted font-medium mt-1">Hệ thống đã tự động cấp quyền qua SePay webhook — chỉ dùng form này khi khách báo chuyển khoản xong mà chưa thấy tab tự mở khoá (sai nội dung, lỗi webhook...).</p>
               </div>
               
               <form id="grant-access-form" class="space-y-4">
@@ -359,7 +394,7 @@
               <div class="flex items-center justify-between pb-2 border-b border-glass-border">
                 <div>
                   <h3 class="text-sm font-extrabold text-text-primary flex items-center gap-2">
-                    <span>💎</span>
+                    <svg class="w-4 h-4 text-accent-primary" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M6 3h12l3 5-9 12L3 8z"/></svg>
                     <span>Danh Sách Tab Trả Phí (Bản Quyền)</span>
                   </h3>
                   <p class="text-[11px] text-text-muted">Bấm "Cấp quyền" để điền nhanh bài hát vào ô thao tác</p>
@@ -376,11 +411,12 @@
             <div class="glass-card p-5 rounded-3xl border border-glass-border space-y-4 shadow-sm">
               <div class="flex items-center justify-between pb-2 border-b border-glass-border">
                 <h3 class="text-sm font-extrabold text-text-primary flex items-center gap-2">
-                  <span>🕒</span>
-                  <span>Lịch Sử Cấp Quyền Đơn Mua Gần Đây</span>
+                  <svg class="w-4 h-4 text-text-muted" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"/><polyline points="12 7 12 12 15 14"/></svg>
+                  <span>Lịch Sử Tất Cả Đơn Đã Mua (Tự Động + Thủ Công)</span>
                 </h3>
                 <button id="refresh-history-btn" class="text-xs text-accent-primary hover:underline font-bold flex items-center gap-1 cursor-pointer">
-                  <span>🔄 Tải lại</span>
+                  <svg class="w-3 h-3" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/></svg>
+                  <span>Tải lại</span>
                 </button>
               </div>
 

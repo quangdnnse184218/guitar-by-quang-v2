@@ -18,6 +18,7 @@ import { loadGears, initGearsSection } from './admin/gears.js'
 import {
   loadUsers,
   loadRecentGrants,
+  loadRecentOrders,
   renderPaidSongs,
   initUsersGrantSection,
 } from './admin/users-grant.js'
@@ -190,6 +191,7 @@ async function initDashboard() {
     if (tabId === 'grant') {
       renderPaidSongs()
       loadRecentGrants()
+      loadRecentOrders()
     }
   }
 
@@ -300,6 +302,7 @@ async function initDashboard() {
   loadGears()
   loadUsers()
   loadRecentGrants()
+  loadRecentOrders()
 }
 
 document.addEventListener('DOMContentLoaded', initDashboard)

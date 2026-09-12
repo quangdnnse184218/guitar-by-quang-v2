@@ -21,6 +21,13 @@ import {
 import { fetchAllGears, DEFAULT_GEARS } from './lib/gears-service.js'
 import { uploadToStorage, removeFromStorageByUrl, formatBytes, MAX_UPLOAD_BYTES } from './lib/storage-service.js'
 import { iconCrown, iconHeadphones, iconGuitar } from './icons.js'
+import {
+  createOrderAndBuildQr,
+  downloadQrImage,
+  watchOrderPayment,
+  uploadAndVerifyHssvCard,
+  buildVietQrUrl,
+} from './lib/checkout-order.js'
 
 // If redirected here with a recovery token, immediately move to reset-password.html
 if (
@@ -44,6 +51,15 @@ let currentProfile = null
 let allSongs = []
 let favoriteSongIds = new Set()
 let purchasedSongIds = new Set()
+
+// Hàm hủy theo dõi đơn hàng đang chờ thanh toán (xem watchOrderPayment) —
+// chỉ có 1 đơn được theo dõi tại 1 thời điểm (modal thanh toán chỉ mở 1 lúc).
+let stopOrderWatch = null
+
+// Đơn hàng của lượt thanh toán đang mở — cần cho nút "Xác minh thẻ HSSV".
+// (đã có currentUser.id sẵn nên không cần thêm activeUserId riêng như các
+// trang khác chưa chắc đã đăng nhập lúc mở modal.)
+let activeOrder = null
 
 // State
 let activeTab = 'overview' // 'overview' | 'favorites' | 'purchases' | 'profile'
@@ -970,6 +986,11 @@ export function toggleModal(modalId, show) {
     const iframe = modal.querySelector('iframe')
     if (iframe) iframe.src = ''
 
+    if (modalId === 'checkout-modal' && stopOrderWatch) {
+      stopOrderWatch()
+      stopOrderWatch = null
+    }
+
     modal.classList.add('opacity-0', 'pointer-events-none')
     modal.classList.remove('opacity-100', 'pointer-events-auto')
     if (dialog) {
@@ -1050,6 +1071,8 @@ window.openCheckoutModal = function openCheckoutModal(tabId) {
   const metaEl = document.getElementById('modal-tab-meta')
   const priceEl = document.getElementById('modal-tab-price')
   const syntaxEl = document.getElementById('modal-transfer-syntax')
+  const qrImgEl = document.getElementById('modal-qr-img')
+  const qrTriggerEl = document.getElementById('qr-preview-trigger')
   const discountTag = document.getElementById('modal-discount-tag')
   const levelEl = document.getElementById('modal-tab-level')
   const tuningEl = document.getElementById('modal-tab-tuning')
@@ -1083,12 +1106,79 @@ window.openCheckoutModal = function openCheckoutModal(tabId) {
     }
   }
 
+  // Reset khối HSSV về trạng thái ban đầu mỗi lần mở modal cho 1 bài mới —
+  // chỉ hiện nếu bài có giá ưu đãi (discount_note), ẩn hẳn nếu không.
+  activeOrder = null
+  const hssvBlock = document.getElementById('modal-hssv-block')
+  const hssvCheckbox = document.getElementById('modal-hssv-checkbox')
+  const hssvPanel = document.getElementById('modal-hssv-upload-panel')
+  const hssvFileInput = document.getElementById('modal-hssv-file-input')
+  const hssvVerifyBtn = document.getElementById('modal-hssv-verify-btn')
+  const hssvStatus = document.getElementById('modal-hssv-status')
+  if (hssvBlock) hssvBlock.classList.toggle('hidden', !discountNote)
+  if (hssvCheckbox) hssvCheckbox.checked = false
+  if (hssvPanel) hssvPanel.classList.add('hidden')
+  if (hssvFileInput) {
+    hssvFileInput.value = ''
+    hssvFileInput.disabled = false
+  }
+  if (hssvVerifyBtn) {
+    hssvVerifyBtn.disabled = true
+    hssvVerifyBtn.textContent = 'Xác minh thẻ HSSV'
+  }
+  if (hssvStatus) {
+    hssvStatus.classList.add('hidden')
+    hssvStatus.textContent = ''
+  }
+
   const cleanSongCode = tab.title
     .replace(/[^a-zA-Z0-9]/g, '')
     .toUpperCase()
     .slice(0, 10)
   activeCheckoutSyntax = `VIDEOTAB ${cleanSongCode}`
   if (syntaxEl) syntaxEl.textContent = activeCheckoutSyntax
+
+  // Tạo đơn hàng riêng + QR nhúng sẵn số tiền/nội dung — để SePay webhook tự
+  // đối chiếu đúng người-đúng bài khi có tiền vào, thay vì phải cấp quyền tay.
+  if (stopOrderWatch) {
+    stopOrderWatch()
+    stopOrderWatch = null
+  }
+
+  if (currentUser?.id) {
+    createOrderAndBuildQr(currentUser.id, tab)
+      .then(({ orderCode, qrUrl, order }) => {
+        if (!orderCode) return
+        activeOrder = order
+        activeCheckoutSyntax = orderCode
+        if (syntaxEl) syntaxEl.textContent = activeCheckoutSyntax
+        if (qrImgEl) qrImgEl.src = qrUrl
+        if (qrTriggerEl) {
+          qrTriggerEl.onclick = () =>
+            window.openImageModal(
+              qrUrl,
+              'Mã QR Chuyển Khoản TPBank (03970202801)',
+              'Quét mã QR bằng App Ngân hàng bất kỳ — số tiền và nội dung đã được điền sẵn, chỉ cần xác nhận chuyển khoản.'
+            )
+        }
+
+        // Tự động phát hiện khi SePay webhook xác nhận thanh toán — không cần
+        // người dùng tự bấm làm mới hay đoán xem đã cấp quyền chưa.
+        stopOrderWatch = watchOrderPayment(orderCode, {
+          onPaid: () => {
+            stopOrderWatch = null
+            purchasedSongIds.add(String(tab.id))
+            updateCounters()
+            renderOverviewFeatured()
+            renderPurchases()
+            toggleModal('checkout-modal', false)
+            window.navigateToPurchasesTab(tab.id)
+            showToast(`Chuyển khoản thành công! Đã mở khoá "${tab.title}" 🎉`, 'success')
+          },
+        })
+      })
+      .catch((err) => console.warn('Không tạo được đơn hàng tự động:', err))
+  }
 
   const videoDemo =
     tab.video_demo_url ||
@@ -1310,6 +1400,15 @@ window.openImageModal = function openImageModal(src, title, caption) {
   toggleModal('image-preview-modal', true)
 }
 
+window.downloadCheckoutQr = function downloadCheckoutQr() {
+  const qrImgEl = document.getElementById('modal-qr-img')
+  if (!qrImgEl?.src) return
+  downloadQrImage(qrImgEl.src).catch((err) => {
+    console.error('Không tải được ảnh QR:', err)
+    showToast('Không tải được ảnh QR, thử lại nhé!', 'error')
+  })
+}
+
 window.toggleFavoriteSong = async function (event, songId) {
   if (event) event.stopPropagation()
   if (!currentUser) return
@@ -1387,6 +1486,92 @@ document.getElementById('copy-syntax-btn')?.addEventListener('click', async () =
     showToast('Không thể sao chép tự động.')
   }
 })
+
+// Checkbox "Tôi là HSSV" → hiện panel upload ảnh thẻ. Chọn ảnh xong bấm "Xác
+// minh" → upload lên bucket riêng tư + gọi Edge Function verify-hssv-card
+// (AI kiểm tra thẻ). Nếu đạt, đổi luôn giá + QR sang giá HSSV — không cần
+// admin duyệt tay.
+;(function initHssvVerification() {
+  const hssvCheckbox = document.getElementById('modal-hssv-checkbox')
+  const hssvPanel = document.getElementById('modal-hssv-upload-panel')
+  const hssvFileInput = document.getElementById('modal-hssv-file-input')
+  const hssvVerifyBtn = document.getElementById('modal-hssv-verify-btn')
+  const hssvStatus = document.getElementById('modal-hssv-status')
+
+  if (hssvCheckbox && hssvPanel) {
+    hssvCheckbox.addEventListener('change', () => {
+      hssvPanel.classList.toggle('hidden', !hssvCheckbox.checked)
+    })
+  }
+
+  if (hssvFileInput && hssvVerifyBtn) {
+    hssvFileInput.addEventListener('change', () => {
+      hssvVerifyBtn.disabled = !hssvFileInput.files?.length
+    })
+  }
+
+  if (hssvVerifyBtn) {
+    hssvVerifyBtn.addEventListener('click', async () => {
+      const file = hssvFileInput?.files?.[0]
+      if (!file || !activeOrder?.id || !currentUser?.id) return
+
+      hssvVerifyBtn.disabled = true
+      hssvVerifyBtn.textContent = 'Đang xác minh...'
+      if (hssvStatus) {
+        hssvStatus.classList.remove('hidden')
+        hssvStatus.className = 'font-bold text-[11px] leading-relaxed text-text-muted'
+        hssvStatus.textContent = 'Đang gửi ảnh cho AI kiểm tra, chờ chút nhé...'
+      }
+
+      try {
+        const result = await uploadAndVerifyHssvCard(currentUser.id, activeOrder.id, file)
+
+        if (result?.approved) {
+          activeOrder.amount = result.newAmount || activeOrder.amount
+          const qrImgEl = document.getElementById('modal-qr-img')
+          const priceEl = document.getElementById('modal-tab-price')
+          const discountTag = document.getElementById('modal-discount-tag')
+          const newQrUrl = buildVietQrUrl(activeOrder.amount, activeCheckoutSyntax)
+          if (qrImgEl) qrImgEl.src = newQrUrl
+          const qrTriggerEl = document.getElementById('qr-preview-trigger')
+          if (qrTriggerEl) {
+            qrTriggerEl.onclick = () =>
+              window.openImageModal(
+                newQrUrl,
+                'Mã QR Chuyển Khoản TPBank (03970202801)',
+                'Quét mã QR bằng App Ngân hàng bất kỳ — số tiền và nội dung đã được điền sẵn, chỉ cần xác nhận chuyển khoản.'
+              )
+          }
+          if (priceEl) priceEl.textContent = `${activeOrder.amount.toLocaleString('vi-VN')} VNĐ`
+          if (discountTag) discountTag.textContent = '✓ Đã xác minh HSSV'
+
+          if (hssvStatus) {
+            hssvStatus.className = 'font-bold text-[11px] leading-relaxed text-emerald-600 dark:text-emerald-400'
+            hssvStatus.textContent = '✓ Đã xác minh! Mã QR đã đổi sang giá HSSV.'
+          }
+          hssvVerifyBtn.textContent = 'Đã xác minh ✓'
+          if (hssvFileInput) hssvFileInput.disabled = true
+        } else {
+          if (hssvStatus) {
+            hssvStatus.className = 'font-bold text-[11px] leading-relaxed text-rose-600 dark:text-rose-400'
+            hssvStatus.textContent =
+              result?.reason || 'Không xác minh được thẻ HSSV, bạn có thể thử ảnh khác hoặc thanh toán giá thường.'
+          }
+          hssvVerifyBtn.disabled = false
+          hssvVerifyBtn.textContent = 'Xác minh thẻ HSSV'
+        }
+      } catch (err) {
+        console.error('Lỗi xác minh HSSV:', err)
+        if (hssvStatus) {
+          hssvStatus.className = 'font-bold text-[11px] leading-relaxed text-rose-600 dark:text-rose-400'
+          hssvStatus.textContent = 'Có lỗi khi xác minh, thử lại giúp mình nhé.'
+        }
+        hssvVerifyBtn.disabled = false
+        hssvVerifyBtn.textContent = 'Xác minh thẻ HSSV'
+      }
+    })
+  }
+})()
 
 // Social Share
 document.getElementById('share-zalo-btn')?.addEventListener('click', () => {

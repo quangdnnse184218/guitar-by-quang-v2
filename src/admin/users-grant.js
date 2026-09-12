@@ -23,6 +23,8 @@ const paidSongsList = document.getElementById('paid-songs-list')
 const statPaidSongsCount = document.getElementById('stat-paid-songs-count')
 const recentGrantsTbody = document.getElementById('recent-grants-tbody')
 const refreshHistoryBtn = document.getElementById('refresh-history-btn')
+const recentOrdersTbody = document.getElementById('recent-orders-tbody')
+const refreshOrdersBtn = document.getElementById('refresh-orders-btn')
 
 function escapeHtml(str) {
   if (!str) return ''
@@ -300,6 +302,60 @@ function renderRecentGrants() {
   })
 }
 
+// Load Recent Auto Orders (bang orders, do SePay webhook tao/cap nhat - xem
+// Edge Function sepay-ipn) - de admin theo doi luong tu dong ma khong can vao
+// Supabase Dashboard.
+export async function loadRecentOrders() {
+  if (!recentOrdersTbody) return
+  recentOrdersTbody.innerHTML = `<tr><td colspan="5" class="p-4 text-center text-text-muted text-xs">Đang tải đơn hàng...</td></tr>`
+
+  try {
+    const { data, error } = await supabase.rpc('admin_get_recent_orders')
+    if (error) throw error
+    renderRecentOrders(data || [])
+  } catch (err) {
+    console.error('Error loading recent orders:', err)
+    recentOrdersTbody.innerHTML = `<tr><td colspan="5" class="p-4 text-center text-rose-500 text-xs">Lỗi khi tải đơn hàng.</td></tr>`
+  }
+}
+
+const ORDER_STATUS_BADGE = {
+  paid: '<span class="px-2 py-0.5 rounded-full bg-emerald-500/15 text-emerald-600 dark:text-emerald-400 text-[10px] font-bold uppercase">Đã thanh toán</span>',
+  pending:
+    '<span class="px-2 py-0.5 rounded-full bg-amber-500/15 text-amber-600 dark:text-amber-400 text-[10px] font-bold uppercase">Đang chờ</span>',
+  expired:
+    '<span class="px-2 py-0.5 rounded-full bg-black/10 dark:bg-white/10 text-text-muted text-[10px] font-bold uppercase">Hết hạn</span>',
+}
+
+function renderRecentOrders(orders) {
+  if (!recentOrdersTbody) return
+  recentOrdersTbody.innerHTML = ''
+
+  if (orders.length === 0) {
+    recentOrdersTbody.innerHTML = `<tr><td colspan="5" class="p-6 text-center text-text-muted text-xs">Chưa có đơn hàng tự động nào.</td></tr>`
+    return
+  }
+
+  orders.forEach((o) => {
+    const tr = document.createElement('tr')
+    tr.className =
+      'hover:bg-black/5 dark:hover:bg-white/5 transition-colors border-b border-glass-border/40 last:border-0'
+    tr.innerHTML = `
+      <td data-label="Mã đơn" class="p-3 font-mono font-bold text-text-primary">${escapeHtml(o.order_code)}</td>
+      <td data-label="Khách / Bài hát" class="p-3">
+        <div class="font-bold text-text-primary">${escapeHtml(o.user_name || 'Khách vãng lai')}</div>
+        <div class="text-[10px] text-text-muted">${escapeHtml(o.song_title || o.song_id)}</div>
+      </td>
+      <td data-label="Số tiền" class="p-3 font-mono">${Number(o.amount).toLocaleString('vi-VN')}đ</td>
+      <td data-label="Trạng thái" class="p-3">${ORDER_STATUS_BADGE[o.status] || escapeHtml(o.status)}</td>
+      <td data-label="Thời gian tạo" class="p-3 text-right text-[11px] text-text-muted font-mono">
+        ${o.created_at ? new Date(o.created_at).toLocaleString('vi-VN', { hour: '2-digit', minute: '2-digit', day: '2-digit', month: '2-digit' }) : '—'}
+      </td>
+    `
+    recentOrdersTbody.appendChild(tr)
+  })
+}
+
 // Grant Form Submit Handler
 if (grantAccessForm) {
   grantAccessForm.addEventListener('submit', async (e) => {
@@ -360,5 +416,9 @@ export function initUsersGrantSection() {
 
   if (refreshHistoryBtn) {
     refreshHistoryBtn.addEventListener('click', () => loadRecentGrants())
+  }
+
+  if (refreshOrdersBtn) {
+    refreshOrdersBtn.addEventListener('click', () => loadRecentOrders())
   }
 }
