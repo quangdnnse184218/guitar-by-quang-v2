@@ -20,6 +20,7 @@ import {
 } from './lib/songs-service.js'
 import { fetchAllGears, DEFAULT_GEARS } from './lib/gears-service.js'
 import { uploadToStorage, removeFromStorageByUrl, formatBytes, MAX_UPLOAD_BYTES } from './lib/storage-service.js'
+import { iconCrown, iconHeadphones, iconGuitar } from './icons.js'
 
 // If redirected here with a recovery token, immediately move to reset-password.html
 if (
@@ -359,9 +360,9 @@ async function checkAuthAndInit() {
     // Check if admin
     if (currentProfile.role === 'admin') {
       adminNoticeBanner?.classList.remove('hidden')
-      userRoleBadge.innerHTML = '⚡ Quản Trị Viên (Admin)'
+      userRoleBadge.innerHTML = `${iconCrown('w-2.5 h-2.5')}Quản Trị Viên (Admin)`
       userRoleBadge.className =
-        'px-2 py-0.5 rounded-full bg-purple-500/20 text-purple-700 dark:text-purple-300 text-[10px] font-bold border border-purple-500/30'
+        'inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-purple-500/20 text-purple-700 dark:text-purple-300 text-[10px] font-bold border border-purple-500/30'
     }
 
     // Update Header & Banner UI
@@ -701,15 +702,15 @@ function renderOverviewFeatured() {
                   ? `
             <div class="my-auto text-center flex flex-col items-center justify-center py-0.5" onclick="event.stopPropagation(); window.openVideoDemoModal('${escapeHtml(song.title)}', '${escapeHtml(song.audio_demo || song.demo_audio_url || song.audio_url)}', true)">
               <div class="w-7 h-7 sm:w-10 sm:h-10 rounded-full bg-white text-[#9a4b24] flex items-center justify-center shadow-lg transform group-hover:scale-110 transition-transform">
-                <span class="text-sm sm:text-base">🎧</span>
+                ${iconHeadphones('w-3.5 h-3.5 sm:w-4 sm:h-4')}
               </div>
               <span class="text-[8px] sm:text-[10px] font-bold mt-1 text-white/95 tracking-wide bg-black/60 px-2 py-0.5 rounded-full backdrop-blur-xs leading-none whitespace-nowrap">Nghe Audio Demo</span>
             </div>
             `
                   : `
             <div class="my-auto text-center flex flex-col items-center justify-center opacity-80 py-0.5">
-              <div class="w-6 h-6 sm:w-8 sm:h-8 rounded-full bg-black/30 flex items-center justify-center text-xs sm:text-sm shadow-sm">
-                🎸
+              <div class="w-6 h-6 sm:w-8 sm:h-8 rounded-full bg-black/30 flex items-center justify-center text-white shadow-sm">
+                ${iconGuitar('w-3 h-3 sm:w-3.5 sm:h-3.5')}
               </div>
               <span class="text-[8px] sm:text-[10px] font-bold mt-0.5 text-white/80 tracking-wide">Acoustic Tab</span>
             </div>

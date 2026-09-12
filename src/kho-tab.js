@@ -14,6 +14,7 @@ import {
 import { applyScrollReveal } from './animations/scroll-reveal.js'
 import { isCompleted, toggleCompleted } from './lib/local-storage-service.js'
 import { supabase } from './lib/supabase.js'
+import { iconHeadphones, iconGuitar, iconHeart } from './icons.js'
 
 // Initialize UI
 initNavbarShrink()
@@ -121,13 +122,13 @@ function renderSongCard(tab, index, extraClass = '') {
   const isPinned = Boolean(tab.is_featured)
   const pinnedClass = isPinned ? 'song-card-pinned' : ''
   const pinnedBadge = isPinned
-    ? '<span class="px-1.5 sm:px-2 py-0.5 rounded-full text-[8px] sm:text-[10px] font-black bg-amber-400 text-black shadow-sm uppercase tracking-wide">⭐ Nổi bật</span>'
+    ? `<span class="inline-flex items-center gap-1 px-1.5 sm:px-2 py-0.5 rounded-full text-[8px] sm:text-[10px] font-black bg-amber-400 text-black shadow-sm uppercase tracking-wide"><svg class="w-2 h-2 sm:w-2.5 sm:h-2.5" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2l2.94 6.34L21.5 9.27l-4.75 4.51L17.88 21 12 17.77 6.12 21l1.13-7.22L2.5 9.27l6.56-.93z"/></svg>Nổi bật</span>`
     : ''
 
   // Overlay shown mid-drag when swiping a card right to toggle favorite (see initSwipeToFavorite)
   const swipeFavOverlay = `
     <div class="swipe-fav-overlay absolute inset-0 flex items-center justify-center rounded-2xl sm:rounded-3xl opacity-0 pointer-events-none z-30 bg-rose-500/90">
-      <span class="text-3xl sm:text-4xl">❤️</span>
+      <span class="text-white">${iconHeart('w-9 h-9 sm:w-10 sm:h-10')}</span>
     </div>
   `
 
@@ -259,7 +260,7 @@ function renderSongCard(tab, index, extraClass = '') {
     artworkCenterHtml = `
       <div class="my-auto text-center flex flex-col items-center justify-center py-0.5" onclick="event.stopPropagation(); window.openVideoDemoModal('${tab.title.replace(/'/g, "\\'")}', '${normalizedAudio.replace(/'/g, "\\'")}', true)">
         <button class="w-7 h-7 sm:w-10 sm:h-10 rounded-full bg-white text-[#0B0E1A] flex items-center justify-center shadow-lg transform group-hover:scale-110 transition-transform cursor-pointer" aria-label="Nghe Audio Demo">
-          <span class="text-sm sm:text-base">🎧</span>
+          ${iconHeadphones('w-3.5 h-3.5 sm:w-4 sm:h-4')}
         </button>
         <span class="text-[8px] sm:text-[10px] font-bold mt-1 text-white/95 tracking-wide bg-black/60 px-2 py-0.5 rounded-full backdrop-blur-xs leading-none whitespace-nowrap">Nghe Audio Demo</span>
       </div>
@@ -267,8 +268,8 @@ function renderSongCard(tab, index, extraClass = '') {
   } else {
     artworkCenterHtml = `
       <div class="my-auto text-center flex flex-col items-center justify-center opacity-80 py-0.5">
-        <div class="w-6 h-6 sm:w-8 sm:h-8 rounded-full bg-black/30 flex items-center justify-center text-xs sm:text-sm shadow-sm">
-          🎸
+        <div class="w-6 h-6 sm:w-8 sm:h-8 rounded-full bg-black/30 flex items-center justify-center text-white shadow-sm">
+          ${iconGuitar('w-3 h-3 sm:w-3.5 sm:h-3.5')}
         </div>
         <span class="text-[8px] sm:text-[10px] font-bold mt-0.5 text-white/80 tracking-wide">Acoustic Tab</span>
       </div>

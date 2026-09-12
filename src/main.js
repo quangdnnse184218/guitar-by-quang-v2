@@ -20,9 +20,10 @@ import {
   normalizeAudioPath,
 } from './lib/songs-service.js'
 import { fetchAllGears } from './lib/gears-service.js'
-import { applyScrollReveal } from './animations/scroll-reveal.js'
+import { applyScrollReveal, applyHeroEntrance } from './animations/scroll-reveal.js'
 import { isCompleted, toggleCompleted } from './lib/local-storage-service.js'
 import { supabase } from './lib/supabase.js'
+import { iconHeadphones, iconGuitar } from './icons.js'
 
 // 1. Initialize UI Globals
 initNavbarShrink()
@@ -214,7 +215,7 @@ export function renderSongCard(tab, index, extraClass = '') {
     artworkCenterHtml = `
       <div class="my-auto text-center flex flex-col items-center justify-center py-0.5" onclick="event.stopPropagation(); window.openVideoDemoModal('${tab.title.replace(/'/g, "\\'")}', '${audioDemo.replace(/\\/g, '/').replace(/'/g, "\\'")}', true)">
         <button class="w-7 h-7 sm:w-10 sm:h-10 rounded-full bg-white text-[#0B0E1A] flex items-center justify-center shadow-lg transform group-hover:scale-110 transition-transform cursor-pointer" aria-label="Nghe Audio Demo">
-          <span class="text-sm sm:text-base">🎧</span>
+          ${iconHeadphones('w-3.5 h-3.5 sm:w-4 sm:h-4')}
         </button>
         <span class="text-[8px] sm:text-[10px] font-bold mt-1 text-white/95 tracking-wide bg-black/60 px-2 py-0.5 rounded-full backdrop-blur-xs leading-none whitespace-nowrap">Nghe Audio Demo</span>
       </div>
@@ -222,8 +223,8 @@ export function renderSongCard(tab, index, extraClass = '') {
   } else {
     artworkCenterHtml = `
       <div class="my-auto text-center flex flex-col items-center justify-center opacity-80 py-0.5">
-        <div class="w-6 h-6 sm:w-8 sm:h-8 rounded-full bg-black/30 flex items-center justify-center text-xs sm:text-sm shadow-sm">
-          🎸
+        <div class="w-6 h-6 sm:w-8 sm:h-8 rounded-full bg-black/30 flex items-center justify-center text-white shadow-sm">
+          ${iconGuitar('w-3 h-3 sm:w-3.5 sm:h-3.5')}
         </div>
         <span class="text-[8px] sm:text-[10px] font-bold mt-0.5 text-white/80 tracking-wide">Acoustic Tab</span>
       </div>
@@ -953,6 +954,11 @@ function initHeroTiltEffect() {
 
 async function initHome() {
   setupEventListeners()
+
+  // Màn ra mắt cho hero (badge → tiêu đề → đoạn giới thiệu → CTA) ngay lúc
+  // tải trang — trước đây mọi thứ hiện cùng lúc, không có nhịp xuất hiện nào
+  // dù phần nội dung bên dưới đã có applyScrollReveal khi cuộn tới.
+  applyHeroEntrance('.hero-reveal-item')
 
   // Reveal static sections (About story/step cards, FAQ items, Contact service
   // cards) as they scroll into view — previously only song/gear cards animated.
