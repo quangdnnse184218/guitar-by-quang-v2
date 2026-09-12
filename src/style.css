@@ -1697,3 +1697,20 @@ select {
 [data-toggle-password] svg.hidden {
   display: none !important;
 }
+
+/* Khoá cuộn trang nền khi có modal đang mở (toggleModal thêm class này vào
+   body) — không có rule này thì cuộn hết nội dung modal (vd modal thanh
+   toán dài, có mã QR) sẽ chuyển sang cuộn tiếp trang Kho Tab/Trang chủ ẩn
+   phía sau. */
+body.modal-open {
+  overflow: hidden;
+}
+
+/* Chặn "scroll chaining": khi con trỏ/ngón tay cuộn tới đúng biên trên/dưới
+   của nội dung modal, overscroll-behavior giữ cuộn ở lại bên trong thay vì
+   để trình duyệt "tràn" sang phần tử cha (trang nền) — bổ sung thêm cho
+   body.modal-open ở trên vì trên một số trình duyệt mobile, overflow:hidden
+   trên body không chặn được scroll chaining bằng chạm (touch). */
+.modal-dialog {
+  overscroll-behavior: contain;
+}
