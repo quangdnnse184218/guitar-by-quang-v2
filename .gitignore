@@ -18,6 +18,9 @@ dist-ssr
 .env.*.local
 *.local
 
+# Supabase CLI local cache (npx supabase tự tạo, không phải config của project)
+supabase/.temp
+
 # Editor directories and files
 .vscode/*
 !.vscode/extensions.json
