@@ -21,6 +21,10 @@ dist-ssr
 # Supabase CLI local cache (npx supabase tự tạo, không phải config của project)
 supabase/.temp
 
+# Skill bên thứ ba cài qua ui-ux-pro-max-cli (uipro init) — dữ liệu tham khảo
+# cục bộ dùng để tra cứu khi code, không phải asset của project nên không commit.
+.claude/skills
+
 # Editor directories and files
 .vscode/*
 !.vscode/extensions.json

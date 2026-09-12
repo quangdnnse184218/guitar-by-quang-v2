@@ -1,4 +1,5 @@
 import { supabase } from './lib/supabase.js'
+import { iconGuitar, iconHeart, iconBolt, iconPerson, iconLogout, iconCrown } from './icons.js'
 
 /**
  * Universal Password Recovery Intercept:
@@ -70,10 +71,19 @@ export function initMobileMenu() {
 
   if (!toggleBtn || !menuDrawer) return
 
+  // Đóng nhanh hơn mở (~65% thời lượng) để cảm giác phản hồi nhanh nhạy hơn —
+  // trước đây cả 2 chiều đều dùng chung duration-300 của Tailwind. Set thẳng
+  // transitionDuration ở đây (ghi đè class duration-300 trong HTML) để không
+  // phải sửa lặp lại ở cả 5 trang dùng chung khối drawer này.
+  const OPEN_MS = 300
+  const CLOSE_MS = 200
+
   const openMenu = () => {
+    menuDrawer.style.transitionDuration = `${OPEN_MS}ms`
     menuDrawer.classList.remove('translate-x-full', 'pointer-events-none')
     menuDrawer.classList.add('pointer-events-auto')
     if (backdrop) {
+      backdrop.style.transitionDuration = `${OPEN_MS}ms`
       backdrop.classList.remove('hidden')
       requestAnimationFrame(() => {
         backdrop.classList.remove('opacity-0')
@@ -83,12 +93,16 @@ export function initMobileMenu() {
   }
 
   const closeMenu = () => {
+    menuDrawer.style.transitionDuration = `${CLOSE_MS}ms`
     menuDrawer.classList.add('translate-x-full', 'pointer-events-none')
     menuDrawer.classList.remove('pointer-events-auto')
-    if (backdrop) backdrop.classList.add('opacity-0')
+    if (backdrop) {
+      backdrop.style.transitionDuration = `${CLOSE_MS}ms`
+      backdrop.classList.add('opacity-0')
+    }
     setTimeout(() => {
       if (backdrop) backdrop.classList.add('hidden')
-    }, 300)
+    }, CLOSE_MS)
     document.body.style.overflow = ''
   }
 
@@ -215,11 +229,11 @@ export async function initAuthHeader() {
     const personalDashboardUrl = '/user-dashboard.html'
 
     const roleBadgeHtml = isAdmin
-      ? `<span class="px-1.5 py-0.5 rounded-full bg-purple-500/20 text-purple-600 dark:text-purple-300 text-[10px] font-bold border border-purple-500/30">👑 Admin</span>`
-      : `<span class="px-1.5 py-0.5 rounded-full bg-amber-500/20 text-amber-600 dark:text-amber-300 text-[10px] font-bold border border-amber-500/30">👑 Thành viên</span>`
+      ? `<span class="inline-flex items-center gap-1 px-1.5 py-0.5 rounded-full bg-purple-500/20 text-purple-600 dark:text-purple-300 text-[10px] font-bold border border-purple-500/30">${iconCrown('w-2.5 h-2.5')}Admin</span>`
+      : `<span class="inline-flex items-center gap-1 px-1.5 py-0.5 rounded-full bg-amber-500/20 text-amber-600 dark:text-amber-300 text-[10px] font-bold border border-amber-500/30">${iconCrown('w-2.5 h-2.5')}Thành viên</span>`
 
     const adminDropdownOption = isAdmin
-      ? `<a href="/admin-dashboard.html" class="block px-3 py-2 text-xs font-bold text-purple-600 dark:text-purple-400 hover:bg-purple-500/10 rounded-xl transition-colors flex items-center gap-2 border-b border-glass-border mb-1"><span>⚡</span><span>Bảng Quản Trị Admin</span></a>`
+      ? `<a href="/admin-dashboard.html" class="block px-3 py-2 text-xs font-bold text-purple-600 dark:text-purple-400 hover:bg-purple-500/10 rounded-xl transition-colors flex items-center gap-2 border-b border-glass-border mb-1"><span>${iconBolt('w-3.5 h-3.5')}</span><span>Bảng Quản Trị Admin</span></a>`
       : ''
 
     const userDropdownHtml = `
@@ -240,23 +254,23 @@ export async function initAuthHeader() {
           </div>
           ${adminDropdownOption}
           <a href="${personalDashboardUrl}" class="block px-3 py-2 text-xs font-semibold text-text-primary hover:bg-glass-bg-hover hover:text-accent-primary rounded-xl transition-colors flex items-center gap-2">
-            <span>🎸</span>
+            <span>${iconGuitar('w-3.5 h-3.5')}</span>
             <span>${isAdmin ? 'Trang Cá Nhân' : 'Trang Của Tôi'}</span>
           </a>
           <a href="/user-dashboard.html#favorites" class="block px-3 py-2 text-xs font-semibold text-text-primary hover:bg-glass-bg-hover hover:text-accent-primary rounded-xl transition-colors flex items-center gap-2">
-            <span>❤️</span>
+            <span>${iconHeart('w-3.5 h-3.5')}</span>
             <span>Tab Yêu Thích</span>
           </a>
           <a href="/user-dashboard.html#purchases" class="block px-3 py-2 text-xs font-semibold text-text-primary hover:bg-glass-bg-hover hover:text-accent-primary rounded-xl transition-colors flex items-center gap-2">
-            <span>⚡</span>
+            <span>${iconBolt('w-3.5 h-3.5')}</span>
             <span>Tab Đã Mua</span>
           </a>
           <a href="/user-dashboard.html#profile" class="block px-3 py-2 text-xs font-semibold text-text-primary hover:bg-glass-bg-hover hover:text-accent-primary rounded-xl transition-colors flex items-center gap-2">
-            <span>👤</span>
+            <span>${iconPerson('w-3.5 h-3.5')}</span>
             <span>Hồ Sơ & Mật Khẩu</span>
           </a>
           <button id="auth-logout-btn" class="w-full text-left px-3 py-2 text-xs font-bold text-rose-500 hover:bg-rose-500/10 rounded-xl transition-colors mt-1 border-t border-glass-border flex items-center gap-2 cursor-pointer">
-            <span>🚪</span>
+            <span>${iconLogout('w-3.5 h-3.5')}</span>
             <span>Đăng xuất</span>
           </button>
         </div>

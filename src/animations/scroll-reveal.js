@@ -10,6 +10,19 @@ export function applyScrollReveal(selector, options = {}) {
   const els = document.querySelectorAll(selector)
   if (els.length === 0) return
 
+  // Mọi lời gọi applyScrollReveal (card bài hát, FAQ, gear...) đều phải tôn
+  // trọng "giảm hiệu ứng chuyển động" — trước đây chỉ hiệu ứng nghiêng 3D ở
+  // hero (initHeroTiltEffect) có kiểm tra này, còn hiệu ứng hiện dần khi cuộn
+  // thì không, nên người bật Reduce Motion vẫn phải xem mọi thứ trượt/mờ dần
+  // liên tục. Đánh dấu revealed để giữ nguyên trạng thái hiển thị bình
+  // thường, không chặn nội dung xuất hiện — chỉ bỏ qua animation.
+  if (window.matchMedia?.('(prefers-reduced-motion: reduce)').matches) {
+    els.forEach((el) => {
+      el.dataset.revealed = 'true'
+    })
+    return
+  }
+
   const { stagger = 0, ...gsapOptions } = options
 
   els.forEach((el, i) => {
@@ -30,6 +43,30 @@ export function applyScrollReveal(selector, options = {}) {
       },
       ...gsapOptions,
     })
+  })
+}
+
+/**
+ * Chuỗi xuất hiện so le cho các khối trong hero ngay lúc tải trang (khác với
+ * applyScrollReveal — hero luôn nằm trong khung nhìn đầu tiên nên phải chạy
+ * ngay, không đợi cuộn tới). Cũng tôn trọng prefers-reduced-motion.
+ */
+export function applyHeroEntrance(selector, options = {}) {
+  const els = document.querySelectorAll(selector)
+  if (els.length === 0) return
+
+  if (window.matchMedia?.('(prefers-reduced-motion: reduce)').matches) return
+
+  const { stagger = 0.09, ...gsapOptions } = options
+
+  gsap.from(els, {
+    opacity: 0,
+    y: 14,
+    duration: 0.5,
+    stagger,
+    ease: 'power3.out',
+    clearProps: 'transform,opacity',
+    ...gsapOptions,
   })
 }
 

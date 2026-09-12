@@ -132,11 +132,11 @@ function renderUsersTable() {
         <div class="flex items-center justify-between sm:justify-center w-full">
           <span class="text-[11px] font-bold text-text-muted sm:hidden">Hoạt động:</span>
           <div class="flex items-center gap-2">
-            <span class="text-xs font-mono font-bold ${u.purchases_count > 0 ? 'text-amber-500 bg-amber-500/10 px-2 py-0.5 rounded-md border border-amber-500/20' : 'text-text-muted'}" title="Đã mua">
-              🛒 ${u.purchases_count || 0} bài
+            <span class="inline-flex items-center gap-1 text-xs font-mono font-bold ${u.purchases_count > 0 ? 'text-amber-500 bg-amber-500/10 px-2 py-0.5 rounded-md border border-amber-500/20' : 'text-text-muted'}" title="Đã mua">
+              <svg class="w-3 h-3" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M13 2L4.5 14h6L9 22l10-13h-6.5L13 2z"/></svg>${u.purchases_count || 0} bài
             </span>
-            <span class="text-xs font-mono font-bold ${u.favorites_count > 0 ? 'text-rose-500 bg-rose-500/10 px-2 py-0.5 rounded-md border border-rose-500/20' : 'text-text-muted'}" title="Yêu thích">
-              ❤️ ${u.favorites_count || 0}
+            <span class="inline-flex items-center gap-1 text-xs font-mono font-bold ${u.favorites_count > 0 ? 'text-rose-500 bg-rose-500/10 px-2 py-0.5 rounded-md border border-rose-500/20' : 'text-text-muted'}" title="Yêu thích">
+              <svg class="w-3 h-3" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 20.25c-4.5-2.7-9-6.44-9-10.5C3 6.5 5.5 4 8.25 4c1.6 0 3 .8 3.75 2.1C12.75 4.8 14.15 4 15.75 4 18.5 4 21 6.5 21 9.75c0 4.06-4.5 7.8-9 10.5z"/></svg>${u.favorites_count || 0}
             </span>
           </div>
         </div>
@@ -336,7 +336,8 @@ if (grantAccessForm) {
     } finally {
       if (submitBtn) {
         submitBtn.disabled = false
-        submitBtn.innerHTML = '<span>⚡ Xác Nhận Cấp Quyền</span>'
+        submitBtn.innerHTML =
+          '<svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M13 2L4.5 14h6L9 22l10-13h-6.5L13 2z"/></svg><span>Xác Nhận Cấp Quyền</span>'
       }
     }
   })
