@@ -491,8 +491,23 @@ export function initHeaderOverlapFix() {
     const extraNav = document.getElementById('mobile-logged-in-nav')
     const isShown =
       extraNav && window.innerWidth < 768 && getComputedStyle(extraNav).display !== 'none'
-    const extra = isShown ? extraNav.getBoundingClientRect().height : 0
-    main.style.paddingTop = extra > 1 ? `${extra}px` : ''
+
+    if (!isShown) {
+      main.style.paddingTop = ''
+      return
+    }
+
+    // Đo lại padding-top gốc (từ class pt-28/pt-32 của Tailwind) mỗi lần áp
+    // dụng thay vì đo 1 lần lúc khởi tạo — trước đây set thẳng
+    // main.style.paddingTop = extra khiến nó GHI ĐÈ hoàn toàn padding gốc
+    // thay vì cộng thêm vào, làm nội dung đầu trang (badge/tiêu đề hero) bị
+    // header 2 hàng che mất trên mọi trang có sẵn pt-28/pt-32 (kho-tab.html,
+    // user-dashboard.html...). Phải tạm xoá inline style trước khi đo để lấy
+    // đúng giá trị base đang áp dụng theo breakpoint hiện tại.
+    main.style.paddingTop = ''
+    const basePaddingTop = parseFloat(getComputedStyle(main).paddingTop) || 0
+    const extra = extraNav.getBoundingClientRect().height
+    main.style.paddingTop = `${basePaddingTop + extra}px`
   }
 
   apply()
@@ -516,10 +531,16 @@ export function initMobileHeaderScroll() {
   // slide back over content sitting just below the fold — e.g. the hero badge
   // on index.html, still only ~60-100px down when scrolling back up a little.
   // Only hide/reveal past this point so it can never land on top of that.
-  const revealSafeZone = document.getElementById('hero')
-  const revealThreshold = revealSafeZone
-    ? revealSafeZone.offsetTop + revealSafeZone.offsetHeight
-    : 400
+  //
+  // Ngưỡng này trước đây lấy theo chiều cao khối #hero (chỉ index.html có,
+  // ~1179px — phải lướt qua gần hết cả khối giới thiệu mới ẩn) rồi lại đổi
+  // sang window.innerHeight (~1 màn hình, vẫn quá sâu). Theo phản hồi thực tế
+  // trên điện thoại: chỉ cần lướt qua khỏi badge tới ngang tiêu đề giới thiệu
+  // (~150-200px) là đã đủ để ẩn — dùng một hằng số nhỏ, cố định cho MỌI trang
+  // thay vì phụ thuộc chiều cao nội dung của từng trang, vừa nhất quán vừa
+  // đúng cảm giác "lướt một chút là ẩn" mà vẫn nằm ngoài vùng ~60-100px sát
+  // đầu trang gây ra lỗi che nội dung nói trên.
+  const revealThreshold = 200
 
   let lastScrollY = window.scrollY
   let ticking = false
