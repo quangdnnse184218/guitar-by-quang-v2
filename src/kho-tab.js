@@ -1141,7 +1141,7 @@ function initHssvVerification() {
       if (hssvStatus) {
         hssvStatus.classList.remove('hidden')
         hssvStatus.className = 'font-bold text-[11px] leading-relaxed text-text-muted'
-        hssvStatus.textContent = 'Đang gửi ảnh cho AI kiểm tra, chờ chút nhé...'
+        hssvStatus.textContent = 'Đang xác minh... chờ chút nhé'
       }
 
       try {
