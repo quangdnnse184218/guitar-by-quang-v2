@@ -72,6 +72,10 @@ async function checkExistingSession() {
   }
 }
 
+// Form đăng nhập admin cũng có novalidate nên type="email" không tự chặn gì
+// — kiểm tra định dạng ở đây, giống login.js/register.js.
+const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/
+
 if (loginForm) {
   loginForm.addEventListener('submit', async (e) => {
     e.preventDefault()
@@ -82,6 +86,12 @@ if (loginForm) {
 
     if (!email || !password) {
       showError('Vui lòng nhập đầy đủ Email và Mật khẩu!')
+      return
+    }
+
+    if (!emailRegex.test(email)) {
+      emailInput?.focus()
+      showError('Địa chỉ Email không đúng định dạng (Ví dụ đúng: tenban@gmail.com).')
       return
     }
 
