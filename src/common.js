@@ -1,6 +1,20 @@
 import { supabase } from './lib/supabase.js'
 import { iconGuitar, iconHeart, iconBolt, iconPerson, iconLogout, iconCrown } from './icons.js'
 
+// profiles.full_name/avatar_url do chính người dùng tự đặt (qua form Hồ Sơ) —
+// phải escape trước khi chèn vào innerHTML, nếu không ai cũng có thể đặt tên
+// dạng "<img src=x onerror=...>" để tự chạy JS ngay trong menu tài khoản của
+// chính họ (và của bất kỳ ai vô tình xem trang có hiển thị tên đó).
+function escapeHtml(str) {
+  if (!str) return ''
+  return String(str)
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#039;')
+}
+
 /**
  * Universal Password Recovery Intercept:
  * If the user clicks a recovery link from Supabase email and lands on ANY page,
@@ -205,15 +219,20 @@ export async function initAuthHeader() {
       console.warn('Header profile fetch warning:', e)
     }
 
-    const initial = fullName.charAt(0).toUpperCase()
+    // profiles.full_name/avatar_url và user.email đều có thể do người dùng tự
+    // đặt — escape trước khi chèn vào innerHTML để chặn XSS (xem escapeHtml).
+    const safeFullName = escapeHtml(fullName)
+    const safeAvatarUrl = escapeHtml(avatarUrl)
+    const safeEmail = escapeHtml(user.email || '')
+    const initial = escapeHtml(fullName.charAt(0).toUpperCase())
 
     // Avatar image or initial letter
     const avatarHtml = avatarUrl
-      ? `<img src="${avatarUrl}" alt="${fullName}" class="w-6 h-6 rounded-full object-cover border border-amber-400/50" />`
+      ? `<img src="${safeAvatarUrl}" alt="${safeFullName}" class="w-6 h-6 rounded-full object-cover border border-amber-400/50" />`
       : `<div class="w-6 h-6 rounded-full bg-warm-gradient text-white flex items-center justify-center text-xs font-bold shadow-xs">${initial}</div>`
 
     const mobileAvatarHtml = avatarUrl
-      ? `<img src="${avatarUrl}" alt="${fullName}" class="w-10 h-10 rounded-full object-cover border-2 border-amber-400/60 shadow-sm" />`
+      ? `<img src="${safeAvatarUrl}" alt="${safeFullName}" class="w-10 h-10 rounded-full object-cover border-2 border-amber-400/60 shadow-sm" />`
       : `<div class="w-10 h-10 rounded-full bg-warm-gradient text-white flex items-center justify-center text-lg font-bold shadow-sm">${initial}</div>`
 
     const isAdmin = role === 'admin'
@@ -241,7 +260,7 @@ export async function initAuthHeader() {
         <button id="user-header-dropdown-btn" type="button" aria-expanded="false" aria-haspopup="true" class="flex items-center gap-2 px-3 py-1.5 sm:px-3.5 sm:py-1.5 rounded-full bg-glass-bg border border-amber-500/40 hover:border-amber-400 shadow-sm hover:shadow-amber-500/10 transition-all cursor-pointer">
           ${avatarHtml}
           <div class="flex items-center gap-1.5 text-left">
-            <span class="text-xs sm:text-sm font-bold text-text-primary hidden sm:inline-block truncate max-w-[110px]">${fullName}</span>
+            <span class="text-xs sm:text-sm font-bold text-text-primary hidden sm:inline-block truncate max-w-[110px]">${safeFullName}</span>
             <span class="hidden md:inline-block">${roleBadgeHtml}</span>
           </div>
           <svg id="user-header-dropdown-arrow" class="w-3.5 h-3.5 text-text-muted transition-transform md:group-hover:rotate-180" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
@@ -249,8 +268,8 @@ export async function initAuthHeader() {
         <!-- Dropdown Menu -->
         <div id="user-header-dropdown-menu" class="absolute right-0 mt-2 w-52 rounded-2xl bg-glass-bg backdrop-blur-2xl border border-glass-border shadow-2xl opacity-0 invisible md:group-hover:opacity-100 md:group-hover:visible transition-all duration-200 z-50 p-2 pointer-events-none md:pointer-events-auto">
           <div class="px-3 py-2 border-b border-glass-border mb-1">
-            <p class="text-xs font-bold text-text-primary truncate">${fullName}</p>
-            <p class="text-[10px] text-text-muted truncate">${user.email}</p>
+            <p class="text-xs font-bold text-text-primary truncate">${safeFullName}</p>
+            <p class="text-[10px] text-text-muted truncate">${safeEmail}</p>
           </div>
           ${adminDropdownOption}
           ${
@@ -368,7 +387,7 @@ export async function initAuthHeader() {
              ${mobileAvatarHtml}
              <div>
                <div class="flex items-center gap-1.5">
-                 <p class="text-sm font-bold text-text-primary">${fullName}</p>
+                 <p class="text-sm font-bold text-text-primary">${safeFullName}</p>
                </div>
                <a href="${targetDashboardUrl}" class="text-xs text-accent-primary font-bold hover:underline flex items-center gap-1 mt-0.5">
                  <span>Vào ${isAdmin ? 'Bảng Quản Trị Admin' : 'Trang Của Tôi'} →</span>
