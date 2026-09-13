@@ -20,6 +20,7 @@ import {
   normalizeAudioPath,
 } from '../lib/songs-service.js'
 import { uploadToStorage, removeFromStorageByUrl, formatBytes, MAX_UPLOAD_BYTES } from '../lib/storage-service.js'
+import { formatCompactPrice } from '../lib/song-format.js'
 
 const adminSongsTbody = document.getElementById('admin-songs-tbody')
 const addSongBtn = document.getElementById('add-song-btn')
@@ -318,22 +319,6 @@ window.openAddSongModal = function (type = 'free') {
     if (songModalTitle) songModalTitle.textContent = '💎 Thêm Video Tab Có Phí Mới (Mua Tab)'
   }
   toggleModal(songModal, true)
-}
-
-function formatCompactPrice(val) {
-  if (val === 0 || val === '0') return 'Miễn phí'
-  if (!val && val !== 0) return '239k'
-  const str = String(val).trim()
-  if (!str || str.toLowerCase() === 'miễn phí' || str.toLowerCase() === 'free') return 'Miễn phí'
-  if (str.toLowerCase().endsWith('k')) return str.toLowerCase()
-  const numericOnly = Number(str.replace(/[^0-9]/g, ''))
-  if (numericOnly >= 1000) {
-    return `${Math.round(numericOnly / 1000)}k`
-  }
-  if (numericOnly > 0) {
-    return `${numericOnly}k`
-  }
-  return str
 }
 
 window.editSong = function (id) {

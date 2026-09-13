@@ -12,10 +12,10 @@ import {
   normalizeAudioPath,
 } from './lib/songs-service.js'
 import { applyScrollReveal } from './animations/scroll-reveal.js'
-import { isCompleted, toggleCompleted } from './lib/local-storage-service.js'
+import { toggleCompleted } from './lib/local-storage-service.js'
 import { supabase } from './lib/supabase.js'
+import { renderSongCard } from './lib/song-card.js'
 import { initShareButtons } from './lib/share-song.js'
-import { iconHeadphones, iconGuitar, iconHeart } from './icons.js'
 import {
   createOrderAndBuildQr,
   downloadQrImage,
@@ -126,273 +126,6 @@ window.showToast = function showToast(msg, type = 'success') {
     toastNotification.classList.remove('toast-visible')
   }, 4000)
 }
-
-// ==========================================================================
-// RENDER CARD (Copied from main.js)
-// ==========================================================================
-export function formatCompactPrice(val) {
-  if (val === 0 || val === '0') return 'Miễn phí'
-  if (!val && val !== 0) return '239k'
-  const str = String(val).trim()
-  if (!str || str.toLowerCase() === 'miễn phí' || str.toLowerCase() === 'free') return 'Miễn phí'
-  if (str.toLowerCase().endsWith('k')) return str.toLowerCase()
-  const numericOnly = Number(str.replace(/[^0-9]/g, ''))
-  if (numericOnly >= 1000) {
-    return `${Math.round(numericOnly / 1000)}k`
-  }
-  if (numericOnly > 0) {
-    return `${numericOnly}k`
-  }
-  return str
-}
-
-export function formatCompactDiscount(note) {
-  if (!note) return 'HSSV: 179k'
-  const str = String(note).trim()
-  if (str.toLowerCase().includes('179')) return 'HSSV: 179k'
-  if (str.length > 15) {
-    const num = str.replace(/[^0-9]/g, '')
-    if (num) return `HSSV: ${num.length >= 4 ? Math.round(Number(num) / 1000) : num}k`
-  }
-  return str
-}
-
-function renderSongCard(tab, index, extraClass = '') {
-  const levelNum = tab.level_num ?? tab.levelNum ?? 5
-  const percent = Math.min(100, Math.max(10, (levelNum / 10) * 100))
-  const isFree = tab.is_free ?? tab.isFree ?? false
-  const isPinned = Boolean(tab.is_featured)
-  const pinnedClass = isPinned ? 'song-card-pinned' : ''
-  const pinnedBadge = isPinned
-    ? `<span class="inline-flex items-center gap-1 px-1.5 sm:px-2 py-0.5 rounded-full text-[8px] sm:text-[10px] font-black bg-amber-400 text-black shadow-sm uppercase tracking-wide"><svg class="w-2 h-2 sm:w-2.5 sm:h-2.5" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2l2.94 6.34L21.5 9.27l-4.75 4.51L17.88 21 12 17.77 6.12 21l1.13-7.22L2.5 9.27l6.56-.93z"/></svg>Nổi bật</span>`
-    : ''
-
-  // Overlay shown mid-drag when swiping a card right to toggle favorite (see initSwipeToFavorite)
-  const swipeFavOverlay = `
-    <div class="swipe-fav-overlay absolute inset-0 flex items-center justify-center rounded-2xl sm:rounded-3xl opacity-0 pointer-events-none z-30 bg-rose-500/90">
-      <span class="text-white">${iconHeart('w-9 h-9 sm:w-10 sm:h-10')}</span>
-    </div>
-  `
-
-  // Always-visible favorite toggle — swipe-to-favorite alone isn't discoverable,
-  // so every card also gets an explicit heart button reflecting the real state.
-  // Sits inline in the same badge row as FREE/price (not absolutely positioned
-  // on the card) so it never straddles the thumbnail's rounded edge.
-  const favActiveForBtn = favoriteSongIds.has(String(tab.id))
-  const favButtonHtml = `
-    <button
-      type="button"
-      onclick="event.stopPropagation(); window.handleToggleFavorite(event, '${tab.id}')"
-      data-fav-btn="${tab.id}"
-      title="${favActiveForBtn ? 'Bỏ yêu thích' : 'Yêu thích'}"
-      class="flex-shrink-0 w-5 h-5 sm:w-6 sm:h-6 rounded-full flex items-center justify-center transition-all cursor-pointer shadow-sm ${favActiveForBtn ? 'bg-rose-500 text-white' : 'bg-black/40 text-white/80 hover:text-white hover:bg-black/60'}"
-    >
-      ${
-        favActiveForBtn
-          ? '<svg class="w-2.5 h-2.5 sm:w-3 sm:h-3 fill-current" viewBox="0 0 24 24"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg>'
-          : '<svg class="w-2.5 h-2.5 sm:w-3 sm:h-3 fill-none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg>'
-      }
-    </button>
-  `
-
-  if (isFree) {
-    return `
-      <div onclick="window.openFreeTabModal('${tab.id}')" class="song-card glass-card card-interactive p-2.5 sm:p-4 rounded-2xl sm:rounded-3xl border border-glass-border flex flex-col justify-between space-y-2.5 sm:space-y-3.5 group cursor-pointer ${pinnedClass} ${extraClass}" data-id="${tab.id}">
-        ${swipeFavOverlay}
-        <div class="space-y-2 sm:space-y-3">
-          <div class="relative overflow-hidden rounded-xl sm:rounded-2xl h-[150px] sm:h-auto sm:aspect-[16/10] w-full bg-gradient-to-br from-[#1E3A2F] via-[#2A4D3E] to-[#172A22] p-2 sm:p-3.5 flex flex-col justify-between text-white shadow-inner group-hover:scale-[1.02] transition-transform duration-500 ease-out">
-            <div class="flex justify-between items-start text-xs uppercase font-bold tracking-wider">
-              <span class="bg-black/50 backdrop-blur px-1.5 sm:px-2 py-0.5 rounded-full text-white/95 text-[8px] sm:text-[10px] font-mono truncate min-w-0 max-w-[70px] sm:max-w-none">${tab.category || 'Fingerstyle'}</span>
-              <div class="flex items-center gap-1 flex-wrap justify-end">
-                ${pinnedBadge}
-                <span class="px-1.5 sm:px-2 py-0.5 rounded-full text-[8px] sm:text-[10px] font-black bg-emerald-600 text-white shadow-sm uppercase tracking-wide">FREE</span>
-                ${favButtonHtml}
-              </div>
-            </div>
-
-            <div class="my-auto text-center flex flex-col items-center justify-center py-0.5">
-              <div class="w-7 h-7 sm:w-10 sm:h-10 rounded-full bg-white text-emerald-800 flex items-center justify-center shadow-lg transform group-hover:scale-110 transition-transform">
-                <svg class="w-3.5 h-3.5 sm:w-4.5 sm:h-4.5 fill-current ml-0.5" viewBox="0 0 24 24">
-                  <path d="M8 5v14l11-7z"/>
-                </svg>
-              </div>
-              <span class="text-[8px] sm:text-[10px] font-bold mt-1 text-white/95 tracking-wide bg-black/60 px-2 py-0.5 rounded-full backdrop-blur-xs leading-none whitespace-nowrap">Xem Tab Miễn Phí</span>
-            </div>
-
-            <div class="flex justify-between items-end gap-1 text-xs text-white/95 font-semibold">
-              <span class="font-mono tabular-nums text-[9px] sm:text-[11px] flex-shrink-0">${tab.duration || 'Full Video'}</span>
-              <span class="text-white/80 text-[8px] sm:text-[11px] truncate min-w-0">Tuning: ${tab.tuning || 'Standard'}</span>
-            </div>
-          </div>
-
-          <div class="space-y-1">
-            <h3 class="text-xs sm:text-base font-bold text-text-primary group-hover:text-emerald-600 dark:group-hover:text-emerald-400 transition-colors leading-tight line-clamp-2">
-              ${tab.title}
-            </h3>
-
-            <div class="space-y-0.5 sm:space-y-1 pt-0.5">
-              <div class="flex items-center justify-between text-[10px] sm:text-xs font-bold text-text-muted">
-                <span>Độ khó: <strong class="text-emerald-700 dark:text-emerald-400 font-mono tabular-nums">${tab.level || levelNum + '/10'}</strong></span>
-                <span class="text-[9px] sm:text-xs font-semibold text-text-faint hidden sm:inline">Tuning: ${tab.tuning || 'Standard'}</span>
-              </div>
-              <div class="w-full bg-glass-bg rounded-full h-1 sm:h-1.5 overflow-hidden border border-glass-border">
-                <div class="bg-emerald-600 dark:bg-emerald-400 h-1 sm:h-1.5 rounded-full transition-all duration-500" style="width: ${percent}%"></div>
-              </div>
-            </div>
-
-            <p class="text-[10px] sm:text-xs text-text-muted font-medium leading-snug pt-0.5 line-clamp-2">
-              ${tab.description || 'Bản tab guitar fingerstyle miễn phí kèm video hướng dẫn.'}
-            </p>
-          </div>
-        </div>
-
-        <div class="pt-1 sm:pt-2">
-          <div class="w-full py-1.5 sm:py-2.5 px-1.5 rounded-full badge-semantic-success font-bold text-[10px] sm:text-xs transition-all shadow-sm flex items-center justify-center gap-1 active:scale-95 text-center cursor-pointer">
-            <span class="truncate">Xem Video Tab (Free)</span>
-          </div>
-        </div>
-      </div>
-    `
-  }
-
-  // 2. PAID CARD
-  const compActive = isCompleted(tab.id)
-  const isPurchased = purchasedSongIds.has(String(tab.id))
-
-  const priceFormatted = tab.price_formatted || tab.priceFormatted || '239k'
-  const discountNote = tab.discount_note || tab.discountNote || ''
-  const cardTypeClass = isFree ? 'card-free' : 'card-paid'
-  const tuning = tab.tuning || 'Standard'
-  const duration = tab.duration || '03:40'
-  const capoText =
-    tab.capo !== undefined &&
-    tab.capo !== null &&
-    tab.capo !== '' &&
-    tab.capo !== 0 &&
-    tab.capo !== '0'
-      ? `Capo ${tab.capo}`
-      : 'Không kẹp'
-
-  const videoDemo = tab.demo_video_url || tab.video_demo || tab.videoDemo || tab.youtube_id || ''
-  const audioDemo = tab.audio_demo || tab.demo_audio_url || tab.audio_url || ''
-
-  const normalizedVideo = videoDemo ? normalizeVideoPath(videoDemo) : ''
-  const normalizedAudio = audioDemo ? normalizeAudioPath(audioDemo) : ''
-
-  const hasDemo = Boolean(normalizedVideo || normalizedAudio)
-  const thumbnailBg = tab.thumbnail_bg || tab.thumbnailBg || 'from-[#C1602F] to-[#6E3B1F]'
-
-  const badgeHtml = isPurchased
-    ? `
-    <span class="px-2 sm:px-2.5 py-0.5 sm:py-1 rounded-full text-[8px] sm:text-[9.5px] font-black bg-emerald-600 text-white shadow-sm uppercase tracking-wide flex items-center gap-0.5">
-      <svg class="w-2.5 h-2.5 sm:w-3 sm:h-3" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/></svg>
-      <span>ĐÃ MUA</span>
-    </span>
-  `
-    : `
-    <div class="flex flex-col items-end gap-1 sm:gap-1.5">
-      <span class="px-2 sm:px-2.5 py-0.5 sm:py-1 rounded-full text-[8px] sm:text-[9.5px] font-black text-white bg-gradient-to-r from-rose-600 via-rose-500 to-red-500 shadow-md shadow-rose-900/40 ring-1 ring-white/25 uppercase tracking-wide font-mono tabular-nums">BÁN • ${priceFormatted}</span>
-      ${discountNote ? `<span class="px-2 sm:px-2.5 py-0.5 rounded-full text-[7px] sm:text-[8.5px] font-extrabold text-white bg-gradient-to-r from-amber-500 to-accent-primary shadow-sm shadow-amber-900/30 ring-1 ring-white/25 inline-block leading-none whitespace-nowrap">🎓 ${discountNote}</span>` : ''}
-    </div>
-  `
-
-  let artworkCenterHtml = ''
-  if (isPurchased) {
-    artworkCenterHtml = `
-      <div class="my-auto text-center flex flex-col items-center justify-center py-0.5" onclick="event.stopPropagation(); window.navigateToPurchasesTab()">
-        <button class="w-7 h-7 sm:w-10 sm:h-10 rounded-full bg-white text-[#0B0E1A] flex items-center justify-center shadow-lg transform group-hover:scale-110 transition-transform cursor-pointer" aria-label="Mở tab đã mua">
-          <svg class="w-3.5 h-3.5 sm:w-4.5 sm:h-4.5 fill-current ml-0.5 text-accent-primary" viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
-        </button>
-        <span class="text-[8px] sm:text-[10px] font-bold mt-1 text-white/95 tracking-wide bg-black/60 px-2 py-0.5 rounded-full backdrop-blur-xs leading-none whitespace-nowrap">Xem Trong Tab Đã Mua</span>
-      </div>
-    `
-  } else if (normalizedVideo) {
-    artworkCenterHtml = `
-      <div class="my-auto text-center flex flex-col items-center justify-center py-0.5" onclick="event.stopPropagation(); window.openVideoDemoModal('${tab.title.replace(/'/g, "\\'")}', '${normalizedVideo.replace(/'/g, "\\'")}', false)">
-        <button class="w-7 h-7 sm:w-10 sm:h-10 rounded-full bg-white text-[#0B0E1A] flex items-center justify-center shadow-lg transform group-hover:scale-110 transition-transform cursor-pointer" aria-label="Xem Demo">
-          <svg class="w-3.5 h-3.5 sm:w-4.5 sm:h-4.5 fill-current ml-0.5 text-accent-primary" viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
-        </button>
-        <span class="text-[8px] sm:text-[10px] font-bold mt-1 text-white/95 tracking-wide bg-black/60 px-2 py-0.5 rounded-full backdrop-blur-xs leading-none whitespace-nowrap">Xem Demo</span>
-      </div>
-    `
-  } else if (normalizedAudio) {
-    artworkCenterHtml = `
-      <div class="my-auto text-center flex flex-col items-center justify-center py-0.5" onclick="event.stopPropagation(); window.openVideoDemoModal('${tab.title.replace(/'/g, "\\'")}', '${normalizedAudio.replace(/'/g, "\\'")}', true)">
-        <button class="w-7 h-7 sm:w-10 sm:h-10 rounded-full bg-white text-[#0B0E1A] flex items-center justify-center shadow-lg transform group-hover:scale-110 transition-transform cursor-pointer" aria-label="Nghe Audio Demo">
-          ${iconHeadphones('w-3.5 h-3.5 sm:w-4 sm:h-4')}
-        </button>
-        <span class="text-[8px] sm:text-[10px] font-bold mt-1 text-white/95 tracking-wide bg-black/60 px-2 py-0.5 rounded-full backdrop-blur-xs leading-none whitespace-nowrap">Nghe Audio Demo</span>
-      </div>
-    `
-  } else {
-    artworkCenterHtml = `
-      <div class="my-auto text-center flex flex-col items-center justify-center opacity-80 py-0.5">
-        <div class="w-6 h-6 sm:w-8 sm:h-8 rounded-full bg-black/30 flex items-center justify-center text-white shadow-sm">
-          ${iconGuitar('w-3 h-3 sm:w-3.5 sm:h-3.5')}
-        </div>
-        <span class="text-[8px] sm:text-[10px] font-bold mt-0.5 text-white/80 tracking-wide">Acoustic Tab</span>
-      </div>
-    `
-  }
-
-  return `
-    <div onclick="${isPurchased ? 'window.navigateToPurchasesTab()' : `window.openCheckoutModal('${tab.id}')`}" class="song-card glass-card card-interactive p-2.5 sm:p-4 rounded-2xl sm:rounded-3xl border ${isPurchased ? 'border-amber-500/40 hover:border-amber-400' : 'border-glass-border'} flex flex-col justify-between space-y-2.5 sm:space-y-3.5 group cursor-pointer ${cardTypeClass} ${pinnedClass} ${extraClass}" data-id="${tab.id}">
-      ${swipeFavOverlay}
-      <div class="space-y-2 sm:space-y-3">
-        <div class="relative overflow-hidden rounded-xl sm:rounded-2xl h-[150px] sm:h-auto sm:aspect-[16/10] w-full bg-gradient-to-br ${thumbnailBg} p-2 sm:p-3.5 flex flex-col justify-between text-white shadow-inner group-hover:scale-[1.02] transition-transform duration-500 ease-out">
-          <div class="flex justify-between items-start text-xs uppercase font-bold tracking-wider">
-            <span class="bg-black/50 backdrop-blur px-1.5 sm:px-2 py-0.5 rounded-full text-white/95 text-[8px] sm:text-[10px] font-mono truncate min-w-0 max-w-[70px] sm:max-w-none">${tab.category || 'Nhạc Việt'}</span>
-            <div class="flex items-start gap-1 flex-wrap justify-end">
-              ${pinnedBadge}
-              ${badgeHtml}
-              ${favButtonHtml}
-            </div>
-          </div>
-
-          ${artworkCenterHtml}
-
-          <div class="flex justify-between items-end gap-1 text-xs text-white/95 font-semibold">
-            <span class="font-mono tabular-nums text-[9px] sm:text-[11px] flex-shrink-0">${tab.duration || 'Full Video'}</span>
-            <span class="text-white/80 text-[8px] sm:text-[11px] truncate min-w-0">Tuning: ${tab.tuning || 'Standard'}</span>
-          </div>
-        </div>
-
-        <div class="space-y-1">
-          <h3 class="text-xs sm:text-base font-bold text-text-primary group-hover:text-accent-primary transition-colors leading-tight line-clamp-2">
-            ${tab.title}
-          </h3>
-
-          <div class="space-y-0.5 sm:space-y-1 pt-0.5">
-            <div class="flex items-center justify-between text-[10px] sm:text-xs font-bold text-text-muted">
-              <span>Độ khó: <strong class="text-accent-primary font-mono tabular-nums">${tab.level || levelNum + '/10'}</strong></span>
-              <span class="text-[9px] sm:text-xs font-semibold text-text-faint hidden sm:inline">Tuning: ${tab.tuning || 'Standard'}</span>
-            </div>
-            <div class="w-full bg-glass-bg rounded-full h-1 sm:h-1.5 overflow-hidden border border-glass-border">
-              <div class="bg-warm-gradient h-1 sm:h-1.5 rounded-full transition-all duration-500" style="width: ${percent}%"></div>
-            </div>
-          </div>
-
-          <p class="text-[10px] sm:text-xs text-text-muted font-medium leading-snug pt-0.5 line-clamp-2">
-            ${tab.description || 'Bản tab guitar fingerstyle chuẩn âm thanh acoustic.'}
-          </p>
-        </div>
-      </div>
-
-      <div class="pt-1 sm:pt-2">
-        ${
-          isPurchased
-            ? `<div class="w-full py-1.5 sm:py-2.5 px-1.5 rounded-full bg-amber-500/15 border border-amber-500/30 hover:bg-amber-500/25 text-amber-600 dark:text-amber-300 font-extrabold text-[10px] sm:text-xs transition-all shadow-xs flex items-center justify-center gap-1 active:scale-95 text-center cursor-pointer">
-          <span class="truncate">Mở Tab Đã Mua</span>
-        </div>`
-            : `<div class="w-full py-1.5 sm:py-2.5 px-1.5 rounded-full bg-warm-gradient hover:opacity-90 text-white font-bold text-[10px] sm:text-xs transition-all shadow-md shadow-accent-primary/20 flex items-center justify-center gap-1 active:scale-95 text-center cursor-pointer">
-          <span class="truncate">Xem Chi Tiết</span>
-        </div>`
-        }
-      </div>
-    </div>
-  `
-}
-
 // ==========================================================================
 // RENDER & FILTER LIST
 // ==========================================================================
@@ -434,7 +167,17 @@ function updateGrid() {
     return
   }
 
-  const html = filtered.map((song, i) => renderSongCard(song, i)).join('')
+  const html = filtered
+    .map((song) =>
+      renderSongCard(song, {
+        isPinned: Boolean(song.is_featured),
+        isFavorite: favoriteSongIds.has(String(song.id)),
+        isPurchased: purchasedSongIds.has(String(song.id)),
+        showFavoriteButton: true,
+        showSwipeOverlay: true,
+      })
+    )
+    .join('')
   grid.innerHTML = html
 
   setTimeout(() => {

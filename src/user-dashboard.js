@@ -24,6 +24,7 @@ import { fetchAllGears, DEFAULT_GEARS } from './lib/gears-service.js'
 import { uploadToStorage, removeFromStorageByUrl, formatBytes, MAX_UPLOAD_BYTES } from './lib/storage-service.js'
 import { iconCrown, iconHeadphones, iconGuitar } from './icons.js'
 import { initShareButtons } from './lib/share-song.js'
+import { formatCompactPrice, formatCompactDiscount } from './lib/song-format.js'
 import {
   createOrderAndBuildQr,
   downloadQrImage,
@@ -494,33 +495,6 @@ function updateCounters() {
   if (statPurchasedCount) statPurchasedCount.textContent = purCount
   if (tabFavCounter) tabFavCounter.textContent = favCount
   if (tabPurchasedCounter) tabPurchasedCounter.textContent = purCount
-}
-
-export function formatCompactPrice(val) {
-  if (val === 0 || val === '0') return 'Miễn phí'
-  if (!val && val !== 0) return '239k'
-  const str = String(val).trim()
-  if (!str || str.toLowerCase() === 'miễn phí' || str.toLowerCase() === 'free') return 'Miễn phí'
-  if (str.toLowerCase().endsWith('k')) return str.toLowerCase()
-  const numericOnly = Number(str.replace(/[^0-9]/g, ''))
-  if (numericOnly >= 1000) {
-    return `${Math.round(numericOnly / 1000)}k`
-  }
-  if (numericOnly > 0) {
-    return `${numericOnly}k`
-  }
-  return str
-}
-
-export function formatCompactDiscount(note) {
-  if (!note) return 'HSSV: 179k'
-  const str = String(note).trim()
-  if (str.toLowerCase().includes('179')) return 'HSSV: 179k'
-  if (str.length > 15) {
-    const num = str.replace(/[^0-9]/g, '')
-    if (num) return `HSSV: ${num.length >= 4 ? Math.round(Number(num) / 1000) : num}k`
-  }
-  return str
 }
 
 // ==========================================================================
