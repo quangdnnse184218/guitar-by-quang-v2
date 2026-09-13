@@ -20,6 +20,39 @@ function escapeJsString(str) {
   return String(str || '').replace(/'/g, "\\'")
 }
 
+/**
+ * Class của khung ảnh trên thẻ — dùng chung cho cả thẻ ở đây lẫn 3 biến thể
+ * thẻ riêng trong trang cá nhân (những thẻ đó có hành động và màu khác nên
+ * không gộp chung hàm được, nhưng khung ảnh thì phải giống hệt nhau).
+ *
+ * Trên mobile dùng CHIỀU CAO CỐ ĐỊNH chứ không phải aspect-ratio: box có
+ * aspect-ratio kèm chiều cao tối thiểu sẽ sinh ra chiều rộng tối thiểu tự
+ * động (cao 140px với tỉ lệ 4/3 là bắt buộc rộng 186px), làm khung ảnh phình
+ * to hơn thẻ chứa nó rồi bị cắt mất mép phải — đúng lỗi đã từng phải sửa ở 7
+ * chỗ khác nhau vì code bị lặp.
+ */
+export const SONG_THUMB_CLASS =
+  'relative overflow-hidden rounded-xl sm:rounded-2xl h-[150px] sm:h-auto sm:aspect-[16/10] w-full p-2 sm:p-3.5 flex flex-col justify-between text-white shadow-inner group-hover:scale-[1.02] transition-transform duration-500 ease-out'
+
+/** Badge thể loại ở góc trái khung ảnh (cắt bớt nếu tên thể loại quá dài). */
+export function renderCategoryBadge(song, fallback = 'Fingerstyle') {
+  return `<span class="bg-black/50 backdrop-blur px-1.5 sm:px-2 py-0.5 rounded-full text-white/95 text-[8px] sm:text-[10px] font-mono truncate min-w-0 max-w-[70px] sm:max-w-none">${song.category || fallback}</span>`
+}
+
+/**
+ * Hàng dưới cùng khung ảnh: thời lượng bên trái, tuning bên phải.
+ * Thời lượng không bao giờ bị co (flex-shrink-0), tuning cắt bằng dấu "..."
+ * khi thẻ quá hẹp thay vì bị khung ảnh cắt cụt không báo hiệu gì.
+ */
+export function renderThumbMetaRow(song, fallbackDuration = 'Full Video') {
+  return `
+    <div class="flex justify-between items-end gap-1 text-xs text-white/95 font-semibold">
+      <span class="font-mono tabular-nums text-[9px] sm:text-[11px] flex-shrink-0">${song.duration || fallbackDuration}</span>
+      <span class="text-white/80 text-[8px] sm:text-[11px] truncate min-w-0">Tuning: ${song.tuning || 'Standard'}</span>
+    </div>
+  `
+}
+
 function renderPinnedBadge() {
   return `<span class="inline-flex items-center gap-1 px-1.5 sm:px-2 py-0.5 rounded-full text-[8px] sm:text-[10px] font-black bg-amber-400 text-black shadow-sm uppercase tracking-wide"><svg class="w-2 h-2 sm:w-2.5 sm:h-2.5" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2l2.94 6.34L21.5 9.27l-4.75 4.51L17.88 21 12 17.77 6.12 21l1.13-7.22L2.5 9.27l6.56-.93z"/></svg>Nổi bật</span>`
 }
@@ -137,15 +170,6 @@ export function renderSongCard(tab, options = {}) {
   // Khung ảnh: trên mobile dùng chiều cao cố định thay vì aspect-ratio, vì
   // aspect-ratio kèm chiều cao tối thiểu sẽ sinh ra chiều rộng tối thiểu tự
   // động làm khung ảnh phình rộng hơn thẻ rồi bị cắt mất mép phải.
-  const thumbBaseClass =
-    'relative overflow-hidden rounded-xl sm:rounded-2xl h-[150px] sm:h-auto sm:aspect-[16/10] w-full p-2 sm:p-3.5 flex flex-col justify-between text-white shadow-inner group-hover:scale-[1.02] transition-transform duration-500 ease-out'
-
-  const bottomMetaRow = `
-    <div class="flex justify-between items-end gap-1 text-xs text-white/95 font-semibold">
-      <span class="font-mono tabular-nums text-[9px] sm:text-[11px] flex-shrink-0">${tab.duration || 'Full Video'}</span>
-      <span class="text-white/80 text-[8px] sm:text-[11px] truncate min-w-0">Tuning: ${tab.tuning || 'Standard'}</span>
-    </div>
-  `
 
   const levelRow = (accentClass, barClass) => `
     <div class="space-y-0.5 sm:space-y-1 pt-0.5">
@@ -165,7 +189,7 @@ export function renderSongCard(tab, options = {}) {
       <div onclick="window.openFreeTabModal('${tab.id}')" class="song-card glass-card card-interactive p-2.5 sm:p-4 rounded-2xl sm:rounded-3xl border border-glass-border flex flex-col justify-between space-y-2.5 sm:space-y-3.5 group cursor-pointer ${pinnedClass} ${extraClass}" data-id="${tab.id}">
         ${swipeOverlay}
         <div class="space-y-2 sm:space-y-3">
-          <div class="${thumbBaseClass} bg-gradient-to-br from-[#1E3A2F] via-[#2A4D3E] to-[#172A22]">
+          <div class="${SONG_THUMB_CLASS} bg-gradient-to-br from-[#1E3A2F] via-[#2A4D3E] to-[#172A22]">
             <div class="flex justify-between items-start text-xs uppercase font-bold tracking-wider">
               <span class="bg-black/50 backdrop-blur px-1.5 sm:px-2 py-0.5 rounded-full text-white/95 text-[8px] sm:text-[10px] font-mono truncate min-w-0 max-w-[70px] sm:max-w-none">${tab.category || 'Fingerstyle'}</span>
               <div class="flex items-center gap-1 flex-wrap justify-end">
@@ -184,7 +208,7 @@ export function renderSongCard(tab, options = {}) {
               <span class="text-[8px] sm:text-[10px] font-bold mt-1 text-white/95 tracking-wide bg-black/60 px-2 py-0.5 rounded-full backdrop-blur-xs leading-none whitespace-nowrap">Xem Tab Miễn Phí</span>
             </div>
 
-            ${bottomMetaRow}
+            ${renderThumbMetaRow(tab)}
           </div>
 
           <div class="space-y-1">
@@ -235,7 +259,7 @@ export function renderSongCard(tab, options = {}) {
     <div onclick="${isPurchased ? 'window.navigateToPurchasesTab()' : `window.openCheckoutModal('${tab.id}')`}" class="song-card glass-card card-interactive p-2.5 sm:p-4 rounded-2xl sm:rounded-3xl border ${isPurchased ? 'border-amber-500/40 hover:border-amber-400' : 'border-glass-border'} flex flex-col justify-between space-y-2.5 sm:space-y-3.5 group cursor-pointer card-paid ${pinnedClass} ${extraClass}" data-id="${tab.id}">
       ${swipeOverlay}
       <div class="space-y-2 sm:space-y-3">
-        <div class="${thumbBaseClass} bg-gradient-to-br ${thumbnailBg}">
+        <div class="${SONG_THUMB_CLASS} bg-gradient-to-br ${thumbnailBg}">
           <div class="flex justify-between items-start text-xs uppercase font-bold tracking-wider">
             <span class="bg-black/50 backdrop-blur px-1.5 sm:px-2 py-0.5 rounded-full text-white/95 text-[8px] sm:text-[10px] font-mono truncate min-w-0 max-w-[70px] sm:max-w-none">${tab.category || 'Nhạc Việt'}</span>
             <div class="flex items-start gap-1 flex-wrap justify-end">
@@ -247,7 +271,7 @@ export function renderSongCard(tab, options = {}) {
 
           ${renderPaidArtworkCenter(tab, { isPurchased, video, audio })}
 
-          ${bottomMetaRow}
+          ${renderThumbMetaRow(tab)}
         </div>
 
         <div class="space-y-1">
