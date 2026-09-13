@@ -253,9 +253,13 @@ export async function initAuthHeader() {
             <p class="text-[10px] text-text-muted truncate">${user.email}</p>
           </div>
           ${adminDropdownOption}
+          ${
+            isAdmin
+              ? ''
+              : `
           <a href="${personalDashboardUrl}" class="block px-3 py-2 text-xs font-semibold text-text-primary hover:bg-glass-bg-hover hover:text-accent-primary rounded-xl transition-colors flex items-center gap-2">
             <span>${iconGuitar('w-3.5 h-3.5')}</span>
-            <span>${isAdmin ? 'Trang Cá Nhân' : 'Trang Của Tôi'}</span>
+            <span>Trang Của Tôi</span>
           </a>
           <a href="/user-dashboard.html#favorites" class="block px-3 py-2 text-xs font-semibold text-text-primary hover:bg-glass-bg-hover hover:text-accent-primary rounded-xl transition-colors flex items-center gap-2">
             <span>${iconHeart('w-3.5 h-3.5')}</span>
@@ -269,6 +273,8 @@ export async function initAuthHeader() {
             <span>${iconPerson('w-3.5 h-3.5')}</span>
             <span>Hồ Sơ & Mật Khẩu</span>
           </a>
+          `
+          }
           <button id="auth-logout-btn" class="w-full text-left px-3 py-2 text-xs font-bold text-rose-500 hover:bg-rose-500/10 rounded-xl transition-colors mt-1 border-t border-glass-border flex items-center gap-2 cursor-pointer">
             <span>${iconLogout('w-3.5 h-3.5')}</span>
             <span>Đăng xuất</span>
