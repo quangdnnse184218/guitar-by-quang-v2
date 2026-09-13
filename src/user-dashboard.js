@@ -590,9 +590,9 @@ function renderOverviewFeatured() {
                 <span class="text-[8px] sm:text-[10px] font-bold mt-1 text-white/95 tracking-wide bg-black/60 px-2 py-0.5 rounded-full backdrop-blur-xs leading-none whitespace-nowrap">Xem Tab Miễn Phí</span>
               </div>
 
-              <div class="flex justify-between items-end text-xs text-white/95 font-semibold">
-                <span class="font-mono tabular-nums text-[9px] sm:text-[11px]">${song.duration || '04:15'}</span>
-                <span class="text-white/80 text-[8px] sm:text-[11px]">Tuning: ${song.tuning || 'Standard'}</span>
+              <div class="flex justify-between items-end gap-1 text-xs text-white/95 font-semibold">
+                <span class="font-mono tabular-nums text-[9px] sm:text-[11px] flex-shrink-0">${song.duration || '04:15'}</span>
+                <span class="text-white/80 text-[8px] sm:text-[11px] truncate min-w-0">Tuning: ${song.tuning || 'Standard'}</span>
               </div>
             </div>
 
@@ -660,9 +660,9 @@ function renderOverviewFeatured() {
                 <span class="text-[8px] sm:text-[10px] font-bold mt-1 text-white/95 tracking-wide bg-black/60 px-2 py-0.5 rounded-full backdrop-blur-xs leading-none whitespace-nowrap">Xem Trong Tab Đã Mua</span>
               </div>
 
-              <div class="flex justify-between items-end text-xs text-white/95 font-semibold">
-                <span class="font-mono tabular-nums text-[9px] sm:text-[11px]">${song.duration || '03:40'}</span>
-                <span class="text-white/80 text-[8px] sm:text-[11px]">Tuning: ${song.tuning || 'Standard'}</span>
+              <div class="flex justify-between items-end gap-1 text-xs text-white/95 font-semibold">
+                <span class="font-mono tabular-nums text-[9px] sm:text-[11px] flex-shrink-0">${song.duration || '03:40'}</span>
+                <span class="text-white/80 text-[8px] sm:text-[11px] truncate min-w-0">Tuning: ${song.tuning || 'Standard'}</span>
               </div>
             </div>
 
@@ -743,9 +743,9 @@ function renderOverviewFeatured() {
             `
             }
 
-            <div class="flex justify-between items-end text-xs text-white/95 font-semibold">
-              <span class="font-mono tabular-nums text-[9px] sm:text-[11px]">${song.duration || '03:40'}</span>
-              <span class="text-white/80 text-[8px] sm:text-[11px]">Tuning: ${song.tuning || 'Standard'}</span>
+            <div class="flex justify-between items-end gap-1 text-xs text-white/95 font-semibold">
+              <span class="font-mono tabular-nums text-[9px] sm:text-[11px] flex-shrink-0">${song.duration || '03:40'}</span>
+              <span class="text-white/80 text-[8px] sm:text-[11px] truncate min-w-0">Tuning: ${song.tuning || 'Standard'}</span>
             </div>
           </div>
 

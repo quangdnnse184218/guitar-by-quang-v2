@@ -1714,3 +1714,21 @@ body.modal-open {
 .modal-dialog {
   overscroll-behavior: contain;
 }
+
+/* Carousel "Bài Hát Nổi Bật" trên mobile cố ý hé lộ ~38% thẻ kế tiếp để gợi ý
+   còn vuốt được thêm — nhưng để mép phải cắt thẳng đứng giữa chữ/badge của
+   thẻ đó lại trông giống lỗi vỡ layout hơn là gợi ý vuốt. Phủ một dải mờ dần
+   sang trong suốt ở mép phải (chỉ khi carousel còn cuộn được, tự ẩn ở
+   md: trở lên khi carousel chuyển thành grid tĩnh) để rõ ràng đó là "còn
+   nữa" chứ không phải thẻ bị che khuất. */
+#featured-grid {
+  mask-image: linear-gradient(to right, black calc(100% - 32px), transparent 100%);
+  -webkit-mask-image: linear-gradient(to right, black calc(100% - 32px), transparent 100%);
+}
+
+@media (min-width: 768px) {
+  #featured-grid {
+    mask-image: none;
+    -webkit-mask-image: none;
+  }
+}
