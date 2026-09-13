@@ -75,6 +75,23 @@ document.addEventListener('DOMContentLoaded', () => {
   // Supabase và chỉ nhận được lỗi chung chung "Invalid login credentials".
   const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/
 
+  // Khi mật khẩu SAI, code dừng ngay sau đúng 1 lệnh gọi (signInWithPassword
+  // thất bại). Khi mật khẩu ĐÚNG nhưng là admin, code còn phải gọi thêm 2
+  // lệnh nữa (đọc role + signOut) trước khi hiện CÙNG một thông báo — nên dù
+  // chữ hiện ra giống hệt nhau, nhánh admin luôn mất thời gian lâu hơn một
+  // chút. Kẻ tấn công có mật khẩu admin bị lộ có thể đo độ trễ phản hồi lặp
+  // lại nhiều lần ở chính trang này để suy ra tài khoản đó là admin dù không
+  // đọc được nội dung thông báo khác nhau. Đệm cả 2 nhánh về cùng một mốc
+  // thời gian tối thiểu để xoá chênh lệch đó.
+  const AUTH_RESPONSE_FLOOR_MS = 900
+
+  async function padToFloor(startedAt) {
+    const elapsed = Date.now() - startedAt
+    if (elapsed < AUTH_RESPONSE_FLOOR_MS) {
+      await new Promise((resolve) => setTimeout(resolve, AUTH_RESPONSE_FLOOR_MS - elapsed))
+    }
+  }
+
   form.addEventListener('submit', async (e) => {
     e.preventDefault()
     hideAlert()
@@ -92,6 +109,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     setLoading(true)
+    const startedAt = Date.now()
 
     try {
       const { data, error } = await supabase.auth.signInWithPassword({
@@ -116,6 +134,7 @@ document.addEventListener('DOMContentLoaded', () => {
             // riêng như "tài khoản không tồn tại") — để không tạo tín hiệu
             // phân biệt giữa 2 trường hợp, tránh lộ danh tính admin nếu
             // mật khẩu admin từng bị lộ và ai đó thử đăng nhập ở cổng member.
+            await padToFloor(startedAt)
             showAlert('Sai email hoặc mật khẩu. Vui lòng kiểm tra lại.')
             setLoading(false)
             return
@@ -141,6 +160,7 @@ document.addEventListener('DOMContentLoaded', () => {
       if (error.message.includes('Invalid login credentials')) {
         errorMsg = 'Sai email hoặc mật khẩu. Vui lòng kiểm tra lại.'
       }
+      await padToFloor(startedAt)
       showAlert(errorMsg)
     } finally {
       setLoading(false)

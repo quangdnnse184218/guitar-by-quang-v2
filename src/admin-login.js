@@ -76,6 +76,19 @@ async function checkExistingSession() {
 // — kiểm tra định dạng ở đây, giống login.js/register.js.
 const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/
 
+// Cùng vấn đề chênh lệch thời gian như login.js: nhánh "sai mật khẩu" dừng
+// ngay sau 1 lệnh gọi, còn nhánh "đúng mật khẩu nhưng không phải admin" phải
+// gọi thêm 2 lệnh (đọc role + signOut) trước khi hiện CÙNG một thông báo —
+// đệm về cùng mốc thời gian tối thiểu để không lộ qua độ trễ phản hồi.
+const AUTH_RESPONSE_FLOOR_MS = 900
+
+async function padToFloor(startedAt) {
+  const elapsed = Date.now() - startedAt
+  if (elapsed < AUTH_RESPONSE_FLOOR_MS) {
+    await new Promise((resolve) => setTimeout(resolve, AUTH_RESPONSE_FLOOR_MS - elapsed))
+  }
+}
+
 if (loginForm) {
   loginForm.addEventListener('submit', async (e) => {
     e.preventDefault()
@@ -96,6 +109,7 @@ if (loginForm) {
     }
 
     setLoading(true)
+    const startedAt = Date.now()
 
     try {
       const { data, error } = await supabase.auth.signInWithPassword({
@@ -115,6 +129,7 @@ if (loginForm) {
       const GENERIC_FAIL_MSG = 'Email hoặc mật khẩu không chính xác. Vui lòng thử lại!'
 
       if (error) {
+        await padToFloor(startedAt)
         showError(GENERIC_FAIL_MSG)
         setLoading(false)
         return
@@ -132,6 +147,7 @@ if (loginForm) {
 
         if (!isAdmin) {
           await supabase.auth.signOut()
+          await padToFloor(startedAt)
           showError(GENERIC_FAIL_MSG)
           setLoading(false)
           return
@@ -139,10 +155,12 @@ if (loginForm) {
 
         window.location.replace('/admin-dashboard.html')
       } else {
+        await padToFloor(startedAt)
         showError(GENERIC_FAIL_MSG)
         setLoading(false)
       }
     } catch (err) {
+      await padToFloor(startedAt)
       showError('Lỗi kết nối máy chủ xác thực. Vui lòng kiểm tra lại mạng!')
       setLoading(false)
     }
