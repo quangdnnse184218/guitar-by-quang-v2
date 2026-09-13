@@ -375,13 +375,24 @@ if (grantAccessForm) {
     }
 
     try {
-      const { error } = await supabase.rpc('admin_grant_access', {
-        p_user_id: userId,
-        p_song_id: songId,
+      // Gọi Edge Function thay vì thẳng RPC — hàm này vừa ghi vào DB (qua
+      // đúng RPC admin_grant_access cũ) vừa tự động gọi Apps Script cấp
+      // quyền xem file Google Drive cho email tài khoản khách, để cấp quyền
+      // thủ công cũng tự động hoá luôn phần Drive như luồng SePay tự động.
+      const { data, error } = await supabase.functions.invoke('admin-grant-access', {
+        body: { userId, songId },
       })
       if (error) throw error
+      if (!data?.success) throw new Error(data?.error || 'Lỗi khi cấp quyền')
 
-      showToast('✓ Đã cấp quyền xem Tab thành công!', 'success')
+      if (data.driveGranted) {
+        showToast('✓ Đã cấp quyền xem Tab + tự động cấp quyền Google Drive!', 'success')
+      } else {
+        showToast(
+          '✓ Đã cấp quyền xem Tab, nhưng cấp quyền Drive tự động thất bại — cần tự chia sẻ Drive thủ công!',
+          'error'
+        )
+      }
       grantUserIdInput.value = ''
 
       // Reload both lists
