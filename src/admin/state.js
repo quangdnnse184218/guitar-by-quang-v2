@@ -13,7 +13,8 @@ export const state = {
   recentGrantsList: [],
   currentAdminId: null,
 
-  activeTab: 'songs', // 'songs' | 'gears' | 'users' | 'grant'
+  activeTab: 'overview', // 'overview' | 'content' | 'users' | 'grant'
+  activeContentSubtab: 'songs', // tab con bên trong 'content': 'songs' | 'gears'
   songSearchQuery: '',
   songCategoryFilter: 'all',
   songTypeFilter: 'all',

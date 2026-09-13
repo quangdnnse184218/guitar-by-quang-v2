@@ -18,10 +18,11 @@ import { loadGears, initGearsSection } from './admin/gears.js'
 import {
   loadUsers,
   loadRecentGrants,
-  loadRecentOrders,
+  loadPendingOrders,
   renderPaidSongs,
   initUsersGrantSection,
 } from './admin/users-grant.js'
+import { loadOverview, initOverviewSection } from './admin/overview.js'
 
 // If redirected here with a recovery token, immediately move to admin-reset-password.html
 if (
@@ -42,14 +43,18 @@ const adminDropdownEmail = document.getElementById('admin-dropdown-email')
 const logoutBtn = document.getElementById('logout-btn')
 const adminHeaderDropdownWrap = document.getElementById('admin-header-dropdown-wrap')
 const adminHeaderDropdownBtn = document.getElementById('admin-header-dropdown-btn')
-const tabNavSongs = document.getElementById('tab-nav-songs')
-const tabNavGears = document.getElementById('tab-nav-gears')
+const tabNavOverview = document.getElementById('tab-nav-overview')
+const tabNavContent = document.getElementById('tab-nav-content')
 const tabNavUsers = document.getElementById('tab-nav-users')
 const tabNavGrant = document.getElementById('tab-nav-grant')
+const sectionOverview = document.getElementById('section-overview')
+const sectionContent = document.getElementById('section-content')
 const sectionSongs = document.getElementById('section-songs')
 const sectionGears = document.getElementById('section-gears')
 const sectionUsers = document.getElementById('section-users')
 const sectionGrant = document.getElementById('section-grant')
+const subtabSongs = document.getElementById('subtab-songs')
+const subtabGears = document.getElementById('subtab-gears')
 
 // Codes Modal DOM (đóng modal — tính năng "generate code" bên trong đã bị gỡ
 // từ trước, chỉ còn nút đóng modal còn hoạt động trong HTML)
@@ -171,6 +176,9 @@ async function initDashboard() {
   }
 
   // Tab Switcher Helper
+  // 4 tab chính: Tổng Quan / Nội Dung (gồm 2 tab con Kho Tab + Đồ Nghề) /
+  // Người Dùng / Đơn Hàng. Gộp Kho Tab với Đồ Nghề vì Đồ Nghề ít dùng hơn hẳn,
+  // để hàng tab chính không bị chật trên mobile.
   function switchTab(tabId) {
     state.activeTab = tabId
 
@@ -180,36 +188,67 @@ async function initDashboard() {
     const inactiveClass = `${baseClass} text-text-muted hover:text-text-primary`
     const activeClass = `${baseClass} bg-warm-gradient text-white shadow-xs`
 
-    if (tabNavSongs) tabNavSongs.className = tabId === 'songs' ? activeClass : inactiveClass
-    if (tabNavGears) tabNavGears.className = tabId === 'gears' ? activeClass : inactiveClass
+    if (tabNavOverview) tabNavOverview.className = tabId === 'overview' ? activeClass : inactiveClass
+    if (tabNavContent) tabNavContent.className = tabId === 'content' ? activeClass : inactiveClass
     if (tabNavUsers) tabNavUsers.className = tabId === 'users' ? activeClass : inactiveClass
     if (tabNavGrant) tabNavGrant.className = tabId === 'grant' ? activeClass : inactiveClass
 
-    if (sectionSongs) sectionSongs.classList.toggle('hidden', tabId !== 'songs')
-    if (sectionGears) sectionGears.classList.toggle('hidden', tabId !== 'gears')
+    if (sectionOverview) sectionOverview.classList.toggle('hidden', tabId !== 'overview')
+    if (sectionContent) sectionContent.classList.toggle('hidden', tabId !== 'content')
     if (sectionUsers) sectionUsers.classList.toggle('hidden', tabId !== 'users')
     if (sectionGrant) sectionGrant.classList.toggle('hidden', tabId !== 'grant')
 
-    if (tabId === 'songs') loadSongs()
-    if (tabId === 'gears') loadGears()
+    // 2 khối nội dung nằm ngoài #section-content (giữ nguyên vị trí HTML cũ)
+    // nên phải tự ẩn/hiện theo tab chính lẫn tab con.
+    if (tabId !== 'content') {
+      sectionSongs?.classList.add('hidden')
+      sectionGears?.classList.add('hidden')
+    } else {
+      switchContentSubtab(state.activeContentSubtab || 'songs')
+    }
+
+    if (tabId === 'overview') loadOverview()
     if (tabId === 'users') loadUsers()
     if (tabId === 'grant') {
       renderPaidSongs()
       loadRecentGrants()
-      loadRecentOrders()
+      loadPendingOrders()
+      // Danh sách user cần sẵn sàng cho ô tìm khách trong form cấp quyền.
+      if (!state.usersList || state.usersList.length === 0) loadUsers()
     }
   }
 
-  window.switchTab = switchTab
+  function switchContentSubtab(sub) {
+    state.activeContentSubtab = sub
 
-  if (tabNavSongs) tabNavSongs.addEventListener('click', () => switchTab('songs'))
-  if (tabNavGears) tabNavGears.addEventListener('click', () => switchTab('gears'))
+    const subBase = 'flex-1 sm:flex-none px-4 py-2 rounded-xl text-xs font-bold transition-all cursor-pointer'
+    const subActive = `${subBase} bg-warm-gradient text-white shadow-xs`
+    const subInactive = `${subBase} text-text-muted hover:text-text-primary`
+
+    if (subtabSongs) subtabSongs.className = sub === 'songs' ? subActive : subInactive
+    if (subtabGears) subtabGears.className = sub === 'gears' ? subActive : subInactive
+
+    sectionSongs?.classList.toggle('hidden', sub !== 'songs')
+    sectionGears?.classList.toggle('hidden', sub !== 'gears')
+
+    if (sub === 'songs') loadSongs()
+    if (sub === 'gears') loadGears()
+  }
+
+  window.switchTab = switchTab
+  window.switchContentSubtab = switchContentSubtab
+
+  if (tabNavOverview) tabNavOverview.addEventListener('click', () => switchTab('overview'))
+  if (tabNavContent) tabNavContent.addEventListener('click', () => switchTab('content'))
   if (tabNavUsers) tabNavUsers.addEventListener('click', () => switchTab('users'))
   if (tabNavGrant) tabNavGrant.addEventListener('click', () => switchTab('grant'))
+  if (subtabSongs) subtabSongs.addEventListener('click', () => switchContentSubtab('songs'))
+  if (subtabGears) subtabGears.addEventListener('click', () => switchContentSubtab('gears'))
 
   initSongsSection()
   initGearsSection()
   initUsersGrantSection()
+  initOverviewSection()
 
   if (closeCodesModal) {
     closeCodesModal.addEventListener('click', () => toggleModal(codesModal, false))
@@ -303,12 +342,13 @@ async function initDashboard() {
     })
   }
 
-  // Load initial data
+  // Tải dữ liệu ban đầu: Tổng Quan là tab mặc định nên ưu tiên số liệu của nó,
+  // kèm danh sách bài + user để các tab khác (và ô tìm khách ở form cấp quyền)
+  // có sẵn dữ liệu ngay khi admin bấm sang.
+  loadOverview()
   loadSongs().then(() => renderPaidSongs())
-  loadGears()
   loadUsers()
-  loadRecentGrants()
-  loadRecentOrders()
+  loadPendingOrders()
 }
 
 document.addEventListener('DOMContentLoaded', initDashboard)

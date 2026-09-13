@@ -111,7 +111,7 @@ Deno.serve(async (req: Request) => {
       return json({ success: false, error: "forbidden" }, 403);
     }
 
-    const { userId, songId } = await req.json();
+    const { userId, songId, reason, note } = await req.json();
     if (!userId || !songId) return json({ success: false, error: "missing_userId_or_songId" }, 400);
 
     // Bước 1: cấp quyền trong DB qua đúng RPC hiện có (giữ nguyên toàn bộ
@@ -122,6 +122,8 @@ Deno.serve(async (req: Request) => {
     const { data: rpcResult, error: rpcError } = await userClient.rpc("admin_grant_access", {
       p_user_id: userId,
       p_song_id: songId,
+      p_reason: reason ?? "other",
+      p_note: note ?? null,
     });
 
     if (rpcError) {
