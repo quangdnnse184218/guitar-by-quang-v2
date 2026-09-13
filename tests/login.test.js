@@ -50,6 +50,14 @@ function flushPromises() {
   return new Promise((resolve) => setTimeout(resolve, 0))
 }
 
+// login.js đệm mọi nhánh thất bại về cùng một mốc thời gian tối thiểu
+// (AUTH_RESPONSE_FLOOR_MS = 900ms, chống dò tài khoản admin qua chênh lệch
+// thời gian phản hồi) trước khi hiện thông báo — flushPromises() bình
+// thường (đợi đúng 1 tick) không đủ để thông báo đó kịp hiện ra.
+function flushAuthFloor() {
+  return new Promise((resolve) => setTimeout(resolve, 950))
+}
+
 // login.js bọc toàn bộ logic trong 1 listener DOMContentLoaded gắn thẳng vào
 // `document`. Vì jsdom `document` dùng chung giữa các test trong cùng file,
 // nếu dispatch DOMContentLoaded thật thì các listener từ những lần import
@@ -88,6 +96,7 @@ describe('login.js — chặn admin đăng nhập ở cổng member', () => {
     document.getElementById('login-password').value = 'correct-admin-password'
     document.getElementById('login-form').dispatchEvent(new Event('submit', { cancelable: true }))
     await flushPromises()
+    await flushAuthFloor()
 
     expect(mockSupabase.auth.signOut).toHaveBeenCalledTimes(1)
     expect(document.getElementById('login-alert-text').textContent).toBe(
@@ -106,6 +115,7 @@ describe('login.js — chặn admin đăng nhập ở cổng member', () => {
     document.getElementById('login-password').value = 'wrong-password'
     document.getElementById('login-form').dispatchEvent(new Event('submit', { cancelable: true }))
     await flushPromises()
+    await flushAuthFloor()
 
     expect(document.getElementById('login-alert-text').textContent).toBe(
       'Sai email hoặc mật khẩu. Vui lòng kiểm tra lại.'

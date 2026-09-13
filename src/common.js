@@ -1095,8 +1095,8 @@ export function initPasswordResetForm({
         return showAlert('Vui lòng nhập đầy đủ mật khẩu mới và xác nhận mật khẩu.')
       }
 
-      if (newPassword.length < 6) {
-        return showAlert('Mật khẩu mới phải có tối thiểu 6 ký tự.')
+      if (newPassword.length < 8) {
+        return showAlert('Mật khẩu mới phải có tối thiểu 8 ký tự.')
       }
 
       if (newPassword !== confirmPassword) {

@@ -259,8 +259,8 @@ async function initDashboard() {
       const newPwd = adminNewPassword?.value || ''
       const confirmPwd = adminConfirmPassword?.value || ''
 
-      if (!newPwd || newPwd.length < 6) {
-        showChangePwdError('Mật khẩu mới phải có tối thiểu 6 ký tự!')
+      if (!newPwd || newPwd.length < 8) {
+        showChangePwdError('Mật khẩu mới phải có tối thiểu 8 ký tự!')
         return
       }
 

@@ -50,6 +50,14 @@ function flushPromises() {
   return new Promise((resolve) => setTimeout(resolve, 0))
 }
 
+// admin-login.js đệm mọi nhánh thất bại về cùng một mốc thời gian tối
+// thiểu (AUTH_RESPONSE_FLOOR_MS = 900ms) trước khi hiện thông báo —
+// flushPromises() bình thường (đợi đúng 1 tick) không đủ để thông báo đó
+// kịp hiện ra.
+function flushAuthFloor() {
+  return new Promise((resolve) => setTimeout(resolve, 950))
+}
+
 async function loadAdminLoginModule() {
   renderAdminLoginPage()
   await import('../src/admin-login.js')
@@ -78,10 +86,14 @@ describe('admin-login.js — chặn tài khoản không phải admin', () => {
       .getElementById('admin-login-form')
       .dispatchEvent(new Event('submit', { cancelable: true }))
     await flushPromises()
+    await flushAuthFloor()
 
     expect(mockSupabase.auth.signOut).toHaveBeenCalledTimes(1)
+    // Cùng thông báo chung với "sai mật khẩu" — không được để lộ riêng
+    // "tài khoản đúng nhưng không phải admin" qua nội dung message (đã vá,
+    // xem commit fix "chặn lộ thông tin xác thực qua trang đăng nhập admin").
     expect(document.getElementById('login-error-text').textContent).toBe(
-      'Tài khoản này không có quyền truy cập Admin.'
+      'Email hoặc mật khẩu không chính xác. Vui lòng thử lại!'
     )
   })
 })

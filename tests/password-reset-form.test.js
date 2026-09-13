@@ -85,7 +85,7 @@ describe.each(CONFIGS)('initPasswordResetForm — $label', ({ options }) => {
     const { initPasswordResetForm } = await import('../src/common.js')
     initPasswordResetForm(options)
 
-    submitForm(options.formId, { newPassword: 'abcdef', confirmPassword: 'ghijkl' })
+    submitForm(options.formId, { newPassword: 'abcdefgh', confirmPassword: 'ghijklmn' })
     await flushPromises()
 
     expect(document.getElementById('reset-alert-text').textContent).toBe(
@@ -94,7 +94,7 @@ describe.each(CONFIGS)('initPasswordResetForm — $label', ({ options }) => {
     expect(mockSupabase.auth.updateUser).not.toHaveBeenCalled()
   })
 
-  it('từ chối khi mật khẩu ngắn hơn 6 ký tự', async () => {
+  it('từ chối khi mật khẩu ngắn hơn 8 ký tự', async () => {
     renderFormFixture(options.formId)
     const { initPasswordResetForm } = await import('../src/common.js')
     initPasswordResetForm(options)
@@ -103,7 +103,7 @@ describe.each(CONFIGS)('initPasswordResetForm — $label', ({ options }) => {
     await flushPromises()
 
     expect(document.getElementById('reset-alert-text').textContent).toBe(
-      'Mật khẩu mới phải có tối thiểu 6 ký tự.'
+      'Mật khẩu mới phải có tối thiểu 8 ký tự.'
     )
     expect(mockSupabase.auth.updateUser).not.toHaveBeenCalled()
   })

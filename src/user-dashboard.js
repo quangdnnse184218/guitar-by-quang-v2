@@ -2016,8 +2016,8 @@ if (changePasswordForm) {
       return
     }
 
-    if (newPassword.length < 6) {
-      showPasswordAlert('Mật khẩu mới phải có tối thiểu 6 ký tự.')
+    if (newPassword.length < 8) {
+      showPasswordAlert('Mật khẩu mới phải có tối thiểu 8 ký tự.')
       return
     }
 

@@ -129,9 +129,9 @@ document.addEventListener('DOMContentLoaded', () => {
       return showAlert('Vui lòng nhập Mật khẩu.')
     }
 
-    if (password.length < 6) {
+    if (password.length < 8) {
       passwordInput?.focus()
-      return showAlert('Mật khẩu phải có tối thiểu 6 ký tự.')
+      return showAlert('Mật khẩu phải có tối thiểu 8 ký tự.')
     }
 
     // 4. Kiểm tra Xác nhận mật khẩu
@@ -249,7 +249,8 @@ document.addEventListener('DOMContentLoaded', () => {
         msgLower.includes('password') &&
         (msgLower.includes('least') || msgLower.includes('short') || msgLower.includes('weak'))
       ) {
-        errorMsg = 'Mật khẩu chưa đủ độ dài (tối thiểu 6 ký tự). Vui lòng thử mật khẩu khác.'
+        errorMsg =
+          'Mật khẩu chưa đủ mạnh (tối thiểu 8 ký tự, có chữ thường, chữ hoa và số). Vui lòng thử mật khẩu khác.'
       } else if (
         msgLower.includes('rate limit') ||
         msgLower.includes('too many requests') ||
