@@ -605,6 +605,7 @@ const otherMode = (which) => (which === 'see' ? 'hear' : 'see')
 // nhỏ nên không có lớp chống gian lận nào ở tầng này.
 const PLAYER_ID_KEY = 'gbq_camam_player_id'
 const PLAYER_NAME_KEY = 'gbq_camam_player_name'
+const PLAYER_SECRET_KEY = 'gbq_camam_player_secret'
 const LEADERBOARD_TABLE = 'cam_am_leaderboard'
 const PLAYERS_TABLE = 'cam_am_players'
 const LEADERBOARD_LIMIT = 20
@@ -622,6 +623,25 @@ function getPlayerId() {
     // id ở lần chơi kế — không nộp được điểm cũng không sao, chỉ mất phần
     // "tô sáng dòng của mình" trong bảng.
     return crypto.randomUUID()
+  }
+}
+
+/** Mã bí mật riêng của trình duyệt này — gửi kèm mỗi lần đăng ký tên/nộp
+ *  điểm để server xác nhận đúng là chủ của player_id đó, chặn việc ai cũng
+ *  gọi thẳng API ghi đè tên/điểm của người khác (player_id vốn lộ công khai
+ *  qua bảng xếp hạng). Không phải cơ chế xác thực thật (không có tài khoản)
+ *  nên vẫn chỉ là hàng rào chống phá — không chống được người tự sửa điểm
+ *  của chính mình. */
+function getPlayerSecret() {
+  try {
+    let secret = localStorage.getItem(PLAYER_SECRET_KEY)
+    if (!secret) {
+      secret = crypto.randomUUID() + crypto.randomUUID()
+      localStorage.setItem(PLAYER_SECRET_KEY, secret)
+    }
+    return secret
+  } catch {
+    return crypto.randomUUID() + crypto.randomUUID()
   }
 }
 
@@ -653,11 +673,15 @@ async function isNameTaken(name, myPlayerId) {
   return data.length > 0
 }
 
-/** Mỗi player_id đúng một dòng tên — đăng ký lại (upsert) nếu đổi tên. */
+/** Mỗi player_id đúng một dòng tên — đăng ký lại (upsert) nếu đổi tên. Đi
+ *  qua RPC (không ghi thẳng bảng) để server kiểm tra mã bí mật, chặn người
+ *  khác giả mạo player_id của mình. */
 async function registerPlayerName(name, myPlayerId) {
-  const { error } = await supabase
-    .from(PLAYERS_TABLE)
-    .upsert({ player_id: myPlayerId, player_name: name }, { onConflict: 'player_id' })
+  const { error } = await supabase.rpc('cam_am_register_player', {
+    p_player_id: myPlayerId,
+    p_name: name,
+    p_secret: getPlayerSecret(),
+  })
   if (error) throw error
 }
 
@@ -733,16 +757,14 @@ async function submitScoreIfBest(modeToSubmit, score) {
   const name = getPlayerName()
   if (!name || score <= 0) return
   try {
-    await supabase.from(LEADERBOARD_TABLE).upsert(
-      {
-        player_id: getPlayerId(),
-        mode: modeToSubmit,
-        player_name: name,
-        score,
-        updated_at: new Date().toISOString(),
-      },
-      { onConflict: 'player_id,mode' },
-    )
+    const { error } = await supabase.rpc('cam_am_submit_score', {
+      p_player_id: getPlayerId(),
+      p_secret: getPlayerSecret(),
+      p_mode: modeToSubmit,
+      p_name: name,
+      p_score: score,
+    })
+    if (error) throw error
   } catch {
     // Không nộp được (mất mạng, bảng chưa tạo…) thì bỏ qua — kỷ lục vẫn còn
     // nguyên trong localStorage, không ảnh hưởng gì tới việc chơi tiếp.
