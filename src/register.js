@@ -1,5 +1,6 @@
 import { supabase } from './lib/supabase.js'
 import { initThemeToggle } from './theme-toggle.js'
+import { getPasswordWeaknessReason, initPasswordMatchHint } from './common.js'
 
 document.addEventListener('DOMContentLoaded', () => {
   initThemeToggle()
@@ -9,6 +10,12 @@ document.addEventListener('DOMContentLoaded', () => {
   const passwordInput = document.getElementById('register-password')
   const confirmPasswordInput = document.getElementById('register-confirm-password')
   const nameInput = document.getElementById('register-name')
+
+  initPasswordMatchHint({
+    passwordInputId: 'register-password',
+    confirmInputId: 'register-confirm-password',
+    hintElId: 'register-password-match-hint',
+  })
 
   const submitBtn = document.getElementById('register-submit-btn')
   const btnText = document.getElementById('btn-text')
@@ -129,9 +136,10 @@ document.addEventListener('DOMContentLoaded', () => {
       return showAlert('Vui lòng nhập Mật khẩu.')
     }
 
-    if (password.length < 8) {
+    const weaknessReason = getPasswordWeaknessReason(password)
+    if (weaknessReason) {
       passwordInput?.focus()
-      return showAlert('Mật khẩu phải có tối thiểu 8 ký tự.')
+      return showAlert(weaknessReason)
     }
 
     // 4. Kiểm tra Xác nhận mật khẩu

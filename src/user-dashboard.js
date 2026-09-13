@@ -10,6 +10,8 @@ import {
   initMobileMenu,
   initCardTouchFeedback,
   initHeaderOverlapFix,
+  getPasswordWeaknessReason,
+  initPasswordMatchHint,
 } from './common.js'
 import { initThemeToggle } from './theme-toggle.js'
 import {
@@ -122,6 +124,11 @@ const changePasswordForm = document.getElementById('change-password-form')
 const currentPasswordInput = document.getElementById('current-password')
 const newPasswordInput = document.getElementById('new-password')
 const confirmNewPasswordInput = document.getElementById('confirm-new-password')
+initPasswordMatchHint({
+  passwordInputId: 'new-password',
+  confirmInputId: 'confirm-new-password',
+  hintElId: 'password-match-hint',
+})
 const changePasswordBtn = document.getElementById('change-password-btn')
 const pwdBtnText = document.getElementById('pwd-btn-text')
 const pwdBtnSpinner = document.getElementById('pwd-btn-spinner')
@@ -2016,8 +2023,9 @@ if (changePasswordForm) {
       return
     }
 
-    if (newPassword.length < 8) {
-      showPasswordAlert('Mật khẩu mới phải có tối thiểu 8 ký tự.')
+    const weaknessReason = getPasswordWeaknessReason(newPassword)
+    if (weaknessReason) {
+      showPasswordAlert(weaknessReason)
       return
     }
 

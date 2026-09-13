@@ -9,7 +9,7 @@
 
 import { supabase } from './lib/supabase.js'
 import { initThemeToggle } from './theme-toggle.js'
-import { initPasswordToggles } from './common.js'
+import { initPasswordToggles, getPasswordWeaknessReason, initPasswordMatchHint } from './common.js'
 import { state } from './admin/state.js'
 import { showToast } from './admin/toast.js'
 import { toggleModal } from './admin/modal.js'
@@ -64,6 +64,11 @@ const cancelChangePasswordBtn = document.getElementById('cancel-change-password-
 const changePasswordForm = document.getElementById('change-password-form')
 const adminNewPassword = document.getElementById('admin-new-password')
 const adminConfirmPassword = document.getElementById('admin-confirm-password')
+initPasswordMatchHint({
+  passwordInputId: 'admin-new-password',
+  confirmInputId: 'admin-confirm-password',
+  hintElId: 'admin-password-match-hint',
+})
 const changePwdError = document.getElementById('change-pwd-error')
 const changePwdErrorText = document.getElementById('change-pwd-error-text')
 const savePasswordBtn = document.getElementById('save-password-btn')
@@ -259,8 +264,9 @@ async function initDashboard() {
       const newPwd = adminNewPassword?.value || ''
       const confirmPwd = adminConfirmPassword?.value || ''
 
-      if (!newPwd || newPwd.length < 8) {
-        showChangePwdError('Mật khẩu mới phải có tối thiểu 8 ký tự!')
+      const weaknessReason = getPasswordWeaknessReason(newPwd)
+      if (weaknessReason) {
+        showChangePwdError(weaknessReason)
         return
       }
 

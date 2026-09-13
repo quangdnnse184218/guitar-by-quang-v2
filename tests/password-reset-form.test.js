@@ -24,6 +24,7 @@ function renderFormFixture(formId) {
     <form id="${formId}">
       <input id="new-password" />
       <input id="confirm-password" />
+      <span id="password-match-hint"></span>
       <button id="reset-submit-btn"><span id="btn-text"></span><span id="btn-spinner" class="hidden"></span></button>
     </form>
     <div id="reset-alert" class="hidden">
@@ -85,7 +86,7 @@ describe.each(CONFIGS)('initPasswordResetForm — $label', ({ options }) => {
     const { initPasswordResetForm } = await import('../src/common.js')
     initPasswordResetForm(options)
 
-    submitForm(options.formId, { newPassword: 'abcdefgh', confirmPassword: 'ghijklmn' })
+    submitForm(options.formId, { newPassword: 'Abcdefg1', confirmPassword: 'Ghijklm2' })
     await flushPromises()
 
     expect(document.getElementById('reset-alert-text').textContent).toBe(
@@ -103,7 +104,7 @@ describe.each(CONFIGS)('initPasswordResetForm — $label', ({ options }) => {
     await flushPromises()
 
     expect(document.getElementById('reset-alert-text').textContent).toBe(
-      'Mật khẩu mới phải có tối thiểu 8 ký tự.'
+      'Mật khẩu phải có tối thiểu 8 ký tự.'
     )
     expect(mockSupabase.auth.updateUser).not.toHaveBeenCalled()
   })
@@ -114,7 +115,7 @@ describe.each(CONFIGS)('initPasswordResetForm — $label', ({ options }) => {
     const { initPasswordResetForm } = await import('../src/common.js')
     initPasswordResetForm(options)
 
-    submitForm(options.formId, { newPassword: 'new-secure-pass', confirmPassword: 'new-secure-pass' })
+    submitForm(options.formId, { newPassword: 'New-secure-pass1', confirmPassword: 'New-secure-pass1' })
     await flushPromises()
 
     expect(document.getElementById('reset-alert-text').textContent).toBe(options.successMessage)
@@ -127,7 +128,7 @@ describe.each(CONFIGS)('initPasswordResetForm — $label', ({ options }) => {
     const { initPasswordResetForm } = await import('../src/common.js')
     initPasswordResetForm(options)
 
-    submitForm(options.formId, { newPassword: 'new-secure-pass', confirmPassword: 'new-secure-pass' })
+    submitForm(options.formId, { newPassword: 'New-secure-pass1', confirmPassword: 'New-secure-pass1' })
     await flushPromises()
 
     expect(document.getElementById('reset-alert-text').textContent).toBe(

@@ -732,7 +732,7 @@
           <div class="space-y-1">
             <label class="text-xs font-bold text-text-primary">Mật khẩu mới *</label>
             <div class="relative">
-              <input type="password" id="admin-new-password" required minlength="8" placeholder="Tối thiểu 8 ký tự..." class="w-full px-3.5 py-2.5 pr-10 rounded-xl bg-black/5 dark:bg-white/5 border border-glass-border text-xs text-text-primary focus:outline-none focus:border-accent-primary" />
+              <input type="password" id="admin-new-password" required minlength="8" placeholder="Tối thiểu 8 ký tự, gồm chữ hoa, chữ thường và số..." class="w-full px-3.5 py-2.5 pr-10 rounded-xl bg-black/5 dark:bg-white/5 border border-glass-border text-xs text-text-primary focus:outline-none focus:border-accent-primary" />
               <button type="button" id="toggle-new-password-visibility" data-toggle-password="admin-new-password" class="absolute right-2.5 top-1/2 -translate-y-1/2 p-1 text-text-muted hover:text-text-primary transition-colors cursor-pointer text-xs" title="Hiện hoặc ẩn mật khẩu" aria-label="Hiện hoặc ẩn mật khẩu">
                 <svg class="w-4 h-4 eye-open" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
                   <path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
@@ -759,6 +759,7 @@
                 </svg>
               </button>
             </div>
+            <span id="admin-password-match-hint" class="text-[11px] font-semibold block mt-1"></span>
           </div>
 
           <div class="pt-4 border-t border-glass-border flex justify-end gap-3">

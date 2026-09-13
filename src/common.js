@@ -950,6 +950,49 @@ export function initForgotPasswordModal({
  * redirect). Element id (input mật khẩu, alert box, nút submit, account
  * email span...) giống hệt nhau giữa 2 trang nên không cần tham số hoá.
  */
+/** Gợi ý độ mạnh mật khẩu hiện ở nhãn/placeholder các ô nhập mật khẩu — phải
+ *  khớp đúng với cấu hình đã bật ở Supabase Auth (Authentication > Providers
+ *  > Email > Password Requirements: tối thiểu 8 ký tự, gồm chữ hoa, chữ
+ *  thường và số), nếu không đồng bộ thì Supabase sẽ từ chối dù đã qua hết
+ *  kiểm tra phía client. */
+export const PASSWORD_HINT_TEXT = 'Tối thiểu 8 ký tự, gồm chữ hoa, chữ thường và số'
+
+/** Kiểm tra mật khẩu trước ở phía client theo đúng yêu cầu đã bật ở Supabase
+ *  Auth — trả về null nếu đạt, hoặc câu thông báo lỗi cụ thể đầu tiên chưa
+ *  đạt để hiện ngay, không phải đợi submit xong mới bị Supabase từ chối. */
+export function getPasswordWeaknessReason(password) {
+  if (!password || password.length < 8) return 'Mật khẩu phải có tối thiểu 8 ký tự.'
+  if (!/[a-z]/.test(password)) return 'Mật khẩu phải có ít nhất 1 chữ thường.'
+  if (!/[A-Z]/.test(password)) return 'Mật khẩu phải có ít nhất 1 chữ hoa.'
+  if (!/[0-9]/.test(password)) return 'Mật khẩu phải có ít nhất 1 chữ số.'
+  return null
+}
+
+/** Hiện trạng thái khớp/không khớp giữa ô mật khẩu và ô xác nhận NGAY lúc
+ *  đang gõ (không đợi bấm submit mới biết) — dùng chung cho mọi form có cặp
+ *  mật khẩu + xác nhận mật khẩu (đăng ký, đổi mật khẩu, đặt lại mật khẩu). */
+export function initPasswordMatchHint({ passwordInputId, confirmInputId, hintElId }) {
+  const passwordInput = document.getElementById(passwordInputId)
+  const confirmInput = document.getElementById(confirmInputId)
+  const hintEl = document.getElementById(hintElId)
+  if (!passwordInput || !confirmInput || !hintEl) return
+
+  function update() {
+    if (!confirmInput.value) {
+      hintEl.textContent = ''
+      hintEl.classList.remove('text-emerald-500', 'text-rose-500')
+      return
+    }
+    const matches = passwordInput.value === confirmInput.value
+    hintEl.textContent = matches ? '✓ Mật khẩu khớp' : '✗ Mật khẩu chưa khớp'
+    hintEl.classList.toggle('text-emerald-500', matches)
+    hintEl.classList.toggle('text-rose-500', !matches)
+  }
+
+  passwordInput.addEventListener('input', update)
+  confirmInput.addEventListener('input', update)
+}
+
 export function initPasswordResetForm({
   formId,
   defaultAccountLabel,
@@ -971,6 +1014,12 @@ export function initPasswordResetForm({
   const alertIcon = document.getElementById('reset-alert-icon')
 
   const accountEmailSpan = document.getElementById('account-email')
+
+  initPasswordMatchHint({
+    passwordInputId: 'new-password',
+    confirmInputId: 'confirm-password',
+    hintElId: 'password-match-hint',
+  })
 
   function setAccountEmail(email) {
     if (accountEmailSpan) {
@@ -1095,8 +1144,9 @@ export function initPasswordResetForm({
         return showAlert('Vui lòng nhập đầy đủ mật khẩu mới và xác nhận mật khẩu.')
       }
 
-      if (newPassword.length < 8) {
-        return showAlert('Mật khẩu mới phải có tối thiểu 8 ký tự.')
+      const weaknessReason = getPasswordWeaknessReason(newPassword)
+      if (weaknessReason) {
+        return showAlert(weaknessReason)
       }
 
       if (newPassword !== confirmPassword) {
