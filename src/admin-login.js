@@ -103,12 +103,19 @@ if (loginForm) {
         password,
       })
 
+      // Luôn hiện đúng MỘT thông báo lỗi chung cho mọi trường hợp thất bại —
+      // kể cả khi Supabase trả lỗi cụ thể hơn (vd "Email not confirmed" nghĩa
+      // là email/mật khẩu ĐÚNG nhưng tài khoản chưa xác nhận email) hay khi
+      // đăng nhập đúng nhưng tài khoản không phải admin. Trước đây 2 trường
+      // hợp này hiện thông báo khác — vô tình biến trang admin-login thành
+      // "máy dò" cho kẻ tấn công dò danh sách email/mật khẩu rò rỉ: biết
+      // được cặp nào ĐÚNG (dù không phải admin) mà không cần đăng nhập thử ở
+      // cổng thành viên. Cùng nguyên tắc chống lộ danh tính admin đã áp dụng
+      // ở login.js, áp dụng ngược lại ở đây.
+      const GENERIC_FAIL_MSG = 'Email hoặc mật khẩu không chính xác. Vui lòng thử lại!'
+
       if (error) {
-        if (error.message.includes('Invalid login credentials')) {
-          showError('Email hoặc mật khẩu không chính xác. Vui lòng thử lại!')
-        } else {
-          showError(`Đăng nhập thất bại: ${error.message}`)
-        }
+        showError(GENERIC_FAIL_MSG)
         setLoading(false)
         return
       }
@@ -125,14 +132,14 @@ if (loginForm) {
 
         if (!isAdmin) {
           await supabase.auth.signOut()
-          showError('Tài khoản này không có quyền truy cập Admin.')
+          showError(GENERIC_FAIL_MSG)
           setLoading(false)
           return
         }
 
         window.location.replace('/admin-dashboard.html')
       } else {
-        showError('Không nhận được phiên đăng nhập hợp lệ.')
+        showError(GENERIC_FAIL_MSG)
         setLoading(false)
       }
     } catch (err) {
