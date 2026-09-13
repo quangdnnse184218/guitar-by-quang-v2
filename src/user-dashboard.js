@@ -23,6 +23,7 @@ import {
 import { fetchAllGears, DEFAULT_GEARS } from './lib/gears-service.js'
 import { uploadToStorage, removeFromStorageByUrl, formatBytes, MAX_UPLOAD_BYTES } from './lib/storage-service.js'
 import { iconCrown, iconHeadphones, iconGuitar } from './icons.js'
+import { initShareButtons } from './lib/share-song.js'
 import {
   createOrderAndBuildQr,
   downloadQrImage,
@@ -69,6 +70,8 @@ let favSearchQuery = ''
 let favFilter = 'all' // all, free, paid
 let purchasedSearchQuery = ''
 let purchasedFilter = 'all' // all, free, paid
+// Bài đang mở trong modal — để nút chia sẻ biết đang chia sẻ bài nào.
+let activeShareSong = null
 
 // DOM References
 const adminNoticeBanner = document.getElementById('admin-notice-banner')
@@ -1230,6 +1233,8 @@ window.openFreeTabModal = function openFreeTabModal(tabId) {
   const tab = allSongs.find((t) => String(t.id) === String(tabId))
   if (!tab) return
 
+  activeShareSong = { id: tab.id, title: tab.title }
+
   const titleEl = document.getElementById('free-tab-modal-title')
   const levelEl = document.getElementById('free-tab-modal-level')
   const tuningEl = document.getElementById('free-tab-modal-tuning')
@@ -1580,16 +1585,11 @@ document.getElementById('copy-syntax-btn')?.addEventListener('click', async () =
   }
 })()
 
-// Social Share
-document.getElementById('share-zalo-btn')?.addEventListener('click', () => {
-  const url = encodeURIComponent(window.location.href)
-  window.open(`https://sp.zalo.me/share_inline?link=${url}`, '_blank')
-})
-
-document.getElementById('share-fb-btn')?.addEventListener('click', () => {
-  const url = encodeURIComponent(window.location.href)
-  window.open(`https://www.facebook.com/sharer/sharer.php?u=${url}`, '_blank')
-})
+// Chia sẻ bài tab qua tin nhắn (Zalo / Messenger / app nhắn tin của máy)
+initShareButtons(
+  () => activeShareSong,
+  (msg) => showToast(msg)
+)
 
 // Modal backdrop clicks
 ;[

@@ -14,6 +14,7 @@ import {
 import { applyScrollReveal } from './animations/scroll-reveal.js'
 import { isCompleted, toggleCompleted } from './lib/local-storage-service.js'
 import { supabase } from './lib/supabase.js'
+import { initShareButtons } from './lib/share-song.js'
 import { iconHeadphones, iconGuitar, iconHeart } from './icons.js'
 import {
   createOrderAndBuildQr,
@@ -37,6 +38,8 @@ let allSongs = []
 let activeFilter = 'all' // all, free, paid
 let searchQuery = ''
 let activeCheckoutSyntax = ''
+// Bài đang mở trong modal — để nút chia sẻ biết đang chia sẻ bài nào.
+let activeShareSong = null
 // Đơn hàng + user của lượt thanh toán đang mở — cần để nút "Xác minh thẻ
 // HSSV" biết đang xác minh cho đơn nào, xem initModalInteractions().
 let activeOrder = null
@@ -550,6 +553,36 @@ async function loadData() {
   const [songs] = await Promise.all([fetchAllSongs(), loadFavoriteIds(), loadPurchasedIds()])
   allSongs = songs
   updateGrid()
+  openSongFromUrlParam()
+}
+
+/**
+ * Mở đúng bài khi vào bằng link chia sẻ dạng /kho-tab.html?tab=<id>.
+ * Dự án không có trang riêng cho từng bài, nên link chia sẻ trỏ về kho tab kèm
+ * tham số này rồi tự bật modal của bài đó lên — người nhận bấm link là thấy
+ * ngay bài được chia sẻ thay vì phải tự tìm giữa cả kho.
+ */
+function openSongFromUrlParam() {
+  const songId = new URLSearchParams(window.location.search).get('tab')
+  if (!songId) return
+
+  const song = allSongs.find((s) => String(s.id) === String(songId))
+  if (!song) {
+    showToast('Không tìm thấy bài hát trong link chia sẻ — có thể bài đã bị gỡ.', 'info')
+    return
+  }
+
+  // Cuộn tới đúng thẻ bài rồi mở modal, để lúc đóng modal vẫn thấy bài đó.
+  document.querySelector(`.song-card[data-id="${CSS.escape(String(song.id))}"]`)?.scrollIntoView({
+    behavior: 'smooth',
+    block: 'center',
+  })
+
+  if (song.is_free) {
+    window.openFreeTabModal(song.id)
+  } else {
+    window.openCheckoutModal?.(song.id)
+  }
 }
 
 // ==========================================================================
@@ -938,6 +971,8 @@ window.openFreeTabModal = function openFreeTabModal(tabId) {
   const tab = allSongs.find((t) => t.id === tabId)
   if (!tab) return
 
+  activeShareSong = { id: tab.id, title: tab.title }
+
   const titleEl = document.getElementById('free-tab-modal-title')
   const levelEl = document.getElementById('free-tab-modal-level')
   const tuningEl = document.getElementById('free-tab-modal-tuning')
@@ -1036,6 +1071,11 @@ window.openFreeTabModal = function openFreeTabModal(tabId) {
 }
 
 function initModalInteractions() {
+  initShareButtons(
+    () => activeShareSong,
+    (msg) => showToast(msg, 'success')
+  )
+
   const closeCheckoutBtn = document.getElementById('close-checkout-modal')
   const closeFreeBtn = document.getElementById('close-free-tab-modal')
   const closeVideoDemoBtn = document.getElementById('close-video-demo-modal')

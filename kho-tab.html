@@ -717,21 +717,35 @@
 
             <!-- Nút Chia Sẻ Nhanh -->
             <div class="space-y-1.5 pt-2 border-t border-glass-border/60">
-              <span class="text-[10px] font-bold text-text-muted uppercase tracking-wider block">Chia sẻ bài tập:</span>
-              <div class="flex items-center gap-2">
-                <button id="share-zalo-btn"
-                  class="flex-1 py-2.5 px-3 rounded-xl bg-[#0068FF] hover:bg-[#0052cc] text-white text-xs font-bold transition-all flex items-center justify-center gap-1.5 cursor-pointer shadow-sm active:scale-95">
-                  <span
-                    class="w-4 h-4 rounded-full bg-white text-[#0068FF] font-black flex items-center justify-center text-[9px]">Z</span>
+              <span class="text-[10px] font-bold text-text-muted uppercase tracking-wider block">Gửi bài tab này cho bạn bè:</span>
+              <div class="grid grid-cols-2 gap-2">
+                <button id="share-zalo-btn" type="button"
+                  class="py-2.5 px-3 rounded-xl bg-[#0068FF] hover:bg-[#0052cc] text-white text-xs font-bold transition-all flex items-center justify-center gap-1.5 cursor-pointer shadow-sm active:scale-95">
+                  <span class="w-4 h-4 rounded-full bg-white text-[#0068FF] font-black flex items-center justify-center text-[9px]">Z</span>
                   <span>Zalo</span>
                 </button>
-                <button id="share-fb-btn"
-                  class="flex-1 py-2.5 px-3 rounded-xl bg-[#1877F2] hover:bg-[#1465cc] text-white text-xs font-bold transition-all flex items-center justify-center gap-1.5 cursor-pointer shadow-sm active:scale-95">
-                  <svg class="w-3.5 h-3.5 fill-current" viewBox="0 0 24 24">
-                    <path
-                      d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z" />
+                <button id="share-messenger-btn" type="button"
+                  class="py-2.5 px-3 rounded-xl bg-[#A033FF] hover:brightness-110 text-white text-xs font-bold transition-all flex items-center justify-center gap-1.5 cursor-pointer shadow-sm active:scale-95">
+                  <svg class="w-3.5 h-3.5 fill-current" viewBox="0 0 24 24" aria-hidden="true">
+                    <path d="M12 2C6.21 2 1.79 6.24 1.79 11.82c0 2.92 1.21 5.46 3.19 7.21.17.15.27.36.27.59l.05 1.81c.02.58.61.95 1.14.72l2.02-.89c.18-.08.37-.09.55-.04 1.01.28 2.08.43 3.19.43 5.79 0 10.21-4.24 10.21-9.82S17.79 2 12 2zm6.13 7.63-3 4.76c-.48.76-1.5.95-2.22.41l-2.39-1.79a.62.62 0 0 0-.74 0l-3.22 2.45c-.43.33-.99-.18-.7-.64l3-4.76c.48-.76 1.5-.95 2.22-.41l2.39 1.79c.22.17.52.17.74 0l3.22-2.45c.43-.33.99.18.7.64z"/>
                   </svg>
-                  <span>Facebook</span>
+                  <span>Messenger</span>
+                </button>
+              </div>
+              <div class="grid grid-cols-2 gap-2">
+                <button id="share-system-btn" type="button"
+                  class="hidden py-2.5 px-3 rounded-xl bg-glass-bg border border-glass-border hover:bg-glass-bg-hover text-text-primary text-xs font-bold transition-all flex items-center justify-center gap-1.5 cursor-pointer active:scale-95">
+                  <svg class="w-3.5 h-3.5 fill-none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24" aria-hidden="true">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.86 9.86 0 01-4-.8L3 21l1.9-3.8A7.86 7.86 0 013 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"/>
+                  </svg>
+                  <span>Nhắn tin khác</span>
+                </button>
+                <button id="share-copy-btn" type="button"
+                  class="py-2.5 px-3 rounded-xl bg-glass-bg border border-glass-border hover:bg-glass-bg-hover text-text-primary text-xs font-bold transition-all flex items-center justify-center gap-1.5 cursor-pointer active:scale-95">
+                  <svg class="w-3.5 h-3.5 fill-none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24" aria-hidden="true">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"/>
+                  </svg>
+                  <span>Copy link</span>
                 </button>
               </div>
             </div>

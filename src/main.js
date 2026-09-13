@@ -23,6 +23,7 @@ import { fetchAllGears } from './lib/gears-service.js'
 import { applyScrollReveal, applyHeroEntrance } from './animations/scroll-reveal.js'
 import { isCompleted, toggleCompleted } from './lib/local-storage-service.js'
 import { supabase } from './lib/supabase.js'
+import { initShareButtons } from './lib/share-song.js'
 import { iconHeadphones, iconGuitar } from './icons.js'
 import {
   createOrderAndBuildQr,
@@ -45,6 +46,8 @@ initHeaderOverlapFix()
 // ==========================================================================
 let featuredSongs = []
 let activeCheckoutSyntax = ''
+// Bài đang mở trong modal — để nút chia sẻ biết đang chia sẻ bài nào.
+let activeShareSong = null
 
 // Songs the logged-in user already bought — blocks re-purchase and shows an
 // "Đã Mua" state on the card instead, mirroring the same set in kho-tab.js.
@@ -863,6 +866,8 @@ window.openFreeTabModal = function openFreeTabModal(tabId) {
   const tab = featuredSongs.find((t) => t.id === tabId)
   if (!tab) return
 
+  activeShareSong = { id: tab.id, title: tab.title }
+
   const titleEl = document.getElementById('free-tab-modal-title')
   const levelEl = document.getElementById('free-tab-modal-level')
   const tuningEl = document.getElementById('free-tab-modal-tuning')
@@ -1023,21 +1028,10 @@ function setupEventListeners() {
     })
   }
 
-  const shareZaloBtn = document.getElementById('share-zalo-btn')
-  if (shareZaloBtn) {
-    shareZaloBtn.addEventListener('click', () => {
-      const url = encodeURIComponent(window.location.href)
-      window.open(`https://sp.zalo.me/share_inline?link=${url}`, '_blank')
-    })
-  }
-
-  const shareFbBtn = document.getElementById('share-fb-btn')
-  if (shareFbBtn) {
-    shareFbBtn.addEventListener('click', () => {
-      const url = encodeURIComponent(window.location.href)
-      window.open(`https://www.facebook.com/sharer/sharer.php?u=${url}`, '_blank')
-    })
-  }
+  initShareButtons(
+    () => activeShareSong,
+    (msg) => showToast(msg)
+  )
 
   const modals = [
     'checkout-modal',
