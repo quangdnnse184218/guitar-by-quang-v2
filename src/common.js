@@ -814,7 +814,7 @@ export function initMobileKeyboardScroll() {
  * Wires up the generic "quên mật khẩu" modal dùng chung giữa login.js và
  * admin-login.js (trước đây 2 file gần như copy-paste y hệt nhau ~70 dòng).
  * LUÔN hiện `successMessage` bất kể resetPasswordForEmail thành công hay lỗi
- * — bắt buộc để chống user enumeration (CWE-204), xem CLAUDE.md.
+ * — bắt buộc để chống user enumeration (CWE-204), xem tài liệu dự án.
  */
 export function initForgotPasswordModal({
   prefillEmailInputId,

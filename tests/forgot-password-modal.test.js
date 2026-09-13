@@ -5,7 +5,7 @@
  * tests/admin-login.test.js — chỉ cần test đúng 1 chỗ vì cả 2 trang dùng
  * chung implementation.
  *
- * Bất biến cần giữ (xem CLAUDE.md): message luôn giống hệt nhau dù email có
+ * Bất biến cần giữ (xem tài liệu dự án): message luôn giống hệt nhau dù email có
  * tồn tại hay không, và dù request tới Supabase thành công hay lỗi (chống
  * user enumeration — CWE-204).
  */

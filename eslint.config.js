@@ -37,8 +37,8 @@ export default [
   },
   prettierConfig,
   {
-    // .claude/skills — script cài kèm skill bên thứ ba (ui-ux-pro-max), không
-    // phải code của project nên không lint theo config này.
-    ignores: ['dist/**', 'node_modules/**', '.claude/**'],
+    // Bỏ qua thư mục build, thư viện ngoài và mọi thư mục ẩn (cấu hình/công cụ
+    // cục bộ của từng máy, không phải source code của project).
+    ignores: ['dist/**', 'node_modules/**', '**/.*/**'],
   },
 ]

@@ -1,5 +1,5 @@
 /**
- * Test cho bất biến bảo mật ở cổng member (login.js) được ghi trong CLAUDE.md:
+ * Test cho bất biến bảo mật ở cổng member (login.js) được ghi trong tài liệu dự án:
  * tài khoản admin không được đăng nhập qua cổng member, và message từ chối
  * phải giống hệt message "sai mật khẩu" (không được để lộ đây là tài khoản
  * admin qua nội dung thông báo).
