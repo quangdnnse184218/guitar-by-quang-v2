@@ -162,7 +162,7 @@ export function renderSongCard(tab, index, extraClass = '') {
     return `
       <div onclick="window.openFreeTabModal('${tab.id}')" class="song-card glass-card card-interactive p-2.5 sm:p-4 rounded-2xl sm:rounded-3xl border border-glass-border flex flex-col justify-between space-y-2.5 sm:space-y-3.5 group cursor-pointer ${extraClass}" data-id="${tab.id}">
         <div class="space-y-2 sm:space-y-3">
-          <div class="relative overflow-hidden rounded-xl sm:rounded-2xl aspect-[4/3] sm:aspect-[16/10] min-h-[140px] sm:min-h-0 bg-gradient-to-br from-[#1E3A2F] via-[#2A4D3E] to-[#172A22] p-2 sm:p-3.5 flex flex-col justify-between text-white shadow-inner group-hover:scale-[1.02] transition-transform duration-500 ease-out">
+          <div class="relative overflow-hidden rounded-xl sm:rounded-2xl h-[150px] sm:h-auto sm:aspect-[16/10] w-full bg-gradient-to-br from-[#1E3A2F] via-[#2A4D3E] to-[#172A22] p-2 sm:p-3.5 flex flex-col justify-between text-white shadow-inner group-hover:scale-[1.02] transition-transform duration-500 ease-out">
             <div class="flex justify-between items-start text-xs uppercase font-bold tracking-wider">
               <span class="bg-black/50 backdrop-blur px-1.5 sm:px-2 py-0.5 rounded-full text-white/95 text-[8px] sm:text-[10px] font-mono truncate min-w-0 max-w-[70px] sm:max-w-none">${tab.category || 'Fingerstyle'}</span>
               <div class="flex items-center gap-1 flex-wrap justify-end">
@@ -293,7 +293,7 @@ export function renderSongCard(tab, index, extraClass = '') {
   return `
     <div onclick="${isPurchased ? 'window.navigateToPurchasesTab()' : `window.openCheckoutModal('${tab.id}')`}" class="song-card glass-card card-interactive p-2.5 sm:p-4 rounded-2xl sm:rounded-3xl border ${isPurchased ? 'border-amber-500/40 hover:border-amber-400' : 'border-glass-border'} flex flex-col justify-between space-y-2.5 sm:space-y-3.5 group cursor-pointer ${cardTypeClass} ${extraClass}" data-id="${tab.id}">
       <div class="space-y-2 sm:space-y-3">
-        <div class="relative overflow-hidden rounded-xl sm:rounded-2xl aspect-[4/3] sm:aspect-[16/10] min-h-[140px] sm:min-h-0 bg-gradient-to-br ${thumbnailBg} p-2 sm:p-3.5 flex flex-col justify-between text-white shadow-inner group-hover:scale-[1.02] transition-transform duration-500 ease-out">
+        <div class="relative overflow-hidden rounded-xl sm:rounded-2xl h-[150px] sm:h-auto sm:aspect-[16/10] w-full bg-gradient-to-br ${thumbnailBg} p-2 sm:p-3.5 flex flex-col justify-between text-white shadow-inner group-hover:scale-[1.02] transition-transform duration-500 ease-out">
           <div class="flex justify-between items-start text-xs uppercase font-bold tracking-wider">
             <span class="bg-black/50 backdrop-blur px-1.5 sm:px-2 py-0.5 rounded-full text-white/95 text-[8px] sm:text-[10px] font-mono truncate min-w-0 max-w-[70px] sm:max-w-none">${tab.category || 'Nhạc Việt'}</span>
             <div class="flex items-start gap-1 flex-wrap justify-end">
