@@ -588,7 +588,7 @@ function renderOverviewFeatured() {
 
             <!-- Details -->
             <div class="space-y-1">
-              <h3 class="text-xs sm:text-base font-bold text-text-primary group-hover:text-emerald-500 transition-colors leading-tight line-clamp-1">
+              <h3 class="text-xs sm:text-base font-bold text-text-primary group-hover:text-emerald-500 transition-colors leading-tight line-clamp-2">
                 ${song.title}
               </h3>
 
@@ -658,7 +658,7 @@ function renderOverviewFeatured() {
 
             <!-- Details -->
             <div class="space-y-1">
-              <h3 class="text-xs sm:text-base font-bold text-text-primary group-hover:text-accent-primary transition-colors leading-tight line-clamp-1">
+              <h3 class="text-xs sm:text-base font-bold text-text-primary group-hover:text-accent-primary transition-colors leading-tight line-clamp-2">
                 ${song.title}
               </h3>
 
@@ -711,7 +711,7 @@ function renderOverviewFeatured() {
               <div class="w-7 h-7 sm:w-10 sm:h-10 rounded-full bg-white text-[#9a4b24] flex items-center justify-center shadow-lg transform group-hover:scale-110 transition-transform">
                 <svg class="w-3.5 h-3.5 sm:w-4.5 sm:h-4.5 fill-current ml-0.5 text-accent-primary" viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
               </div>
-              <span class="text-[8px] sm:text-[10px] font-bold mt-1 text-white/95 tracking-wide bg-black/60 px-2 py-0.5 rounded-full backdrop-blur-xs leading-none whitespace-nowrap">Nhấn để xem</span>
+              <span class="text-[8px] sm:text-[10px] font-bold mt-1 text-white/95 tracking-wide bg-black/60 px-2 py-0.5 rounded-full backdrop-blur-xs leading-none whitespace-nowrap">Xem Demo</span>
             </div>
             `
                 : song.audio_demo || song.demo_audio_url || song.audio_url
@@ -741,7 +741,7 @@ function renderOverviewFeatured() {
 
           <!-- Details -->
           <div class="space-y-1">
-            <h3 class="text-xs sm:text-base font-bold text-text-primary group-hover:text-accent-primary transition-colors leading-tight line-clamp-1">
+            <h3 class="text-xs sm:text-base font-bold text-text-primary group-hover:text-accent-primary transition-colors leading-tight line-clamp-2">
               ${song.title}
             </h3>
 
@@ -763,7 +763,7 @@ function renderOverviewFeatured() {
 
         <div class="pt-1 sm:pt-2">
           <div class="w-full py-1.5 sm:py-2.5 px-1.5 rounded-full bg-warm-gradient hover:brightness-105 text-white font-bold text-[10px] sm:text-xs transition-all shadow-md flex items-center justify-center gap-1 active:scale-95 text-center cursor-pointer">
-            <span class="truncate">Nhận Video Tab</span>
+            <span class="truncate">Xem Chi Tiết</span>
           </div>
         </div>
       </div>
@@ -1676,7 +1676,7 @@ function renderFavorites() {
             </button>
           </div>
 
-          <h3 class="text-xs sm:text-base font-extrabold text-text-primary group-hover:text-accent-primary transition-colors line-clamp-1">${song?.title || 'Chưa có tên'}</h3>
+          <h3 class="text-xs sm:text-base font-extrabold text-text-primary group-hover:text-accent-primary transition-colors line-clamp-2">${song?.title || 'Chưa có tên'}</h3>
           <p class="text-[10px] sm:text-xs text-text-muted font-medium mb-2 sm:mb-3 truncate">${song?.singer || 'Various Artists'} • <span class="font-mono">${song?.category || 'Fingerstyle'}</span></p>
 
           <div class="grid grid-cols-2 gap-1.5 sm:gap-2 text-[10px] sm:text-[11px] bg-black/5 dark:bg-white/5 p-2 sm:p-2.5 rounded-xl border border-glass-border mb-3 sm:mb-4 font-mono">
@@ -1765,7 +1765,7 @@ function renderPurchases() {
             <span class="text-[9px] sm:text-[11px] font-mono font-bold text-text-muted">${song?.category || 'Fingerstyle'}</span>
           </div>
 
-          <h3 class="text-xs sm:text-base font-extrabold text-text-primary group-hover:text-accent-primary transition-colors line-clamp-1">${song?.title || 'Chưa có tên'}</h3>
+          <h3 class="text-xs sm:text-base font-extrabold text-text-primary group-hover:text-accent-primary transition-colors line-clamp-2">${song?.title || 'Chưa có tên'}</h3>
           <p class="text-[10px] sm:text-xs text-text-muted font-medium mb-2 sm:mb-3 truncate">${song?.singer || 'Various Artists'}</p>
 
           <div class="grid grid-cols-2 gap-1.5 sm:gap-2 text-[10px] sm:text-[11px] bg-black/5 dark:bg-white/5 p-2 sm:p-2.5 rounded-xl border border-glass-border mb-3 sm:mb-4 font-mono">
