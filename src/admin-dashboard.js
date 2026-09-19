@@ -2,27 +2,29 @@
  * ==============================================================================
  * GUITAR BY QUANG v2 — ADMIN DASHBOARD CMS (admin-dashboard.js)
  * ==============================================================================
- * File này là entry point, chỉ còn auth guard, tab switcher, đổi mật khẩu và
- * khởi tạo. Logic CRUD theo từng mảng (songs/gears/users&grant) đã tách sang
- * src/admin/*.js — xem ghi chú ở đầu mỗi file đó.
+ * File này là entry point: auth guard, khung giao diện (sidebar + router) và
+ * khởi tạo. Logic từng màn hình nằm ở src/admin/*.js — xem ghi chú đầu mỗi file.
+ *
+ * Điều hướng do src/admin/router.js lo: mỗi mục quản trị là một route hash
+ * riêng thay vì biến `activeTab` trong bộ nhớ, nên F5 hay Back đều không làm
+ * mất chỗ đang đứng.
  */
 
 import { supabase } from './lib/supabase.js'
 import { initThemeToggle } from './theme-toggle.js'
-import { initPasswordToggles, getPasswordWeaknessReason, initPasswordMatchHint } from './common.js'
+import { initPasswordToggles } from './common.js'
 import { state } from './admin/state.js'
-import { showToast } from './admin/toast.js'
 import { toggleModal } from './admin/modal.js'
+import { initRouter } from './admin/router.js'
 import { loadSongs, initSongsSection } from './admin/songs.js'
 import { loadGears, initGearsSection } from './admin/gears.js'
-import {
-  loadUsers,
-  loadRecentGrants,
-  loadPendingOrders,
-  renderPaidSongs,
-  initUsersGrantSection,
-} from './admin/users-grant.js'
+import { loadUsers, initUsersSection } from './admin/users.js'
+import { loadPendingOrders, initOrdersSection } from './admin/orders.js'
+import { enterGrantPage, initGrantSection } from './admin/grant.js'
+import { loadRecentGrants, loadRecentRevocations, initHistorySection } from './admin/history.js'
 import { loadOverview, initOverviewSection } from './admin/overview.js'
+import { loadUserDetail } from './admin/user-detail.js'
+import { enterSettingsPage, initSettingsSection, renderAdminIdentity } from './admin/settings.js'
 
 // If redirected here with a recovery token, immediately move to admin-reset-password.html
 if (
@@ -37,48 +39,19 @@ if (
 initThemeToggle()
 initPasswordToggles()
 
+const SIDEBAR_COLLAPSED_KEY = 'gbq_admin_sidebar_collapsed'
+
 // DOM Elements
-const adminUserEmail = document.getElementById('admin-user-email')
-const adminDropdownEmail = document.getElementById('admin-dropdown-email')
 const logoutBtn = document.getElementById('logout-btn')
 const adminHeaderDropdownWrap = document.getElementById('admin-header-dropdown-wrap')
 const adminHeaderDropdownBtn = document.getElementById('admin-header-dropdown-btn')
-const tabNavOverview = document.getElementById('tab-nav-overview')
-const tabNavContent = document.getElementById('tab-nav-content')
-const tabNavUsers = document.getElementById('tab-nav-users')
-const tabNavGrant = document.getElementById('tab-nav-grant')
-const sectionOverview = document.getElementById('section-overview')
-const sectionContent = document.getElementById('section-content')
-const sectionSongs = document.getElementById('section-songs')
-const sectionGears = document.getElementById('section-gears')
-const sectionUsers = document.getElementById('section-users')
-const sectionGrant = document.getElementById('section-grant')
-const subtabSongs = document.getElementById('subtab-songs')
-const subtabGears = document.getElementById('subtab-gears')
 
-// Codes Modal DOM (đóng modal — tính năng "generate code" bên trong đã bị gỡ
-// từ trước, chỉ còn nút đóng modal còn hoạt động trong HTML)
-const codesModal = document.getElementById('codes-modal')
-const closeCodesModal = document.getElementById('close-codes-modal')
-
-// Change Password DOM
-const openChangePasswordBtn = document.getElementById('open-change-password-btn')
-const changePasswordModal = document.getElementById('change-password-modal')
-const closeChangePasswordModal = document.getElementById('close-change-password-modal')
-const cancelChangePasswordBtn = document.getElementById('cancel-change-password-btn')
-const changePasswordForm = document.getElementById('change-password-form')
-const adminNewPassword = document.getElementById('admin-new-password')
-const adminConfirmPassword = document.getElementById('admin-confirm-password')
-initPasswordMatchHint({
-  passwordInputId: 'admin-new-password',
-  confirmInputId: 'admin-confirm-password',
-  hintElId: 'admin-password-match-hint',
-})
-const changePwdError = document.getElementById('change-pwd-error')
-const changePwdErrorText = document.getElementById('change-pwd-error-text')
-const savePasswordBtn = document.getElementById('save-password-btn')
-const savePasswordText = document.getElementById('save-password-text')
-const savePasswordSpinner = document.getElementById('save-password-spinner')
+// Sidebar (desktop cố định, mobile trượt ra như drawer)
+const adminSidebar = document.getElementById('admin-sidebar')
+const sidebarBackdrop = document.getElementById('admin-sidebar-backdrop')
+const sidebarOpenBtn = document.getElementById('sidebar-open-btn')
+const sidebarCloseBtn = document.getElementById('sidebar-close-btn')
+const bottomMenuBtn = document.getElementById('bottom-menu-btn')
 
 // ==========================================================================
 // AUTH GUARD
@@ -96,7 +69,7 @@ async function checkAuth() {
 
     const { data: profile } = await supabase
       .from('profiles')
-      .select('role')
+      .select('id, role, full_name, avatar_url, created_at')
       .eq('id', session.user.id)
       .single()
 
@@ -109,13 +82,12 @@ async function checkAuth() {
     }
 
     state.currentAdminId = session.user.id
-
-    if (adminUserEmail) {
-      adminUserEmail.textContent = session.user.email || 'Admin'
+    state.adminProfile = { ...profile, email: session.user.email || '' }
+    state.adminSession = {
+      last_sign_in_at: session.user.last_sign_in_at,
+      email_confirmed_at: session.user.email_confirmed_at,
     }
-    if (adminDropdownEmail) {
-      adminDropdownEmail.textContent = session.user.email || 'Admin'
-    }
+    renderAdminIdentity()
     return true
   } catch (err) {
     console.error('Auth verification error:', err)
@@ -133,15 +105,18 @@ async function initDashboard() {
   if (!isAuthed) return
 
   // Logout Handler
-  if (logoutBtn) {
-    logoutBtn.addEventListener('click', async () => {
-      await supabase.auth.signOut()
-      window.location.replace('/admin-login.html')
-    })
-  }
+  logoutBtn?.addEventListener('click', async () => {
+    await supabase.auth.signOut()
+    window.location.replace('/admin-login.html')
+  })
 
-  // Account Dropdown (Đổi mật khẩu / Xem Website / Đăng xuất)
+  // Account Dropdown (Cài đặt / Xem Website / Đăng xuất)
   if (adminHeaderDropdownWrap && adminHeaderDropdownBtn) {
+    const closeDropdown = () => {
+      adminHeaderDropdownWrap.classList.remove('open')
+      adminHeaderDropdownBtn.setAttribute('aria-expanded', 'false')
+    }
+
     adminHeaderDropdownBtn.addEventListener('click', (e) => {
       e.stopPropagation()
       const isOpen = adminHeaderDropdownWrap.classList.toggle('open')
@@ -149,204 +124,139 @@ async function initDashboard() {
     })
 
     document.addEventListener('click', (e) => {
-      if (!adminHeaderDropdownWrap.contains(e.target)) {
-        adminHeaderDropdownWrap.classList.remove('open')
-        adminHeaderDropdownBtn.setAttribute('aria-expanded', 'false')
-      }
+      if (!adminHeaderDropdownWrap.contains(e.target)) closeDropdown()
     })
 
     document.addEventListener('keydown', (e) => {
-      if (e.key === 'Escape' && adminHeaderDropdownWrap.classList.contains('open')) {
-        adminHeaderDropdownWrap.classList.remove('open')
-        adminHeaderDropdownBtn.setAttribute('aria-expanded', 'false')
-      }
+      if (e.key === 'Escape') closeDropdown()
     })
 
-    // Đóng dropdown khi bấm bất kỳ mục nào bên trong (trừ nút Đổi mật khẩu,
-    // vì nó chỉ mở modal — vẫn nên đóng dropdown lại để không che modal)
+    // Bấm bất kỳ mục nào bên trong thì đóng menu lại.
     document
       .getElementById('admin-header-dropdown-menu')
       ?.querySelectorAll('a, button')
-      .forEach((item) => {
-        item.addEventListener('click', () => {
-          adminHeaderDropdownWrap.classList.remove('open')
-          adminHeaderDropdownBtn.setAttribute('aria-expanded', 'false')
-        })
-      })
+      .forEach((item) => item.addEventListener('click', closeDropdown))
   }
 
-  // Tab Switcher Helper
-  // 4 tab chính: Tổng Quan / Nội Dung (gồm 2 tab con Kho Tab + Đồ Nghề) /
-  // Người Dùng / Đơn Hàng. Gộp Kho Tab với Đồ Nghề vì Đồ Nghề ít dùng hơn hẳn,
-  // để hàng tab chính không bị chật trên mobile.
-  function switchTab(tabId) {
-    state.activeTab = tabId
+  // ==========================================================================
+  // SIDEBAR (mobile: drawer)
+  // ==========================================================================
+  function setSidebar(open) {
+    adminSidebar?.classList.toggle('is-open', open)
+    if (sidebarBackdrop) sidebarBackdrop.hidden = !open
+    // Chặn cuộn trang phía sau khi drawer đang mở, nếu không ngón tay kéo
+    // drawer sẽ cuộn cả bảng dữ liệu bên dưới.
+    document.body.classList.toggle('overflow-hidden', open)
+  }
 
-    // Default inactive and active classes supporting 2x2 grid on mobile and flex on desktop
-    const baseClass =
-      'px-3 sm:px-4 py-2.5 sm:py-2 rounded-xl text-xs font-bold transition-all cursor-pointer flex items-center justify-center gap-1.5 text-center'
-    const inactiveClass = `${baseClass} text-text-muted hover:text-text-primary`
-    const activeClass = `${baseClass} bg-warm-gradient text-white shadow-xs`
+  // Thu gọn sidebar trên desktop. Khi thu gọn chỉ còn icon nên gắn tên mục vào
+  // `title` để rê chuột vẫn biết là mục nào.
+  document.querySelectorAll('.admin-nav-item').forEach((item) => {
+    const label = item.querySelector('span:not(.admin-nav-badge)')?.textContent?.trim()
+    if (label) item.title = label
+  })
 
-    if (tabNavOverview) tabNavOverview.className = tabId === 'overview' ? activeClass : inactiveClass
-    if (tabNavContent) tabNavContent.className = tabId === 'content' ? activeClass : inactiveClass
-    if (tabNavUsers) tabNavUsers.className = tabId === 'users' ? activeClass : inactiveClass
-    if (tabNavGrant) tabNavGrant.className = tabId === 'grant' ? activeClass : inactiveClass
+  const adminShell = document.querySelector('.admin-shell')
+  const collapseBtn = document.getElementById('sidebar-collapse-btn')
 
-    if (sectionOverview) sectionOverview.classList.toggle('hidden', tabId !== 'overview')
-    if (sectionContent) sectionContent.classList.toggle('hidden', tabId !== 'content')
-    if (sectionUsers) sectionUsers.classList.toggle('hidden', tabId !== 'users')
-    if (sectionGrant) sectionGrant.classList.toggle('hidden', tabId !== 'grant')
-
-    // 2 khối nội dung nằm ngoài #section-content (giữ nguyên vị trí HTML cũ)
-    // nên phải tự ẩn/hiện theo tab chính lẫn tab con.
-    if (tabId !== 'content') {
-      sectionSongs?.classList.add('hidden')
-      sectionGears?.classList.add('hidden')
-    } else {
-      switchContentSubtab(state.activeContentSubtab || 'songs')
+  function setCollapsed(collapsed, persist = true) {
+    adminShell?.classList.toggle('is-collapsed', collapsed)
+    if (collapseBtn) {
+      collapseBtn.setAttribute('aria-pressed', String(collapsed))
+      const text = collapsed ? 'Mở rộng menu' : 'Thu gọn menu'
+      collapseBtn.setAttribute('aria-label', text)
+      collapseBtn.title = text
     }
-
-    if (tabId === 'overview') loadOverview()
-    if (tabId === 'users') loadUsers()
-    if (tabId === 'grant') {
-      renderPaidSongs()
-      loadRecentGrants()
-      loadPendingOrders()
-      // Danh sách user cần sẵn sàng cho ô tìm khách trong form cấp quyền.
-      if (!state.usersList || state.usersList.length === 0) loadUsers()
+    if (!persist) return
+    try {
+      localStorage.setItem(SIDEBAR_COLLAPSED_KEY, collapsed ? '1' : '0')
+    } catch {
+      /* không lưu được thì chỉ mất ghi nhớ, không ảnh hưởng chức năng */
     }
   }
 
-  function switchContentSubtab(sub) {
-    state.activeContentSubtab = sub
-
-    const subBase = 'flex-1 sm:flex-none px-4 py-2 rounded-xl text-xs font-bold transition-all cursor-pointer'
-    const subActive = `${subBase} bg-warm-gradient text-white shadow-xs`
-    const subInactive = `${subBase} text-text-muted hover:text-text-primary`
-
-    if (subtabSongs) subtabSongs.className = sub === 'songs' ? subActive : subInactive
-    if (subtabGears) subtabGears.className = sub === 'gears' ? subActive : subInactive
-
-    sectionSongs?.classList.toggle('hidden', sub !== 'songs')
-    sectionGears?.classList.toggle('hidden', sub !== 'gears')
-
-    if (sub === 'songs') loadSongs()
-    if (sub === 'gears') loadGears()
+  let savedCollapsed = false
+  try {
+    savedCollapsed = localStorage.getItem(SIDEBAR_COLLAPSED_KEY) === '1'
+  } catch {
+    /* mặc định mở rộng */
   }
+  setCollapsed(savedCollapsed, false)
+  collapseBtn?.addEventListener('click', () => setCollapsed(!adminShell.classList.contains('is-collapsed')))
 
-  window.switchTab = switchTab
-  window.switchContentSubtab = switchContentSubtab
+  sidebarOpenBtn?.addEventListener('click', () => setSidebar(true))
+  bottomMenuBtn?.addEventListener('click', () => setSidebar(true))
+  sidebarCloseBtn?.addEventListener('click', () => setSidebar(false))
+  sidebarBackdrop?.addEventListener('click', () => setSidebar(false))
 
-  if (tabNavOverview) tabNavOverview.addEventListener('click', () => switchTab('overview'))
-  if (tabNavContent) tabNavContent.addEventListener('click', () => switchTab('content'))
-  if (tabNavUsers) tabNavUsers.addEventListener('click', () => switchTab('users'))
-  if (tabNavGrant) tabNavGrant.addEventListener('click', () => switchTab('grant'))
-  if (subtabSongs) subtabSongs.addEventListener('click', () => switchContentSubtab('songs'))
-  if (subtabGears) subtabGears.addEventListener('click', () => switchContentSubtab('gears'))
+  // Chọn một mục điều hướng thì đóng drawer lại — không thì trang mới bị
+  // drawer che mất ngay sau khi bấm.
+  document.querySelectorAll('[data-route-link]').forEach((el) => {
+    el.addEventListener('click', () => setSidebar(false))
+  })
 
   initSongsSection()
   initGearsSection()
-  initUsersGrantSection()
+  initUsersSection()
+  initOrdersSection()
+  initGrantSection()
+  initHistorySection()
   initOverviewSection()
-
-  if (closeCodesModal) {
-    closeCodesModal.addEventListener('click', () => toggleModal(codesModal, false))
-  }
+  initSettingsSection()
 
   // ==========================================================================
-  // CHANGE PASSWORD HANDLERS
+  // ROUTER — mỗi mục quản trị là một route, vào route nào thì nạp dữ liệu đó
   // ==========================================================================
-  function showChangePwdError(msg) {
-    if (!changePwdError || !changePwdErrorText) return
-    changePwdErrorText.textContent = msg
-    changePwdError.classList.remove('hidden')
-  }
+  initRouter((route, param) => {
+    state.activeTab = route
+    setSidebar(false)
 
-  function hideChangePwdError() {
-    if (changePwdError) changePwdError.classList.add('hidden')
-  }
-
-  window.openChangePasswordModal = function () {
-    hideChangePwdError()
-    if (adminNewPassword) {
-      adminNewPassword.value = ''
-      adminNewPassword.type = 'password'
+    switch (route) {
+      case 'tong-quan':
+        loadOverview()
+        break
+      case 'kho-tab':
+        loadSongs()
+        break
+      case 'do-nghe':
+        loadGears()
+        break
+      case 'don-hang':
+        loadPendingOrders()
+        break
+      case 'cap-quyen':
+        enterGrantPage()
+        break
+      case 'lich-su':
+        loadRecentGrants()
+        loadRecentRevocations()
+        break
+      case 'thanh-vien':
+        loadUsers()
+        break
+      case 'thanh-vien-chi-tiet':
+        loadUserDetail(param)
+        break
+      case 'cai-dat':
+        enterSettingsPage()
+        break
     }
-    if (adminConfirmPassword) {
-      adminConfirmPassword.value = ''
-      adminConfirmPassword.type = 'password'
-    }
-    toggleModal(changePasswordModal, true)
-    setTimeout(() => adminNewPassword?.focus(), 150)
-  }
+  })
 
-  if (openChangePasswordBtn) {
-    openChangePasswordBtn.addEventListener('click', window.openChangePasswordModal)
-  }
-
-  if (closeChangePasswordModal) {
-    closeChangePasswordModal.addEventListener('click', () =>
-      toggleModal(changePasswordModal, false)
-    )
-  }
-
-  if (cancelChangePasswordBtn) {
-    cancelChangePasswordBtn.addEventListener('click', () => toggleModal(changePasswordModal, false))
-  }
-
-  if (changePasswordForm) {
-    changePasswordForm.addEventListener('submit', async (e) => {
-      e.preventDefault()
-      hideChangePwdError()
-
-      const newPwd = adminNewPassword?.value || ''
-      const confirmPwd = adminConfirmPassword?.value || ''
-
-      const weaknessReason = getPasswordWeaknessReason(newPwd)
-      if (weaknessReason) {
-        showChangePwdError(weaknessReason)
-        return
-      }
-
-      if (newPwd !== confirmPwd) {
-        showChangePwdError('Xác nhận mật khẩu không khớp. Vui lòng nhập lại chính xác!')
-        return
-      }
-
-      if (savePasswordBtn) savePasswordBtn.disabled = true
-      if (savePasswordText) savePasswordText.textContent = 'Đang cập nhật...'
-      if (savePasswordSpinner) savePasswordSpinner.classList.remove('hidden')
-
-      try {
-        const { error } = await supabase.auth.updateUser({
-          password: newPwd,
-        })
-
-        if (error) {
-          showChangePwdError(`Đổi mật khẩu thất bại: ${error.message}`)
-          return
-        }
-
-        showToast('✓ Đã cập nhật mật khẩu Admin thành công!', 'success')
-        toggleModal(changePasswordModal, false)
-        if (adminNewPassword) adminNewPassword.value = ''
-        if (adminConfirmPassword) adminConfirmPassword.value = ''
-      } catch (err) {
-        showChangePwdError(`Lỗi kết nối máy chủ: ${err.message}`)
-      } finally {
-        if (savePasswordBtn) savePasswordBtn.disabled = false
-        if (savePasswordText) savePasswordText.textContent = 'Cập Nhật Mật Khẩu'
-        if (savePasswordSpinner) savePasswordSpinner.classList.add('hidden')
-      }
+  // Escape đóng modal đang mở (trừ #confirm-modal — modal đó tự xử lý Escape
+  // bên trong confirm.js để còn resolve được Promise là "đã huỷ").
+  document.addEventListener('keydown', (e) => {
+    if (e.key !== 'Escape') return
+    ;['song-modal', 'gear-modal'].forEach((id) => {
+      const modal = document.getElementById(id)
+      if (modal && !modal.classList.contains('pointer-events-none')) toggleModal(modal, false)
     })
-  }
+  })
 
-  // Tải dữ liệu ban đầu: Tổng Quan là tab mặc định nên ưu tiên số liệu của nó,
-  // kèm danh sách bài + user để các tab khác (và ô tìm khách ở form cấp quyền)
-  // có sẵn dữ liệu ngay khi admin bấm sang.
-  loadOverview()
-  loadSongs().then(() => renderPaidSongs())
+  // Nạp dữ liệu nền: initRouter() ở trên đã nạp dữ liệu cho đúng route đang
+  // mở, phần này lo những thứ mà route khác cần sẵn — danh sách user cho ô
+  // tìm khách, và số đơn chờ cho badge đỏ trên sidebar (phải thấy ngay dù đang
+  // đứng ở trang nào).
   loadUsers()
   loadPendingOrders()
 }

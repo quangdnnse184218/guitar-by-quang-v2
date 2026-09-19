@@ -1732,3 +1732,404 @@ body.modal-open {
     -webkit-mask-image: none;
   }
 }
+
+/* ==============================================================================
+   ADMIN SHELL — SIDEBAR + TOPBAR + BOTTOM NAV
+   ------------------------------------------------------------------------------
+   Bảng quản trị trước đây dùng một hàng tab ngang nằm cạnh tiêu đề trang: thêm
+   mục thứ 5 là hàng tab tràn, và trên điện thoại 4 tab xếp 2x2 chiếm gần nửa
+   màn hình trước khi thấy được dữ liệu. Chuyển sang layout quen thuộc của mọi
+   trang quản trị: sidebar dọc trên desktop (thêm mục không giới hạn), drawer +
+   thanh điều hướng dưới trên điện thoại (vùng ngón tay với tới được).
+   ============================================================================== */
+@media (min-width: 1024px) {
+  .admin-shell {
+    display: grid;
+    grid-template-columns: 264px minmax(0, 1fr);
+    align-items: start;
+  }
+}
+
+.admin-sidebar {
+  position: fixed;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  width: min(280px, 84vw);
+  z-index: 60;
+  display: flex;
+  flex-direction: column;
+  background: var(--glass-bg);
+  border-right: 1px solid var(--glass-border);
+  transform: translateX(-100%);
+  transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.admin-sidebar.is-open {
+  transform: translateX(0);
+  box-shadow: 0 0 60px rgba(0, 0, 0, 0.45);
+}
+
+@media (min-width: 1024px) {
+  .admin-sidebar {
+    position: sticky;
+    height: 100vh;
+    width: auto;
+    transform: none;
+    box-shadow: none;
+    z-index: 30;
+  }
+}
+
+.admin-sidebar-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 55;
+  background: rgba(0, 0, 0, 0.55);
+  backdrop-filter: blur(2px);
+}
+
+@media (min-width: 1024px) {
+  .admin-sidebar-backdrop {
+    display: none;
+  }
+}
+
+.admin-sidebar-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  padding: 16px 14px;
+  border-bottom: 1px solid var(--glass-border);
+}
+
+.admin-sidebar-close {
+  padding: 6px;
+  border-radius: 10px;
+  color: var(--text-muted);
+  cursor: pointer;
+  flex-shrink: 0;
+}
+
+.admin-sidebar-close:hover {
+  background: var(--glass-bg-hover);
+  color: var(--text-primary);
+}
+
+@media (min-width: 1024px) {
+  .admin-sidebar-close {
+    display: none;
+  }
+}
+
+.admin-sidebar-nav {
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+  padding: 10px;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.admin-nav-group {
+  margin: 14px 0 4px;
+  padding-left: 12px;
+  font-size: 9px;
+  font-weight: 800;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+  opacity: 0.75;
+}
+
+.admin-nav-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 9px 12px;
+  border-radius: 12px;
+  font-size: 12.5px;
+  font-weight: 700;
+  color: var(--text-muted);
+  transition:
+    background-color 0.18s ease,
+    color 0.18s ease;
+  cursor: pointer;
+}
+
+.admin-nav-item:hover {
+  background: var(--glass-bg-hover);
+  color: var(--text-primary);
+}
+
+.admin-nav-item.is-active {
+  background: linear-gradient(135deg, var(--accent-primary) 0%, var(--terracotta) 100%);
+  color: #ffffff;
+  box-shadow: 0 6px 16px -8px var(--accent-primary);
+}
+
+.admin-nav-badge {
+  margin-left: auto;
+  min-width: 18px;
+  height: 18px;
+  padding: 0 5px;
+  border-radius: 999px;
+  background: #e11d48;
+  color: #ffffff;
+  font-size: 10px;
+  font-weight: 900;
+  line-height: 18px;
+  text-align: center;
+  flex-shrink: 0;
+}
+
+.admin-nav-item.is-active .admin-nav-badge {
+  background: rgba(255, 255, 255, 0.28);
+}
+
+.admin-sidebar-foot {
+  padding: 10px;
+  border-top: 1px solid var(--glass-border);
+}
+
+.admin-main {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+  min-width: 0;
+}
+
+.admin-topbar {
+  position: sticky;
+  top: 0;
+  z-index: 40;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 11px 14px;
+  background: var(--bg-base);
+  border-bottom: 1px solid var(--glass-border);
+}
+
+@media (min-width: 640px) {
+  .admin-topbar {
+    padding: 13px 24px;
+  }
+}
+
+.admin-topbar-icon-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 8px;
+  border-radius: 12px;
+  background: var(--glass-bg);
+  border: 1px solid var(--glass-border);
+  color: var(--text-primary);
+  cursor: pointer;
+  flex-shrink: 0;
+  transition: background-color 0.18s ease;
+}
+
+.admin-topbar-icon-btn:hover {
+  background: var(--glass-bg-hover);
+}
+
+.admin-content {
+  flex: 1;
+  width: 100%;
+  max-width: 1320px;
+  margin: 0 auto;
+  /* Chừa chỗ cho thanh điều hướng dưới trên mobile, nếu không nút ở cuối trang
+     bị thanh đó che mất. */
+  padding: 18px 14px 96px;
+}
+
+@media (min-width: 640px) {
+  .admin-content {
+    padding: 22px 24px 96px;
+  }
+}
+
+@media (min-width: 1024px) {
+  .admin-content {
+    padding-bottom: 32px;
+  }
+}
+
+/* ------------------------------------------------------------------------------
+   THANH ĐIỀU HƯỚNG DƯỚI (chỉ mobile)
+   ------------------------------------------------------------------------------ */
+.admin-bottom-nav {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  z-index: 50;
+  display: grid;
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+  background: var(--glass-bg);
+  border-top: 1px solid var(--glass-border);
+  box-shadow: 0 -6px 24px rgba(0, 0, 0, 0.18);
+  padding-bottom: env(safe-area-inset-bottom, 0px);
+}
+
+.admin-bottom-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 3px;
+  padding: 8px 2px 7px;
+  font-size: 9.5px;
+  font-weight: 800;
+  line-height: 1.1;
+  text-align: center;
+  color: var(--text-muted);
+  cursor: pointer;
+  transition: color 0.18s ease;
+}
+
+.admin-bottom-item.is-active {
+  color: var(--accent-primary);
+}
+
+.admin-bottom-badge {
+  position: absolute;
+  top: -5px;
+  right: -9px;
+  min-width: 16px;
+  height: 16px;
+  padding: 0 4px;
+  border-radius: 999px;
+  background: #e11d48;
+  color: #ffffff;
+  font-size: 9px;
+  font-weight: 900;
+  line-height: 16px;
+  text-align: center;
+}
+
+/* ------------------------------------------------------------------------------
+   BẢNG XẾP THÀNH THẺ TRÊN MOBILE — dùng cho bảng "Lượt mở khoá"
+   ------------------------------------------------------------------------------
+   Bảng 5 cột trong trang Lịch sử trước đây phải cuộn ngang trên điện thoại nên
+   cột "Thao tác" (nút Thu hồi) nằm ngoài vùng nhìn thấy. Xếp mỗi dòng thành một
+   thẻ, nhãn lấy từ `data-label`, để thấy đủ mà không phải cuộn ngang.
+   ------------------------------------------------------------------------------ */
+@media (max-width: 767.98px) {
+  table.admin-stacked-table,
+  table.admin-stacked-table tbody {
+    display: block;
+    width: 100%;
+  }
+
+  table.admin-stacked-table thead {
+    display: none;
+  }
+
+  table.admin-stacked-table tbody tr {
+    display: block;
+    padding: 12px;
+    border-bottom: 1px solid var(--glass-border);
+  }
+
+  table.admin-stacked-table tbody td {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 12px;
+    padding: 3px 0 !important;
+    text-align: left !important;
+  }
+
+  table.admin-stacked-table tbody td::before {
+    content: attr(data-label);
+    flex-shrink: 0;
+    font-size: 10px;
+    font-weight: 800;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    color: var(--text-muted);
+    padding-top: 2px;
+  }
+
+  /* Dòng trạng thái "Đang tải…" / "Chưa có dữ liệu" dùng colspan — không có
+     nhãn và phải chiếm cả chiều rộng. */
+  table.admin-stacked-table tbody td[colspan] {
+    display: block;
+    text-align: center !important;
+  }
+
+  table.admin-stacked-table tbody td[colspan]::before {
+    display: none;
+  }
+}
+
+/* Hàng tab trong trang chi tiết thành viên cuộn ngang được nhưng không hiện
+   thanh cuộn thô. */
+.admin-detail-tabs {
+  scrollbar-width: none;
+}
+
+.admin-detail-tabs::-webkit-scrollbar {
+  display: none;
+}
+
+/* ------------------------------------------------------------------------------
+   SIDEBAR THU GỌN (chỉ desktop) — còn lại cột icon, nhớ lựa chọn trong localStorage
+   ------------------------------------------------------------------------------ */
+@media (min-width: 1024px) {
+  .admin-shell {
+    transition: grid-template-columns 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+  }
+
+  .admin-shell.is-collapsed {
+    grid-template-columns: 76px minmax(0, 1fr);
+  }
+
+  .is-collapsed .admin-sidebar-head {
+    justify-content: center;
+    padding: 16px 8px;
+  }
+
+  .is-collapsed .admin-brand-text {
+    display: none;
+  }
+
+  /* Tiêu đề nhóm thành đường kẻ mảnh để vẫn phân được các nhóm */
+  .is-collapsed .admin-nav-group {
+    height: 1px;
+    margin: 10px 10px;
+    padding: 0;
+    font-size: 0;
+    background: var(--glass-border);
+    opacity: 1;
+  }
+
+  .is-collapsed .admin-nav-item {
+    position: relative;
+    justify-content: center;
+    padding: 11px 0;
+  }
+
+  /* Chỉ giữ icon: ẩn chữ và biểu tượng phụ (mũi tên mở tab mới) */
+  .is-collapsed .admin-nav-item > span:not(.admin-nav-badge),
+  .is-collapsed .admin-nav-item > svg:nth-of-type(n + 2) {
+    display: none;
+  }
+
+  .is-collapsed .admin-nav-badge {
+    position: absolute;
+    top: 3px;
+    right: 12px;
+    margin: 0;
+    min-width: 16px;
+    height: 16px;
+    padding: 0 3px;
+    font-size: 9px;
+    line-height: 16px;
+  }
+}

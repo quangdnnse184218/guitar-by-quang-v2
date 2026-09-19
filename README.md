@@ -164,19 +164,35 @@ Security với policy theo từng người dùng.
 │   ├── luyen-cam-am.js     Game luyện cảm âm có bảng xếp hạng
 │   ├── metronome.js        Máy gõ nhịp
 │   ├── common.js           Header, menu, modal quên mật khẩu dùng chung
-│   ├── admin/              Module quản trị tách nhỏ (songs, gears, users, tổng quan)
+│   ├── admin/              Module quản trị, mỗi file một màn hình
+│   │   ├── router.js       Router hash: mỗi mục quản trị là một URL riêng
+│   │   ├── overview.js     Tổng quan: việc cần xử lý, doanh thu so cùng kỳ, biểu đồ
+│   │   ├── orders.js       Đơn chưa hoàn tất (ẩn đơn của khách đã sở hữu tab)
+│   │   ├── grant.js        Cấp quyền thủ công theo 3 bước + khung tóm tắt
+│   │   ├── history.js      Lịch sử mở khoá và thu hồi
+│   │   ├── users.js        Danh sách thành viên
+│   │   ├── user-detail.js  Hồ sơ chi tiết một thành viên
+│   │   ├── settings.js     Cài đặt: hồ sơ, ảnh đại diện, mật khẩu, giao diện
+│   │   ├── songs.js        CRUD kho video tab
+│   │   ├── gears.js        CRUD bộ đồ nghề
+│   │   ├── access.js       Thu hồi quyền xem tab (kèm gỡ quyền Drive)
+│   │   ├── confirm.js      Hộp thoại xác nhận thay confirm() của trình duyệt
+│   │   └── format.js       Hàm định dạng dùng chung
 │   └── lib/                Tầng truy cập dữ liệu + tiện ích dùng chung
-├── supabase/functions/     4 Edge Function (Deno)
-│   ├── sepay-ipn/          Webhook ngân hàng → cấp quyền tự động
-│   ├── verify-hssv-card/   Xác minh thẻ HSSV bằng AI
-│   ├── admin-grant-access/ Cấp quyền thủ công + cấp Drive
-│   └── check-email-domain/ Kiểm tra domain email tồn tại khi đăng ký
+├── supabase/
+│   ├── functions/          5 Edge Function (Deno)
+│   │   ├── sepay-ipn/          Webhook ngân hàng → cấp quyền tự động
+│   │   ├── verify-hssv-card/   Xác minh thẻ HSSV bằng AI
+│   │   ├── admin-grant-access/ Cấp quyền thủ công + cấp quyền Drive
+│   │   ├── admin-revoke-access/ Thu hồi quyền + gỡ quyền Drive
+│   │   └── check-email-domain/ Kiểm tra domain email tồn tại khi đăng ký
+│   └── migrations/         Script SQL cho các thay đổi schema
 └── tests/                  Test cho các bất biến bảo mật
 ```
 
 **Cơ sở dữ liệu:** `songs`, `gears`, `profiles`, `orders`, `purchases`,
-`favorites`, `redemption_codes`, `app_secrets`, `cam_am_leaderboard`,
-`cam_am_players` — tất cả đều bật RLS.
+`favorites`, `access_revocations`, `redemption_codes`, `app_secrets`,
+`cam_am_leaderboard`, `cam_am_players` — tất cả đều bật RLS.
 
 **Logic nghiệp vụ nhạy cảm** (cấp quyền, thống kê doanh thu, xoá người dùng)
 đặt trong PostgreSQL function `SECURITY DEFINER` có tự kiểm tra vai trò admin
@@ -231,3 +247,18 @@ ra quyền sở hữu.
 Nội dung trả phí là video đặt trên Google Drive. Dùng Apps Script làm cầu nối
 cho phép cấp quyền theo email khách mà không phải quản lý OAuth service
 account phức tạp, đổi lại phải tự bảo vệ endpoint đó bằng secret riêng.
+
+**Vì sao lệnh thu hồi Drive dùng tên field khác lệnh cấp?**
+Bản Apps Script đầu tiên chỉ biết cấp quyền và bỏ qua mọi field lạ. Nếu lệnh
+thu hồi gửi tới bản đó với cùng `fileId`/`email`, nó sẽ **cấp** quyền — đúng
+ngược lại ý định, và im lặng. Nên payload thu hồi dùng `revokeFileId`/
+`revokeEmail`, và URL của nó nằm ở khoá `app_secrets` riêng chỉ được set sau
+khi đã deploy bản Apps Script có nhánh thu hồi. Mỗi lượt thu hồi ghi vào
+`access_revocations` kèm cờ gỡ Drive thành công hay chưa.
+
+**Vì sao trang quản trị dùng router hash thay vì tách thành nhiều file HTML?**
+Trang quản trị cần 7 màn hình có URL riêng để F5 hay Back không mất chỗ đang
+đứng. Tách thành 7 file `.html` đồng nghĩa với 7 bản sao của sidebar và header
+— đúng thứ từng gây lệch header giữa các trang public trước đây. Router hash
+giữ một khung giao diện duy nhất mà vẫn có URL thật cho từng màn hình, kể cả
+link sâu tới hồ sơ một thành viên (`#/thanh-vien/<uuid>`).
