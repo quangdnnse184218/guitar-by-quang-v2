@@ -1,201 +1,311 @@
 // Edge Function: verify-hssv-card
 //
-// Khách tick "Tôi là Học sinh/Sinh viên" trong modal thanh toán rồi upload
-// ảnh thẻ HSSV lên bucket riêng tư "hssv-cards" (RLS: mỗi user chỉ đọc/ghi
-// được đúng thư mục {user_id}/ của mình). Hàm này tải lại ảnh đó bằng
-// service role, nhờ Gemini (Google AI Studio) đọc ảnh và trả lời 2 câu hỏi:
-// có đúng là thẻ HSSV không, và năm hiệu lực có >= năm hiện tại không —
-// CHỈ kiểm tra lỏng như vậy, không đối chiếu tên/trường với chủ tài khoản.
-// Nếu đạt, tự hạ giá đơn hàng (orders.amount) xuống giá HSSV lấy từ
-// songs.discount_note (vd "HSSV: 179k" -> 179000) để SePay webhook đối
-// chiếu đúng số tiền thấp hơn khi khách chuyển khoản.
+// Khách tick "Tôi là Học sinh/Sinh viên", đồng ý cho dùng ảnh, rồi upload ảnh thẻ
+// lên bucket riêng tư "hssv-cards" (RLS: mỗi user chỉ đọc/ghi thư mục {user_id}/ của
+// mình; admin đọc được để duyệt lại). Hàm này tải ảnh bằng service role, nhờ Gemini
+// ĐỌC KỸ thẻ (có phải thẻ không, tên, trường, mã HS/SV, năm hết hạn), rồi
+// decideHssv() (decision.ts) chọn một trong ba kết quả:
+//   approved — thẻ rõ, còn hạn, mã chưa dùng ở tài khoản khác → hạ giá đơn ngay
+//   pending  — AI lỗi/ảnh mờ/thiếu mã/mã trùng tài khoản khác → chờ admin ("Duyệt HSSV")
+//   rejected — chắc chắn không phải thẻ hoặc thẻ hết hạn
+// Mỗi lượt được lưu vào hssv_verifications kèm mốc purge_at; hàm hssv-cleanup xoá ảnh
+// khi tới hạn (3 ngày sau khi admin xem, tối đa 30 ngày từ lúc tải lên).
+// Không so khuôn mặt, không lưu sinh trắc học.
 
-import "jsr:@supabase/functions-js/edge-runtime.d.ts";
-import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
+import 'jsr:@supabase/functions-js/edge-runtime.d.ts'
+import { createClient } from 'jsr:@supabase/supabase-js@2'
+import { decideHssv, type CardReading } from './decision.ts'
 
-const SUPABASE_URL = Deno.env.get("SUPABASE_URL")!;
-const SUPABASE_ANON_KEY = Deno.env.get("SUPABASE_ANON_KEY")!;
-const SERVICE_ROLE_KEY = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
+const SUPABASE_URL = Deno.env.get('SUPABASE_URL')!
+const SUPABASE_ANON_KEY = Deno.env.get('SUPABASE_ANON_KEY')!
+const SERVICE_ROLE_KEY = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!
 
 const corsHeaders = {
-  "Access-Control-Allow-Origin": "*",
-  "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type",
-  "Access-Control-Allow-Methods": "POST, OPTIONS",
-};
+  'Access-Control-Allow-Origin': '*',
+  'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
+  'Access-Control-Allow-Methods': 'POST, OPTIONS',
+}
 
 function json(body: unknown, status = 200) {
   return new Response(JSON.stringify(body), {
     status,
-    headers: { ...corsHeaders, "Content-Type": "application/json" },
-  });
+    headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+  })
 }
 
 // btoa(String.fromCharCode(...bytes)) sập ngay với ảnh vài MB thật từ điện
 // thoại vì spread hàng triệu phần tử vượt giới hạn tham số hàm của JS — phải
 // nối base64 theo từng đoạn nhỏ (32KB) thay vì truyền cả mảng một lần.
 function arrayBufferToBase64(buffer: ArrayBuffer): string {
-  const bytes = new Uint8Array(buffer);
-  let binary = "";
-  const chunkSize = 0x8000;
+  const bytes = new Uint8Array(buffer)
+  let binary = ''
+  const chunkSize = 0x8000
   for (let i = 0; i < bytes.length; i += chunkSize) {
-    binary += String.fromCharCode(...bytes.subarray(i, i + chunkSize));
+    binary += String.fromCharCode(...bytes.subarray(i, i + chunkSize))
   }
-  return btoa(binary);
+  return btoa(binary)
+}
+
+async function sha256Hex(text: string): Promise<string> {
+  const digest = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(text))
+  return Array.from(new Uint8Array(digest))
+    .map((b) => b.toString(16).padStart(2, '0'))
+    .join('')
 }
 
 // "HSSV: 179k" -> 179000. Cùng logic quy đổi "179" -> 179k như
 // formatCompactPrice ở phía client (src/kho-tab.js, src/main.js).
 function parseVndAmount(text: string | null | undefined): number | null {
-  if (!text) return null;
-  const digits = text.replace(/[^0-9]/g, "");
-  if (!digits) return null;
-  let n = Number(digits);
-  if (n > 0 && n < 1000) n *= 1000;
-  return n > 0 ? n : null;
+  if (!text) return null
+  const digits = text.replace(/[^0-9]/g, '')
+  if (!digits) return null
+  let n = Number(digits)
+  if (n > 0 && n < 1000) n *= 1000
+  return n > 0 ? n : null
+}
+
+function buildPrompt(currentYear: number): string {
+  return `Bạn đang xem một ảnh chụp thẻ Học sinh/Sinh viên (HSSV) tại Việt Nam. Hãy ĐỌC KỸ thẻ và trả về thông tin in trên thẻ.
+KHÔNG suy đoán: thông tin nào không đọc rõ thì để null.
+Các trường:
+- is_student_card: true nếu là thẻ học sinh hoặc sinh viên thật (logo/tên trường, chữ "THẺ HỌC SINH"/"THẺ SINH VIÊN" hoặc tương đương); false nếu rõ ràng không phải (ảnh khác, giấy tờ khác, ảnh chụp màn hình bừa); null nếu không chắc.
+- legible: false nếu ảnh quá mờ/chói/cắt mất phần, không đọc được chữ.
+- full_name: họ tên in trên thẻ.
+- school: tên trường.
+- student_id: mã số sinh viên / mã học sinh (giữ nguyên chữ và số).
+- expiry_year: năm thẻ hết hiệu lực dạng số nguyên (nếu ghi niên khóa như "2023-2027" thì lấy năm kết thúc; năm hiện tại là ${currentYear}).
+- reason: một câu ngắn bằng tiếng Việt nói bạn đã thấy gì.
+Trả lời DUY NHẤT bằng JSON hợp lệ, không thêm chữ nào khác:
+{"is_student_card": boolean|null, "legible": boolean, "full_name": string|null, "school": string|null, "student_id": string|null, "expiry_year": number|null, "reason": string}`
+}
+
+// Model "thinking" đôi khi trả nhiều phần tử trong parts[] (suy luận nội bộ + trả lời
+// cuối) — lấy đúng phần có "text" và không đánh dấu thought:true.
+function parseReading(geminiJson: unknown): CardReading | null {
+  const parts: Array<{ text?: string; thought?: boolean }> =
+    (geminiJson as any)?.candidates?.[0]?.content?.parts ?? []
+  const rawText = parts.find((p) => p.text && !p.thought)?.text ?? parts[0]?.text
+  if (!rawText) return null
+  try {
+    const parsed = JSON.parse(rawText)
+    return parsed && typeof parsed === 'object' ? (parsed as CardReading) : null
+  } catch {
+    return null
+  }
 }
 
 Deno.serve(async (req: Request) => {
-  if (req.method === "OPTIONS") return new Response("ok", { headers: corsHeaders });
-  if (req.method !== "POST") return json({ approved: false, error: "method_not_allowed" }, 405);
+  if (req.method === 'OPTIONS') return new Response('ok', { headers: corsHeaders })
+  if (req.method !== 'POST') return json({ approved: false, error: 'method_not_allowed' }, 405)
 
   try {
-    const authHeader = req.headers.get("Authorization") ?? "";
+    const authHeader = req.headers.get('Authorization') ?? ''
     const userClient = createClient(SUPABASE_URL, SUPABASE_ANON_KEY, {
       global: { headers: { Authorization: authHeader } },
-    });
+    })
     const {
       data: { user },
-    } = await userClient.auth.getUser();
+    } = await userClient.auth.getUser()
 
-    if (!user) return json({ approved: false, error: "unauthorized" }, 401);
+    if (!user) return json({ approved: false, error: 'unauthorized' }, 401)
 
-    const { orderId, imagePath } = await req.json();
-    if (!orderId || !imagePath) return json({ approved: false, error: "missing_params" }, 400);
+    const { orderId, imagePath, consent } = await req.json()
+    if (!orderId || !imagePath) return json({ approved: false, error: 'missing_params' }, 400)
+    if (consent !== true) return json({ approved: false, error: 'consent_required' }, 400)
 
     // Chặn IDOR: path upload phải nằm đúng thư mục của chính user gọi hàm này.
-    if (!String(imagePath).startsWith(`${user.id}/`)) {
-      return json({ approved: false, error: "path_mismatch" }, 403);
+    if (!String(imagePath).startsWith(`${user.id}/`) || String(imagePath).includes('..')) {
+      return json({ approved: false, error: 'path_mismatch' }, 403)
     }
 
-    const admin = createClient(SUPABASE_URL, SERVICE_ROLE_KEY);
+    const admin = createClient(SUPABASE_URL, SERVICE_ROLE_KEY)
+
+    // Ảnh vừa tải lên mà hàm dừng trước khi ghi nhận lượt xác minh thì không ai theo dõi
+    // hạn xoá của nó nữa — xoá ngay (best-effort) để không có ảnh nằm lại ngoài kiểm soát.
+    const discardUpload = async () => {
+      try {
+        await admin.storage.from('hssv-cards').remove([imagePath])
+      } catch (e) {
+        console.error('Không xoá được ảnh vừa tải:', e)
+      }
+    }
 
     const { data: order, error: orderErr } = await admin
-      .from("orders")
-      .select("id, user_id, song_id, status")
-      .eq("id", orderId)
-      .maybeSingle();
+      .from('orders')
+      .select('id, user_id, song_id, status')
+      .eq('id', orderId)
+      .maybeSingle()
 
     if (orderErr || !order || order.user_id !== user.id) {
-      return json({ approved: false, error: "order_not_found" }, 404);
+      await discardUpload()
+      return json({ approved: false, error: 'order_not_found' }, 404)
     }
-    if (order.status === "paid") {
-      return json({ approved: false, error: "already_paid" });
+    if (order.status === 'paid') {
+      await discardUpload()
+      return json({ approved: false, error: 'already_paid' })
     }
 
     const { data: fileBlob, error: downloadErr } = await admin.storage
-      .from("hssv-cards")
-      .download(imagePath);
+      .from('hssv-cards')
+      .download(imagePath)
 
     if (downloadErr || !fileBlob) {
-      return json({ approved: false, error: "image_download_failed" }, 500);
+      return json({ approved: false, error: 'image_download_failed' }, 500)
     }
 
     const { data: secretRow } = await admin
-      .from("app_secrets")
-      .select("value")
-      .eq("key", "gemini_api_key")
-      .maybeSingle();
+      .from('app_secrets')
+      .select('value')
+      .eq('key', 'gemini_api_key')
+      .maybeSingle()
 
-    const geminiKey = secretRow?.value;
-    if (!geminiKey) return json({ approved: false, error: "ai_not_configured" }, 500);
-
-    const arrayBuffer = await fileBlob.arrayBuffer();
-    const base64 = arrayBufferToBase64(arrayBuffer);
-    const mimeType = fileBlob.type || "image/jpeg";
-    const currentYear = new Date().getFullYear();
-
-    const prompt = `Bạn đang xem một ảnh chụp thẻ Học sinh/Sinh viên (HSSV) tại Việt Nam.
-Nhiệm vụ: xác định 2 điều, KHÔNG cần kiểm tra tên/trường/ảnh có khớp với ai đang dùng thẻ hay không.
-1. is_student_card: ảnh có phải là một tấm thẻ học sinh hoặc sinh viên thật (có logo trường, chữ "THẺ HỌC SINH"/"THẺ SINH VIÊN" hoặc tương đương) hay không.
-2. valid_year: thẻ có ghi năm hiệu lực / niên khóa / giá trị sử dụng đến năm mà năm đó >= ${currentYear} hay không (nếu ghi dạng niên khóa như "2023-2027" thì lấy năm kết thúc). Nếu ảnh mờ không đọc được năm, để valid_year = false.
-Trả lời DUY NHẤT bằng JSON hợp lệ, không thêm chữ nào khác:
-{"is_student_card": boolean, "valid_year": boolean, "reason": "giải thích ngắn gọn bằng tiếng Việt"}`;
-
-    const geminiRes = await fetch(
-      `https://generativelanguage.googleapis.com/v1beta/models/gemini-3.6-flash:generateContent?key=${geminiKey}`,
-      {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          contents: [
-            {
-              parts: [{ text: prompt }, { inline_data: { mime_type: mimeType, data: base64 } }],
-            },
-          ],
-          generationConfig: { temperature: 0, responseMimeType: "application/json" },
-        }),
-      }
-    );
-
-    if (!geminiRes.ok) {
-      console.error("Gemini API error:", await geminiRes.text());
-      await admin
-        .from("orders")
-        .update({ is_hssv: true, hssv_image_path: imagePath, hssv_status: "rejected" })
-        .eq("id", orderId);
-      return json({ approved: false, error: "ai_error" }, 502);
+    const geminiKey = secretRow?.value
+    if (!geminiKey) {
+      await discardUpload()
+      return json({ approved: false, error: 'ai_not_configured' }, 500)
     }
 
-    const geminiJson = await geminiRes.json();
-    // Model "thinking" đôi khi trả về nhiều phần tử trong parts[] (phần suy
-    // luận nội bộ + phần trả lời cuối) — lấy đúng phần có "text" và không
-    // đánh dấu thought:true thay vì luôn tin chắc parts[0] là câu trả lời.
-    const parts: Array<{ text?: string; thought?: boolean }> =
-      geminiJson?.candidates?.[0]?.content?.parts ?? [];
-    const rawText = parts.find((p) => p.text && !p.thought)?.text ?? parts[0]?.text ?? "{}";
+    const base64 = arrayBufferToBase64(await fileBlob.arrayBuffer())
+    const mimeType = fileBlob.type || 'image/jpeg'
+    const currentYear = new Date().getFullYear()
 
-    let parsed: { is_student_card?: boolean; valid_year?: boolean; reason?: string } = {};
+    let reading: CardReading | null = null
     try {
-      parsed = JSON.parse(rawText);
-    } catch {
-      parsed = {};
+      const geminiRes = await fetch(
+        `https://generativelanguage.googleapis.com/v1beta/models/gemini-3.6-flash:generateContent?key=${geminiKey}`,
+        {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            contents: [
+              {
+                parts: [
+                  { text: buildPrompt(currentYear) },
+                  { inline_data: { mime_type: mimeType, data: base64 } },
+                ],
+              },
+            ],
+            generationConfig: { temperature: 0, responseMimeType: 'application/json' },
+          }),
+        }
+      )
+      if (geminiRes.ok) {
+        reading = parseReading(await geminiRes.json())
+      } else {
+        // Lỗi AI KHÔNG được biến thành "từ chối" khách thật — chuyển cho admin.
+        console.error('Gemini API error:', geminiRes.status)
+      }
+    } catch (e) {
+      console.error('Gemini request failed:', e)
     }
 
-    const approved = Boolean(parsed.is_student_card && parsed.valid_year);
+    const { data: profile } = await admin
+      .from('profiles')
+      .select('full_name')
+      .eq('id', user.id)
+      .maybeSingle()
 
-    if (approved) {
+    // Một thẻ — một tài khoản: cùng mã HS/SV đã được tài khoản KHÁC dùng thì không
+    // tự duyệt. (Cùng tài khoản dùng lại thẻ cho bài khác thì bình thường.)
+    let cardHash: string | null = null
+    let duplicateOnOtherAccount = false
+    const idForHash = reading ? String(reading.student_id ?? '') : ''
+    const normalizedId = idForHash.toUpperCase().replace(/[^0-9A-Z]/g, '')
+    if (normalizedId.length >= 4) {
+      cardHash = await sha256Hex(normalizedId)
+      const { data: dupRows } = await admin
+        .from('hssv_verifications')
+        .select('id')
+        .eq('card_hash', cardHash)
+        .neq('user_id', user.id)
+        .neq('status', 'rejected')
+        .limit(1)
+      duplicateOnOtherAccount = (dupRows?.length ?? 0) > 0
+    }
+
+    const decision = decideHssv({
+      reading,
+      currentYear,
+      accountName: profile?.full_name ?? null,
+      duplicateOnOtherAccount,
+    })
+
+    let newAmount: number | null = null
+    if (decision.status === 'approved') {
       const { data: song } = await admin
-        .from("songs")
-        .select("discount_note")
-        .eq("id", order.song_id)
-        .maybeSingle();
+        .from('songs')
+        .select('discount_note')
+        .eq('id', order.song_id)
+        .maybeSingle()
+      newAmount = parseVndAmount(song?.discount_note)
+    }
 
-      const discountedAmount = parseVndAmount(song?.discount_note);
+    // Lưu lượt xác minh (một dòng cho mỗi đơn; tải lại ảnh thì cập nhật dòng đó).
+    const record = {
+      order_id: orderId,
+      user_id: user.id,
+      status: decision.status,
+      flags: decision.flags,
+      ai_reason: reading?.reason ?? null,
+      extracted_name: reading?.full_name ?? null,
+      extracted_school: reading?.school ?? null,
+      extracted_id: decision.studentId,
+      extracted_expiry: decision.expiryYear,
+      card_hash: cardHash,
+      image_path: imagePath,
+      consent_at: new Date().toISOString(),
+      created_at: new Date().toISOString(),
+      reviewed_at: null,
+      reviewed_by: null,
+      purge_at: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString(),
+      image_purged_at: null,
+    }
 
-      await admin
-        .from("orders")
-        .update({
-          is_hssv: true,
-          hssv_image_path: imagePath,
-          hssv_status: "approved",
-          ...(discountedAmount ? { amount: discountedAmount } : {}),
-        })
-        .eq("id", orderId);
+    const { data: existing } = await admin
+      .from('hssv_verifications')
+      .select('id, image_path')
+      .eq('order_id', orderId)
+      .maybeSingle()
 
-      return json({ approved: true, newAmount: discountedAmount, reason: parsed.reason });
+    const { error: saveErr } = existing
+      ? await admin.from('hssv_verifications').update(record).eq('id', existing.id)
+      : await admin.from('hssv_verifications').insert(record)
+
+    if (saveErr) {
+      // Chưa chạy SQL hoặc lỗi ghi: dừng để KHÔNG hạ giá mà admin không thấy được lượt này.
+      console.error('Không lưu được hssv_verifications:', saveErr)
+      await discardUpload()
+      return json({ approved: false, error: 'save_failed' }, 500)
+    }
+
+    // Khách gửi ảnh khác cho cùng đơn: ảnh cũ không còn được lượt xác minh nào trỏ tới,
+    // xoá luôn (nếu không sẽ nằm lại vĩnh viễn, không có hạn xoá).
+    if (existing?.image_path && existing.image_path !== imagePath) {
+      try {
+        await admin.storage.from('hssv-cards').remove([existing.image_path])
+      } catch (e) {
+        console.error('Không xoá được ảnh cũ:', e)
+      }
     }
 
     await admin
-      .from("orders")
-      .update({ is_hssv: true, hssv_image_path: imagePath, hssv_status: "rejected" })
-      .eq("id", orderId);
+      .from('orders')
+      .update({
+        is_hssv: true,
+        hssv_image_path: imagePath,
+        hssv_status: decision.status,
+        ...(newAmount ? { amount: newAmount } : {}),
+      })
+      .eq('id', orderId)
 
     return json({
-      approved: false,
-      reason: parsed.reason || "Không nhận diện được thẻ HSSV hợp lệ hoặc còn hiệu lực.",
-    });
+      approved: decision.status === 'approved',
+      status: decision.status,
+      newAmount,
+      reason: decision.message,
+    })
   } catch (err) {
-    console.error("verify-hssv-card error:", err);
-    return json({ approved: false, error: "internal_error" }, 500);
+    console.error('verify-hssv-card error:', err)
+    return json({ approved: false, error: 'internal_error' }, 500)
   }
-});
+})

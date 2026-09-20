@@ -21,6 +21,7 @@ import { loadGears, initGearsSection } from './admin/gears.js'
 import { loadUsers, initUsersSection } from './admin/users.js'
 import { loadPendingOrders, initOrdersSection } from './admin/orders.js'
 import { loadPayments, initPaymentsSection } from './admin/payments.js'
+import { loadHssv, loadHssvBadge, initHssvSection } from './admin/hssv.js'
 import { enterGrantPage, initGrantSection } from './admin/grant.js'
 import { loadRecentGrants, loadRecentRevocations, initHistorySection } from './admin/history.js'
 import { loadOverview, initOverviewSection } from './admin/overview.js'
@@ -201,6 +202,7 @@ async function initDashboard() {
   initUsersSection()
   initOrdersSection()
   initPaymentsSection()
+  initHssvSection()
   initGrantSection()
   initHistorySection()
   initOverviewSection()
@@ -225,6 +227,9 @@ async function initDashboard() {
         break
       case 'tien-ve':
         loadPayments()
+        break
+      case 'duyet-hssv':
+        loadHssv()
         break
       case 'don-hang':
         loadPendingOrders()
@@ -264,6 +269,7 @@ async function initDashboard() {
   // đứng ở trang nào).
   loadUsers()
   loadPayments()
+  loadHssvBadge()
 }
 
 document.addEventListener('DOMContentLoaded', initDashboard)

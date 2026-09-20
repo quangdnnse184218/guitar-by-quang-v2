@@ -42,6 +42,12 @@ export const ROUTES = {
     title: 'Tiền Về',
     subtitle: 'Khoản tiền vào tài khoản chưa khớp đơn nào — gán cho đúng khách',
   },
+  'duyet-hssv': {
+    section: 'section-hssv',
+    nav: 'duyet-hssv',
+    title: 'Duyệt HSSV',
+    subtitle: 'Xem lại thẻ học sinh/sinh viên khách nộp để giảm giá — ảnh tự xoá sau vài ngày',
+  },
   'don-hang': {
     section: 'section-orders',
     nav: 'don-hang',

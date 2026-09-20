@@ -216,11 +216,76 @@ describe('uploadAndVerifyHssvCard', () => {
 
     expect(mockSupabase.storage.from).toHaveBeenCalledWith('hssv-cards')
     const [path] = upload.mock.calls[0]
-    expect(path).toBe('user-1/order-9.jpg')
+    expect(path).toMatch(/^user-1\/order-9-\d+\.jpg$/)
     // Edge Function nhận đúng path vừa upload để kiểm tra lại quyền sở hữu
     expect(mockSupabase.functions.invoke).toHaveBeenCalledWith('verify-hssv-card', {
-      body: { orderId: 'order-9', imagePath: 'user-1/order-9.jpg' },
+      body: { orderId: 'order-9', imagePath: path, consent: true },
     })
+  })
+
+  it('đổi ảnh khác cho cùng đơn phải dùng TÊN FILE MỚI và không ghi đè (bucket không có quyền UPDATE)', async () => {
+    vi.useFakeTimers()
+    const upload = vi.fn().mockResolvedValue({ error: null })
+    mockSupabase.storage.from.mockReturnValue({ upload })
+    mockSupabase.functions.invoke.mockResolvedValue({ data: { approved: true }, error: null })
+    const { uploadAndVerifyHssvCard } = await import('../src/lib/checkout-order.js')
+    const file = { name: 'the.jpg', type: 'image/jpeg' }
+
+    vi.setSystemTime(1_000)
+    await uploadAndVerifyHssvCard('user-1', 'order-9', file)
+    vi.setSystemTime(2_000)
+    await uploadAndVerifyHssvCard('user-1', 'order-9', file)
+    vi.useRealTimers()
+
+    const [first, second] = upload.mock.calls
+    expect(first[0]).not.toBe(second[0])
+    expect(first[2].upsert).toBe(false)
+    expect(second[2].upsert).toBe(false)
+  })
+
+  it('đuôi file lạ được chuẩn hoá, không lọt ký tự đặc biệt vào đường dẫn', async () => {
+    const upload = vi.fn().mockResolvedValue({ error: null })
+    mockSupabase.storage.from.mockReturnValue({ upload })
+    mockSupabase.functions.invoke.mockResolvedValue({ data: { approved: true }, error: null })
+    const { uploadAndVerifyHssvCard } = await import('../src/lib/checkout-order.js')
+
+    await uploadAndVerifyHssvCard('user-1', 'order-9', { name: 'the.j/../pg', type: 'image/jpeg' })
+
+    expect(upload.mock.calls[0][0]).toMatch(/^user-1\/order-9-\d+\.jpg$/)
+  })
+
+  it('Zalo điền thì được lưu vào hồ sơ; lỗi lưu Zalo không làm hỏng bước xác minh', async () => {
+    const upload = vi.fn().mockResolvedValue({ error: null })
+    mockSupabase.storage.from.mockReturnValue({ upload })
+    mockSupabase.functions.invoke.mockResolvedValue({ data: { approved: true }, error: null })
+    const eq = vi.fn().mockResolvedValue({ error: { message: 'column does not exist' } })
+    const update = vi.fn().mockReturnValue({ eq })
+    mockSupabase.from.mockReturnValue({ update })
+    vi.spyOn(console, 'warn').mockImplementation(() => {})
+    const { uploadAndVerifyHssvCard } = await import('../src/lib/checkout-order.js')
+
+    const res = await uploadAndVerifyHssvCard(
+      'user-1',
+      'order-9',
+      { name: 'the.jpg', type: 'image/jpeg' },
+      { zalo: '  0901234567 ' }
+    )
+
+    expect(update).toHaveBeenCalledWith({ zalo: '0901234567' })
+    expect(eq).toHaveBeenCalledWith('id', 'user-1')
+    expect(res.approved).toBe(true)
+  })
+
+  it('không điền Zalo thì không đụng vào bảng profiles', async () => {
+    const upload = vi.fn().mockResolvedValue({ error: null })
+    mockSupabase.storage.from.mockReturnValue({ upload })
+    mockSupabase.functions.invoke.mockResolvedValue({ data: { approved: true }, error: null })
+    mockSupabase.from.mockClear()
+    const { uploadAndVerifyHssvCard } = await import('../src/lib/checkout-order.js')
+
+    await uploadAndVerifyHssvCard('user-1', 'order-9', { name: 'the.jpg', type: 'image/jpeg' }, { zalo: '   ' })
+
+    expect(mockSupabase.from).not.toHaveBeenCalled()
   })
 
   it('upload lỗi thì không gọi AI và báo chưa được duyệt', async () => {

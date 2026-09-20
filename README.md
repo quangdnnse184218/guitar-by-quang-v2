@@ -28,8 +28,8 @@ tác thủ công nào của quản trị viên.
 |---|---|
 | **Thanh toán tự động** | Webhook ngân hàng (SePay) xác thực bằng HMAC-SHA256, chống replay, tự cấp quyền xem file Google Drive và gửi email báo đơn |
 | **Bảo mật chủ động** | Row-Level Security ở tầng database, chống user enumeration, chống XSS lưu trữ, chống dò tài khoản qua thời gian phản hồi |
-| **Kiểm thử bất biến bảo mật** | 72 test tự động, gồm chạy nguyên hàm webhook thanh toán với chữ ký HMAC thật và Supabase giả lập, chạy trong CI mỗi lần push |
-| **AI có kiểm soát** | Xác minh ảnh thẻ HSSV bằng Gemini để tự động giảm giá, có chống IDOR và kiểm tra quyền sở hữu đơn hàng |
+| **Kiểm thử bất biến bảo mật** | 126 test tự động, gồm chạy nguyên hàm webhook thanh toán với chữ ký HMAC thật và Supabase giả lập, chạy trong CI mỗi lần push |
+| **AI có kiểm soát** | Gemini đọc thẻ HSSV để tự động giảm giá; chỗ nào AI chưa chắc thì chuyển cho quản trị viên duyệt thay vì từ chối nhầm, ảnh tự xoá sau vài ngày, có chống IDOR và kiểm tra quyền sở hữu đơn hàng |
 | **Tối ưu mobile-first** | Toàn bộ giao diện thiết kế cho người Việt dùng điện thoại, mạng yếu — không SPA, không hydration |
 
 ---
@@ -111,21 +111,29 @@ sequenceDiagram
 
 ## Xác minh thẻ học sinh/sinh viên bằng AI
 
-Khách là học sinh/sinh viên được giảm giá. Thay vì bắt quản trị viên duyệt tay
-từng ảnh thẻ, hệ thống tự xử lý:
+Khách là học sinh/sinh viên được giảm giá. Hệ thống tự xử lý phần rõ ràng và
+chỉ chuyển cho quản trị viên phần AI chưa chắc:
 
-1. Khách tải ảnh thẻ lên bucket riêng tư, mỗi người chỉ ghi/đọc được đúng thư
-   mục mang ID của mình.
+1. Khách đồng ý cho dùng ảnh (nêu rõ mục đích và thời hạn lưu) rồi tải **một** ảnh
+   thẻ lên bucket riêng tư, mỗi người chỉ ghi/đọc được đúng thư mục mang ID của mình.
 2. Edge Function kiểm tra **ảnh có đúng nằm trong thư mục của người gọi không**
    (chống IDOR) và **đơn hàng có đúng của người đó không**.
-3. Gemini đọc ảnh, trả về JSON: có phải thẻ HSSV thật không, năm hiệu lực còn
-   hạn không.
-4. Nếu đạt, hệ thống tự hạ số tiền của đơn xuống mức giá HSSV để webhook ngân
-   hàng đối chiếu đúng số tiền thấp hơn.
+3. Gemini đọc kỹ thẻ: có phải thẻ thật không, họ tên, trường, mã học sinh/sinh viên,
+   năm hết hạn.
+4. Một hàm quyết định thuần (có test riêng) chọn: **duyệt** (thẻ rõ, còn hạn, mã
+   chưa dùng ở tài khoản khác → hạ giá đơn ngay), **chờ admin** (AI lỗi, ảnh mờ,
+   thiếu mã, mã trùng tài khoản khác) hoặc **từ chối** (rõ ràng không phải thẻ,
+   hoặc hết hạn). Lỗi của AI không bao giờ biến thành "từ chối" khách thật.
+5. Quản trị viên xem lại ảnh và thông tin AI đọc được ở trang **Duyệt HSSV**, có thể
+   duyệt hoặc thu hồi giảm giá. Mã học sinh/sinh viên chỉ lưu dạng băm một chiều để
+   một thẻ không dùng cho nhiều tài khoản.
+6. Ảnh tự xoá sau 3 ngày kể từ khi được xem lại, tối đa 30 ngày từ lúc tải lên
+   (Edge Function chạy theo lịch, xoá file thật qua Storage API); chỉ giữ lại kết quả.
 
-Giới hạn đã biết và chấp nhận có chủ đích: hệ thống chỉ xác minh *thẻ hợp lệ*,
-không đối chiếu danh tính chủ thẻ với người mua. Rủi ro tài chính tối đa là
-phần chênh lệch giảm giá của một đơn, nên không đáng đánh đổi bằng eKYC.
+Giới hạn đã biết và chấp nhận có chủ đích: hệ thống không so khuôn mặt hay lưu dữ liệu
+sinh trắc học — hai người cố tình cho nhau mượn thẻ vẫn qua được (mỗi thẻ chỉ giảm giá
+cho một tài khoản). Rủi ro tài chính tối đa là phần chênh lệch giảm giá của một đơn, nên
+không đáng đánh đổi bằng eKYC (từ chối nhầm khách thật, dữ liệu nhạy cảm, thêm ma sát).
 
 ---
 
@@ -184,9 +192,10 @@ Security với policy theo từng người dùng.
 │   │   └── format.js       Hàm định dạng dùng chung
 │   └── lib/                Tầng truy cập dữ liệu + tiện ích dùng chung
 ├── supabase/
-│   ├── functions/          5 Edge Function (Deno)
+│   ├── functions/          6 Edge Function (Deno)
 │   │   ├── sepay-ipn/          Webhook ngân hàng → cấp quyền tự động, ghi mọi giao dịch
-│   │   ├── verify-hssv-card/   Xác minh thẻ HSSV bằng AI
+│   │   ├── verify-hssv-card/   Đọc thẻ HSSV bằng AI: duyệt / chờ admin / từ chối
+│   │   ├── hssv-cleanup/       Tự xoá ảnh thẻ tới hạn (chạy theo lịch)
 │   │   ├── admin-grant-access/ Cấp quyền thủ công + cấp quyền Drive
 │   │   ├── admin-revoke-access/ Thu hồi quyền + gỡ quyền Drive
 │   │   └── check-email-domain/ Kiểm tra domain email tồn tại khi đăng ký

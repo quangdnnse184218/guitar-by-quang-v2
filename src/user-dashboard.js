@@ -116,6 +116,7 @@ const filterPurchasedSelect = document.getElementById('filter-purchased-select')
 const profileForm = document.getElementById('profile-update-form')
 const profileEmailInput = document.getElementById('profile-email-input')
 const profileNameInput = document.getElementById('profile-name-input')
+const profileZaloInput = document.getElementById('profile-zalo-input')
 const profileAvatarInput = document.getElementById('profile-avatar-input')
 const profileAvatarFileInput = document.getElementById('profile-avatar-file')
 const profileAvatarFileName = document.getElementById('profile-avatar-file-name')
@@ -485,6 +486,7 @@ function updateUserInfoUI() {
   // Populate Profile Form
   if (profileEmailInput) profileEmailInput.value = currentUser.email || ''
   if (profileNameInput) profileNameInput.value = name
+  if (profileZaloInput) profileZaloInput.value = currentProfile.zalo || ''
   if (profileAvatarInput) profileAvatarInput.value = currentProfile.avatar_url || ''
 }
 
@@ -1927,11 +1929,17 @@ if (profileForm) {
       // dù chỉ đi vào nhánh UPDATE — tài khoản thường không có quyền đó nên
       // luôn báo "permission denied for table profiles". update() không cần
       // quyền INSERT nên hoạt động đúng.
+      // Chỉ gửi cột zalo khi khách thực sự đổi nó: nếu chưa chạy SQL thêm cột này,
+      // lưu tên/ảnh đại diện vẫn phải chạy bình thường.
+      const zalo = profileZaloInput ? profileZaloInput.value.trim().slice(0, 200) : undefined
+      const zaloChanged = zalo !== undefined && zalo !== (currentProfile.zalo || '')
+
       const { error } = await supabase
         .from('profiles')
         .update({
           full_name: fullName,
           avatar_url: avatarUrl,
+          ...(zaloChanged ? { zalo: zalo || null } : {}),
         })
         .eq('id', currentUser.id)
 
@@ -1939,6 +1947,7 @@ if (profileForm) {
 
       currentProfile.full_name = fullName
       currentProfile.avatar_url = avatarUrl
+      if (zaloChanged) currentProfile.zalo = zalo
 
       updateUserInfoUI()
       showToast('Cập nhật hồ sơ cá nhân thành công!')

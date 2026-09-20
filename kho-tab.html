@@ -464,8 +464,28 @@
                 <span class="font-bold text-text-primary">Tôi là Học sinh/Sinh viên — áp dụng giá ưu đãi</span>
               </label>
               <div id="modal-hssv-upload-panel" class="hidden space-y-2.5 pt-1">
-                <p class="text-text-muted leading-relaxed">Chụp/tải ảnh thẻ HSSV còn hiệu lực năm nay — hệ thống tự
-                  kiểm tra và đổi sang giá ưu đãi ngay nếu hợp lệ, không cần chờ admin duyệt.</p>
+                <p class="text-text-muted leading-relaxed">Chụp/tải ảnh thẻ HSSV còn hiệu lực năm nay, rõ họ tên,
+                  trường và mã số. Hệ thống đọc thẻ và đổi sang giá ưu đãi ngay nếu hợp lệ; nếu chưa chắc chắn,
+                  yêu cầu sẽ được chuyển cho admin xét duyệt.</p>
+                <label class="flex items-start gap-2.5 cursor-pointer select-none">
+                  <input type="checkbox" id="modal-hssv-consent"
+                    class="w-4 h-4 mt-0.5 rounded accent-accent-primary cursor-pointer flex-shrink-0">
+                  <span class="leading-relaxed">
+                    <span class="font-bold text-text-primary">Tôi đồng ý cho Guitar by Quang thu thập và sử dụng ảnh thẻ
+                      HSSV của tôi với mục đích duy nhất là xác minh điều kiện giảm giá.</span>
+                    <span class="block text-[10.5px] text-text-muted italic mt-1">Ảnh được lưu trữ riêng tư, chỉ quản trị
+                      viên truy cập, và tự động xoá sau tối đa 30 ngày. Xem thêm tại
+                      <a href="/chinh-sach-bao-mat.html#hssv" target="_blank" rel="noopener"
+                        class="text-accent-primary underline font-bold not-italic">Chính sách bảo mật</a>.</span>
+                  </span>
+                </label>
+                <div class="space-y-1">
+                  <label for="modal-hssv-zalo" class="font-bold text-text-primary">Zalo liên hệ
+                    <span class="font-normal text-text-muted">(không bắt buộc)</span></label>
+                  <input type="text" id="modal-hssv-zalo" maxlength="200" autocomplete="off"
+                    placeholder="Số điện thoại hoặc link Zalo, để admin nhắn khi cần"
+                    class="block w-full px-3 py-2 rounded-lg bg-transparent border border-glass-border text-[11px] text-text-primary placeholder:text-text-muted focus:outline-none focus:border-accent-primary" />
+                </div>
                 <input type="file" accept="image/*" id="modal-hssv-file-input"
                   class="block w-full text-[11px] text-text-muted file:mr-3 file:px-3 file:py-1.5 file:rounded-lg file:border-0 file:bg-accent-primary/15 file:text-accent-primary file:font-bold file:cursor-pointer cursor-pointer" />
                 <button type="button" id="modal-hssv-verify-btn" disabled

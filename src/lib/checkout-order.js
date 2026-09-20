@@ -41,24 +41,39 @@ export async function createOrderAndBuildQr(userId, tab) {
 /**
  * Upload ảnh thẻ HSSV lên bucket riêng tư "hssv-cards" (mỗi user chỉ đọc/ghi
  * được đúng thư mục {user_id}/ của mình — xem RLS trên storage.objects), rồi
- * gọi Edge Function verify-hssv-card để AI kiểm tra thẻ còn hiệu lực năm nay
- * không. Nếu hợp lệ, Edge Function tự hạ giá đơn hàng xuống giá HSSV.
+ * gọi Edge Function verify-hssv-card để AI đọc kỹ thẻ. Kết quả: approved (hạ giá
+ * đơn xuống giá HSSV), pending (chờ admin duyệt) hoặc rejected. Hàm này chỉ được gọi
+ * sau khi khách đã tick đồng ý dùng ảnh — Edge Function cũng từ chối nếu thiếu `consent`.
+ * `zalo` là tuỳ chọn: lưu vào hồ sơ để admin liên lạc khi cần (không dùng để xác minh).
  */
-export async function uploadAndVerifyHssvCard(userId, orderId, file) {
-  const ext = (file.name.split('.').pop() || 'jpg').toLowerCase()
-  const path = `${userId}/${orderId}.${ext}`
+export async function uploadAndVerifyHssvCard(userId, orderId, file, { zalo } = {}) {
+  const rawExt = (file.name.split('.').pop() || '').toLowerCase()
+  const ext = /^[a-z0-9]{1,5}$/.test(rawExt) ? rawExt : 'jpg'
+  // Mỗi lần tải dùng MỘT TÊN FILE MỚI (thêm mốc thời gian) thay vì ghi đè. Bucket
+  // chỉ có quyền INSERT/SELECT cho khách (không có UPDATE), nên `upsert` lên file đã
+  // tồn tại bị RLS chặn — khách đổi ảnh khác ngay trong cùng cửa sổ thanh toán sẽ luôn
+  // thất bại. Ảnh cũ được Edge Function xoá khi lượt xác minh trỏ sang ảnh mới.
+  const path = `${userId}/${orderId}-${Date.now()}.${ext}`
 
   const { error: uploadError } = await supabase.storage
     .from('hssv-cards')
-    .upload(path, file, { upsert: true, contentType: file.type || 'image/jpeg' })
+    .upload(path, file, { upsert: false, contentType: file.type || 'image/jpeg' })
 
   if (uploadError) {
     console.error('Không tải được ảnh thẻ HSSV:', uploadError)
     return { approved: false, error: uploadError.message }
   }
 
+  const cleanZalo = String(zalo ?? '').trim().slice(0, 200)
+  if (cleanZalo) {
+    // Best-effort: chưa chạy SQL (cột zalo chưa có) hoặc lỗi mạng thì bỏ qua,
+    // không được làm hỏng bước xác minh.
+    const { error: zaloError } = await supabase.from('profiles').update({ zalo: cleanZalo }).eq('id', userId)
+    if (zaloError) console.warn('Không lưu được Zalo:', zaloError.message)
+  }
+
   const { data, error } = await supabase.functions.invoke('verify-hssv-card', {
-    body: { orderId, imagePath: path },
+    body: { orderId, imagePath: path, consent: true },
   })
 
   if (error) {

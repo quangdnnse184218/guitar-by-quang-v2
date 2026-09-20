@@ -124,8 +124,9 @@
           <h2 class="text-lg font-extrabold text-text-primary">5. Chia sẻ dữ liệu với bên thứ ba</h2>
           <p class="text-sm sm:text-base text-text-muted leading-relaxed">
             Không chia sẻ, bán hay trao đổi dữ liệu cá nhân với bên thứ ba cho mục đích thương mại. Dữ liệu chỉ đi
-            qua Supabase (nơi lưu trữ, xem mục 3) và Google Analytics (nếu bật, chỉ ở dạng thống kê ẩn danh, xem mục
-            1) — cả hai đều là công cụ vận hành, không phải bên nhận dữ liệu để khai thác riêng.
+            qua Supabase (nơi lưu trữ, xem mục 3), Google Analytics (nếu bật, chỉ ở dạng thống kê ẩn danh, xem mục
+            1) và, riêng với ảnh thẻ HSSV, dịch vụ AI của Google để đọc chữ trên thẻ (xem mục 7) — đều là công cụ
+            vận hành, không phải bên nhận dữ liệu để khai thác riêng.
           </p>
         </section>
 
@@ -133,13 +134,28 @@
           <h2 class="text-lg font-extrabold text-text-primary">6. Quyền của bạn</h2>
           <p class="text-sm sm:text-base text-text-muted leading-relaxed">
             Bạn có thể yêu cầu xem, sửa hoặc xoá hoàn toàn dữ liệu tài khoản của mình (bao gồm cả xoá biệt danh khỏi
-            bảng xếp hạng) bất cứ lúc nào — liên hệ theo thông tin ở mục 8, Quang sẽ xử lý trực tiếp vì đây là site cá
+            bảng xếp hạng) bất cứ lúc nào — liên hệ theo thông tin ở mục 9, Quang sẽ xử lý trực tiếp vì đây là site cá
             nhân quy mô nhỏ, không qua bộ phận trung gian nào.
           </p>
         </section>
 
+        <section id="hssv" class="space-y-3 scroll-mt-24">
+          <h2 class="text-lg font-extrabold text-text-primary">7. Ảnh thẻ học sinh/sinh viên và Zalo liên hệ</h2>
+          <p class="text-sm sm:text-base text-text-muted leading-relaxed">
+            Chỉ áp dụng khi bạn chọn giá ưu đãi HSSV lúc thanh toán:
+          </p>
+          <ul class="list-disc list-outside pl-5 space-y-2 text-sm sm:text-base text-text-muted leading-relaxed">
+            <li><strong class="text-text-primary font-bold">Mục đích duy nhất</strong>: xác minh bạn đủ điều kiện giảm giá. Ảnh không dùng cho việc nào khác và không được so khuôn mặt hay trích xuất dữ liệu sinh trắc học.</li>
+            <li><strong class="text-text-primary font-bold">Thông tin đọc từ thẻ</strong>: họ tên, trường, mã học sinh/sinh viên và năm hết hạn được đọc tự động bằng dịch vụ AI của Google (Gemini API), nên ảnh được gửi tới Google chỉ để đọc thẻ trong lúc xác minh. Mã học sinh/sinh viên còn được lưu dưới dạng mã băm một chiều để đảm bảo một thẻ không dùng giảm giá cho nhiều tài khoản.</li>
+            <li><strong class="text-text-primary font-bold">Ai xem được</strong>: ảnh nằm trong kho lưu trữ riêng tư; chỉ bạn và quản trị viên truy cập được.</li>
+            <li><strong class="text-text-primary font-bold">Thời hạn lưu ảnh</strong>: ảnh tự động bị xoá sau 3 ngày kể từ khi quản trị viên xem lại, và tối đa 30 ngày kể từ lúc bạn tải lên dù chưa xem. Sau đó chỉ còn kết quả xác minh (đã duyệt/chờ duyệt/từ chối), tên, trường, mã đã băm và năm hết hạn.</li>
+            <li><strong class="text-text-primary font-bold">Xoá sớm</strong>: bạn có thể yêu cầu xoá ảnh và kết quả xác minh bất cứ lúc nào qua mục 9.</li>
+            <li><strong class="text-text-primary font-bold">Zalo liên hệ</strong>: hoàn toàn tuỳ chọn. Số điện thoại/link Zalo bạn điền chỉ quản trị viên xem, dùng để nhắn bạn khi cần hỗ trợ đơn hàng hoặc xác minh; không dùng để xác minh danh tính. Bạn sửa hoặc xoá trong mục Hồ sơ của trang cá nhân.</li>
+          </ul>
+        </section>
+
         <section class="space-y-3">
-          <h2 class="text-lg font-extrabold text-text-primary">7. Thay đổi chính sách</h2>
+          <h2 class="text-lg font-extrabold text-text-primary">8. Thay đổi chính sách</h2>
           <p class="text-sm sm:text-base text-text-muted leading-relaxed">
             Chính sách này có thể được cập nhật khi site có thêm tính năng mới liên quan đến dữ liệu người dùng.
             Ngày cập nhật gần nhất luôn hiển thị ở đầu trang.
@@ -147,7 +163,7 @@
         </section>
 
         <section class="space-y-3">
-          <h2 class="text-lg font-extrabold text-text-primary">8. Liên hệ</h2>
+          <h2 class="text-lg font-extrabold text-text-primary">9. Liên hệ</h2>
           <p class="text-sm sm:text-base text-text-muted leading-relaxed">
             Có thắc mắc về dữ liệu cá nhân hoặc muốn yêu cầu xoá dữ liệu, nhắn trực tiếp cho Quang qua:
           </p>

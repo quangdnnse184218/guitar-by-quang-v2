@@ -617,10 +617,15 @@ window.openCheckoutModal = async function openCheckoutModal(tabId) {
   const hssvFileInput = document.getElementById('modal-hssv-file-input')
   const hssvVerifyBtn = document.getElementById('modal-hssv-verify-btn')
   const hssvStatus = document.getElementById('modal-hssv-status')
+  const hssvConsent = document.getElementById('modal-hssv-consent')
   if (hssvBlock) hssvBlock.classList.toggle('hidden', !discountNote)
   if (hssvCheckbox) hssvCheckbox.checked = false
+  if (hssvConsent) hssvConsent.checked = false
   if (hssvPanel) hssvPanel.classList.add('hidden')
-  if (hssvFileInput) hssvFileInput.value = ''
+  if (hssvFileInput) {
+    hssvFileInput.value = ''
+    hssvFileInput.disabled = false
+  }
   if (hssvVerifyBtn) {
     hssvVerifyBtn.disabled = true
     hssvVerifyBtn.textContent = 'Xác minh thẻ HSSV'
@@ -891,44 +896,60 @@ function initModalInteractions() {
   initHssvVerification()
 }
 
-// Checkbox "Tôi là HSSV" → hiện panel upload ảnh thẻ. Chọn ảnh xong bấm "Xác
-// minh" → upload lên bucket riêng tư + gọi Edge Function verify-hssv-card
-// (AI kiểm tra thẻ). Nếu đạt, đổi luôn giá + QR sang giá HSSV — không cần
-// admin duyệt tay.
+// Checkbox "Tôi là HSSV" → hiện panel upload ảnh thẻ. Phải tick đồng ý dùng ảnh và
+// chọn ảnh thì nút "Xác minh" mới bật → upload lên bucket riêng tư + gọi Edge
+// Function verify-hssv-card (AI đọc thẻ). Kết quả có 3 mức: đạt (đổi ngay giá + QR
+// sang giá HSSV), chờ admin xét duyệt (giữ giá thường, khách có thể trả giá thường
+// hoặc chờ), hoặc bị từ chối.
 function initHssvVerification() {
   const hssvCheckbox = document.getElementById('modal-hssv-checkbox')
   const hssvPanel = document.getElementById('modal-hssv-upload-panel')
   const hssvFileInput = document.getElementById('modal-hssv-file-input')
+  const hssvConsent = document.getElementById('modal-hssv-consent')
+  const hssvZalo = document.getElementById('modal-hssv-zalo')
   const hssvVerifyBtn = document.getElementById('modal-hssv-verify-btn')
   const hssvStatus = document.getElementById('modal-hssv-status')
+
+  const STATUS_BASE = 'font-bold text-[11px] leading-relaxed '
+  const TONE = {
+    muted: 'text-text-muted',
+    ok: 'text-emerald-600 dark:text-emerald-400',
+    wait: 'text-amber-600 dark:text-amber-400',
+    bad: 'text-rose-600 dark:text-rose-400',
+  }
+  const showStatus = (tone, text) => {
+    if (!hssvStatus) return
+    hssvStatus.classList.remove('hidden')
+    hssvStatus.className = STATUS_BASE + TONE[tone]
+    hssvStatus.textContent = text
+  }
+  // Nút chỉ bật khi đã có ảnh VÀ đã tick đồng ý.
+  const syncVerifyBtn = () => {
+    if (!hssvVerifyBtn) return
+    hssvVerifyBtn.disabled = !(hssvFileInput?.files?.length && hssvConsent?.checked)
+  }
 
   if (hssvCheckbox && hssvPanel) {
     hssvCheckbox.addEventListener('change', () => {
       hssvPanel.classList.toggle('hidden', !hssvCheckbox.checked)
     })
   }
-
-  if (hssvFileInput && hssvVerifyBtn) {
-    hssvFileInput.addEventListener('change', () => {
-      hssvVerifyBtn.disabled = !hssvFileInput.files?.length
-    })
-  }
+  hssvFileInput?.addEventListener('change', syncVerifyBtn)
+  hssvConsent?.addEventListener('change', syncVerifyBtn)
 
   if (hssvVerifyBtn) {
     hssvVerifyBtn.addEventListener('click', async () => {
       const file = hssvFileInput?.files?.[0]
-      if (!file || !activeOrder?.id || !activeUserId) return
+      if (!file || !hssvConsent?.checked || !activeOrder?.id || !activeUserId) return
 
       hssvVerifyBtn.disabled = true
       hssvVerifyBtn.textContent = 'Đang xác minh...'
-      if (hssvStatus) {
-        hssvStatus.classList.remove('hidden')
-        hssvStatus.className = 'font-bold text-[11px] leading-relaxed text-text-muted'
-        hssvStatus.textContent = 'Đang xác minh... chờ chút nhé'
-      }
+      showStatus('muted', 'Đang đọc thẻ... chờ chút nhé')
 
       try {
-        const result = await uploadAndVerifyHssvCard(activeUserId, activeOrder.id, file)
+        const result = await uploadAndVerifyHssvCard(activeUserId, activeOrder.id, file, {
+          zalo: hssvZalo?.value,
+        })
 
         if (result?.approved) {
           activeOrder.amount = result.newAmount || activeOrder.amount
@@ -949,27 +970,30 @@ function initHssvVerification() {
           if (priceEl) priceEl.textContent = `${activeOrder.amount.toLocaleString('vi-VN')} VNĐ`
           if (discountTag) discountTag.textContent = '✓ Đã xác minh HSSV'
 
-          if (hssvStatus) {
-            hssvStatus.className = 'font-bold text-[11px] leading-relaxed text-emerald-600 dark:text-emerald-400'
-            hssvStatus.textContent = '✓ Đã xác minh! Mã QR đã đổi sang giá HSSV.'
-          }
+          showStatus('ok', '✓ Đã xác minh! Mã QR đã đổi sang giá HSSV.')
           hssvVerifyBtn.textContent = 'Đã xác minh ✓'
           if (hssvFileInput) hssvFileInput.disabled = true
+        } else if (result?.status === 'pending') {
+          showStatus(
+            'wait',
+            `${result.reason || 'Yêu cầu của bạn đã chuyển cho admin xét duyệt.'} Bạn có thể chờ admin duyệt, hoặc chuyển khoản giá thường ngay để nhận tab liền. Nếu ảnh bị mờ hay chói, chọn ảnh khác rõ hơn rồi bấm gửi lại.`
+          )
+          // Không khoá ô chọn ảnh: khách gửi lại được, ảnh mới ghi đè lượt cũ.
+          if (hssvFileInput) hssvFileInput.value = ''
+          hssvVerifyBtn.disabled = true
+          hssvVerifyBtn.textContent = 'Gửi ảnh khác'
         } else {
-          if (hssvStatus) {
-            hssvStatus.className = 'font-bold text-[11px] leading-relaxed text-rose-600 dark:text-rose-400'
-            hssvStatus.textContent =
-              result?.reason || 'Không xác minh được thẻ HSSV, bạn có thể thử ảnh khác hoặc thanh toán giá thường.'
-          }
+          showStatus(
+            'bad',
+            result?.reason ||
+              'Không xác minh được thẻ HSSV, bạn có thể thử ảnh khác hoặc thanh toán giá thường.'
+          )
           hssvVerifyBtn.disabled = false
           hssvVerifyBtn.textContent = 'Xác minh thẻ HSSV'
         }
       } catch (err) {
         console.error('Lỗi xác minh HSSV:', err)
-        if (hssvStatus) {
-          hssvStatus.className = 'font-bold text-[11px] leading-relaxed text-rose-600 dark:text-rose-400'
-          hssvStatus.textContent = 'Có lỗi khi xác minh, thử lại giúp mình nhé.'
-        }
+        showStatus('bad', 'Có lỗi khi xác minh, thử lại giúp mình nhé.')
         hssvVerifyBtn.disabled = false
         hssvVerifyBtn.textContent = 'Xác minh thẻ HSSV'
       }
