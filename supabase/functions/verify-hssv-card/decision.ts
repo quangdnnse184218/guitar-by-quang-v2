@@ -30,11 +30,17 @@ export function normalizeStudentId(raw: unknown): string | null {
   return cleaned.length >= 4 ? cleaned : null
 }
 
+// Dải dấu kết hợp Unicode (U+0300–U+036F), dựng từ mã số để file không chứa ký tự vô hình.
+const COMBINING_MARKS = new RegExp(
+  '[' + String.fromCharCode(0x300) + '-' + String.fromCharCode(0x36f) + ']',
+  'g'
+)
+
 /** Bỏ dấu, hạ chữ thường, chỉ giữ chữ cái — để so tên trên thẻ với tên tài khoản. */
 export function normalizeName(raw: unknown): string {
   return String(raw ?? '')
     .normalize('NFD')
-    .replace(/[̀-ͯ]/g, '')
+    .replace(COMBINING_MARKS, '')
     .replace(/đ/gi, 'd')
     .toLowerCase()
     .replace(/[^a-z\s]/g, ' ')

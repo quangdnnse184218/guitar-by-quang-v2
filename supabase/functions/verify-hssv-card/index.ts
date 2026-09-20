@@ -20,6 +20,10 @@ const SUPABASE_URL = Deno.env.get('SUPABASE_URL')!
 const SUPABASE_ANON_KEY = Deno.env.get('SUPABASE_ANON_KEY')!
 const SERVICE_ROLE_KEY = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!
 
+const GEMINI_TIMEOUT_MS = 35_000
+const GEMINI_ATTEMPTS = 2
+const GEMINI_RETRY_DELAY_MS = 1_000
+
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
   'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
@@ -169,34 +173,45 @@ Deno.serve(async (req: Request) => {
     const mimeType = fileBlob.type || 'image/jpeg'
     const currentYear = new Date().getFullYear()
 
+    // Gemini đôi khi chậm bất thường (đã đo được 30–90 giây) hoặc trả lỗi thoáng qua
+    // (429/5xx). Giới hạn thời gian chờ để khách không đứng nhìn vòng quay mãi, và thử
+    // lại MỘT lần với lỗi tạm thời. Hết cách thì để admin duyệt (không từ chối oan).
     let reading: CardReading | null = null
-    try {
-      const geminiRes = await fetch(
-        `https://generativelanguage.googleapis.com/v1beta/models/gemini-3.6-flash:generateContent?key=${geminiKey}`,
+    const geminiBody = JSON.stringify({
+      contents: [
         {
+          parts: [
+            { text: buildPrompt(currentYear) },
+            { inline_data: { mime_type: mimeType, data: base64 } },
+          ],
+        },
+      ],
+      generationConfig: { temperature: 0, responseMimeType: 'application/json' },
+    })
+    const geminiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-3.6-flash:generateContent?key=${geminiKey}`
+
+    for (let attempt = 0; attempt < GEMINI_ATTEMPTS && !reading; attempt++) {
+      try {
+        const geminiRes = await fetch(geminiUrl, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            contents: [
-              {
-                parts: [
-                  { text: buildPrompt(currentYear) },
-                  { inline_data: { mime_type: mimeType, data: base64 } },
-                ],
-              },
-            ],
-            generationConfig: { temperature: 0, responseMimeType: 'application/json' },
-          }),
+          body: geminiBody,
+          signal: AbortSignal.timeout(GEMINI_TIMEOUT_MS),
+        })
+        if (geminiRes.ok) {
+          reading = parseReading(await geminiRes.json())
+          break // trả lời được rồi thì thôi, dù đọc không ra JSON cũng không hỏi lại
         }
-      )
-      if (geminiRes.ok) {
-        reading = parseReading(await geminiRes.json())
-      } else {
-        // Lỗi AI KHÔNG được biến thành "từ chối" khách thật — chuyển cho admin.
-        console.error('Gemini API error:', geminiRes.status)
+        console.error('Gemini API error:', geminiRes.status, 'lần', attempt + 1)
+        const transient = geminiRes.status === 429 || geminiRes.status >= 500
+        if (!transient) break
+      } catch (e) {
+        // Quá thời gian chờ hoặc lỗi mạng: không thử lại để khách không phải chờ gấp đôi.
+        console.error('Gemini request failed:', e)
+        break
       }
-    } catch (e) {
-      console.error('Gemini request failed:', e)
+      if (attempt + 1 < GEMINI_ATTEMPTS)
+        await new Promise((r) => setTimeout(r, GEMINI_RETRY_DELAY_MS))
     }
 
     const { data: profile } = await admin

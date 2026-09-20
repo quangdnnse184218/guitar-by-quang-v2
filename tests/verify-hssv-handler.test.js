@@ -179,6 +179,58 @@ describe('verify-hssv-card — kết quả xác minh', () => {
     expect(db.verifications[0].flags).toContain('ai_unavailable')
   })
 
+  it('Gemini lỗi tạm thời (503) lần đầu rồi ổn → thử lại và vẫn duyệt được', async () => {
+    vi.useFakeTimers({ toFake: ['setTimeout'] })
+    let n = 0
+    geminiReply = () =>
+      ++n === 1 ? { ok: false, status: 503, json: async () => ({}) } : asGemini(goodCard())
+    const pending = call()
+    await vi.advanceTimersByTimeAsync(2000)
+    const r = await pending
+    vi.useRealTimers()
+    expect(n).toBe(2)
+    expect(r.body).toMatchObject({ approved: true, status: 'approved' })
+  })
+
+  it('Gemini lỗi 503 cả hai lần → chỉ thử đúng 2 lần rồi chuyển admin', async () => {
+    vi.useFakeTimers({ toFake: ['setTimeout'] })
+    let n = 0
+    geminiReply = () => (n++, { ok: false, status: 503, json: async () => ({}) })
+    const pending = call()
+    await vi.advanceTimersByTimeAsync(5000)
+    const r = await pending
+    vi.useRealTimers()
+    expect(n).toBe(2)
+    expect(r.body.status).toBe('pending')
+    expect(db.verifications[0].flags).toContain('ai_unavailable')
+  })
+
+  it('Gemini lỗi không tạm thời (400) → không thử lại', async () => {
+    let n = 0
+    geminiReply = () => (n++, { ok: false, status: 400, json: async () => ({}) })
+    const r = await call()
+    expect(n).toBe(1)
+    expect(r.body.status).toBe('pending')
+  })
+
+  it('quá thời gian chờ / lỗi mạng → chuyển admin ngay, không thử lại, không treo khách', async () => {
+    let n = 0
+    globalThis.fetch = vi.fn(async () => {
+      n++
+      throw new DOMException('signal timed out', 'TimeoutError')
+    })
+    const r = await call()
+    expect(n).toBe(1)
+    expect(r.body).toMatchObject({ approved: false, status: 'pending' })
+    expect(db.orders[0].amount).toBe(239000)
+  })
+
+  it('mỗi lần gọi Gemini đều có giới hạn thời gian chờ', async () => {
+    await call()
+    const [, init] = globalThis.fetch.mock.calls[0]
+    expect(init.signal).toBeInstanceOf(AbortSignal)
+  })
+
   it('Gemini trả rác không phải JSON → chờ admin', async () => {
     geminiReply = () => ({
       ok: true,

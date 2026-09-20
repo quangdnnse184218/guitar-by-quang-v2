@@ -5,7 +5,7 @@ hệ thống bán tab **tự động hoá hoàn toàn** — từ lúc khách qu�
 khoản đến lúc khách xem được video tab trên Google Drive, không cần một thao
 tác thủ công nào của quản trị viên.
 
-🔗 **Đang chạy tại:** [quang-v2.vercel.app](https://quang-v2.vercel.app)
+🔗 **Đang chạy tại:** [guitar-by-quang-v2.vercel.app](https://guitar-by-quang-v2.vercel.app)
 
 ---
 
