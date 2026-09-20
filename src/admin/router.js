@@ -36,11 +36,17 @@ export const ROUTES = {
     title: 'Bộ Đồ Nghề',
     subtitle: 'Danh sách đàn, phụ kiện hiển thị ở trang chủ và trang Công Cụ',
   },
+  'tien-ve': {
+    section: 'section-payments',
+    nav: 'tien-ve',
+    title: 'Tiền Về',
+    subtitle: 'Khoản tiền vào tài khoản chưa khớp đơn nào — gán cho đúng khách',
+  },
   'don-hang': {
     section: 'section-orders',
     nav: 'don-hang',
-    title: 'Đơn Hàng',
-    subtitle: 'Đơn khách đã tạo nhưng hệ thống chưa nhận được tiền',
+    title: 'Đơn Chờ Thanh Toán',
+    subtitle: 'Đơn khách đã tạo nhưng chưa có tiền nào về — phần lớn là bỏ dở',
   },
   'cap-quyen': {
     section: 'section-grant',

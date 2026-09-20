@@ -19,7 +19,7 @@ import { showToast } from './toast.js'
 import { navigate } from './router.js'
 import { loadSongs } from './songs.js'
 import { loadUsers } from './users.js'
-import { loadPendingOrders } from './orders.js'
+import { loadPayments } from './payments.js'
 import { escapeHtml, formatVnd, avatarUrlFor } from './format.js'
 
 const form = document.getElementById('grant-access-form')
@@ -39,6 +39,9 @@ const summaryEl = document.getElementById('grant-summary')
 const warningsEl = document.getElementById('grant-warnings')
 const submitBtn = document.getElementById('grant-submit-btn')
 const resultEl = document.getElementById('grant-result')
+const txBanner = document.getElementById('grant-tx-banner')
+const amountWrap = document.getElementById('grant-amount-wrap')
+const amountInput = document.getElementById('grant-amount')
 
 /**
  * `paid` = lý do này nghĩa là ĐÃ nhận được tiền → đơn chờ khớp được ghi là "đã
@@ -62,6 +65,10 @@ let ownedSongIds = new Set()
 let pendingSongIds = new Set()
 /** Chống ghi đè kết quả cũ khi admin đổi lựa chọn nhanh. */
 let contextRequestId = 0
+/** Khoản tiền về (bank_transactions) đang được xử lý — đến từ trang Tiền về. */
+let linkedTransaction = null
+/** Đơn cụ thể được gợi ý cho khoản tiền đó (kèm khách + bài của đơn). */
+let linkedOrder = null
 
 const ICON_CHECK =
   '<svg class="w-3.5 h-3.5 flex-shrink-0 mt-0.5 text-emerald-500" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/></svg>'
@@ -379,19 +386,29 @@ function renderConsequences(song, reason) {
     (context?.pending_orders || []).some((p) => p.song_id === song.id || p.song_title === song.title)
 
   // Chỉ nói về doanh thu khi đã chọn lý do — trước đó chưa biết kết quả thế nào.
+  // Ô "Số tiền đã nhận" chỉ xuất hiện khi lý do là ĐÃ NHẬN TIỀN mà khách không có
+  // đơn nào để đóng: lúc đó hệ thống phải tạo một đơn mới để ghi doanh thu.
+  let needsAmount = false
   if (reason) {
-    if (hasMatchingPending) {
+    if (hasMatchingPending || orderIdForSubmit()) {
       lines.push(
         reason.paid
-          ? `<li class="flex gap-2">${ICON_CHECK}<span>Đơn chờ của khách cho bài này được đóng thành <strong>đã thanh toán</strong> và tính vào doanh thu.</span></li>`
-          : `<li class="flex gap-2">${ICON_CHECK}<span>Đơn chờ của khách cho bài này được đóng thành <strong>hết hạn</strong>, không tính doanh thu.</span></li>`
+          ? `<li class="flex gap-2">${ICON_CHECK}<span>Đơn của khách cho bài này được đóng thành <strong>đã thanh toán</strong> và tính vào doanh thu.</span></li>`
+          : `<li class="flex gap-2">${ICON_CHECK}<span>Đơn của khách cho bài này được đóng thành <strong>hết hạn</strong>, không tính doanh thu.</span></li>`
+      )
+    } else if (reason.paid) {
+      needsAmount = true
+      const shown = Number(amountInput?.value) || 0
+      lines.push(
+        `<li class="flex gap-2">${ICON_CHECK}<span>Ghi nhận doanh thu <strong>${formatVnd(shown || song.price || 0)}</strong> (khách chưa có đơn cho bài này nên hệ thống tạo một đơn đã thanh toán).</span></li>`
       )
     } else {
       lines.push(
-        `<li class="flex gap-2">${ICON_CHECK}<span>Khách không có đơn chờ cho bài này nên <strong>không ghi thêm doanh thu</strong>.</span></li>`
+        `<li class="flex gap-2">${ICON_CHECK}<span>Không thu tiền nên <strong>không ghi doanh thu</strong>.</span></li>`
       )
     }
   }
+  syncAmountField(needsAmount, song)
 
   box.innerHTML = `
     <div class="text-[10px] font-bold uppercase tracking-wider text-text-muted mb-2">Khi bấm cấp</div>
@@ -446,7 +463,58 @@ function renderSubmit(song, reason) {
   if (labelEl) labelEl.textContent = label
 }
 
+/**
+ * Chỉ gửi orderId khi khách + bài đang chọn vẫn đúng là của đơn được gợi ý.
+ * Nếu admin đổi khách hoặc đổi bài giữa chừng thì đơn đó không còn liên quan —
+ * server sẽ từ chối một cặp không khớp, nên không gửi để khỏi báo lỗi vô ích.
+ */
+function orderIdForSubmit() {
+  if (!linkedOrder || !selectedUser) return null
+  return linkedOrder.userId === selectedUser.id && linkedOrder.songId === selectedSongId
+    ? linkedOrder.id
+    : null
+}
+
+/** Hiện/ẩn ô số tiền; chỉ đặt giá trị mặc định khi vừa chuyển sang bài khác. */
+function syncAmountField(visible, song) {
+  if (!amountWrap || !amountInput) return
+  amountWrap.classList.toggle('hidden', !visible)
+  if (!visible || !song) return
+  if (amountInput.dataset.forSong !== song.id) {
+    amountInput.dataset.forSong = song.id
+    // Khoản tiền thật đang được gán thì mặc định là đúng số tiền đó.
+    const suggested = linkedTransaction?.amount ?? song.price ?? ''
+    amountInput.value = suggested === '' ? '' : String(Number(suggested))
+  }
+}
+
+/** Nhắc rõ đang xử lý khoản tiền nào (khi đến từ trang Tiền về). */
+function renderTxBanner() {
+  if (!txBanner) return
+  if (!linkedTransaction) {
+    txBanner.classList.add('hidden')
+    txBanner.innerHTML = ''
+    return
+  }
+  txBanner.innerHTML = `
+    <div class="flex items-start gap-3 p-3.5 rounded-xl border border-amber-500/30 bg-amber-500/[0.07]">
+      <div class="flex-1 min-w-0 text-xs leading-relaxed">
+        <div class="font-extrabold text-text-primary">Đang xử lý khoản tiền về ${formatVnd(linkedTransaction.amount)}</div>
+        <div class="text-text-muted mt-0.5 break-words">Nội dung: ${linkedTransaction.content ? escapeHtml(linkedTransaction.content) : '(trống)'}</div>
+        <div class="text-text-muted mt-0.5">Cấp xong, khoản này được đánh dấu là đã gán và biến khỏi danh sách Tiền về.</div>
+      </div>
+      <button type="button" data-unlink-tx class="text-[11px] font-bold text-text-muted hover:text-text-primary cursor-pointer flex-shrink-0">Bỏ liên kết</button>
+    </div>`
+  txBanner.classList.remove('hidden')
+  txBanner.querySelector('[data-unlink-tx]')?.addEventListener('click', () => {
+    linkedTransaction = null
+    linkedOrder = null
+    render()
+  })
+}
+
 function render() {
+  renderTxBanner()
   renderSongs()
   renderReasons()
   renderSummary()
@@ -462,6 +530,12 @@ function resetForm() {
   context = null
   ownedSongIds = new Set()
   pendingSongIds = new Set()
+  linkedTransaction = null
+  linkedOrder = null
+  if (amountInput) {
+    amountInput.value = ''
+    delete amountInput.dataset.forSong
+  }
   if (noteInput) noteInput.value = ''
   if (songSearch) songSearch.value = ''
   userCard?.classList.add('hidden')
@@ -524,7 +598,19 @@ async function submitGrant(e) {
     // RPC admin_grant_access, kèm lý do/ghi chú và tự đóng đơn treo) vừa tự
     // động gọi Apps Script cấp quyền xem file Google Drive cho email khách.
     const { data, error } = await supabase.functions.invoke('admin-grant-access', {
-      body: { userId: snapshot.userId, songId: selectedSongId, reason: selectedReason, note },
+      body: {
+        userId: snapshot.userId,
+        songId: selectedSongId,
+        reason: selectedReason,
+        note,
+        orderId: orderIdForSubmit() || undefined,
+        transactionId: linkedTransaction?.id || undefined,
+        // Chỉ gửi số tiền khi ô đang hiện — nghĩa là hệ thống phải tạo đơn mới.
+        amount:
+          amountWrap && !amountWrap.classList.contains('hidden') && amountInput?.value !== ''
+            ? Number(amountInput.value)
+            : undefined,
+      },
     })
     if (error) throw error
     if (!data?.success) throw new Error(data?.error || 'Lỗi khi cấp quyền')
@@ -542,7 +628,7 @@ async function submitGrant(e) {
       data.driveGranted ? 'success' : 'error'
     )
 
-    await Promise.all([loadUsers(), loadPendingOrders()])
+    await Promise.all([loadUsers(), loadPayments()])
   } catch (err) {
     console.error(err)
     showToast('❌ ' + (err.message || 'Lỗi khi cấp quyền'), 'error')
@@ -563,18 +649,36 @@ export async function enterGrantPage() {
   if (state.usersList.length === 0) await loadUsers()
 
   if (prefill) {
-    // Đến từ đơn chờ / hồ sơ thành viên → bắt đầu lại, không dính lựa chọn cũ.
+    // Đến từ trang Tiền về / đơn chờ / hồ sơ thành viên → bắt đầu lại, không dính
+    // lựa chọn cũ.
     resetForm()
     selectedSongId = prefill.songId || null
     selectedReason = prefill.reason || null
     if (noteInput) noteInput.value = prefill.note || ''
 
-    const user = state.usersList.find((u) => u.id === prefill.userId)
-    if (user) {
-      await selectUser(user)
+    if (prefill.transactionId) {
+      linkedTransaction = {
+        id: prefill.transactionId,
+        amount: prefill.amount,
+        content: prefill.txContent || '',
+      }
+    }
+    if (prefill.orderId && prefill.userId && prefill.songId) {
+      linkedOrder = { id: prefill.orderId, userId: prefill.userId, songId: prefill.songId }
+    }
+
+    if (prefill.userId) {
+      const user = state.usersList.find((u) => u.id === prefill.userId)
+      if (user) {
+        await selectUser(user)
+      } else {
+        showToast('Không tìm thấy khách này trong danh sách thành viên', 'error')
+        render()
+      }
     } else {
-      showToast('Không tìm thấy khách này trong danh sách thành viên', 'error')
+      // Chưa biết khách nào: admin tự chọn ở bước 1, khoản tiền vẫn được giữ.
       render()
+      userSearch?.focus()
     }
     return
   }
@@ -586,6 +690,8 @@ export function initGrantSection() {
   form?.addEventListener('submit', submitGrant)
   userClear?.addEventListener('click', clearUser)
   songSearch?.addEventListener('input', renderSongs)
+  // Dòng "Ghi nhận doanh thu …" trong khung tóm tắt đổi theo số tiền đang gõ.
+  amountInput?.addEventListener('input', renderSummary)
 
   userSearch?.addEventListener('input', () => {
     const matches = matchingUsers(userSearch.value)

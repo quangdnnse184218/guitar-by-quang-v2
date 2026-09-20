@@ -55,10 +55,14 @@
           </a>
 
           <p class="admin-nav-group">Kinh doanh</p>
+          <a href="#/tien-ve" data-route-link="tien-ve" class="admin-nav-item">
+            <svg class="w-4 h-4 flex-shrink-0" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+            <span>Tiền về</span>
+            <span id="tab-badge-orders" data-orders-badge class="admin-nav-badge hidden"></span>
+          </a>
           <a href="#/don-hang" data-route-link="don-hang" class="admin-nav-item">
             <svg class="w-4 h-4 flex-shrink-0" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
-            <span>Đơn hàng</span>
-            <span id="tab-badge-orders" data-orders-badge class="admin-nav-badge hidden"></span>
+            <span>Đơn chờ thanh toán</span>
           </a>
           <a href="#/cap-quyen" data-route-link="cap-quyen" class="admin-nav-item">
             <svg class="w-4 h-4 flex-shrink-0" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M15 7a2 2 0 012 2m4 0a6 6 0 01-7.743 5.743L11 17H9v2H7v2H4a1 1 0 01-1-1v-2.586a1 1 0 01.293-.707l5.964-5.964A6 6 0 1121 9z"/></svg>
@@ -416,13 +420,53 @@
           </div>
 
           <!-- ============================================================ -->
+          <!-- TRANG: TIỀN VỀ (GIAO DỊCH NGÂN HÀNG)                         -->
+          <!-- ============================================================ -->
+          <div id="section-payments" class="space-y-5 hidden">
+
+            <!-- Hiện khi chưa chạy file SQL bank_transactions -->
+            <div id="payments-setup-notice" class="hidden rounded-2xl border border-amber-500/30 bg-amber-500/[0.07] p-4 text-xs leading-relaxed text-text-primary space-y-1.5">
+              <div class="font-extrabold">Cần bật theo dõi tiền về (làm một lần)</div>
+              <p>Mở Supabase → SQL Editor, dán và chạy file <code class="font-mono bg-black/5 dark:bg-white/10 px-1.5 py-0.5 rounded">supabase/migrations/20260920_bank_transactions.sql</code>. Xong là mọi khoản tiền về được ghi lại và trang này hoạt động.</p>
+            </div>
+
+            <div class="rounded-2xl border border-sky-500/25 bg-sky-500/[0.06] p-4 text-xs leading-relaxed text-text-primary">
+              Mỗi khoản tiền vào tài khoản ngân hàng đều được ghi lại. Khoản nào <strong>không tự khớp được đơn nào</strong>
+              (khách ghi sai nội dung, trả muộn, chuyển thiếu…) hiện ở đây và bạn nhận được email báo.
+              Gán nó cho đúng khách là xong: khách nhận tab, Drive được chia sẻ và doanh thu được ghi.
+            </div>
+
+            <section class="glass-card border border-glass-border rounded-2xl overflow-hidden">
+              <div class="p-4 sm:p-5 border-b border-glass-border flex items-center justify-between gap-3">
+                <h3 class="text-sm font-extrabold text-text-primary flex items-center gap-2">
+                  Tiền về chưa khớp
+                  <span id="payments-unmatched-count" class="px-2 py-0.5 rounded-full bg-amber-500/15 text-amber-600 dark:text-amber-400 text-[10px] font-black">0</span>
+                </h3>
+                <button type="button" id="payments-refresh" class="px-3 py-2 rounded-xl bg-glass-bg border border-glass-border text-text-muted hover:text-text-primary text-[11px] font-bold transition-colors cursor-pointer" title="Tải lại">↻</button>
+              </div>
+              <div id="payments-unmatched" class="divide-y divide-glass-border">
+                <div class="p-8 text-center text-xs text-text-muted">Đang tải…</div>
+              </div>
+            </section>
+
+            <section class="glass-card border border-glass-border rounded-2xl overflow-hidden">
+              <div class="p-4 sm:p-5 border-b border-glass-border">
+                <h3 class="text-sm font-extrabold text-text-primary">Giao dịch gần đây</h3>
+                <p class="text-[11px] text-text-muted mt-0.5">60 khoản tiền vào gần nhất, gồm cả khoản tự khớp và khoản đã xử lý.</p>
+              </div>
+              <div id="payments-recent" class="divide-y divide-glass-border max-h-[480px] overflow-y-auto"></div>
+            </section>
+          </div>
+
+          <!-- ============================================================ -->
           <!-- TRANG: ĐƠN HÀNG (ĐƠN CHƯA HOÀN TẤT)                          -->
           <!-- ============================================================ -->
           <div id="section-orders" class="space-y-5 hidden">
 
             <div class="rounded-2xl border border-sky-500/25 bg-sky-500/[0.06] p-4 text-xs leading-relaxed text-text-primary">
-              <strong>Đơn chưa hoàn tất</strong> là đơn khách đã tạo nhưng hệ thống chưa nhận được tiền. Phần lớn là khách bỏ giữa chừng.
-              Khi khách báo <em>“đã chuyển khoản mà chưa nhận được tab”</em>: tìm đơn của họ bên dưới, đối chiếu sao kê ngân hàng, rồi bấm <strong>Cấp quyền</strong>.
+              Đây là các đơn khách đã tạo nhưng <strong>chưa có tiền nào về</strong> — phần lớn là khách mở form thanh toán rồi bỏ giữa chừng, không cần làm gì.
+              Đơn quá 3 ngày tự hết hạn. Khi khách báo <em>“đã chuyển khoản mà chưa nhận được tab”</em>, hãy vào mục <a href="#/tien-ve" data-route-link="tien-ve" class="font-bold text-accent-primary hover:underline">Tiền về</a>:
+              khoản tiền của họ nằm ở đó và gán được chỉ bằng một cú bấm. Trang này chỉ để tra cứu đơn của một khách.
             </div>
 
             <div id="orders-summary" class="grid grid-cols-3 gap-2.5 sm:gap-4"></div>
@@ -435,8 +479,8 @@
                     <input type="text" id="pending-search" placeholder="Tìm mã đơn, tên, email…"
                       class="flex-1 lg:w-64 px-3.5 py-2 rounded-xl bg-black/5 dark:bg-white/5 border border-glass-border text-xs text-text-primary placeholder:text-text-muted focus:outline-none focus:border-accent-primary" />
                     <button type="button" id="refresh-pending-btn" class="px-3 py-2 rounded-xl bg-glass-bg border border-glass-border text-text-muted hover:text-text-primary text-[11px] font-bold transition-colors cursor-pointer" title="Tải lại danh sách đơn">↻</button>
-                    <button type="button" id="expire-stale-btn" class="px-3 py-2 rounded-xl bg-glass-bg border border-glass-border text-text-muted hover:text-text-primary text-[11px] font-bold transition-colors cursor-pointer whitespace-nowrap" title="Đánh dấu hết hạn cho đơn treo quá 3 ngày">Dọn đơn cũ</button>
-                  </div>
+                    
+                    </div>
                 </div>
                 <p id="orders-hidden-note" class="hidden text-[11px] text-text-muted"></p>
               </div>
@@ -453,6 +497,9 @@
             <form id="grant-access-form" class="grid grid-cols-1 xl:grid-cols-[minmax(0,1fr)_380px] gap-5 items-start" novalidate>
 
               <div class="space-y-4 min-w-0">
+                <!-- Có khi đến từ trang Tiền về: nhắc rõ đang xử lý khoản tiền nào -->
+                <div id="grant-tx-banner" class="hidden"></div>
+
                 <p class="text-xs text-text-muted leading-relaxed max-w-2xl">
                   Dùng khi khách đã trả tiền nhưng hệ thống chưa tự mở tab (chuyển khoản sai nội dung, trả tiền mặt…), hoặc khi bạn muốn tặng tab.
                   Làm lần lượt 3 bước — nút cấp quyền ở khung tóm tắt sẽ sáng lên khi đủ thông tin.
@@ -507,6 +554,13 @@
                     </div>
                   </div>
                   <div id="grant-reason-list" role="radiogroup" aria-label="Lý do cấp" class="grid grid-cols-1 sm:grid-cols-2 gap-2"></div>
+                  <!-- Chỉ hiện khi lý do là "đã nhận tiền" mà khách không có đơn nào để đóng -->
+                  <div id="grant-amount-wrap" class="hidden mt-3.5 space-y-1.5">
+                    <label for="grant-amount" class="text-xs font-bold text-text-primary block">Số tiền đã nhận <span class="text-text-muted font-normal">(để ghi doanh thu)</span></label>
+                    <input type="number" id="grant-amount" min="0" step="1000" inputmode="numeric"
+                      class="w-full px-4 py-2.5 rounded-xl bg-black/5 dark:bg-white/5 border border-glass-border text-xs text-text-primary placeholder:text-text-muted focus:outline-none focus:border-accent-primary" />
+                    <p class="text-[11px] text-text-muted leading-relaxed">Khách này chưa có đơn nào cho bài này, nên hệ thống tạo một đơn đã thanh toán với số tiền bạn nhập để doanh thu không bị thiếu. Mặc định là giá bài.</p>
+                  </div>
                   <div class="mt-3.5 space-y-1.5">
                     <label for="grant-note" class="text-xs font-bold text-text-primary block">Ghi chú <span class="text-text-muted font-normal">(không bắt buộc)</span></label>
                     <input type="text" id="grant-note" maxlength="200" placeholder="VD: khách CK lúc 14h, nội dung ghi thiếu mã đơn"
@@ -738,12 +792,12 @@
         <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 18V5l12-2v13M9 18a3 3 0 11-6 0 3 3 0 016 0zM21 16a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
         <span>Kho tab</span>
       </a>
-      <a href="#/don-hang" data-route-link="don-hang" class="admin-bottom-item">
+      <a href="#/tien-ve" data-route-link="tien-ve" class="admin-bottom-item">
         <span class="relative">
           <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
           <span data-orders-badge class="admin-bottom-badge hidden"></span>
         </span>
-        <span>Đơn hàng</span>
+        <span>Tiền về</span>
       </a>
       <a href="#/thanh-vien" data-route-link="thanh-vien" class="admin-bottom-item">
         <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0z"/></svg>

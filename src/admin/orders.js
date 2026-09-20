@@ -1,22 +1,21 @@
 /**
  * ==============================================================================
- * ADMIN DASHBOARD — ĐƠN CHƯA HOÀN TẤT
+ * ADMIN DASHBOARD — ĐƠN CHỜ THANH TOÁN
  * ==============================================================================
- * "Đơn chưa hoàn tất" = khách đã bấm mua và có mã đơn (DHxxxxxx) nhưng hệ thống
- * chưa nhận được tiền. Phần lớn là khách mở form thanh toán rồi bỏ giữa chừng;
- * chỉ một số ít là khách đã chuyển khoản nhưng ghi sai nội dung nên webhook
- * không khớp được đơn. Trang này giúp admin nhận ra đúng nhóm thứ hai.
+ * "Đơn chờ" = khách đã bấm mua và có mã đơn (DHxxxxxx) nhưng CHƯA CÓ TIỀN NÀO VỀ.
+ * Gần như toàn là khách mở form thanh toán rồi bỏ giữa chừng nên đây chỉ là trang
+ * TRA CỨU đơn của một khách, không phải danh sách việc cần làm. Việc cần làm thật
+ * (tiền đã về mà khách chưa nhận tab) nằm ở trang Tiền về (payments.js), xuất
+ * phát từ giao dịch ngân hàng thật.
  *
  * Đơn của khách ĐÃ SỞ HỮU đúng tab đó bị ẩn hẳn: họ đã nhận được thứ họ cần
- * (qua một đơn khác hoặc admin cấp tay) nên không còn việc gì để xử lý. Việc lọc
- * làm ở đây thay vì ở SQL để chạy đúng ngay cả khi chưa cập nhật database.
+ * (qua một đơn khác hoặc admin cấp tay). Việc lọc làm ở đây thay vì ở SQL để chạy
+ * đúng ngay cả khi chưa cập nhật database. Đơn quá 3 ngày do database tự hết hạn.
  */
 import { supabase } from '../lib/supabase.js'
 import { state } from './state.js'
 import { showToast } from './toast.js'
-import { confirmDialog } from './confirm.js'
 import { navigate } from './router.js'
-import { updateOrdersBadge } from './badge.js'
 import { escapeHtml, formatVnd, formatAge, copyText } from './format.js'
 
 const listEl = document.getElementById('pending-orders-list')
@@ -25,11 +24,10 @@ const filtersEl = document.getElementById('orders-filters')
 const searchEl = document.getElementById('pending-search')
 const hiddenNoteEl = document.getElementById('orders-hidden-note')
 const refreshBtn = document.getElementById('refresh-pending-btn')
-const expireBtn = document.getElementById('expire-stale-btn')
 
 /** Dưới ngưỡng này khách có thể vẫn đang ở màn hình quét mã thanh toán. */
 const FRESH_MINUTES = 30
-/** Trên ngưỡng này gần như chắc chắn khách đã bỏ — khớp nút "Dọn đơn quá 3 ngày". */
+/** Trên ngưỡng này gần như chắc chắn khách đã bỏ — cũng là mốc database tự hết hạn đơn. */
 const STALE_MINUTES = 3 * 24 * 60
 
 /**
@@ -92,7 +90,6 @@ export async function loadPendingOrders() {
     const result = await fetchActionableOrders()
     actionable = result.list
     hiddenOwned = result.hiddenOwned
-    updateOrdersBadge(actionable.length)
     render()
   } catch (err) {
     console.error('Error loading pending orders:', err)
@@ -278,26 +275,4 @@ function render() {
 export function initOrdersSection() {
   refreshBtn?.addEventListener('click', () => loadPendingOrders())
   searchEl?.addEventListener('input', () => render())
-
-  expireBtn?.addEventListener('click', async () => {
-    const answer = await confirmDialog({
-      tone: 'warn',
-      title: 'Dọn đơn chưa hoàn tất quá 3 ngày',
-      message:
-        'Mọi đơn đang chờ được tạo hơn 3 ngày trước sẽ bị đánh dấu <strong>hết hạn</strong>, ' +
-        'kể cả các đơn đang bị ẩn vì khách đã sở hữu tab. ' +
-        'Không ảnh hưởng doanh thu và không xoá quyền xem tab của ai.',
-      confirmText: 'Dọn đơn quá hạn',
-    })
-    if (!answer) return
-
-    try {
-      const { data, error } = await supabase.rpc('admin_expire_stale_orders', { p_days: 3 })
-      if (error) throw error
-      showToast(`✓ Đã dọn ${data?.expired_count || 0} đơn quá hạn`, 'success')
-      await loadPendingOrders()
-    } catch (err) {
-      showToast('❌ ' + (err.message || 'Lỗi khi dọn đơn'), 'error')
-    }
-  })
 }

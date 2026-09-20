@@ -20,6 +20,7 @@ import { loadSongs, initSongsSection } from './admin/songs.js'
 import { loadGears, initGearsSection } from './admin/gears.js'
 import { loadUsers, initUsersSection } from './admin/users.js'
 import { loadPendingOrders, initOrdersSection } from './admin/orders.js'
+import { loadPayments, initPaymentsSection } from './admin/payments.js'
 import { enterGrantPage, initGrantSection } from './admin/grant.js'
 import { loadRecentGrants, loadRecentRevocations, initHistorySection } from './admin/history.js'
 import { loadOverview, initOverviewSection } from './admin/overview.js'
@@ -199,6 +200,7 @@ async function initDashboard() {
   initGearsSection()
   initUsersSection()
   initOrdersSection()
+  initPaymentsSection()
   initGrantSection()
   initHistorySection()
   initOverviewSection()
@@ -220,6 +222,9 @@ async function initDashboard() {
         break
       case 'do-nghe':
         loadGears()
+        break
+      case 'tien-ve':
+        loadPayments()
         break
       case 'don-hang':
         loadPendingOrders()
@@ -255,10 +260,10 @@ async function initDashboard() {
 
   // Nạp dữ liệu nền: initRouter() ở trên đã nạp dữ liệu cho đúng route đang
   // mở, phần này lo những thứ mà route khác cần sẵn — danh sách user cho ô
-  // tìm khách, và số đơn chờ cho badge đỏ trên sidebar (phải thấy ngay dù đang
+  // tìm khách, và số khoản tiền chưa khớp cho badge đỏ trên sidebar (phải thấy ngay dù đang
   // đứng ở trang nào).
   loadUsers()
-  loadPendingOrders()
+  loadPayments()
 }
 
 document.addEventListener('DOMContentLoaded', initDashboard)

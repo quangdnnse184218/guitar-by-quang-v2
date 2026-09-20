@@ -4,7 +4,7 @@
  * ==============================================================================
  * Trang đầu tiên admin nhìn thấy mỗi ngày nên được sắp theo thứ tự ưu tiên của
  * người quản lý một cửa hàng nhỏ:
- *   1. Có việc gì cần xử lý ngay không?  (đơn chờ, Drive lỗi, bài thiếu link)
+ *   1. Có việc gì cần xử lý ngay không?  (tiền về chưa khớp, Drive lỗi, bài thiếu link)
  *   2. Hôm nay / tháng này bán được bao nhiêu, so với kỳ trước ra sao?
  *   3. Xu hướng doanh thu, bài nào bán chạy.
  *   4. Vừa có ai mở khoá tab gì.
@@ -17,13 +17,13 @@ import { supabase } from '../lib/supabase.js'
 import { showToast } from './toast.js'
 import { navigate } from './router.js'
 import { updateOrdersBadge } from './badge.js'
-import { fetchActionableOrders, classifyOrder } from './orders.js'
+import { fetchUnmatchedTransactions } from './payments.js'
 import { escapeHtml, formatVnd, formatVndShort, formatAge, percentChange } from './format.js'
 
 const CHART_RANGE_KEY = 'gbq_admin_chart_range'
 
 let lastStats = null
-let lastOrders = null
+let lastPayments = null
 let lastActivity = []
 let chartRange = readChartRange()
 
@@ -59,17 +59,25 @@ const ATTENTION_COLS = { 1: '', 2: 'lg:grid-cols-2', 3: 'lg:grid-cols-3' }
 function buildAttentionItems() {
   const items = []
 
-  if (lastOrders && lastOrders.list.length > 0) {
-    const waiting = lastOrders.list.filter((o) => classifyOrder(o) === 'waiting').length
+  // Tiền đã về mà chưa khớp đơn nào: việc quan trọng nhất — có thể có khách đã
+  // trả tiền mà chưa nhận được tab.
+  if (lastPayments?.setupNeeded) {
     items.push({
-      tone: waiting > 0 ? 'warn' : 'info',
-      title: `${lastOrders.list.length} đơn chưa hoàn tất`,
+      tone: 'info',
+      title: 'Chưa bật theo dõi tiền về',
       detail:
-        waiting > 0
-          ? `${waiting} đơn đã chờ từ 30 phút đến 3 ngày — có thể là khách đã chuyển khoản mà chưa nhận tab.`
-          : 'Chưa có đơn nào cần kiểm tra gấp.',
-      action: 'Xem đơn',
-      route: 'don-hang',
+        'Chạy file SQL 20260920_bank_transactions.sql để mọi khoản tiền về được ghi lại và báo cho bạn khi không khớp đơn nào.',
+      action: 'Xem hướng dẫn',
+      route: 'tien-ve',
+    })
+  } else if (lastPayments && lastPayments.list.length > 0) {
+    const total = lastPayments.list.reduce((sum, t) => sum + (Number(t.amount) || 0), 0)
+    items.push({
+      tone: 'danger',
+      title: `${lastPayments.list.length} khoản tiền về chưa khớp đơn (${formatVnd(total)})`,
+      detail: 'Khách có thể đã chuyển khoản mà chưa nhận được tab — gán khoản tiền cho đúng khách.',
+      action: 'Xử lý ngay',
+      route: 'tien-ve',
     })
   }
 
@@ -100,7 +108,7 @@ function buildAttentionItems() {
 
 function renderAttention() {
   // Chưa có dữ liệu nào về thì đừng vội tuyên bố "không có gì cần làm".
-  if (!lastStats && !lastOrders) {
+  if (!lastStats && !lastPayments) {
     setHtml('ov-attention', `<div class="glass-card border border-glass-border rounded-2xl p-3.5 text-xs text-text-muted">Đang kiểm tra…</div>`)
     return
   }
@@ -382,9 +390,9 @@ function renderAll() {
 
 export async function loadOverview() {
   // Ba nguồn độc lập — một nguồn lỗi không được làm trắng cả trang.
-  const [statsRes, ordersRes, activityRes] = await Promise.allSettled([
+  const [statsRes, paymentsRes, activityRes] = await Promise.allSettled([
     supabase.rpc('admin_get_overview_stats'),
-    fetchActionableOrders(),
+    fetchUnmatchedTransactions(),
     supabase.rpc('admin_get_recent_purchases'),
   ])
 
@@ -396,11 +404,11 @@ export async function loadOverview() {
     showToast('Lỗi khi tải số liệu tổng quan: ' + (err?.message || 'không rõ'), 'error')
   }
 
-  if (ordersRes.status === 'fulfilled') {
-    lastOrders = ordersRes.value
-    updateOrdersBadge(lastOrders.list.length)
+  if (paymentsRes.status === 'fulfilled') {
+    lastPayments = paymentsRes.value
+    updateOrdersBadge(lastPayments.setupNeeded ? 0 : lastPayments.list.length)
   } else {
-    console.error('Error loading pending orders for overview:', ordersRes.reason)
+    console.error('Error loading unmatched transactions for overview:', paymentsRes.reason)
   }
 
   if (activityRes.status === 'fulfilled' && !activityRes.value.error) {

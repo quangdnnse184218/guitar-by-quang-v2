@@ -1,5 +1,5 @@
 /**
- * Badge đỏ số đơn cần xử lý ở sidebar + thanh điều hướng dưới (mobile).
+ * Badge đỏ số KHOẢN TIỀN VỀ chưa khớp (việc cần admin xử lý) ở sidebar + thanh điều hướng dưới (mobile).
  *
  * Tách khỏi overview.js để orders.js và overview.js cùng gọi được mà không
  * import vòng nhau. Cập nhật mọi vị trí có `data-orders-badge` để hai chỗ

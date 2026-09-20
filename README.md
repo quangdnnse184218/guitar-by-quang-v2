@@ -28,7 +28,7 @@ tác thủ công nào của quản trị viên.
 |---|---|
 | **Thanh toán tự động** | Webhook ngân hàng (SePay) xác thực bằng HMAC-SHA256, chống replay, tự cấp quyền xem file Google Drive và gửi email báo đơn |
 | **Bảo mật chủ động** | Row-Level Security ở tầng database, chống user enumeration, chống XSS lưu trữ, chống dò tài khoản qua thời gian phản hồi |
-| **Kiểm thử bất biến bảo mật** | 17 test tự động khoá lại các quy tắc bảo mật quan trọng, chạy trong CI mỗi lần push |
+| **Kiểm thử bất biến bảo mật** | 72 test tự động, gồm chạy nguyên hàm webhook thanh toán với chữ ký HMAC thật và Supabase giả lập, chạy trong CI mỗi lần push |
 | **AI có kiểm soát** | Xác minh ảnh thẻ HSSV bằng Gemini để tự động giảm giá, có chống IDOR và kiểm tra quyền sở hữu đơn hàng |
 | **Tối ưu mobile-first** | Toàn bộ giao diện thiết kế cho người Việt dùng điện thoại, mạng yếu — không SPA, không hydration |
 
@@ -100,9 +100,12 @@ sequenceDiagram
   database phải khớp đúng giá bài hát, khách không thể tự tạo đơn giá rẻ.
 - **Không chặn phản hồi webhook:** việc cấp quyền Drive và gửi email chạy nền
   bằng `EdgeRuntime.waitUntil` sau khi đã trả lời SePay, tránh timeout.
-- **Có đường lùi thủ công:** nếu khách chuyển khoản sai nội dung, quản trị viên
-  có hàng đợi "đơn chưa hoàn tất" để xử lý bằng một cú bấm, kèm ghi lại lý do
-  và người thực hiện.
+- **Không bỏ sót tiền về:** mọi giao dịch ngân hàng được ghi vào bảng
+  `bank_transactions`, kể cả khoản không khớp đơn nào (sai nội dung, trả muộn,
+  chuyển thiếu). Khoản đó hiện ở trang "Tiền về" kèm gợi ý đơn cùng số tiền,
+  admin gán bằng một cú bấm và nhận email báo ngay khi có tiền về mà chưa khớp.
+- **Doanh thu không thiếu khi cấp tay:** cấp quyền với lý do "đã nhận tiền" mà
+  khách chưa có đơn thì hệ thống tự tạo một đơn đã thanh toán để ghi doanh thu.
 
 ---
 
@@ -167,7 +170,8 @@ Security với policy theo từng người dùng.
 │   ├── admin/              Module quản trị, mỗi file một màn hình
 │   │   ├── router.js       Router hash: mỗi mục quản trị là một URL riêng
 │   │   ├── overview.js     Tổng quan: việc cần xử lý, doanh thu so cùng kỳ, biểu đồ
-│   │   ├── orders.js       Đơn chưa hoàn tất (ẩn đơn của khách đã sở hữu tab)
+│   │   ├── payments.js     Tiền về: giao dịch ngân hàng chưa khớp đơn, gán cho khách
+│   │   ├── orders.js       Đơn chờ thanh toán (tra cứu, ẩn đơn của khách đã sở hữu tab)
 │   │   ├── grant.js        Cấp quyền thủ công theo 3 bước + khung tóm tắt
 │   │   ├── history.js      Lịch sử mở khoá và thu hồi
 │   │   ├── users.js        Danh sách thành viên
@@ -181,7 +185,7 @@ Security với policy theo từng người dùng.
 │   └── lib/                Tầng truy cập dữ liệu + tiện ích dùng chung
 ├── supabase/
 │   ├── functions/          5 Edge Function (Deno)
-│   │   ├── sepay-ipn/          Webhook ngân hàng → cấp quyền tự động
+│   │   ├── sepay-ipn/          Webhook ngân hàng → cấp quyền tự động, ghi mọi giao dịch
 │   │   ├── verify-hssv-card/   Xác minh thẻ HSSV bằng AI
 │   │   ├── admin-grant-access/ Cấp quyền thủ công + cấp quyền Drive
 │   │   ├── admin-revoke-access/ Thu hồi quyền + gỡ quyền Drive
