@@ -28,7 +28,7 @@ tác thủ công nào của quản trị viên.
 |---|---|
 | **Thanh toán tự động** | Webhook ngân hàng (SePay) xác thực bằng HMAC-SHA256, chống replay, tự cấp quyền xem file Google Drive và gửi email báo đơn |
 | **Bảo mật chủ động** | Row-Level Security ở tầng database, chống user enumeration, chống XSS lưu trữ, chống dò tài khoản qua thời gian phản hồi |
-| **Kiểm thử bất biến bảo mật** | 131 test tự động, gồm chạy nguyên hàm webhook thanh toán với chữ ký HMAC thật và Supabase giả lập, chạy trong CI mỗi lần push |
+| **Kiểm thử bất biến bảo mật** | 137 test tự động, gồm chạy nguyên hàm webhook thanh toán với chữ ký HMAC thật và Supabase giả lập, chạy trong CI mỗi lần push |
 | **AI có kiểm soát** | Gemini đọc thẻ HSSV để tự động giảm giá; chỗ nào AI chưa chắc thì chuyển cho quản trị viên duyệt thay vì từ chối nhầm, ảnh tự xoá sau vài ngày, có chống IDOR và kiểm tra quyền sở hữu đơn hàng |
 | **Tối ưu mobile-first** | Toàn bộ giao diện thiết kế cho người Việt dùng điện thoại, mạng yếu — không SPA, không hydration |
 
@@ -122,8 +122,10 @@ chỉ chuyển cho quản trị viên phần AI chưa chắc:
    năm hết hạn.
 4. Một hàm quyết định thuần (có test riêng) chọn: **duyệt** (thẻ rõ, còn hạn, mã
    chưa dùng ở tài khoản khác → hạ giá đơn ngay), **chờ admin** (AI lỗi, ảnh mờ,
-   thiếu mã, mã trùng tài khoản khác) hoặc **từ chối** (rõ ràng không phải thẻ,
-   hoặc hết hạn). Lỗi của AI không bao giờ biến thành "từ chối" khách thật.
+   thiếu mã hoặc hạn) hoặc **từ chối** (không phải thẻ, hết hạn, hoặc thẻ đã được
+   dùng ở tài khoản khác). Lỗi của AI không bao giờ biến thành "từ chối" khách thật.
+   Gemini được gọi theo chuỗi mô hình dự phòng với giới hạn thời gian, vì đã đo được
+   tình trạng quá tải và hết hạn mức thực tế.
 5. Quản trị viên xem lại ảnh và thông tin AI đọc được ở trang **Duyệt HSSV**, có thể
    duyệt hoặc thu hồi giảm giá. Mã học sinh/sinh viên chỉ lưu dạng băm một chiều để
    một thẻ không dùng cho nhiều tài khoản.
