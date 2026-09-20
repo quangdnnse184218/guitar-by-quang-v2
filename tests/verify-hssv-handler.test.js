@@ -179,56 +179,95 @@ describe('verify-hssv-card — kết quả xác minh', () => {
     expect(db.verifications[0].flags).toContain('ai_unavailable')
   })
 
-  it('Gemini lỗi tạm thời (503) lần đầu rồi ổn → thử lại và vẫn duyệt được', async () => {
-    vi.useFakeTimers({ toFake: ['setTimeout'] })
+  const modelOf = (call) => String(call[0]).match(/models\/([^:]+):/)[1]
+
+  it('model đầu quá tải (503) → sang model dự phòng ngay và vẫn duyệt được', async () => {
     let n = 0
     geminiReply = () =>
       ++n === 1 ? { ok: false, status: 503, json: async () => ({}) } : asGemini(goodCard())
-    const pending = call()
-    await vi.advanceTimersByTimeAsync(2000)
-    const r = await pending
-    vi.useRealTimers()
+    const r = await call()
     expect(n).toBe(2)
     expect(r.body).toMatchObject({ approved: true, status: 'approved' })
+    expect(globalThis.fetch.mock.calls.map(modelOf)).toEqual([
+      'gemini-3.6-flash',
+      'gemini-3-flash-preview',
+    ])
   })
 
-  it('Gemini lỗi 503 cả hai lần → chỉ thử đúng 2 lần rồi chuyển admin', async () => {
-    vi.useFakeTimers({ toFake: ['setTimeout'] })
+  it('model bị ngừng cấp (404) hay hết quota (429) cũng chuyển sang model kế', async () => {
+    let n = 0
+    geminiReply = () =>
+      ++n === 1
+        ? { ok: false, status: 404, json: async () => ({}) }
+        : n === 2
+          ? { ok: false, status: 429, json: async () => ({}) }
+          : asGemini(goodCard())
+    const r = await call()
+    expect(n).toBe(3)
+    expect(r.body.status).toBe('approved')
+  })
+
+  it('cả chuỗi model đều lỗi → thử đúng từng model một lần rồi chuyển admin', async () => {
     let n = 0
     geminiReply = () => (n++, { ok: false, status: 503, json: async () => ({}) })
-    const pending = call()
-    await vi.advanceTimersByTimeAsync(5000)
-    const r = await pending
-    vi.useRealTimers()
-    expect(n).toBe(2)
+    const r = await call()
+    expect(n).toBe(3)
     expect(r.body.status).toBe('pending')
     expect(db.verifications[0].flags).toContain('ai_unavailable')
+    expect(db.orders[0].amount).toBe(239000)
   })
 
-  it('Gemini lỗi không tạm thời (400) → không thử lại', async () => {
+  it('quá thời gian chờ ở model đầu → thử model kế, không treo khách', async () => {
     let n = 0
-    geminiReply = () => (n++, { ok: false, status: 400, json: async () => ({}) })
+    globalThis.fetch = vi.fn(async () => {
+      if (++n === 1) throw new DOMException('signal timed out', 'TimeoutError')
+      return geminiReply()
+    })
     const r = await call()
-    expect(n).toBe(1)
-    expect(r.body.status).toBe('pending')
+    expect(n).toBe(2)
+    expect(r.body.status).toBe('approved')
   })
 
-  it('quá thời gian chờ / lỗi mạng → chuyển admin ngay, không thử lại, không treo khách', async () => {
+  it('tổng thời gian chờ AI có trần: hết ngân sách thì dừng, không gọi tiếp model còn lại', async () => {
+    vi.useFakeTimers({ toFake: ['Date'] })
     let n = 0
     globalThis.fetch = vi.fn(async () => {
       n++
+      vi.setSystemTime(Date.now() + 30_000) // mỗi lần gọi "tốn" 30 giây rồi hết hạn
       throw new DOMException('signal timed out', 'TimeoutError')
     })
     const r = await call()
-    expect(n).toBe(1)
-    expect(r.body).toMatchObject({ approved: false, status: 'pending' })
-    expect(db.orders[0].amount).toBe(239000)
+    vi.useRealTimers()
+    expect(n).toBe(2) // 30s + 30s > 40s nên model thứ ba không được gọi
+    expect(r.body.status).toBe('pending')
+  })
+
+  it('thời gian chờ mỗi lần gọi bị kẹp theo phần ngân sách còn lại (25s rồi ≤10s)', async () => {
+    const timeoutSpy = vi.spyOn(AbortSignal, 'timeout')
+    vi.useFakeTimers({ toFake: ['Date'] })
+    globalThis.fetch = vi.fn(async () => {
+      vi.setSystemTime(Date.now() + 30_000)
+      throw new DOMException('signal timed out', 'TimeoutError')
+    })
+    await call()
+    vi.useRealTimers()
+    const args = timeoutSpy.mock.calls.map((c) => c[0])
+    timeoutSpy.mockRestore()
+    expect(args[0]).toBe(25_000)
+    expect(args[1]).toBeLessThanOrEqual(10_000)
   })
 
   it('mỗi lần gọi Gemini đều có giới hạn thời gian chờ', async () => {
     await call()
     const [, init] = globalThis.fetch.mock.calls[0]
     expect(init.signal).toBeInstanceOf(AbortSignal)
+  })
+
+  it('gọi Gemini tắt bước suy nghĩ (nhanh hơn) và dùng model chính đầu tiên', async () => {
+    await call()
+    const [url, init] = globalThis.fetch.mock.calls[0]
+    expect(modelOf([url])).toBe('gemini-3.6-flash')
+    expect(JSON.parse(init.body).generationConfig.thinkingConfig).toEqual({ thinkingBudget: 0 })
   })
 
   it('Gemini trả rác không phải JSON → chờ admin', async () => {
@@ -249,7 +288,7 @@ describe('verify-hssv-card — kết quả xác minh', () => {
     expect(db.orders[0]).toMatchObject({ amount: 239000, hssv_status: 'rejected' })
   })
 
-  it('thẻ đã dùng ở tài khoản khác → chờ admin, giá giữ nguyên', async () => {
+  it('thẻ đã dùng ở tài khoản khác → từ chối luôn và báo rõ, giá giữ nguyên', async () => {
     await call() // lần 1 cho user-1
     // tài khoản khác dùng lại đúng mã
     db.authUser = { id: 'user-2' }
@@ -264,7 +303,8 @@ describe('verify-hssv-card — kết quả xác minh', () => {
     db.files['user-2/o2.jpg'] = new Blob(['y'], { type: 'image/jpeg' })
 
     const r = await call({ orderId: 'o2', imagePath: 'user-2/o2.jpg' })
-    expect(r.body).toMatchObject({ approved: false, status: 'pending' })
+    expect(r.body).toMatchObject({ approved: false, status: 'rejected' })
+    expect(r.body.reason).toMatch(/tài khoản khác/)
     expect(db.orders.find((o) => o.id === 'o2').amount).toBe(239000)
     expect(db.verifications.find((v) => v.order_id === 'o2').flags).toContain('duplicate_id')
   })

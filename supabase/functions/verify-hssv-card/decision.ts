@@ -116,13 +116,27 @@ export function decideHssv(input: {
     }
   }
 
+  // Cùng mã HS/SV đã được một tài khoản KHÁC dùng để giảm giá: từ chối luôn (một thẻ chỉ
+  // giảm giá cho một tài khoản). Chủ thẻ thật bị người khác dùng trước thì nhắn admin xử lý.
+  if (duplicateOnOtherAccount) {
+    return {
+      status: 'rejected',
+      flags: namesMismatch(reading.full_name, accountName)
+        ? ['duplicate_id', 'name_mismatch']
+        : ['duplicate_id'],
+      message:
+        'Thẻ này đã được dùng để giảm giá ở một tài khoản khác nên không áp dụng lại được. Nếu đây là thẻ của bạn, hãy nhắn admin để được hỗ trợ.',
+      studentId,
+      expiryYear,
+    }
+  }
+
   // Từ đây trở đi chỉ có duyệt hoặc chờ admin — không từ chối nhầm khách thật.
   const flags: string[] = []
   if (reading.is_student_card !== true) flags.push('card_uncertain')
   if (reading.legible === false) flags.push('unreadable')
   if (!studentId) flags.push('no_student_id')
   if (expiryYear === null) flags.push('no_expiry')
-  if (duplicateOnOtherAccount) flags.push('duplicate_id')
 
   const softFlags: string[] = []
   if (namesMismatch(reading.full_name, accountName)) softFlags.push('name_mismatch')
@@ -131,8 +145,6 @@ export function decideHssv(input: {
     return {
       status: 'pending',
       flags: [...flags, ...softFlags],
-      // Cố ý dùng chung một câu cho mọi lý do: không tiết lộ cho khách rằng thẻ
-      // đã được tài khoản khác dùng (tránh dò xem thẻ của người khác có được dùng chưa).
       message:
         'Ảnh thẻ chưa đủ để hệ thống tự duyệt. Yêu cầu của bạn đã chuyển cho admin xét duyệt.',
       studentId,

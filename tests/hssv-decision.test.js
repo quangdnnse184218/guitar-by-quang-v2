@@ -86,17 +86,33 @@ describe('decideHssv', () => {
     expect(decide(good({ expiry_year: '2027' })).status).toBe('approved')
   })
 
-  it('mã trùng với tài khoản khác → chờ admin', () => {
+  it('mã trùng với tài khoản khác → TỪ CHỐI luôn, không cần admin', () => {
     const d = decide(good(), { duplicateOnOtherAccount: true })
-    expect(d.status).toBe('pending')
+    expect(d.status).toBe('rejected')
     expect(d.flags).toContain('duplicate_id')
   })
 
-  it('lời nhắn cho khách không tiết lộ thẻ đã bị tài khoản khác dùng', () => {
-    const dup = decide(good(), { duplicateOnOtherAccount: true })
-    const blurry = decide(good({ legible: false }))
-    expect(dup.message).toBe(blurry.message)
-    expect(dup.message).not.toMatch(/tài khoản khác/i)
+  it('lời nhắn khi trùng thẻ nói rõ thẻ đã dùng ở tài khoản khác và chỉ đường liên hệ admin', () => {
+    const d = decide(good(), { duplicateOnOtherAccount: true })
+    expect(d.message).toMatch(/đã được dùng.*tài khoản khác/i)
+    expect(d.message).toMatch(/admin/i)
+  })
+
+  it('trùng thẻ mà ảnh mờ vẫn từ chối (mã đã đọc ra và khớp)', () => {
+    expect(decide(good({ legible: false }), { duplicateOnOtherAccount: true }).status).toBe(
+      'rejected'
+    )
+  })
+
+  it('thẻ hết hạn được nêu lý do hết hạn, không nhầm thành trùng thẻ', () => {
+    const d = decide(good({ expiry_year: 2025 }), { duplicateOnOtherAccount: true })
+    expect(d.flags).toContain('expired')
+    expect(d.flags).not.toContain('duplicate_id')
+  })
+
+  it('trùng thẻ và tên khác tài khoản → giữ cả hai cờ cho admin', () => {
+    const d = decide(good({ full_name: 'Lê Hoàng Cường' }), { duplicateOnOtherAccount: true })
+    expect(d.flags).toEqual(['duplicate_id', 'name_mismatch'])
   })
 
   it('không đọc được mã HS/SV → chờ admin (không dedupe được)', () => {

@@ -6,8 +6,8 @@
 // ĐỌC KỸ thẻ (có phải thẻ không, tên, trường, mã HS/SV, năm hết hạn), rồi
 // decideHssv() (decision.ts) chọn một trong ba kết quả:
 //   approved — thẻ rõ, còn hạn, mã chưa dùng ở tài khoản khác → hạ giá đơn ngay
-//   pending  — AI lỗi/ảnh mờ/thiếu mã/mã trùng tài khoản khác → chờ admin ("Duyệt HSSV")
-//   rejected — chắc chắn không phải thẻ hoặc thẻ hết hạn
+//   pending  — AI lỗi/ảnh mờ/thiếu mã hoặc hạn → chờ admin ("Duyệt HSSV")
+//   rejected — không phải thẻ, thẻ hết hạn, hoặc mã đã dùng ở tài khoản khác
 // Mỗi lượt được lưu vào hssv_verifications kèm mốc purge_at; hàm hssv-cleanup xoá ảnh
 // khi tới hạn (3 ngày sau khi admin xem, tối đa 30 ngày từ lúc tải lên).
 // Không so khuôn mặt, không lưu sinh trắc học.
@@ -20,9 +20,14 @@ const SUPABASE_URL = Deno.env.get('SUPABASE_URL')!
 const SUPABASE_ANON_KEY = Deno.env.get('SUPABASE_ANON_KEY')!
 const SERVICE_ROLE_KEY = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!
 
-const GEMINI_TIMEOUT_MS = 35_000
-const GEMINI_ATTEMPTS = 2
-const GEMINI_RETRY_DELAY_MS = 1_000
+// Chuỗi model: thử lần lượt, model nào lỗi (quá tải 503, hết quota 429, ngừng cấp 404…) thì
+// sang model kế tiếp NGAY (mỗi model có hạn mức và tình trạng quá tải riêng). Đã đo trên thẻ
+// thật: 3.6-flash ~3.7s, 3-flash-preview ~2.7s, 3.7-flash ~5s (khi tắt "suy nghĩ").
+// Không đưa vào: 3.8-flash (hay quá tải), 3.5-flash (~8s), *-lite (đọc sai/không nhận thinkingConfig).
+const GEMINI_MODELS = ['gemini-3.6-flash', 'gemini-3-flash-preview', 'gemini-3.7-flash']
+const GEMINI_TOTAL_BUDGET_MS = 40_000 // tổng thời gian tối đa khách phải chờ AI
+const GEMINI_ATTEMPT_TIMEOUT_MS = 25_000
+const GEMINI_MIN_ATTEMPT_MS = 3_000 // còn ít hơn mức này thì không bắt đầu lần gọi mới
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
@@ -173,9 +178,9 @@ Deno.serve(async (req: Request) => {
     const mimeType = fileBlob.type || 'image/jpeg'
     const currentYear = new Date().getFullYear()
 
-    // Gemini đôi khi chậm bất thường (đã đo được 30–90 giây) hoặc trả lỗi thoáng qua
-    // (429/5xx). Giới hạn thời gian chờ để khách không đứng nhìn vòng quay mãi, và thử
-    // lại MỘT lần với lỗi tạm thời. Hết cách thì để admin duyệt (không từ chối oan).
+    // Gemini đôi khi chậm bất thường (đo được 30–94s) hoặc quá tải/hết quota. Đọc chữ trên thẻ
+    // không cần "suy nghĩ" (thinkingBudget 0: nhanh hơn ~40%, đọc vẫn đúng), và có chuỗi model
+    // dự phòng trong một ngân sách thời gian cố định. Hết cách thì để admin duyệt (không từ chối oan).
     let reading: CardReading | null = null
     const geminiBody = JSON.stringify({
       contents: [
@@ -186,32 +191,35 @@ Deno.serve(async (req: Request) => {
           ],
         },
       ],
-      generationConfig: { temperature: 0, responseMimeType: 'application/json' },
+      generationConfig: {
+        temperature: 0,
+        responseMimeType: 'application/json',
+        thinkingConfig: { thinkingBudget: 0 },
+      },
     })
-    const geminiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-3.6-flash:generateContent?key=${geminiKey}`
 
-    for (let attempt = 0; attempt < GEMINI_ATTEMPTS && !reading; attempt++) {
+    const startedAt = Date.now()
+    for (const model of GEMINI_MODELS) {
+      const timeLeft = GEMINI_TOTAL_BUDGET_MS - (Date.now() - startedAt)
+      if (timeLeft < GEMINI_MIN_ATTEMPT_MS) break
       try {
-        const geminiRes = await fetch(geminiUrl, {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: geminiBody,
-          signal: AbortSignal.timeout(GEMINI_TIMEOUT_MS),
-        })
+        const geminiRes = await fetch(
+          `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${geminiKey}`,
+          {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: geminiBody,
+            signal: AbortSignal.timeout(Math.min(GEMINI_ATTEMPT_TIMEOUT_MS, timeLeft)),
+          }
+        )
         if (geminiRes.ok) {
           reading = parseReading(await geminiRes.json())
-          break // trả lời được rồi thì thôi, dù đọc không ra JSON cũng không hỏi lại
+          break // model đã trả lời thì thôi, dù không đọc ra JSON cũng không hỏi model khác
         }
-        console.error('Gemini API error:', geminiRes.status, 'lần', attempt + 1)
-        const transient = geminiRes.status === 429 || geminiRes.status >= 500
-        if (!transient) break
+        console.error('Gemini API error:', model, geminiRes.status)
       } catch (e) {
-        // Quá thời gian chờ hoặc lỗi mạng: không thử lại để khách không phải chờ gấp đôi.
-        console.error('Gemini request failed:', e)
-        break
+        console.error('Gemini request failed:', model, e)
       }
-      if (attempt + 1 < GEMINI_ATTEMPTS)
-        await new Promise((r) => setTimeout(r, GEMINI_RETRY_DELAY_MS))
     }
 
     const { data: profile } = await admin
@@ -220,8 +228,8 @@ Deno.serve(async (req: Request) => {
       .eq('id', user.id)
       .maybeSingle()
 
-    // Một thẻ — một tài khoản: cùng mã HS/SV đã được tài khoản KHÁC dùng thì không
-    // tự duyệt. (Cùng tài khoản dùng lại thẻ cho bài khác thì bình thường.)
+    // Một thẻ — một tài khoản: cùng mã HS/SV đã được tài khoản KHÁC dùng thì từ chối.
+    // (Cùng tài khoản dùng lại thẻ cho bài khác thì bình thường.)
     let cardHash: string | null = null
     let duplicateOnOtherAccount = false
     const idForHash = reading ? String(reading.student_id ?? '') : ''
