@@ -13,12 +13,25 @@
 // Dong thoi gui 1 email bao don hang moi cho admin (qua Brevo API) de biet
 // ngay co giao dich thanh cong ma khong can mo Supabase Dashboard.
 //
+// MOI GIAO DICH tien vao deu duoc ghi vao bang bank_transactions (khop hay
+// khong). Truoc day tien ve ma khong khop don nao chi co 1 dong console.log nen
+// admin khong the biet "tien da ve ma khach chua nhan tab". Nay khoan khong khop
+// duoc luu voi ly do cu the va gui email bao admin. Ghi log KHONG BAO GIO duoc
+// lam hong viec cap tab: moi loi khi ghi log deu chi duoc bo qua.
+//
 // Secret dung de ky HMAC, secret goi Apps Script, va API key Brevo deu luu
 // trong bang app_secrets (chi service role doc duoc qua RLS), KHONG nhung
 // thang vao source code.
 
 import "jsr:@supabase/functions-js/edge-runtime.d.ts";
 import { createClient } from "jsr:@supabase/supabase-js@2";
+import {
+  decideTransfer,
+  extractOrderCode,
+  parseTransfer,
+  type OrderLite,
+  type TransferInfo,
+} from "./transfer.ts";
 
 declare const EdgeRuntime: { waitUntil: (promise: Promise<unknown>) => void };
 
@@ -28,6 +41,14 @@ const supabaseAdmin = createClient(
 );
 
 const ADMIN_NOTIFY_EMAIL = "quanggg104204@gmail.com";
+
+function escapeHtml(value: unknown): string {
+  return String(value ?? "")
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;");
+}
 
 async function hmacSha256Hex(secret: string, message: string): Promise<string> {
   const enc = new TextEncoder();
@@ -142,9 +163,9 @@ async function notifyAdminByEmail(
         <h2 style="color: #c1602f;">💰 Có đơn hàng mới vừa thanh toán thành công!</h2>
         <table cellpadding="6" style="border-collapse: collapse;">
           <tr><td><strong>Mã đơn:</strong></td><td>${orderCode}</td></tr>
-          <tr><td><strong>Khách hàng:</strong></td><td>${customerName}</td></tr>
-          <tr><td><strong>Email khách:</strong></td><td>${customerEmail}</td></tr>
-          <tr><td><strong>Bài hát:</strong></td><td>${songTitle}</td></tr>
+          <tr><td><strong>Khách hàng:</strong></td><td>${escapeHtml(customerName)}</td></tr>
+          <tr><td><strong>Email khách:</strong></td><td>${escapeHtml(customerEmail)}</td></tr>
+          <tr><td><strong>Bài hát:</strong></td><td>${escapeHtml(songTitle)}</td></tr>
           <tr><td><strong>Số tiền:</strong></td><td><strong>${amountFormatted}</strong></td></tr>
           <tr><td><strong>Thời gian:</strong></td><td>${now}</td></tr>
         </table>
@@ -174,6 +195,90 @@ async function notifyAdminByEmail(
     }
   } catch (err) {
     console.error("[sepay-ipn] notifyAdminByEmail failed:", err);
+  }
+}
+
+const REASON_TEXT: Record<string, string> = {
+  no_code: "Nội dung chuyển khoản không có mã đơn (DH…)",
+  order_not_found: "Có mã đơn nhưng không tìm thấy đơn nào",
+  order_already_paid: "Đơn này đã được thanh toán rồi — khách chuyển thừa một khoản",
+  order_expired: "Đơn đã hết hạn (khách trả muộn)",
+  amount_low: "Số tiền chuyển thấp hơn giá đơn",
+};
+
+/**
+ * Ghi giao dich vao bang bank_transactions.
+ * Tra ve: true = vua ghi moi, false = giao dich nay da duoc ghi tu truoc (SePay
+ * gui lai), null = ghi loi (vd. chua chay file SQL). KHONG bao gio nem loi.
+ */
+async function logTransfer(
+  t: TransferInfo,
+  raw: Record<string, unknown>,
+  o: { status: string; reason?: string | null; orderCode?: string | null; orderId?: string | null }
+): Promise<boolean | null> {
+  try {
+    const row = {
+      external_id: t.externalId,
+      direction: t.direction,
+      amount: t.amount,
+      content: t.content,
+      occurred_at: t.occurredAt,
+      gateway: t.gateway,
+      reference_code: t.referenceCode,
+      status: o.status,
+      reason: o.reason ?? null,
+      order_code: o.orderCode ?? null,
+      order_id: o.orderId ?? null,
+      raw,
+    };
+    const table = supabaseAdmin.from("bank_transactions");
+    const { data, error } = t.externalId
+      ? await table.upsert(row, { onConflict: "external_id", ignoreDuplicates: true }).select("id")
+      : await table.insert(row).select("id");
+    if (error) {
+      console.warn("[sepay-ipn] could not log bank transaction:", error.message);
+      return null;
+    }
+    return (data?.length ?? 0) > 0;
+  } catch (err) {
+    console.warn("[sepay-ipn] bank transaction log threw:", err);
+    return null;
+  }
+}
+
+/** Email bao admin: co tien ve nhung khong khop don nao, can vao xu ly. */
+async function notifyUnmatchedTransfer(t: TransferInfo, reason: string, orderCode: string | null) {
+  try {
+    const brevoKey = await getSecret("brevo_api_key");
+    if (!brevoKey) return;
+
+    const amount = Number(t.amount).toLocaleString("vi-VN") + "đ";
+    const html = `
+      <div style="font-family: sans-serif; font-size: 14px; color: #1a1a1a; line-height: 1.6;">
+        <h2 style="color: #d97706;">⚠️ Có tiền về nhưng chưa khớp đơn nào</h2>
+        <table cellpadding="6" style="border-collapse: collapse;">
+          <tr><td><strong>Số tiền:</strong></td><td><strong>${amount}</strong></td></tr>
+          <tr><td><strong>Nội dung:</strong></td><td>${escapeHtml(t.content) || "(trống)"}</td></tr>
+          <tr><td><strong>Vì sao không khớp:</strong></td><td>${escapeHtml(REASON_TEXT[reason] ?? reason)}</td></tr>
+          ${orderCode ? `<tr><td><strong>Mã đơn trong nội dung:</strong></td><td>${escapeHtml(orderCode)}</td></tr>` : ""}
+        </table>
+        <p>Khách có thể đã chuyển khoản mà chưa nhận được tab. Vào trang quản trị mục <strong>Tiền về</strong> để gán khoản này cho đúng khách:</p>
+        <p><a href="https://quang-v2.vercel.app/admin-dashboard.html#/tien-ve">Mở trang Tiền về</a></p>
+      </div>`;
+
+    const res = await fetch("https://api.brevo.com/v3/smtp/email", {
+      method: "POST",
+      headers: { accept: "application/json", "api-key": brevoKey, "content-type": "application/json" },
+      body: JSON.stringify({
+        sender: { name: "Guitar By Quang", email: ADMIN_NOTIFY_EMAIL },
+        to: [{ email: ADMIN_NOTIFY_EMAIL }],
+        subject: `⚠️ Tiền về chưa khớp đơn: ${amount}`,
+        htmlContent: html,
+      }),
+    });
+    if (!res.ok) console.error("[sepay-ipn] unmatched-transfer email failed:", await res.text());
+  } catch (err) {
+    console.error("[sepay-ipn] notifyUnmatchedTransfer failed:", err);
   }
 }
 
@@ -224,51 +329,72 @@ Deno.serve(async (req: Request) => {
 
   console.log("[sepay-ipn] verified webhook received:", JSON.stringify(body));
 
-  const content = String(body.content ?? "");
-  const transferAmount = Number(body.transferAmount ?? 0);
+  const transfer = parseTransfer(body);
+  const orderCode = extractOrderCode(transfer.content);
 
-  const codeMatch = content.toUpperCase().match(/DH\d{6,}/);
+  // Tra don theo ma o MOI trang thai (khong chi "pending") de biet chinh xac vi
+  // sao mot khoan khong khop: da tra roi, da het han, hay khong co don.
+  let order: OrderLite | null = null;
+  if (orderCode) {
+    const { data, error: orderErr } = await supabaseAdmin
+      .from("orders")
+      .select("id, user_id, song_id, amount, status")
+      .eq("order_code", orderCode)
+      .maybeSingle();
 
-  if (!codeMatch) {
-    console.log("[sepay-ipn] no order code found in content, ignoring:", content);
-    return new Response(JSON.stringify({ success: true, matched: false }), {
+    if (orderErr) {
+      // Loi DB tam thoi: tra 500 de SePay gui lai, thay vi ghi nhan sai la "khong khop".
+      console.error("[sepay-ipn] order lookup failed:", orderErr);
+      return new Response(JSON.stringify({ error: "internal_error" }), {
+        status: 500,
+        headers: { "Content-Type": "application/json" },
+      });
+    }
+    order = data;
+  }
+
+  const decision = decideTransfer(transfer, orderCode, order);
+
+  if (decision.kind === "ignore_outgoing") {
+    console.log("[sepay-ipn] outgoing transfer, ignoring:", transfer.content);
+    await logTransfer(transfer, body, { status: "ignored", reason: "outgoing" });
+    return new Response(JSON.stringify({ success: true, matched: false, reason: "outgoing" }), {
       status: 200,
       headers: { "Content-Type": "application/json" },
     });
   }
 
-  const orderCode = codeMatch[0];
-
-  const { data: order, error: orderErr } = await supabaseAdmin
-    .from("orders")
-    .select("id, user_id, song_id, amount, status")
-    .eq("order_code", orderCode)
-    .eq("status", "pending")
-    .maybeSingle();
-
-  if (orderErr || !order) {
-    console.log("[sepay-ipn] no pending order for code", orderCode);
-    return new Response(JSON.stringify({ success: true, matched: false }), {
-      status: 200,
-      headers: { "Content-Type": "application/json" },
-    });
-  }
-
-  if (transferAmount < Number(order.amount)) {
+  if (decision.kind === "unmatched") {
     console.warn(
-      `[sepay-ipn] amount mismatch for ${orderCode}: expected >= ${order.amount}, got ${transferAmount}`
+      `[sepay-ipn] unmatched transfer (${decision.reason}): ${transfer.amount} - ${transfer.content}`
     );
-    return new Response(JSON.stringify({ success: true, matched: false, reason: "amount_mismatch" }), {
-      status: 200,
-      headers: { "Content-Type": "application/json" },
+    const logged = await logTransfer(transfer, body, {
+      status: "unmatched",
+      reason: decision.reason,
+      orderCode: decision.orderCode,
+      orderId: order?.id ?? null,
     });
+    // logged === false: giao dich nay da duoc ghi + bao truoc do (SePay gui lai)
+    // nen khong bao lai. null (ghi loi) van bao, de khong bo sot tien ve.
+    if (logged !== false) {
+      EdgeRuntime.waitUntil(notifyUnmatchedTransfer(transfer, decision.reason, decision.orderCode));
+    }
+    return new Response(
+      JSON.stringify({ success: true, matched: false, reason: decision.reason }),
+      { status: 200, headers: { "Content-Type": "application/json" } }
+    );
   }
 
-  const { error: updateErr } = await supabaseAdmin
+  // decision.kind === "match": don dang cho va so tien >= gia don. Tu day tro
+  // xuong giu nguyen luong cu.
+  const matchedOrder = order!;
+
+  const { data: updated, error: updateErr } = await supabaseAdmin
     .from("orders")
     .update({ status: "paid", paid_at: new Date().toISOString() })
-    .eq("id", order.id)
-    .eq("status", "pending");
+    .eq("id", matchedOrder.id)
+    .eq("status", "pending")
+    .select("id");
 
   if (updateErr) {
     console.error("[sepay-ipn] failed to mark order paid:", updateErr);
@@ -278,17 +404,27 @@ Deno.serve(async (req: Request) => {
     });
   }
 
+  if (!updated || updated.length === 0) {
+    // Mot request khac (webhook gui trung dong thoi) vua danh dau don nay - khong
+    // cap quyen + gui email lan thu hai.
+    console.log("[sepay-ipn] order already processed by a concurrent request:", decision.orderCode);
+    return new Response(JSON.stringify({ success: true, matched: false, reason: "already_processed" }), {
+      status: 200,
+      headers: { "Content-Type": "application/json" },
+    });
+  }
+
   const { data: existingPurchase } = await supabaseAdmin
     .from("purchases")
     .select("id")
-    .eq("user_id", order.user_id)
-    .eq("song_id", order.song_id)
+    .eq("user_id", matchedOrder.user_id)
+    .eq("song_id", matchedOrder.song_id)
     .maybeSingle();
 
   if (!existingPurchase) {
     const { error: purchaseErr } = await supabaseAdmin
       .from("purchases")
-      .insert({ user_id: order.user_id, song_id: order.song_id, purchased_at: new Date().toISOString() });
+      .insert({ user_id: matchedOrder.user_id, song_id: matchedOrder.song_id, purchased_at: new Date().toISOString() });
     if (purchaseErr) {
       console.error("[sepay-ipn] failed to insert purchase:", purchaseErr);
       return new Response(JSON.stringify({ error: "internal_error" }), {
@@ -298,16 +434,27 @@ Deno.serve(async (req: Request) => {
     }
   }
 
-  console.log(`[sepay-ipn] auto-granted access: order ${orderCode}, user ${order.user_id}, song ${order.song_id}`);
+  console.log(
+    `[sepay-ipn] auto-granted access: order ${decision.orderCode}, user ${matchedOrder.user_id}, song ${matchedOrder.song_id}`
+  );
+
+  await logTransfer(transfer, body, {
+    status: "matched",
+    orderCode: decision.orderCode,
+    orderId: matchedOrder.id,
+  });
 
   // Dung EdgeRuntime.waitUntil de dam bao cap quyen Drive + gui email admin
   // chay xong ngay ca sau khi da tra response cho SePay - fire-and-forget
   // thuong bi cat ngang khi function instance bi huy sau khi response duoc gui.
   EdgeRuntime.waitUntil(
-    Promise.all([grantDriveAccess(order.song_id, order.user_id), notifyAdminByEmail(orderCode, order)])
+    Promise.all([
+      grantDriveAccess(matchedOrder.song_id, matchedOrder.user_id),
+      notifyAdminByEmail(decision.orderCode, matchedOrder),
+    ])
   );
 
-  return new Response(JSON.stringify({ success: true, matched: true, orderCode }), {
+  return new Response(JSON.stringify({ success: true, matched: true, orderCode: decision.orderCode }), {
     status: 200,
     headers: { "Content-Type": "application/json" },
   });

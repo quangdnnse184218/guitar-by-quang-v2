@@ -111,26 +111,66 @@ Deno.serve(async (req: Request) => {
       return json({ success: false, error: "forbidden" }, 403);
     }
 
-    const { userId, songId, reason, note } = await req.json();
+    // orderId / transactionId / amount là tuỳ chọn:
+    //   orderId        đóng đúng đơn này (kể cả đơn đã hết hạn — khách trả muộn)
+    //   transactionId  khoản tiền về (bank_transactions) đang được gán cho lần
+    //                  cấp này; xử lý xong sẽ đánh dấu "đã gán"
+    //   amount         số tiền thực nhận, dùng khi phải tạo đơn để ghi doanh thu
+    const { userId, songId, reason, note, orderId, transactionId, amount } = await req.json();
     if (!userId || !songId) return json({ success: false, error: "missing_userId_or_songId" }, 400);
+
+    // Khoản tiền phải còn "chưa khớp" TRƯỚC KHI cấp: nếu hai admin (hoặc hai
+    // lần bấm) cùng gán một khoản thì chỉ lần đầu được cấp tab, tránh cấp hai
+    // tab cho một khoản tiền.
+    if (transactionId) {
+      const { data: tx } = await supabaseAdmin
+        .from("bank_transactions")
+        .select("status")
+        .eq("id", transactionId)
+        .maybeSingle();
+      if (!tx) return json({ success: false, error: "Không tìm thấy khoản tiền này." }, 404);
+      if (tx.status !== "unmatched") {
+        return json({ success: false, error: "Khoản tiền này đã được xử lý trước đó." }, 409);
+      }
+    }
 
     // Bước 1: cấp quyền trong DB qua đúng RPC hiện có (giữ nguyên toàn bộ
     // validate: user tồn tại, chưa mua trùng...). Gọi bằng userClient (JWT
     // của chính admin) chứ không phải service role — RPC tự kiểm tra
     // auth.uid() bên trong, dùng service role sẽ làm auth.uid() = null và
     // bị chặn nhầm là "không có quyền".
-    const { data: rpcResult, error: rpcError } = await userClient.rpc("admin_grant_access", {
+    // Tham số tuỳ chọn chỉ gửi khi có, để lời gọi cũ vẫn chạy được trên bản
+    // RPC chưa cập nhật.
+    const rpcArgs: Record<string, unknown> = {
       p_user_id: userId,
       p_song_id: songId,
       p_reason: reason ?? "other",
       p_note: note ?? null,
-    });
+    };
+    if (orderId) rpcArgs.p_order_id = orderId;
+    if (amount !== undefined && amount !== null && amount !== "") rpcArgs.p_amount = Number(amount);
+
+    const { data: rpcResult, error: rpcError } = await userClient.rpc("admin_grant_access", rpcArgs);
 
     if (rpcError) {
       return json({ success: false, error: rpcError.message }, 400);
     }
 
-    // Bước 2: cấp quyền Google Drive tự động — không chặn phản hồi nếu lỗi,
+    // Bước 2: đánh dấu khoản tiền đã được gán. Quyền đã cấp xong ở trên nên nếu
+    // bước này lỗi thì báo kèm cảnh báo chứ không huỷ kết quả.
+    let transactionResolved: boolean | undefined;
+    if (transactionId) {
+      const { error: resolveError } = await userClient.rpc("admin_resolve_transaction", {
+        p_transaction_id: transactionId,
+        p_action: "assign",
+        p_order_id: orderId ?? rpcResult?.closed_order_id ?? null,
+        p_note: note ?? null,
+      });
+      transactionResolved = !resolveError;
+      if (resolveError) console.error("[admin-grant-access] resolve transaction failed:", resolveError.message);
+    }
+
+    // Bước 3: cấp quyền Google Drive tự động — không chặn phản hồi nếu lỗi,
     // chỉ báo kèm theo để admin biết cần tự cấp tay nếu bước này thất bại.
     const driveResult = await grantDriveAccess(songId, userId);
 
@@ -139,6 +179,7 @@ Deno.serve(async (req: Request) => {
       dbResult: rpcResult,
       driveGranted: driveResult.ok,
       driveError: driveResult.ok ? undefined : driveResult.reason,
+      transactionResolved,
     });
   } catch (err) {
     console.error("[admin-grant-access] error:", err);
