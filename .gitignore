@@ -18,6 +18,10 @@ dist-ssr
 .env.*.local
 *.local
 
+# Bản sao lưu dữ liệu khách hàng (npm run backup mặc định ghi RA NGOÀI dự án; đây là lớp phòng hờ)
+backups/
+guitar-by-quang-backups/
+
 # Supabase CLI local cache (npx supabase tự tạo, không phải config của project)
 supabase/.temp
 
