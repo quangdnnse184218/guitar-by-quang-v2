@@ -26,6 +26,8 @@ export interface OrderLite {
   status: string;
 }
 
+// "no_code" chỉ còn ở dữ liệu cũ đã lưu trước 2026-09-22 (trang admin vẫn hiển thị được);
+// webhook không tạo thêm: khoản tiền không có mã đơn bị bỏ qua hoàn toàn (xem ignore_unrelated).
 export type UnmatchedReason =
   | "no_code"
   | "order_not_found"
@@ -35,6 +37,7 @@ export type UnmatchedReason =
 
 export type Decision =
   | { kind: "ignore_outgoing" }
+  | { kind: "ignore_unrelated" }
   | { kind: "unmatched"; reason: UnmatchedReason; orderCode: string | null }
   | { kind: "match"; orderCode: string };
 
@@ -79,6 +82,15 @@ export function extractOrderCode(content: string): string | null {
 }
 
 /**
+ * Bản sao payload SePay để lưu vào bảng, BỎ các trường nhạy cảm không cần dùng: số dư tài khoản
+ * (`accumulated`), số tài khoản (`accountNumber`) và tài khoản ảo (`subAccount`).
+ */
+export function sanitizeRaw(body: Record<string, unknown>): Record<string, unknown> {
+  const { accumulated: _a, accountNumber: _n, subAccount: _s, ...rest } = body;
+  return rest;
+}
+
+/**
  * Quyết định cho một khoản tiền về. Nhánh "match" giữ NGUYÊN điều kiện cũ (đơn
  * đang chờ VÀ số tiền >= giá đơn) — phần mới chỉ là nói rõ VÌ SAO các trường hợp
  * còn lại không khớp, để admin thấy được thay vì chỉ có một dòng console.log.
@@ -93,7 +105,10 @@ export function decideTransfer(
   // tiền vào.
   if (transfer.direction === "out") return { kind: "ignore_outgoing" };
 
-  if (!orderCode) return { kind: "unmatched", reason: "no_code", orderCode: null };
+  // Tiền vào KHÔNG có mã đơn DH… thì không liên quan tới web bán tab (bạn bè chuyển tiền
+  // cá nhân, tiền lương…). SePay gửi webhook cho MỌI giao dịch của tài khoản, nhưng web chỉ
+  // được quan tâm khoản nào mang mã đơn (khách quét QR trên web): không lưu, không báo email.
+  if (!orderCode) return { kind: "ignore_unrelated" };
   if (!order) return { kind: "unmatched", reason: "order_not_found", orderCode };
 
   if (order.status === "paid") {

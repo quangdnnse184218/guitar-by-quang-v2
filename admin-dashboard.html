@@ -436,9 +436,10 @@
             </div>
 
             <div class="rounded-2xl border border-sky-500/25 bg-sky-500/[0.06] p-4 text-xs leading-relaxed text-text-primary">
-              Mỗi khoản tiền vào tài khoản ngân hàng đều được ghi lại. Khoản nào <strong>không tự khớp được đơn nào</strong>
-              (khách ghi sai nội dung, trả muộn, chuyển thiếu…) hiện ở đây và bạn nhận được email báo.
-              Gán nó cho đúng khách là xong: khách nhận tab, Drive được chia sẻ và doanh thu được ghi.
+              Chỉ những khoản tiền <strong>mang mã đơn DH…</strong> (khách quét QR trên web) mới được ghi lại. Tiền chuyển vào
+              không có mã đơn (bạn bè, tiền cá nhân…) và tiền chi ra bị bỏ qua hoàn toàn: không lưu, không báo email.
+              Khoản nào có mã nhưng <strong>không tự khớp được đơn</strong> (trả muộn, chuyển thiếu, trả thừa…) hiện ở đây và bạn nhận
+              được email báo. Gán nó cho đúng khách là xong: khách nhận tab, Drive được chia sẻ và doanh thu được ghi.
             </div>
 
             <section class="glass-card border border-glass-border rounded-2xl overflow-hidden">
@@ -457,7 +458,7 @@
             <section class="glass-card border border-glass-border rounded-2xl overflow-hidden">
               <div class="p-4 sm:p-5 border-b border-glass-border">
                 <h3 class="text-sm font-extrabold text-text-primary">Giao dịch gần đây</h3>
-                <p class="text-[11px] text-text-muted mt-0.5">60 khoản tiền vào gần nhất, gồm cả khoản tự khớp và khoản đã xử lý.</p>
+                <p class="text-[11px] text-text-muted mt-0.5">60 khoản tiền có mã đơn gần nhất, gồm cả khoản tự khớp và khoản đã xử lý.</p>
               </div>
               <div id="payments-recent" class="divide-y divide-glass-border max-h-[480px] overflow-y-auto"></div>
             </section>

@@ -28,7 +28,7 @@ const refreshBtn = document.getElementById('payments-refresh')
 const unmatchedCountEl = document.getElementById('payments-unmatched-count')
 
 const REASONS = {
-  no_code: { label: 'Không có mã đơn', hint: 'Khách chuyển khoản mà quên ghi mã DH…' },
+  no_code: { label: 'Không có mã đơn', hint: 'Dữ liệu cũ (trước 22/09): từ nay tiền không có mã đơn không còn được ghi' },
   order_not_found: { label: 'Mã đơn không tồn tại', hint: 'Nội dung có mã nhưng không có đơn nào khớp' },
   order_already_paid: {
     label: 'Chuyển thừa',
@@ -241,7 +241,7 @@ function renderRecent(list) {
   if (!recentEl) return
 
   if (list.length === 0) {
-    recentEl.innerHTML = `<div class="p-8 text-center text-xs text-text-muted">Chưa ghi nhận giao dịch nào. Các khoản tiền về từ giờ sẽ hiện ở đây.</div>`
+    recentEl.innerHTML = `<div class="p-8 text-center text-xs text-text-muted">Chưa ghi nhận giao dịch nào. Các khoản tiền có mã đơn từ giờ sẽ hiện ở đây.</div>`
     return
   }
 

@@ -13,10 +13,14 @@
 // Dong thoi gui 1 email bao don hang moi cho admin (qua Brevo API) de biet
 // ngay co giao dich thanh cong ma khong can mo Supabase Dashboard.
 //
-// MOI GIAO DICH tien vao deu duoc ghi vao bang bank_transactions (khop hay
+// Moi giao dich CO MA DON (DH...) deu duoc ghi vao bang bank_transactions (khop hay
 // khong). Truoc day tien ve ma khong khop don nao chi co 1 dong console.log nen
 // admin khong the biet "tien da ve ma khach chua nhan tab". Nay khoan khong khop
-// duoc luu voi ly do cu the va gui email bao admin. Ghi log KHONG BAO GIO duoc
+// duoc luu voi ly do cu the va gui email bao admin.
+// SePay gui webhook cho MOI giao dich cua tai khoan (ke ca ban be chuyen tien ca nhan,
+// tien ra): khoan KHONG co ma don thi bo qua hoan toan - khong luu noi dung, khong
+// gui email, khong ghi vao log - vi khong lien quan toi viec ban tab va la du lieu
+// tai chinh ca nhan cua chu tai khoan. Ghi log KHONG BAO GIO duoc
 // lam hong viec cap tab: moi loi khi ghi log deu chi duoc bo qua.
 //
 // Secret dung de ky HMAC, secret goi Apps Script, va API key Brevo deu luu
@@ -29,6 +33,7 @@ import {
   decideTransfer,
   extractOrderCode,
   parseTransfer,
+  sanitizeRaw,
   type OrderLite,
   type TransferInfo,
 } from "./transfer.ts";
@@ -263,7 +268,7 @@ async function notifyUnmatchedTransfer(t: TransferInfo, reason: string, orderCod
           ${orderCode ? `<tr><td><strong>Mã đơn trong nội dung:</strong></td><td>${escapeHtml(orderCode)}</td></tr>` : ""}
         </table>
         <p>Khách có thể đã chuyển khoản mà chưa nhận được tab. Vào trang quản trị mục <strong>Tiền về</strong> để gán khoản này cho đúng khách:</p>
-        <p><a href="https://quang-v2.vercel.app/admin-dashboard.html#/tien-ve">Mở trang Tiền về</a></p>
+        <p><a href="https://guitar-by-quang-v2.vercel.app/admin-dashboard.html#/tien-ve">Mở trang Tiền về</a></p>
       </div>`;
 
     const res = await fetch("https://api.brevo.com/v3/smtp/email", {
@@ -327,10 +332,26 @@ Deno.serve(async (req: Request) => {
     });
   }
 
-  console.log("[sepay-ipn] verified webhook received:", JSON.stringify(body));
-
   const transfer = parseTransfer(body);
   const orderCode = extractOrderCode(transfer.content);
+
+  // Loc som, TRUOC khi ghi bat ky log/dong du lieu nao co noi dung chuyen khoan: tien RA va
+  // tien vao khong co ma don khong lien quan toi web (xem decideTransfer).
+  const early = decideTransfer(transfer, orderCode, null);
+  if (early.kind === "ignore_outgoing" || early.kind === "ignore_unrelated") {
+    console.log(`[sepay-ipn] ignored (${early.kind})`);
+    return new Response(
+      JSON.stringify({
+        success: true,
+        matched: false,
+        reason: early.kind === "ignore_outgoing" ? "outgoing" : "unrelated",
+      }),
+      { status: 200, headers: { "Content-Type": "application/json" } }
+    );
+  }
+
+  // Chi log ban da bo so du/so tai khoan.
+  console.log("[sepay-ipn] verified webhook received:", JSON.stringify(sanitizeRaw(body)));
 
   // Tra don theo ma o MOI trang thai (khong chi "pending") de biet chinh xac vi
   // sao mot khoan khong khop: da tra roi, da het han, hay khong co don.
@@ -354,11 +375,9 @@ Deno.serve(async (req: Request) => {
   }
 
   const decision = decideTransfer(transfer, orderCode, order);
-
-  if (decision.kind === "ignore_outgoing") {
-    console.log("[sepay-ipn] outgoing transfer, ignoring:", transfer.content);
-    await logTransfer(transfer, body, { status: "ignored", reason: "outgoing" });
-    return new Response(JSON.stringify({ success: true, matched: false, reason: "outgoing" }), {
+  if (decision.kind === "ignore_outgoing" || decision.kind === "ignore_unrelated") {
+    // Không tới được (đã lọc ở trên) — giữ để TypeScript thu hẹp kiểu và phòng hờ.
+    return new Response(JSON.stringify({ success: true, matched: false }), {
       status: 200,
       headers: { "Content-Type": "application/json" },
     });
@@ -368,7 +387,7 @@ Deno.serve(async (req: Request) => {
     console.warn(
       `[sepay-ipn] unmatched transfer (${decision.reason}): ${transfer.amount} - ${transfer.content}`
     );
-    const logged = await logTransfer(transfer, body, {
+    const logged = await logTransfer(transfer, sanitizeRaw(body), {
       status: "unmatched",
       reason: decision.reason,
       orderCode: decision.orderCode,
@@ -438,7 +457,7 @@ Deno.serve(async (req: Request) => {
     `[sepay-ipn] auto-granted access: order ${decision.orderCode}, user ${matchedOrder.user_id}, song ${matchedOrder.song_id}`
   );
 
-  await logTransfer(transfer, body, {
+  await logTransfer(transfer, sanitizeRaw(body), {
     status: "matched",
     orderCode: decision.orderCode,
     orderId: matchedOrder.id,

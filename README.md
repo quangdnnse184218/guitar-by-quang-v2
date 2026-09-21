@@ -28,7 +28,7 @@ tác thủ công nào của quản trị viên.
 |---|---|
 | **Thanh toán tự động** | Webhook ngân hàng (SePay) xác thực bằng HMAC-SHA256, chống replay, tự cấp quyền xem file Google Drive và gửi email báo đơn |
 | **Bảo mật chủ động** | Row-Level Security ở tầng database, chống user enumeration, chống XSS lưu trữ, chống dò tài khoản qua thời gian phản hồi |
-| **Kiểm thử bất biến bảo mật** | 137 test tự động, gồm chạy nguyên hàm webhook thanh toán với chữ ký HMAC thật và Supabase giả lập, chạy trong CI mỗi lần push |
+| **Kiểm thử bất biến bảo mật** | 145 test tự động, gồm chạy nguyên hàm webhook thanh toán với chữ ký HMAC thật và Supabase giả lập, chạy trong CI mỗi lần push |
 | **AI có kiểm soát** | Gemini đọc thẻ HSSV để tự động giảm giá; chỗ nào AI chưa chắc thì chuyển cho quản trị viên duyệt thay vì từ chối nhầm, ảnh tự xoá sau vài ngày, có chống IDOR và kiểm tra quyền sở hữu đơn hàng |
 | **Tối ưu mobile-first** | Toàn bộ giao diện thiết kế cho người Việt dùng điện thoại, mạng yếu — không SPA, không hydration |
 
@@ -100,10 +100,14 @@ sequenceDiagram
   database phải khớp đúng giá bài hát, khách không thể tự tạo đơn giá rẻ.
 - **Không chặn phản hồi webhook:** việc cấp quyền Drive và gửi email chạy nền
   bằng `EdgeRuntime.waitUntil` sau khi đã trả lời SePay, tránh timeout.
-- **Không bỏ sót tiền về:** mọi giao dịch ngân hàng được ghi vào bảng
-  `bank_transactions`, kể cả khoản không khớp đơn nào (sai nội dung, trả muộn,
-  chuyển thiếu). Khoản đó hiện ở trang "Tiền về" kèm gợi ý đơn cùng số tiền,
-  admin gán bằng một cú bấm và nhận email báo ngay khi có tiền về mà chưa khớp.
+- **Không bỏ sót tiền của khách:** mọi giao dịch mang mã đơn được ghi vào bảng
+  `bank_transactions`, kể cả khoản không khớp đơn nào (sai mã, trả muộn, chuyển
+  thiếu, trả thừa). Khoản đó hiện ở trang "Tiền về" kèm gợi ý đơn cùng số tiền,
+  admin gán bằng một cú bấm và nhận email báo ngay.
+- **Tối thiểu hoá dữ liệu tài chính:** ngân hàng gửi webhook cho MỌI giao dịch của
+  tài khoản, nhưng khoản không có mã đơn (tiền cá nhân) và tiền chi ra bị bỏ qua
+  hoàn toàn — không lưu, không gửi email, không ghi log; số dư và số tài khoản trong
+  payload gốc cũng không được lưu.
 - **Doanh thu không thiếu khi cấp tay:** cấp quyền với lý do "đã nhận tiền" mà
   khách chưa có đơn thì hệ thống tự tạo một đơn đã thanh toán để ghi doanh thu.
 
@@ -195,7 +199,7 @@ Security với policy theo từng người dùng.
 │   └── lib/                Tầng truy cập dữ liệu + tiện ích dùng chung
 ├── supabase/
 │   ├── functions/          6 Edge Function (Deno)
-│   │   ├── sepay-ipn/          Webhook ngân hàng → cấp quyền tự động, ghi mọi giao dịch
+│   │   ├── sepay-ipn/          Webhook ngân hàng → cấp quyền tự động, ghi giao dịch có mã đơn
 │   │   ├── verify-hssv-card/   Đọc thẻ HSSV bằng AI: duyệt / chờ admin / từ chối
 │   │   ├── hssv-cleanup/       Tự xoá ảnh thẻ tới hạn (chạy theo lịch)
 │   │   ├── admin-grant-access/ Cấp quyền thủ công + cấp quyền Drive

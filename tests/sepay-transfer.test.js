@@ -7,6 +7,7 @@ import {
   parseVietnamTime,
   extractOrderCode,
   decideTransfer,
+  sanitizeRaw,
 } from '../supabase/functions/sepay-ipn/transfer.ts'
 
 const order = (over = {}) => ({
@@ -113,12 +114,16 @@ describe('decideTransfer', () => {
     })
   })
 
-  it('không có mã đơn trong nội dung → no_code', () => {
+  it('tiền vào KHÔNG có mã đơn → bỏ qua hoàn toàn (không liên quan tới web bán tab)', () => {
     expect(decideTransfer(transfer({ content: 'tien an' }), null, null)).toEqual({
-      kind: 'unmatched',
-      reason: 'no_code',
-      orderCode: null,
+      kind: 'ignore_unrelated',
     })
+  })
+
+  it('hướng không rõ mà không có mã đơn cũng bỏ qua', () => {
+    expect(
+      decideTransfer(transfer({ direction: 'unknown', content: 'chuyen tien' }), null, null).kind
+    ).toBe('ignore_unrelated')
   })
 
   it('có mã nhưng không tồn tại đơn → order_not_found', () => {
@@ -133,9 +138,9 @@ describe('decideTransfer', () => {
     expect(decideTransfer(transfer(), 'DH123456', order({ status: 'expired' })).kind).toBe(
       'unmatched'
     )
-    expect(
-      decideTransfer(transfer(), 'DH123456', order({ status: 'expired' })).reason
-    ).toBe('order_expired')
+    expect(decideTransfer(transfer(), 'DH123456', order({ status: 'expired' })).reason).toBe(
+      'order_expired'
+    )
   })
 
   it('đơn đã trả mà tiền về thêm lần nữa → order_already_paid (cần hoàn tiền)', () => {
@@ -155,5 +160,26 @@ describe('decideTransfer', () => {
     expect(decideTransfer(transfer({ direction: 'unknown' }), 'DH123456', order()).kind).toBe(
       'match'
     )
+  })
+})
+
+describe('sanitizeRaw', () => {
+  it('bỏ số dư, số tài khoản và tài khoản ảo, giữ phần còn lại', () => {
+    const out = sanitizeRaw({
+      id: 9001,
+      content: 'DH123456',
+      transferAmount: 239000,
+      accumulated: 5000000,
+      accountNumber: '03970202801',
+      subAccount: 'X1',
+    })
+    expect(out).toEqual({ id: 9001, content: 'DH123456', transferAmount: 239000 })
+  })
+
+  it('không làm hỏng payload thiếu các trường đó và không sửa đối tượng gốc', () => {
+    const body = { id: 1, accumulated: 10 }
+    sanitizeRaw(body)
+    expect(body).toEqual({ id: 1, accumulated: 10 })
+    expect(sanitizeRaw({ id: 1 })).toEqual({ id: 1 })
   })
 })
