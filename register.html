@@ -84,6 +84,43 @@
           <span id="register-alert-text">Lỗi đăng ký</span>
         </div>
 
+        <!-- Chờ xác nhận email: hiện sau khi đăng ký thành công, trang KHÔNG tự chuyển đi mà tự đăng nhập
+             ngay khi khách bấm liên kết trong email (xem startWaiting trong src/register.js). -->
+        <div id="register-waiting" class="hidden space-y-5 text-center" aria-live="polite">
+          <div class="w-14 h-14 mx-auto rounded-2xl bg-emerald-500/15 text-emerald-600 dark:text-emerald-400 border border-emerald-500/30 flex items-center justify-center text-2xl shadow-inner">✉️</div>
+          <div class="space-y-2">
+            <h2 class="text-xl font-extrabold text-text-primary">Kiểm tra email của bạn</h2>
+            <p class="text-xs text-text-muted font-medium leading-relaxed">
+              Chúng tôi đã gửi thư xác nhận đến
+              <strong id="waiting-email" class="text-text-primary break-all"></strong>.
+              Mở thư và bấm nút <strong class="text-text-primary">Xác nhận</strong>.
+              Trang này sẽ <strong class="text-text-primary">tự đăng nhập</strong> ngay khi bạn xác nhận xong,
+              bạn không cần làm gì thêm.
+            </p>
+          </div>
+
+          <div id="waiting-status" class="flex items-center justify-center gap-2 text-xs font-bold text-text-muted">
+            <div id="waiting-spinner" class="w-3.5 h-3.5 border-2 border-accent-primary/30 border-t-accent-primary rounded-full animate-spin"></div>
+            <span id="waiting-status-text">Đang chờ bạn xác nhận email…</span>
+          </div>
+
+          <p class="text-[11px] text-text-muted leading-relaxed">
+            Không thấy thư? Kiểm tra mục <strong class="text-text-primary">Spam / Thư rác</strong> (thư có thể đến chậm vài phút).
+            Gõ sai email? Nhắn
+            <a href="https://zalo.me/0326768885" target="_blank" rel="noopener noreferrer" class="text-accent-primary font-bold hover:underline">Zalo cho Quang</a>
+            để được hỗ trợ.
+          </p>
+
+          <p id="waiting-feedback" class="hidden text-[11px] font-semibold leading-relaxed" role="status"></p>
+
+          <button
+            type="button"
+            id="waiting-resend-btn"
+            disabled
+            class="w-full py-3 rounded-full bg-glass-bg border border-glass-border hover:border-accent-primary hover:text-accent-primary text-text-primary font-bold text-xs transition-all disabled:opacity-60 disabled:cursor-not-allowed cursor-pointer"
+          >Gửi lại email xác nhận</button>
+        </div>
+
         <!-- Register Form -->
         <form id="register-form" class="space-y-4" novalidate>
           <div class="space-y-1.5">

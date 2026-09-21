@@ -1,6 +1,11 @@
 import { supabase } from './lib/supabase.js'
 import { initThemeToggle } from './theme-toggle.js'
 import { getPasswordWeaknessReason, initPasswordMatchHint } from './common.js'
+import { watchEmailConfirmation } from './lib/email-confirmation-watch.js'
+import { redirectTo } from './lib/navigate.js'
+
+// Supabase chỉ cho gửi lại email xác nhận sau mỗi 60 giây.
+const RESEND_COOLDOWN_SECONDS = 60
 
 document.addEventListener('DOMContentLoaded', () => {
   initThemeToggle()
@@ -65,6 +70,142 @@ document.addEventListener('DOMContentLoaded', () => {
       submitBtn.classList.remove('opacity-70', 'cursor-not-allowed')
       btnText.textContent = 'Đăng Ký Tài Khoản'
       btnSpinner.classList.add('hidden')
+    }
+  }
+
+  // ---------------------------------------------------------------------------
+  // CHỜ XÁC NHẬN EMAIL: đăng ký xong thì ở NGUYÊN trang này (không tự nhảy sang Đăng nhập),
+  // rồi tự đăng nhập ngay khi khách bấm liên kết trong email — dù họ mở email trên điện thoại
+  // hay tab khác. Xem src/lib/email-confirmation-watch.js.
+  // ---------------------------------------------------------------------------
+  const waitingPanel = document.getElementById('register-waiting')
+  const waitingEmail = document.getElementById('waiting-email')
+  const waitingSpinner = document.getElementById('waiting-spinner')
+  const waitingStatusText = document.getElementById('waiting-status-text')
+  const waitingFeedback = document.getElementById('waiting-feedback')
+  const resendBtn = document.getElementById('waiting-resend-btn')
+
+  let watcher = null
+  let authChannel = null
+  let resendTimer = null
+  let waitingEmailValue = ''
+
+  const confirmRedirectUrl = () => `${window.location.origin}/email-confirmed.html`
+
+  function setWaitingStatus(text, { spinning = true } = {}) {
+    if (waitingStatusText) waitingStatusText.textContent = text
+    waitingSpinner?.classList.toggle('hidden', !spinning)
+  }
+
+  function setWaitingFeedback(message, ok = true) {
+    if (!waitingFeedback) return
+    waitingFeedback.classList.remove('hidden')
+    waitingFeedback.textContent = message
+    waitingFeedback.className =
+      'text-[11px] font-semibold leading-relaxed ' +
+      (ok ? 'text-emerald-600 dark:text-emerald-400' : 'text-rose-600 dark:text-rose-400')
+  }
+
+  function onVisible() {
+    if (!document.hidden) watcher?.checkNow()
+  }
+
+  function stopWaiting() {
+    watcher?.stop()
+    watcher = null
+    authChannel?.close()
+    authChannel = null
+    document.removeEventListener('visibilitychange', onVisible)
+    if (resendTimer) clearInterval(resendTimer)
+    resendTimer = null
+  }
+
+  function startResendCooldown() {
+    if (!resendBtn) return
+    let left = RESEND_COOLDOWN_SECONDS
+    resendBtn.disabled = true
+    resendBtn.textContent = `Gửi lại email xác nhận (${left}s)`
+    if (resendTimer) clearInterval(resendTimer)
+    resendTimer = setInterval(() => {
+      left--
+      if (left <= 0) {
+        clearInterval(resendTimer)
+        resendTimer = null
+        resendBtn.disabled = false
+        resendBtn.textContent = 'Gửi lại email xác nhận'
+      } else {
+        resendBtn.textContent = `Gửi lại email xác nhận (${left}s)`
+      }
+    }, 1000)
+  }
+
+  resendBtn?.addEventListener('click', async () => {
+    if (!waitingEmailValue) return
+    startResendCooldown()
+    setWaitingFeedback('Đang gửi lại email…')
+    const { error } = await supabase.auth.resend({
+      type: 'signup',
+      email: waitingEmailValue,
+      options: { emailRedirectTo: confirmRedirectUrl() },
+    })
+    if (error) {
+      const msg = String(error.message || '').toLowerCase()
+      const limited =
+        msg.includes('rate limit') || msg.includes('seconds') || msg.includes('too many')
+      setWaitingFeedback(
+        limited
+          ? 'Bạn vừa yêu cầu gửi thư. Vui lòng đợi ít phút rồi thử lại, và kiểm tra cả mục Spam.'
+          : 'Chưa gửi lại được email. Vui lòng thử lại sau ít phút.',
+        false
+      )
+    } else {
+      setWaitingFeedback('Đã gửi lại email. Hãy kiểm tra hộp thư (cả mục Spam).')
+    }
+  })
+
+  function startWaiting(email, password) {
+    stopWaiting()
+    waitingEmailValue = email
+    form.classList.add('hidden')
+    waitingPanel?.classList.remove('hidden')
+    if (waitingEmail) waitingEmail.textContent = email
+    waitingFeedback?.classList.add('hidden')
+    setWaitingStatus('Đang chờ bạn xác nhận email…')
+    startResendCooldown()
+
+    // Mật khẩu chỉ nằm trong hàm này (bộ nhớ), không lưu ở storage; xoá khỏi ô nhập ngay.
+    passwordInput.value = ''
+    confirmPasswordInput.value = ''
+
+    watcher = watchEmailConfirmation({
+      signIn: () => supabase.auth.signInWithPassword({ email, password }),
+      onConfirmed: () => {
+        stopWaiting()
+        setWaitingStatus('Đã xác nhận! Đang đưa bạn vào tài khoản…', { spinning: true })
+        setTimeout(() => redirectTo('/user-dashboard.html'), 800)
+      },
+      onGiveUp: () => {
+        setWaitingStatus(
+          'Đã chờ khá lâu. Nếu bạn đã bấm xác nhận, hãy bấm "Đăng nhập tại đây" bên dưới.',
+          { spinning: false }
+        )
+      },
+      onProblem: () => {
+        setWaitingStatus(
+          'Chưa tự đăng nhập được. Nếu bạn đã bấm xác nhận, hãy bấm "Đăng nhập tại đây" bên dưới.',
+          { spinning: false }
+        )
+      },
+    })
+
+    // Khách quay lại tab này (từ ứng dụng email) → kiểm tra ngay thay vì chờ lượt hỏi kế tiếp.
+    document.addEventListener('visibilitychange', onVisible)
+    // Mở liên kết ở CÙNG trình duyệt: trang "đã xác thực" báo tin qua kênh này → đăng nhập tức thì.
+    if (typeof BroadcastChannel !== 'undefined') {
+      authChannel = new BroadcastChannel('gbq-auth')
+      authChannel.onmessage = (ev) => {
+        if (ev.data?.type === 'email-confirmed') watcher?.checkNow()
+      }
     }
   }
 
@@ -199,6 +340,8 @@ document.addEventListener('DOMContentLoaded', () => {
         email,
         password,
         options: {
+          // Liên kết trong email dẫn tới trang "đã xác thực thành công" của web mình.
+          emailRedirectTo: confirmRedirectUrl(),
           data: {
             full_name: displayName,
             display_name: displayName,
@@ -228,17 +371,12 @@ document.addEventListener('DOMContentLoaded', () => {
 
       // Kiểm tra xem Supabase có yêu cầu xác thực email hay không
       if (data?.user && data?.session === null) {
-        showAlert(
-          'Đăng ký thành công! Vui lòng kiểm tra hộp thư email để kích hoạt tài khoản.',
-          true
-        )
-        setTimeout(() => {
-          window.location.href = '/login.html'
-        }, 3000)
+        // Ở nguyên trang này chờ khách xác nhận email; tự đăng nhập khi họ bấm liên kết.
+        startWaiting(email, password)
       } else {
         showAlert('Đăng ký thành công! Đang chuyển hướng vào tài khoản...', true)
         setTimeout(() => {
-          window.location.href = '/user-dashboard.html'
+          redirectTo('/user-dashboard.html')
         }, 1200)
       }
     } catch (error) {
@@ -265,7 +403,7 @@ document.addEventListener('DOMContentLoaded', () => {
         msgLower.includes('over_email_send_rate_limit')
       ) {
         errorMsg =
-          'Hệ thống Supabase đang giới hạn số lượt gửi email xác thực (Rate limit). Vui lòng TẮT mục "Confirm email" trong Supabase Auth Settings để đăng ký được ngay mà không bị giới hạn.'
+          'Hệ thống đang gửi quá nhiều email xác nhận. Bạn vui lòng thử lại sau ít phút, hoặc nhắn Zalo cho Quang để được hỗ trợ.'
       } else if (
         msgLower.includes('invalid email') ||
         msgLower.includes('unable to validate email')

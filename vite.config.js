@@ -13,6 +13,7 @@ export default defineConfig({
         adminLogin: resolve(import.meta.dirname, 'admin-login.html'),
         adminDashboard: resolve(import.meta.dirname, 'admin-dashboard.html'),
         register: resolve(import.meta.dirname, 'register.html'),
+        emailConfirmed: resolve(import.meta.dirname, 'email-confirmed.html'),
         login: resolve(import.meta.dirname, 'login.html'),
         userDashboard: resolve(import.meta.dirname, 'user-dashboard.html'),
         resetPassword: resolve(import.meta.dirname, 'reset-password.html'),

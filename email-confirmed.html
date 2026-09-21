@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="vi">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, interactive-widget=resizes-content" />
+    <title>Xác Thực Email — Guitar By Quang</title>
+    <meta name="robots" content="noindex, nofollow" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+
+    <!-- Prevent theme flash & sync with localStorage -->
+    <script>
+      (function () {
+        try {
+          var saved = localStorage.getItem('gbq_theme');
+          if (saved !== 'dark') {
+            document.documentElement.setAttribute('data-theme', 'light');
+          } else {
+            document.documentElement.removeAttribute('data-theme');
+          }
+        } catch (e) { }
+      })();
+    </script>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,400;1,600&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+
+    <link rel="stylesheet" href="/src/style.css" />
+  </head>
+  <body class="bg-bg-base text-text-primary min-h-screen relative flex flex-col justify-between overflow-x-hidden">
+    <div class="grain-overlay" aria-hidden="true"></div>
+
+    <header class="py-5 px-6 sm:px-12 flex items-center justify-between border-b border-glass-border">
+      <a href="/" class="flex items-center gap-3 group">
+        <div class="w-9 h-9 rounded-xl bg-warm-gradient text-white flex items-center justify-center shadow-sm group-hover:scale-105 transition-transform">
+          <svg class="w-4 h-4" viewBox="0 0 260 480" fill="currentColor" aria-hidden="true"><rect x="115" y="0" width="30" height="220" rx="14"/><rect x="102" y="0" width="56" height="32" rx="12"/><ellipse cx="130" cy="270" rx="72" ry="62"/><ellipse cx="130" cy="385" rx="108" ry="92"/></svg>
+        </div>
+        <div>
+          <span class="text-base font-extrabold text-text-primary tracking-tight block leading-tight">Guitar By Quang</span>
+          <span class="text-[11px] font-semibold text-text-muted">Nền Tảng Tự Học Guitar</span>
+        </div>
+      </a>
+      <button id="theme-toggle-btn" aria-label="Chuyển đổi giao diện Sáng / Tối"
+        title="Chuyển đổi giao diện Sáng / Tối"
+        class="p-2 rounded-full bg-glass-bg hover:bg-glass-bg-hover text-text-primary border border-glass-border flex items-center justify-center transition-colors cursor-pointer flex-shrink-0">
+        <svg class="sun-icon w-4 h-4 text-accent-primary" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+          stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <circle cx="12" cy="12" r="4"></circle>
+          <path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M6.34 17.66l-1.41 1.41M19.07 4.93l-1.41 1.41"></path>
+        </svg>
+        <svg class="moon-icon w-4 h-4 text-accent-primary" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+          stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z"></path>
+        </svg>
+      </button>
+    </header>
+
+    <main class="flex-grow flex items-center justify-center p-4 sm:p-6 my-auto">
+      <div class="w-full max-w-md glass-card rounded-3xl p-8 sm:p-10 border border-glass-border shadow-2xl text-center">
+
+        <!-- Thành công -->
+        <div id="state-success" class="hidden space-y-5">
+          <div class="w-16 h-16 mx-auto rounded-full bg-emerald-500/15 text-emerald-600 dark:text-emerald-400 border border-emerald-500/30 flex items-center justify-center shadow-inner">
+            <svg class="w-8 h-8" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/></svg>
+          </div>
+          <div class="space-y-2">
+            <h1 class="text-2xl font-extrabold text-text-primary">Đã xác thực thành công</h1>
+            <p class="text-sm text-text-muted font-medium leading-relaxed">
+              Email của bạn đã được xác thực.
+              <strong class="text-text-primary">Vui lòng quay lại trang web</strong>
+              bạn vừa đăng ký, trang đó sẽ tự đăng nhập cho bạn.
+            </p>
+          </div>
+          <div class="pt-1 space-y-2">
+            <p class="text-[11px] text-text-muted">Đã đóng trang đăng ký hoặc không thấy tự đăng nhập?</p>
+            <a href="/login.html" class="block px-4 py-3 rounded-full bg-warm-gradient text-white text-sm font-extrabold shadow-md hover:brightness-105 active:scale-95 transition-all">Đăng nhập ngay</a>
+          </div>
+        </div>
+
+        <!-- Liên kết hết hạn / đã dùng -->
+        <div id="state-error" class="hidden space-y-5">
+          <div class="w-16 h-16 mx-auto rounded-full bg-amber-500/15 text-amber-600 dark:text-amber-400 border border-amber-500/30 flex items-center justify-center text-3xl shadow-inner" aria-hidden="true">!</div>
+          <div class="space-y-2">
+            <h1 class="text-2xl font-extrabold text-text-primary">Liên kết không còn dùng được</h1>
+            <p class="text-sm text-text-muted font-medium leading-relaxed">
+              Liên kết xác nhận đã hết hạn hoặc đã được dùng rồi. Nếu bạn đã xác nhận trước đó, chỉ cần đăng nhập.
+              Nếu chưa, nhập email để nhận thư xác nhận mới.
+            </p>
+          </div>
+          <a href="/login.html" class="block px-4 py-3 rounded-full bg-warm-gradient text-white text-sm font-extrabold shadow-md hover:brightness-105 active:scale-95 transition-all">Đăng nhập</a>
+          <form id="resend-form" class="space-y-2.5 text-left" novalidate>
+            <label for="resend-email" class="text-xs font-bold text-text-primary block">Gửi lại email xác nhận</label>
+            <input
+              type="email"
+              id="resend-email"
+              required
+              placeholder="vidu@gmail.com"
+              autocomplete="email"
+              class="w-full px-4 py-3 rounded-2xl bg-black/5 dark:bg-white/5 border border-glass-border text-sm text-text-primary placeholder:text-text-muted focus:outline-none focus:border-accent-primary transition-colors"
+            />
+            <button
+              type="submit"
+              id="resend-btn"
+              class="w-full py-3 rounded-full bg-glass-bg border border-glass-border hover:border-accent-primary hover:text-accent-primary text-text-primary font-bold text-xs transition-all disabled:opacity-60 disabled:cursor-not-allowed cursor-pointer"
+            >Gửi lại</button>
+            <p id="resend-feedback" class="hidden text-[11px] font-semibold text-text-muted leading-relaxed" role="status"></p>
+          </form>
+        </div>
+
+        <!-- Mở thẳng trang này, không đi qua liên kết trong email -->
+        <div id="state-none" class="space-y-5">
+          <div class="w-16 h-16 mx-auto rounded-2xl bg-accent-primary/15 text-accent-primary border border-accent-primary/30 flex items-center justify-center text-3xl shadow-inner" aria-hidden="true">✉️</div>
+          <div class="space-y-2">
+            <h1 class="text-2xl font-extrabold text-text-primary">Xác thực email</h1>
+            <p class="text-sm text-text-muted font-medium leading-relaxed">
+              Trang này hiện kết quả sau khi bạn bấm liên kết <strong class="text-text-primary">Xác nhận</strong> trong email.
+              Hãy mở email từ Guitar By Quang và bấm vào đó.
+            </p>
+          </div>
+          <div class="grid grid-cols-2 gap-2.5 text-sm">
+            <a href="/login.html" class="px-4 py-3 rounded-2xl bg-warm-gradient text-white font-extrabold shadow-md hover:brightness-105 active:scale-95 transition-all">Đăng nhập</a>
+            <a href="/register.html" class="px-4 py-3 rounded-2xl bg-glass-bg border border-glass-border text-text-primary font-bold hover:border-accent-primary hover:text-accent-primary transition-all">Đăng ký</a>
+          </div>
+        </div>
+
+      </div>
+    </main>
+
+    <footer class="py-5 text-center text-xs text-text-muted border-t border-glass-border">
+      © 2026 Guitar By Quang • Mọi bản quyền được bảo hộ
+    </footer>
+
+    <script type="module" src="/src/email-confirmed.js"></script>
+  </body>
+</html>
