@@ -322,33 +322,44 @@
     </main>
 
     <!-- FOOTER -->
-    <footer class="footer-section pt-8 pb-6 border-t border-glass-border">
+    <footer class="footer-section pt-12 pb-2 border-t border-glass-border">
       <div class="max-w-7xl mx-auto px-6">
-        <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-5 pb-6">
-          <a href="/" class="inline-flex items-center gap-2.5 w-fit group">
-            <span class="w-8 h-8 rounded-lg bg-warm-gradient text-white flex items-center justify-center shadow-sm group-hover:scale-105 transition-transform"><svg class="w-3.5 h-3.5" viewBox="0 0 260 480" fill="currentColor" aria-hidden="true"><rect x="115" y="0" width="30" height="220" rx="14"/><rect x="102" y="0" width="56" height="32" rx="12"/><ellipse cx="130" cy="270" rx="72" ry="62"/><ellipse cx="130" cy="385" rx="108" ry="92"/></svg></span>
-            <span class="flex flex-col leading-tight">
-              <span class="font-extrabold tracking-tight text-text-primary group-hover:text-accent-primary transition-colors">Guitar By Quang</span>
-              <span class="text-[11px] font-semibold text-text-muted">fingerstyle diary • Nhật Quang</span>
-            </span>
-          </a>
-          <nav class="flex flex-wrap items-center gap-x-5 gap-y-2 text-sm font-semibold text-text-muted" aria-label="Liên kết cuối trang">
-            <a href="/kho-tab.html" class="hover:text-accent-primary transition-colors">Kho Video Tab</a>
-            <a href="/cong-cu.html" class="hover:text-accent-primary transition-colors">Công cụ</a>
-            <a href="/index.html#faq" class="hover:text-accent-primary transition-colors">Hỏi đáp</a>
-            <a href="https://zalo.me/0326768885" target="_blank" rel="noopener noreferrer" class="hover:text-accent-primary transition-colors">Zalo 0326.768.885</a>
-            <a href="https://www.facebook.com/quang.doan.969429" target="_blank" rel="noopener noreferrer" class="hover:text-accent-primary transition-colors">Facebook</a>
-          </nav>
+        <div class="grid grid-cols-2 md:grid-cols-12 gap-x-8 gap-y-10 pb-10">
+          <div class="col-span-2 md:col-span-6 space-y-4">
+            <a href="/" class="inline-flex items-center gap-3 w-fit group">
+              <span class="w-10 h-10 rounded-xl bg-warm-gradient text-white flex items-center justify-center shadow-sm group-hover:scale-105 transition-transform"><svg class="w-4 h-4" viewBox="0 0 260 480" fill="currentColor" aria-hidden="true"><rect x="115" y="0" width="30" height="220" rx="14"/><rect x="102" y="0" width="56" height="32" rx="12"/><ellipse cx="130" cy="270" rx="72" ry="62"/><ellipse cx="130" cy="385" rx="108" ry="92"/></svg></span>
+              <span class="flex flex-col leading-tight">
+                <span class="text-lg font-extrabold tracking-tight text-text-primary group-hover:text-accent-primary transition-colors">Guitar By Quang</span>
+                <span class="text-xs font-semibold text-accent-primary">fingerstyle diary • Nhật Quang</span>
+              </span>
+            </a>
+            <p class="text-sm text-text-muted leading-relaxed max-w-sm">Video tab guitar fingerstyle và công cụ luyện tập miễn phí, soạn cho người Việt mới chơi đàn đến lúc tự tin đánh trọn một bài.</p>
+          </div>
+          <div class="md:col-span-3 space-y-4">
+            <h4 class="text-[11px] font-bold uppercase tracking-[0.12em] text-text-primary">Khám phá</h4>
+            <nav class="flex flex-col gap-2.5 text-sm font-medium text-text-muted" aria-label="Khám phá">
+              <a href="/kho-tab.html" class="hover:text-accent-primary transition-colors w-fit">Kho Video Tab</a>
+              <a href="/cong-cu.html" class="hover:text-accent-primary transition-colors w-fit">Công cụ luyện tập</a>
+              <a href="/index.html#faq" class="hover:text-accent-primary transition-colors w-fit">Hỏi đáp</a>
+            </nav>
+          </div>
+          <div class="md:col-span-3 space-y-4">
+            <h4 class="text-[11px] font-bold uppercase tracking-[0.12em] text-text-primary">Liên hệ</h4>
+            <div class="flex flex-col gap-2.5 text-sm font-medium text-text-muted">
+              <a href="https://zalo.me/0326768885" target="_blank" rel="noopener noreferrer" class="hover:text-accent-primary transition-colors w-fit">Zalo: 0326.768.885</a>
+              <a href="https://www.facebook.com/quang.doan.969429" target="_blank" rel="noopener noreferrer" class="hover:text-accent-primary transition-colors w-fit">Facebook: Nhật Quang</a>
+            </div>
+          </div>
         </div>
-        <div class="pt-4 border-t border-black/10 dark:border-white/10 flex flex-col sm:flex-row items-center justify-between gap-3 text-xs text-text-muted">
-          <p class="font-medium text-center sm:text-left">
-            © 2026 Guitar By Quang ·
-            <a href="/chinh-sach-bao-mat.html" class="underline underline-offset-2 hover:text-accent-primary transition-colors">Chính sách bảo mật</a>
-          </p>
-          <button type="button" onclick="window.scrollTo({top:0, behavior:'smooth'})" class="inline-flex items-center gap-1 font-semibold hover:text-accent-primary transition-colors cursor-pointer" title="Về đầu trang">
-            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 15l7-7 7 7"/></svg>
-            <span>Đầu trang</span>
-          </button>
+        <div class="py-5 border-t border-glass-border flex flex-col-reverse sm:flex-row items-center justify-between gap-3 text-xs text-text-muted">
+          <p>© 2026 Guitar By Quang. Bảo lưu mọi quyền.</p>
+          <div class="flex items-center gap-5">
+            <a href="/chinh-sach-bao-mat.html" class="hover:text-accent-primary transition-colors w-fit">Chính sách bảo mật</a>
+            <button type="button" onclick="window.scrollTo({top:0, behavior:'smooth'})" class="inline-flex items-center gap-1 hover:text-accent-primary transition-colors w-fit cursor-pointer">
+              <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 15l7-7 7 7"/></svg>
+              <span>Về đầu trang</span>
+            </button>
+          </div>
         </div>
       </div>
     </footer>
