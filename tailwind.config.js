@@ -23,7 +23,7 @@ export default {
       },
       fontFamily: {
         sans: ['"Plus Jakarta Sans Variable"', '-apple-system', 'BlinkMacSystemFont', 'sans-serif'],
-        heading: ['"Bricolage Grotesque Variable"', '"Plus Jakarta Sans Variable"', 'sans-serif'],
+        heading: ['"Plus Jakarta Sans Variable"', 'sans-serif'],
         body: ['"Plus Jakarta Sans Variable"', 'sans-serif'],
       },
     },
