@@ -22,9 +22,9 @@ export default {
         danger: 'var(--danger)',
       },
       fontFamily: {
-        sans: ['"Be Vietnam Pro"', 'Inter', '-apple-system', 'BlinkMacSystemFont', 'sans-serif'],
-        heading: ['"Be Vietnam Pro"', 'sans-serif'],
-        body: ['"Be Vietnam Pro"', 'Inter', 'sans-serif'],
+        sans: ['"Plus Jakarta Sans Variable"', '-apple-system', 'BlinkMacSystemFont', 'sans-serif'],
+        heading: ['"Bricolage Grotesque Variable"', '"Plus Jakarta Sans Variable"', 'sans-serif'],
+        body: ['"Plus Jakarta Sans Variable"', 'sans-serif'],
       },
     },
   },
