@@ -25,6 +25,9 @@ export default {
         sans: ['"Be Vietnam Pro"', 'Inter', '-apple-system', 'BlinkMacSystemFont', 'sans-serif'],
         heading: ['"Be Vietnam Pro"', 'sans-serif'],
         body: ['"Be Vietnam Pro"', 'Inter', 'sans-serif'],
+        // Chữ tiêu đề lớn (h1 / .text-h1 đã tự áp trong style.css) — thêm class
+        // font-display để dùng cho những chữ lớn khác không phải thẻ h1 thật.
+        display: ['"Fraunces"', 'serif'],
       },
     },
   },

@@ -1,4 +1,7 @@
-@import url('https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,400;1,600&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600;700;800&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,400;1,600&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600;700;800&family=Fraunces:ital,opsz,wght@0,9..144,500;0,9..144,600;0,9..144,700;1,9..144,500&display=swap');
+/* Fraunces: chữ tiêu đề riêng cho h1/.text-h1 — có kèm dấu tiếng Việt (đã kiểm
+   tra glyph qua Google Fonts). Be Vietnam Pro (thiết kế riêng cho tiếng Việt)
+   vẫn giữ cho toàn bộ phần còn lại — không đổi để tránh rủi ro đổ vỡ hiển thị. */
 
 @tailwind base;
 @tailwind components;
@@ -9,41 +12,42 @@
    ============================================================================== */
 :root {
   color-scheme: dark;
-  --bg-base: #0b0e14;
-  --sec-hero-bg: #0b0e14;
-  --sec-about-bg: #111520;
-  /* Trước là #0d1018 — gần như trùng với --sec-hero-bg (#0b0e14), khó nhận ra
-     ranh giới giữa hero và "Bài Hát Nổi Bật" ngay bên dưới. Đổi sang tông ấm
-     (nâu/cam đậm) để 2 khối rõ ràng khác nhau thay vì gần như liền một màu. */
-  --sec-featured-bg: #1a130c;
-  --sec-tools-bg: #121723;
-  --sec-faq-bg: #0f131d;
-  --sec-contact-bg: #131826;
-  --header-bg: rgba(11, 14, 20, 0.9);
-  --footer-bg-grad: linear-gradient(to bottom, #111520, #080a0f);
+  /* Bảng màu "xưởng đàn": gỗ walnut/rosewood ấm (không phải đen-xanh SaaS
+     thường thấy), điểm nhấn đồng thau (brass — dây đàn quấn, ty đàn) và rượu
+     vang đô (wine — lớp nhung lót trong hộp đàn tốt) thay cho cam/terracotta
+     mặc định hay gặp ở web AI tạo. */
+  --bg-base: #1b140f;
+  --sec-hero-bg: #1b140f;
+  --sec-about-bg: #221a13;
+  --sec-featured-bg: #2a1b12;
+  --sec-tools-bg: #1f1912;
+  --sec-faq-bg: #1c1610;
+  --sec-contact-bg: #241c14;
+  --header-bg: rgba(27, 20, 15, 0.9);
+  --footer-bg-grad: linear-gradient(to bottom, #221a13, #120d09);
 
   /* Brand Floating Blobs */
-  --blob-amber: #e87a30;
-  --blob-violet: #e87a30;
-  --blob-rose: #c2410c;
+  --blob-amber: #d4af37;
+  --blob-violet: #a8455a;
+  --blob-rose: #8a6a2a;
 
   /* Card Surfaces — Dark Mode Elevation */
-  --glass-bg: #151a27;
-  --glass-border: rgba(255, 255, 255, 0.09);
-  --glass-bg-hover: #1c2234;
+  --glass-bg: #241b14;
+  --glass-border: rgba(230, 210, 180, 0.1);
+  --glass-bg-hover: #2c2118;
   --glass-blur: 20px;
 
   /* High-Contrast Neutral Text */
-  --text-primary: #f8fafc;
-  --text-muted: #94a3b8;
-  --text-faint: #64748b;
+  --text-primary: #f3ede2;
+  --text-muted: #b8a88f;
+  --text-faint: #8a7860;
 
-  /* Primary Brand Color: Warm Orange */
-  --accent-primary: #e87a30;
-  --accent-primary-hover: #f28c48;
-  --accent-secondary: #e87a30;
-  --terracotta: #d96b27;
-  --terracotta-light: rgba(232, 122, 48, 0.15);
+  /* Primary Brand Color: Antique Brass */
+  --accent-primary: #d4af37;
+  --accent-primary-hover: #e4c158;
+  --accent-secondary: #d4af37;
+  --terracotta: #a8455a;
+  --terracotta-light: rgba(168, 69, 90, 0.18);
 
   /* Semantic Functional Colors — Dark Mode */
   --success-text: #34d399;
@@ -94,39 +98,39 @@
    ============================================================================== */
 [data-theme='light'] {
   color-scheme: light;
-  --bg-base: #f7f2ea;
-  --sec-hero-bg: #f7f2ea;
-  --sec-about-bg: #efe8dc;
-  /* Trước là #faf6ef — nhạt hơn cả hero, gần như trùng màu. Đổi sang tông ấm
-     đậm hơn (be/cam nhạt) để tách bạch rõ với hero phía trên. */
-  --sec-featured-bg: #f2decc;
-  --sec-tools-bg: #ede4d6;
-  --sec-faq-bg: #f6efe5;
-  --sec-contact-bg: #eae0d1;
-  --header-bg: rgba(247, 242, 234, 0.92);
-  --footer-bg: #decab6;
-  --footer-bg-grad: linear-gradient(180deg, #e2d0bd 0%, #d8c3ae 100%);
+  /* Nền vải lanh xưởng mộc (linen), không phải kem #F4F1EA hay gặp — cùng bộ
+     đôi đồng thau/rượu vang như bản tối để hai theme là một bảng màu duy nhất. */
+  --bg-base: #e7e2d3;
+  --sec-hero-bg: #e7e2d3;
+  --sec-about-bg: #ded7c4;
+  --sec-featured-bg: #e3d4be;
+  --sec-tools-bg: #dad2be;
+  --sec-faq-bg: #e2dbc9;
+  --sec-contact-bg: #d5cbb2;
+  --header-bg: rgba(231, 226, 211, 0.92);
+  --footer-bg: #c9bb9e;
+  --footer-bg-grad: linear-gradient(180deg, #d2c4a6 0%, #c2b393 100%);
 
-  --blob-amber: #f5a25d;
-  --blob-violet: #e87a30;
-  --blob-rose: #ea580c;
+  --blob-amber: #b8912e;
+  --blob-violet: #7a2e3a;
+  --blob-rose: #9c7a2e;
 
   /* Card Surfaces — Light Mode Elevation */
-  --glass-bg: #ffffff;
-  --glass-border: rgba(180, 150, 120, 0.25);
-  --glass-bg-hover: #fffdf9;
+  --glass-bg: #fbf9f3;
+  --glass-border: rgba(120, 95, 60, 0.22);
+  --glass-bg-hover: #f5f0e4;
 
   /* Legible Walnut & Charcoal Text */
-  --text-primary: #231c16;
-  --text-muted: #5c4d40;
-  --text-faint: #8a7868;
+  --text-primary: #241c14;
+  --text-muted: #5c4e3a;
+  --text-faint: #8a7a5e;
 
-  /* Primary Brand Color: Warm Acoustic Terracotta */
-  --accent-primary: #d35f1d;
-  --accent-primary-hover: #b84e14;
-  --accent-secondary: #d35f1d;
-  --terracotta: #d35f1d;
-  --terracotta-light: rgba(211, 95, 29, 0.12);
+  /* Primary Brand Color: Antique Brass */
+  --accent-primary: #8a6a2a;
+  --accent-primary-hover: #6e5420;
+  --accent-secondary: #8a6a2a;
+  --terracotta: #6e2a38;
+  --terracotta-light: rgba(110, 42, 56, 0.1);
 
   /* Semantic Functional Colors — Light Mode (Rich, High Contrast WCAG AA) */
   --success-text: #065f46;
@@ -210,6 +214,16 @@ h6 {
   text-shadow: none !important;
   letter-spacing: -0.015em;
   color: var(--text-primary);
+}
+
+/* Tiêu đề lớn nhất mỗi trang (h1 thật, hoặc div/span dùng class .text-h1)
+   dùng một mặt chữ riêng có cá tính hơn — Be Vietnam Pro vẫn dùng cho mọi
+   heading còn lại và toàn bộ nội dung để giữ đồng nhất và an toàn dấu tiếng Việt. */
+h1,
+.text-h1 {
+  font-family: 'Fraunces', 'Be Vietnam Pro', serif;
+  font-optical-sizing: auto;
+  letter-spacing: -0.01em;
 }
 
 /* Numeric Mono Font & Tabular Figures */
@@ -412,8 +426,8 @@ nav,
   transform: translateY(-5px);
   box-shadow:
     0 16px 36px rgba(0, 0, 0, 0.45),
-    0 0 20px rgba(232, 122, 48, 0.15);
-  border-color: rgba(232, 122, 48, 0.4);
+    0 0 20px rgba(212, 175, 55, 0.18);
+  border-color: rgba(212, 175, 55, 0.4);
 }
 
 [data-theme='light'] .song-card:hover,
@@ -424,8 +438,8 @@ nav,
 [data-theme='light'] .card-interactive.touch-active {
   box-shadow:
     0 16px 32px rgba(60, 40, 20, 0.12),
-    0 0 16px rgba(211, 95, 29, 0.12);
-  border-color: rgba(211, 95, 29, 0.4);
+    0 0 16px rgba(138, 106, 42, 0.16);
+  border-color: rgba(138, 106, 42, 0.4);
 }
 
 /* Swipe-to-favorite overlay (kho-tab.js): heart flash shown while dragging a
@@ -464,13 +478,13 @@ nav,
   letter-spacing: 0.08em;
   text-transform: uppercase;
   color: var(--accent-primary);
-  background: rgba(232, 122, 48, 0.14);
-  border: 1px solid rgba(232, 122, 48, 0.35);
+  background: rgba(212, 175, 55, 0.16);
+  border: 1px solid rgba(212, 175, 55, 0.4);
 }
 
 [data-theme='light'] .hero-version-badge {
-  background: rgba(201, 127, 46, 0.12);
-  border-color: rgba(201, 127, 46, 0.35);
+  background: rgba(138, 106, 42, 0.12);
+  border-color: rgba(138, 106, 42, 0.35);
 }
 
 /* ==============================================================================
@@ -628,11 +642,11 @@ nav,
   outline: none;
   border-color: var(--accent-primary);
   background: var(--glass-bg-hover);
-  box-shadow: 0 0 20px rgba(232, 168, 85, 0.2);
+  box-shadow: 0 0 20px rgba(212, 175, 55, 0.22);
 }
 
 [data-theme='light'] .glass-input:focus {
-  box-shadow: 0 0 20px rgba(201, 127, 46, 0.15);
+  box-shadow: 0 0 20px rgba(138, 106, 42, 0.16);
 }
 
 .glass-input::placeholder {
@@ -658,21 +672,21 @@ nav,
 .filter-pill:hover {
   color: var(--text-primary);
   background: var(--glass-bg-hover);
-  border-color: rgba(232, 168, 85, 0.3);
+  border-color: rgba(212, 175, 55, 0.35);
 }
 
 .filter-pill.active {
-  color: #0b0e1a;
+  color: #1b140f;
   background: var(--accent-primary);
   border-color: var(--accent-primary);
-  box-shadow: 0 4px 18px rgba(232, 168, 85, 0.35);
+  box-shadow: 0 4px 18px rgba(212, 175, 55, 0.4);
 }
 
 [data-theme='light'] .filter-pill.active {
   color: #ffffff;
   background: var(--accent-primary);
   border-color: var(--accent-primary);
-  box-shadow: 0 4px 18px rgba(201, 127, 46, 0.25);
+  box-shadow: 0 4px 18px rgba(138, 106, 42, 0.28);
 }
 
 .faq-filter-pill {
@@ -694,21 +708,21 @@ nav,
 .faq-filter-pill:hover {
   color: var(--text-primary);
   background: var(--glass-bg-hover);
-  border-color: rgba(232, 168, 85, 0.3);
+  border-color: rgba(212, 175, 55, 0.35);
 }
 
 .faq-filter-pill.active {
-  color: #0b0e1a;
+  color: #1b140f;
   background: var(--accent-primary);
   border-color: var(--accent-primary);
-  box-shadow: 0 2px 12px rgba(232, 168, 85, 0.3);
+  box-shadow: 0 2px 12px rgba(212, 175, 55, 0.35);
 }
 
 [data-theme='light'] .faq-filter-pill.active {
   color: #ffffff;
   background: var(--accent-primary);
   border-color: var(--accent-primary);
-  box-shadow: 0 2px 12px rgba(201, 127, 46, 0.22);
+  box-shadow: 0 2px 12px rgba(138, 106, 42, 0.25);
 }
 
 /* ==============================================================================
@@ -798,7 +812,7 @@ nav,
   height: 500px;
   top: -180px;
   left: -140px;
-  background: radial-gradient(circle, rgba(245, 178, 60, 0.5), transparent 70%);
+  background: radial-gradient(circle, rgba(212, 175, 55, 0.42), transparent 70%);
 }
 
 .site-ambient-blob-2 {
@@ -806,7 +820,7 @@ nav,
   height: 440px;
   top: 8%;
   right: -160px;
-  background: radial-gradient(circle, rgba(232, 122, 48, 0.42), transparent 70%);
+  background: radial-gradient(circle, rgba(168, 69, 90, 0.38), transparent 70%);
 }
 
 .site-ambient-blob-3 {
@@ -814,17 +828,17 @@ nav,
   height: 400px;
   bottom: -160px;
   left: 18%;
-  background: radial-gradient(circle, rgba(217, 107, 39, 0.34), transparent 70%);
+  background: radial-gradient(circle, rgba(138, 106, 42, 0.32), transparent 70%);
 }
 
 [data-theme='light'] .site-ambient-blob-1 {
-  background: radial-gradient(circle, rgba(219, 158, 62, 0.42), transparent 70%);
+  background: radial-gradient(circle, rgba(184, 145, 46, 0.4), transparent 70%);
 }
 [data-theme='light'] .site-ambient-blob-2 {
-  background: radial-gradient(circle, rgba(211, 95, 29, 0.32), transparent 70%);
+  background: radial-gradient(circle, rgba(122, 46, 58, 0.3), transparent 70%);
 }
 [data-theme='light'] .site-ambient-blob-3 {
-  background: radial-gradient(circle, rgba(184, 78, 20, 0.26), transparent 70%);
+  background: radial-gradient(circle, rgba(156, 122, 46, 0.26), transparent 70%);
 }
 
 @media (prefers-reduced-motion: no-preference) {
@@ -1053,9 +1067,9 @@ nav,
    TAB ORIGIN BADGES ("Tab của Quang" / "Tab sưu tầm")
    ============================================================================== */
 .badge-origin-quang {
-  background-color: rgba(232, 122, 48, 0.22);
-  color: #fdba74;
-  border: 1px solid rgba(232, 122, 48, 0.45);
+  background-color: rgba(212, 175, 55, 0.2);
+  color: #e4c158;
+  border: 1px solid rgba(212, 175, 55, 0.45);
 }
 
 [data-theme='light'] .badge-origin-quang {
@@ -1094,7 +1108,7 @@ nav,
 .badge-semantic-primary {
   background-color: var(--terracotta-light) !important;
   color: var(--accent-primary) !important;
-  border: 1px solid rgba(211, 95, 29, 0.3) !important;
+  border: 1px solid rgba(138, 106, 42, 0.35) !important;
 }
 
 /* ==============================================================================
