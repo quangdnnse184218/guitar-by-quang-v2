@@ -5,21 +5,28 @@ export default {
   theme: {
     extend: {
       colors: {
-        'bg-base': 'var(--bg-base)',
+        // Token dưới dạng `rgb(var(--x) / <alpha-value>)` + biến CSS lưu "R G B"
+        // (không phải hex) — bắt buộc phải vậy thì Tailwind mới sinh được các
+        // utility có modifier độ mờ như `bg-accent-primary/20`. Xem ghi chú
+        // 2026-09-26 ở đầu style.css để biết lý do và phạm vi đã sửa.
+        'bg-base': 'rgb(var(--bg-base) / <alpha-value>)',
+        // blob-amber/violet/rose: token cũ không còn nơi nào dùng tới (đã dò),
+        // giữ lại nguyên hex phẳng cho an toàn, không cần opacity.
         'blob-amber': 'var(--blob-amber)',
         'blob-violet': 'var(--blob-violet)',
         'blob-rose': 'var(--blob-rose)',
-        'glass-bg': 'var(--glass-bg)',
+        'glass-bg': 'rgb(var(--glass-bg) / <alpha-value>)',
+        // glass-border CỐ Ý giữ nguyên dạng cũ — xem ghi chú trong style.css.
         'glass-border': 'var(--glass-border)',
-        'glass-bg-hover': 'var(--glass-bg-hover)',
-        'text-primary': 'var(--text-primary)',
-        'text-muted': 'var(--text-muted)',
-        'text-faint': 'var(--text-faint)',
-        'accent-primary': 'var(--accent-primary)',
-        'accent-primary-hover': 'var(--accent-primary-hover)',
-        'accent-secondary': 'var(--accent-secondary)',
-        success: 'var(--success)',
-        danger: 'var(--danger)',
+        'glass-bg-hover': 'rgb(var(--glass-bg-hover) / <alpha-value>)',
+        'text-primary': 'rgb(var(--text-primary) / <alpha-value>)',
+        'text-muted': 'rgb(var(--text-muted) / <alpha-value>)',
+        'text-faint': 'rgb(var(--text-faint) / <alpha-value>)',
+        'accent-primary': 'rgb(var(--accent-primary) / <alpha-value>)',
+        'accent-primary-hover': 'rgb(var(--accent-primary-hover) / <alpha-value>)',
+        'accent-secondary': 'rgb(var(--accent-secondary) / <alpha-value>)',
+        success: 'rgb(var(--success) / <alpha-value>)',
+        danger: 'rgb(var(--danger) / <alpha-value>)',
       },
       fontFamily: {
         sans: ['"Be Vietnam Pro"', 'Inter', '-apple-system', 'BlinkMacSystemFont', 'sans-serif'],

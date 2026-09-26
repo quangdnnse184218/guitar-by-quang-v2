@@ -20,19 +20,33 @@
      thường thấy), điểm nhấn đồng thau (brass — dây đàn quấn, ty đàn) và rượu
      vang đô (wine — lớp nhung lót trong hộp đàn tốt) thay cho cam/terracotta
      mặc định hay gặp ở web AI tạo. */
-  --bg-base: #1b140f;
+  /* 2026-09-26: các token màu dưới đây (đến hết khối accent) lưu dạng "R G B"
+     cách nhau bằng khoảng trắng (không phải hex, không có dấu phẩy) — bắt
+     buộc phải vậy thì Tailwind mới ghép được với modifier độ mờ kiểu
+     `bg-accent-primary/20`. Trước đây lưu hex phẳng nên MỌI utility dạng
+     `màu/số` (bg-accent-primary/20, border-.../30, shadow-.../10…) trên toàn
+     site NGẦM render trong suốt hoàn toàn — xác nhận bằng cách dựng Tailwind
+     CLI riêng để soi CSS thật sự sinh ra. Mọi nơi dùng trực tiếp `var(--token)`
+     trong file này (và trong .html/.js) đều phải bọc lại thành
+     `rgb(var(--token))` — đã rà và sửa hết khi đổi định dạng này.
+     `--glass-border` CỐ Ý không đổi: nó đang là một màu rgba() có sẵn độ mờ
+     10% dùng trơn (không qua modifier) ở hơn 400 chỗ — đổi sang định dạng này
+     sẽ khiến viền hiện rõ 100% ở khắp trang, một hồi quy lớn hơn nhiều so với
+     lợi ích. Vài chỗ dùng modifier trên glass-border (`/40`, `/60`) vẫn còn
+     bị lỗi tương tự, để lại cho một lượt riêng vì cần rà kỹ hơn. */
+  --bg-base: 27 20 15;
   /* Trước đây mỗi section một sắc riêng (6 tông khác nhau) khiến trang chủ
      nhìn loang lổ, có "đường kẻ ngăn cách" giữa các khối. Giờ chỉ luân phiên
      2 tông: nền gốc và một tông "nổi" hơn một chút — section nào đã có khung
      spotlight/card riêng (Bài Hát Nổi Bật) thì để nền gốc, section trơn mới
      cần tông nổi để tách bạch với section trơn liền kề. */
   --sec-raised-bg: #241c14;
-  --sec-hero-bg: var(--bg-base);
+  --sec-hero-bg: rgb(var(--bg-base));
   --sec-about-bg: var(--sec-raised-bg);
-  --sec-featured-bg: var(--bg-base);
-  --sec-tools-bg: var(--bg-base);
+  --sec-featured-bg: rgb(var(--bg-base));
+  --sec-tools-bg: rgb(var(--bg-base));
   --sec-faq-bg: var(--sec-raised-bg);
-  --sec-contact-bg: var(--bg-base);
+  --sec-contact-bg: rgb(var(--bg-base));
   --header-bg: rgba(27, 20, 15, 0.9);
   --footer-bg-grad: linear-gradient(to bottom, #221a13, #120d09);
 
@@ -42,20 +56,20 @@
   --blob-rose: #8a6a2a;
 
   /* Card Surfaces — Dark Mode Elevation */
-  --glass-bg: #241b14;
+  --glass-bg: 36 27 20;
   --glass-border: rgba(230, 210, 180, 0.1);
-  --glass-bg-hover: #2c2118;
+  --glass-bg-hover: 44 33 24;
   --glass-blur: 20px;
 
   /* High-Contrast Neutral Text */
-  --text-primary: #f3ede2;
-  --text-muted: #b8a88f;
-  --text-faint: #8a7860;
+  --text-primary: 243 237 226;
+  --text-muted: 184 168 143;
+  --text-faint: 138 120 96;
 
   /* Primary Brand Color: Antique Brass */
-  --accent-primary: #d4af37;
-  --accent-primary-hover: #e4c158;
-  --accent-secondary: #d4af37;
+  --accent-primary: 212 175 55;
+  --accent-primary-hover: 228 193 88;
+  --accent-secondary: 212 175 55;
   --terracotta: #a8455a;
   --terracotta-light: rgba(168, 69, 90, 0.18);
 
@@ -64,11 +78,17 @@
   --success-bg: rgba(52, 211, 153, 0.15);
   --success-border: rgba(52, 211, 153, 0.35);
   --success-solid: #10b981;
+  /* `text-success`/`bg-success` (Tailwind, dùng ở nhãn "Không kẹp") trỏ tới
+     token `--success` này — trước đây token này CHƯA TỪNG được định nghĩa,
+     nên mọi chỗ dùng `text-success` âm thầm không có màu (kế thừa màu chữ
+     cha) suốt từ đầu. Trỏ sang cùng sắc với --success-solid. */
+  --success: 16 185 129;
 
   --danger-text: #fca5a5;
   --danger-bg: rgba(248, 113, 113, 0.16);
   --danger-border: rgba(248, 113, 113, 0.35);
   --danger-solid: #ef4444;
+  --danger: 239 68 68;
 
   --warning-text: #fde68a;
   --warning-bg: rgba(245, 158, 11, 0.16);
@@ -110,14 +130,14 @@
   color-scheme: light;
   /* Nền vải lanh xưởng mộc (linen), không phải kem #F4F1EA hay gặp — cùng bộ
      đôi đồng thau/rượu vang như bản tối để hai theme là một bảng màu duy nhất. */
-  --bg-base: #e7e2d3;
+  --bg-base: 231 226 211;
   --sec-raised-bg: #ded7c4;
-  --sec-hero-bg: var(--bg-base);
+  --sec-hero-bg: rgb(var(--bg-base));
   --sec-about-bg: var(--sec-raised-bg);
-  --sec-featured-bg: var(--bg-base);
-  --sec-tools-bg: var(--bg-base);
+  --sec-featured-bg: rgb(var(--bg-base));
+  --sec-tools-bg: rgb(var(--bg-base));
   --sec-faq-bg: var(--sec-raised-bg);
-  --sec-contact-bg: var(--bg-base);
+  --sec-contact-bg: rgb(var(--bg-base));
   --header-bg: rgba(231, 226, 211, 0.92);
   --footer-bg: #c9bb9e;
   --footer-bg-grad: linear-gradient(180deg, #d2c4a6 0%, #c2b393 100%);
@@ -127,19 +147,19 @@
   --blob-rose: #9c7a2e;
 
   /* Card Surfaces — Light Mode Elevation */
-  --glass-bg: #fbf9f3;
+  --glass-bg: 251 249 243;
   --glass-border: rgba(120, 95, 60, 0.22);
-  --glass-bg-hover: #f5f0e4;
+  --glass-bg-hover: 245 240 228;
 
   /* Legible Walnut & Charcoal Text */
-  --text-primary: #241c14;
-  --text-muted: #5c4e3a;
-  --text-faint: #8a7a5e;
+  --text-primary: 36 28 20;
+  --text-muted: 92 78 58;
+  --text-faint: 138 122 94;
 
   /* Primary Brand Color: Antique Brass */
-  --accent-primary: #8a6a2a;
-  --accent-primary-hover: #6e5420;
-  --accent-secondary: #8a6a2a;
+  --accent-primary: 138 106 42;
+  --accent-primary-hover: 110 84 32;
+  --accent-secondary: 138 106 42;
   --terracotta: #6e2a38;
   --terracotta-light: rgba(110, 42, 56, 0.1);
 
@@ -148,11 +168,13 @@
   --success-bg: #ecfdf5;
   --success-border: #a7f3d0;
   --success-solid: #059669;
+  --success: 5 150 105;
 
   --danger-text: #991b1c;
   --danger-bg: #fef2f2;
   --danger-border: #fecaca;
   --danger-solid: #dc2626;
+  --danger: 220 38 38;
 
   --warning-text: #92400e;
   --warning-bg: #fef3c7;
@@ -191,8 +213,8 @@
    BASE & TYPOGRAPHY SETTINGS (PERFECT VIETNAMESE RENDERING)
    ============================================================================== */
 body {
-  background-color: var(--bg-base);
-  color: var(--text-primary);
+  background-color: rgb(var(--bg-base));
+  color: rgb(var(--text-primary));
   font-family:
     'Be Vietnam Pro',
     -apple-system,
@@ -223,7 +245,7 @@ h6 {
   font-weight: 700;
   text-shadow: none !important;
   letter-spacing: -0.015em;
-  color: var(--text-primary);
+  color: rgb(var(--text-primary));
 }
 
 /* Tiêu đề chính mỗi trang/mỗi khối lớn (h1 thật, h2, hoặc div/span dùng class
@@ -263,8 +285,8 @@ textarea {
 }
 
 select {
-  background-color: var(--glass-bg);
-  color: var(--text-primary);
+  background-color: rgb(var(--glass-bg));
+  color: rgb(var(--text-primary));
   border: 1px solid var(--glass-border);
 }
 
@@ -353,7 +375,7 @@ nav,
    ============================================================================== */
 .glass-card {
   position: relative;
-  background-color: var(--glass-bg);
+  background-color: rgb(var(--glass-bg));
   border: 1px solid var(--glass-border);
   border-radius: 20px;
   box-shadow:
@@ -435,7 +457,7 @@ nav,
 .song-card.touch-active,
 .gear-card.touch-active,
 .card-interactive.touch-active {
-  background-color: var(--glass-bg-hover);
+  background-color: rgb(var(--glass-bg-hover));
   transform: translateY(-5px);
   box-shadow:
     0 16px 36px rgba(0, 0, 0, 0.45),
@@ -474,7 +496,7 @@ nav,
    HERO REFINEMENTS
    ============================================================================== */
 .hero-highlight-text {
-  background: linear-gradient(135deg, var(--accent-primary) 0%, var(--terracotta) 100%);
+  background: linear-gradient(135deg, rgb(var(--accent-primary)) 0%, var(--terracotta) 100%);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   display: inline-block;
@@ -490,7 +512,7 @@ nav,
   font-weight: 700;
   letter-spacing: 0.08em;
   text-transform: uppercase;
-  color: var(--accent-primary);
+  color: rgb(var(--accent-primary));
   background: rgba(212, 175, 55, 0.16);
   border: 1px solid rgba(212, 175, 55, 0.4);
 }
@@ -507,7 +529,7 @@ nav,
   border-bottom: 1px solid var(--glass-border);
   backdrop-filter: blur(var(--glass-blur));
   -webkit-backdrop-filter: blur(var(--glass-blur));
-  background-color: var(--header-bg, var(--bg-base));
+  background-color: var(--header-bg, rgb(var(--bg-base)));
   box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
 }
 
@@ -537,13 +559,13 @@ nav,
   padding: 6px 4px;
   font-size: 0.95rem;
   font-weight: 500;
-  color: var(--text-muted);
+  color: rgb(var(--text-muted));
   transition: color 0.2s ease;
 }
 
 .nav-link:hover,
 .nav-link.active {
-  color: var(--text-primary);
+  color: rgb(var(--text-primary));
 }
 
 /* Active Link Underline Indicator */
@@ -554,7 +576,7 @@ nav,
   left: 0;
   width: 100%;
   height: 2px;
-  background: var(--accent-primary);
+  background: rgb(var(--accent-primary));
   border-radius: 2px;
   transform: scaleX(0);
   transform-origin: center;
@@ -587,7 +609,7 @@ nav,
 
 /* Mobile Drawer Panel */
 .mobile-drawer-panel {
-  background: var(--bg-base);
+  background: rgb(var(--bg-base));
   border-left: 1px solid var(--glass-border);
   box-shadow: -10px 0 40px rgba(0, 0, 0, 0.4);
 }
@@ -608,16 +630,16 @@ nav,
   width: 38px;
   height: 38px;
   border-radius: 12px;
-  background: var(--glass-bg);
+  background: rgb(var(--glass-bg));
   border: 1px solid var(--glass-border);
-  color: var(--text-muted);
+  color: rgb(var(--text-muted));
   transition: all 0.25s ease;
 }
 
 .social-icon-btn:hover {
-  color: var(--accent-primary);
-  background: var(--glass-bg-hover);
-  border-color: var(--accent-primary);
+  color: rgb(var(--accent-primary));
+  background: rgb(var(--glass-bg-hover));
+  border-color: rgb(var(--accent-primary));
   transform: translateY(-2px);
 }
 
@@ -642,19 +664,19 @@ nav,
    FORM CONTROLS & FILTER PILLS (Giai đoạn 3)
    ============================================================================== */
 .glass-input {
-  background: var(--glass-bg);
+  background: rgb(var(--glass-bg));
   border: 1px solid var(--glass-border);
   backdrop-filter: blur(var(--glass-blur));
   -webkit-backdrop-filter: blur(var(--glass-blur));
-  color: var(--text-primary);
+  color: rgb(var(--text-primary));
   border-radius: 14px;
   transition: all 0.25s ease;
 }
 
 .glass-input:focus {
   outline: none;
-  border-color: var(--accent-primary);
-  background: var(--glass-bg-hover);
+  border-color: rgb(var(--accent-primary));
+  background: rgb(var(--glass-bg-hover));
   box-shadow: 0 0 20px rgba(212, 175, 55, 0.22);
 }
 
@@ -663,7 +685,7 @@ nav,
 }
 
 .glass-input::placeholder {
-  color: var(--text-faint);
+  color: rgb(var(--text-faint));
 }
 
 .filter-pill {
@@ -672,8 +694,8 @@ nav,
   border-radius: 9999px;
   font-size: 0.9rem;
   font-weight: 600;
-  color: var(--text-muted);
-  background: var(--glass-bg);
+  color: rgb(var(--text-muted));
+  background: rgb(var(--glass-bg));
   border: 1px solid var(--glass-border);
   backdrop-filter: blur(12px);
   -webkit-backdrop-filter: blur(12px);
@@ -683,22 +705,22 @@ nav,
 }
 
 .filter-pill:hover {
-  color: var(--text-primary);
-  background: var(--glass-bg-hover);
+  color: rgb(var(--text-primary));
+  background: rgb(var(--glass-bg-hover));
   border-color: rgba(212, 175, 55, 0.35);
 }
 
 .filter-pill.active {
   color: #1b140f;
-  background: var(--accent-primary);
-  border-color: var(--accent-primary);
+  background: rgb(var(--accent-primary));
+  border-color: rgb(var(--accent-primary));
   box-shadow: 0 4px 18px rgba(212, 175, 55, 0.4);
 }
 
 [data-theme='light'] .filter-pill.active {
   color: #ffffff;
-  background: var(--accent-primary);
-  border-color: var(--accent-primary);
+  background: rgb(var(--accent-primary));
+  border-color: rgb(var(--accent-primary));
   box-shadow: 0 4px 18px rgba(138, 106, 42, 0.28);
 }
 
@@ -708,8 +730,8 @@ nav,
   border-radius: 9999px;
   font-size: 0.75rem;
   font-weight: 700;
-  color: var(--text-muted);
-  background: var(--glass-bg);
+  color: rgb(var(--text-muted));
+  background: rgb(var(--glass-bg));
   border: 1px solid var(--glass-border);
   backdrop-filter: blur(8px);
   -webkit-backdrop-filter: blur(8px);
@@ -719,22 +741,22 @@ nav,
 }
 
 .faq-filter-pill:hover {
-  color: var(--text-primary);
-  background: var(--glass-bg-hover);
+  color: rgb(var(--text-primary));
+  background: rgb(var(--glass-bg-hover));
   border-color: rgba(212, 175, 55, 0.35);
 }
 
 .faq-filter-pill.active {
   color: #1b140f;
-  background: var(--accent-primary);
-  border-color: var(--accent-primary);
+  background: rgb(var(--accent-primary));
+  border-color: rgb(var(--accent-primary));
   box-shadow: 0 2px 12px rgba(212, 175, 55, 0.35);
 }
 
 [data-theme='light'] .faq-filter-pill.active {
   color: #ffffff;
-  background: var(--accent-primary);
-  border-color: var(--accent-primary);
+  background: rgb(var(--accent-primary));
+  border-color: rgb(var(--accent-primary));
   box-shadow: 0 2px 12px rgba(138, 106, 42, 0.25);
 }
 
@@ -777,7 +799,7 @@ nav,
 .footer-section {
   background: var(--footer-bg-grad, #0c0f17);
   border-top: 1px solid var(--glass-border);
-  color: var(--text-muted);
+  color: rgb(var(--text-muted));
   position: relative;
   overflow: hidden;
   z-index: 10;
@@ -899,7 +921,7 @@ nav,
 .site-ambient-note {
   position: absolute;
   --rot: 0deg;
-  color: var(--accent-primary);
+  color: rgb(var(--accent-primary));
   transform: rotate(var(--rot));
 }
 
@@ -954,7 +976,7 @@ nav,
 }
 
 .bg-warm-gradient {
-  background: linear-gradient(135deg, var(--accent-primary) 0%, var(--terracotta) 100%);
+  background: linear-gradient(135deg, rgb(var(--accent-primary)) 0%, var(--terracotta) 100%);
 }
 
 /* FAQ Details & Summary */
@@ -963,8 +985,8 @@ nav,
 }
 
 .faq-item[open] {
-  border-color: var(--accent-primary);
-  background: var(--glass-bg-hover);
+  border-color: rgb(var(--accent-primary));
+  background: rgb(var(--glass-bg-hover));
 }
 
 .faq-item summary {
@@ -996,9 +1018,9 @@ nav,
 .skeleton-pulse {
   background: linear-gradient(
     90deg,
-    var(--glass-bg) 0%,
-    var(--glass-bg-hover) 50%,
-    var(--glass-bg) 100%
+    rgb(var(--glass-bg)) 0%,
+    rgb(var(--glass-bg-hover)) 50%,
+    rgb(var(--glass-bg)) 100%
   );
   background-size: 200% 100%;
   animation: skeletonPulse 1.8s infinite ease-in-out;
@@ -1021,9 +1043,9 @@ nav,
 .skeleton-pulse {
   background: linear-gradient(
     90deg,
-    var(--glass-bg) 0%,
-    var(--glass-bg-hover) 50%,
-    var(--glass-bg) 100%
+    rgb(var(--glass-bg)) 0%,
+    rgb(var(--glass-bg-hover)) 50%,
+    rgb(var(--glass-bg)) 100%
   );
   background-size: 200% 100%;
   animation: skeletonPulse 1.8s infinite ease-in-out;
@@ -1044,7 +1066,7 @@ nav,
 .modal-surface {
   background-color: var(--modal-surface-bg) !important;
   border: 1px solid var(--modal-surface-border) !important;
-  color: var(--text-primary) !important;
+  color: rgb(var(--text-primary)) !important;
   box-shadow: 0 25px 60px -15px rgba(0, 0, 0, 0.5) !important;
 }
 
@@ -1120,7 +1142,7 @@ nav,
 
 .badge-semantic-primary {
   background-color: var(--terracotta-light) !important;
-  color: var(--accent-primary) !important;
+  color: rgb(var(--accent-primary)) !important;
   border: 1px solid rgba(138, 106, 42, 0.35) !important;
 }
 
@@ -1786,7 +1808,7 @@ body.modal-open {
   z-index: 60;
   display: flex;
   flex-direction: column;
-  background: var(--glass-bg);
+  background: rgb(var(--glass-bg));
   border-right: 1px solid var(--glass-border);
   transform: translateX(-100%);
   transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1);
@@ -1834,14 +1856,14 @@ body.modal-open {
 .admin-sidebar-close {
   padding: 6px;
   border-radius: 10px;
-  color: var(--text-muted);
+  color: rgb(var(--text-muted));
   cursor: pointer;
   flex-shrink: 0;
 }
 
 .admin-sidebar-close:hover {
-  background: var(--glass-bg-hover);
-  color: var(--text-primary);
+  background: rgb(var(--glass-bg-hover));
+  color: rgb(var(--text-primary));
 }
 
 @media (min-width: 1024px) {
@@ -1867,7 +1889,7 @@ body.modal-open {
   font-weight: 800;
   letter-spacing: 0.12em;
   text-transform: uppercase;
-  color: var(--text-muted);
+  color: rgb(var(--text-muted));
   opacity: 0.75;
 }
 
@@ -1879,7 +1901,7 @@ body.modal-open {
   border-radius: 12px;
   font-size: 12.5px;
   font-weight: 700;
-  color: var(--text-muted);
+  color: rgb(var(--text-muted));
   transition:
     background-color 0.18s ease,
     color 0.18s ease;
@@ -1887,14 +1909,14 @@ body.modal-open {
 }
 
 .admin-nav-item:hover {
-  background: var(--glass-bg-hover);
-  color: var(--text-primary);
+  background: rgb(var(--glass-bg-hover));
+  color: rgb(var(--text-primary));
 }
 
 .admin-nav-item.is-active {
-  background: linear-gradient(135deg, var(--accent-primary) 0%, var(--terracotta) 100%);
+  background: linear-gradient(135deg, rgb(var(--accent-primary)) 0%, var(--terracotta) 100%);
   color: #ffffff;
-  box-shadow: 0 6px 16px -8px var(--accent-primary);
+  box-shadow: 0 6px 16px -8px rgb(var(--accent-primary));
 }
 
 .admin-nav-badge {
@@ -1936,7 +1958,7 @@ body.modal-open {
   align-items: center;
   gap: 10px;
   padding: 11px 14px;
-  background: var(--bg-base);
+  background: rgb(var(--bg-base));
   border-bottom: 1px solid var(--glass-border);
 }
 
@@ -1952,16 +1974,16 @@ body.modal-open {
   justify-content: center;
   padding: 8px;
   border-radius: 12px;
-  background: var(--glass-bg);
+  background: rgb(var(--glass-bg));
   border: 1px solid var(--glass-border);
-  color: var(--text-primary);
+  color: rgb(var(--text-primary));
   cursor: pointer;
   flex-shrink: 0;
   transition: background-color 0.18s ease;
 }
 
 .admin-topbar-icon-btn:hover {
-  background: var(--glass-bg-hover);
+  background: rgb(var(--glass-bg-hover));
 }
 
 .admin-content {
@@ -1997,7 +2019,7 @@ body.modal-open {
   z-index: 50;
   display: grid;
   grid-template-columns: repeat(5, minmax(0, 1fr));
-  background: var(--glass-bg);
+  background: rgb(var(--glass-bg));
   border-top: 1px solid var(--glass-border);
   box-shadow: 0 -6px 24px rgba(0, 0, 0, 0.18);
   padding-bottom: env(safe-area-inset-bottom, 0px);
@@ -2014,13 +2036,13 @@ body.modal-open {
   font-weight: 800;
   line-height: 1.1;
   text-align: center;
-  color: var(--text-muted);
+  color: rgb(var(--text-muted));
   cursor: pointer;
   transition: color 0.18s ease;
 }
 
 .admin-bottom-item.is-active {
-  color: var(--accent-primary);
+  color: rgb(var(--accent-primary));
 }
 
 .admin-bottom-badge {
@@ -2079,7 +2101,7 @@ body.modal-open {
     font-weight: 800;
     letter-spacing: 0.04em;
     text-transform: uppercase;
-    color: var(--text-muted);
+    color: rgb(var(--text-muted));
     padding-top: 2px;
   }
 

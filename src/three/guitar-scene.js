@@ -179,7 +179,7 @@ export function initFallbackGuitarIcon(containerEl) {
     'd',
     'M50,180 C10,180 10,120 30,100 C15,80 20,40 50,40 C80,40 85,80 70,100 C90,120 90,180 50,180 Z'
   )
-  body.setAttribute('fill', 'var(--accent-primary)')
+  body.setAttribute('fill', 'rgb(var(--accent-primary))')
 
   // Guitar neck (rectangle)
   const neck = document.createElementNS('http://www.w3.org/2000/svg', 'rect')
@@ -187,14 +187,14 @@ export function initFallbackGuitarIcon(containerEl) {
   neck.setAttribute('y', '10')
   neck.setAttribute('width', '16')
   neck.setAttribute('height', '50')
-  neck.setAttribute('fill', 'var(--accent-secondary)')
+  neck.setAttribute('fill', 'rgb(var(--accent-secondary))')
 
   // Sound hole (circle)
   const hole = document.createElementNS('http://www.w3.org/2000/svg', 'circle')
   hole.setAttribute('cx', '50')
   hole.setAttribute('cy', '100')
   hole.setAttribute('r', '12')
-  hole.setAttribute('fill', 'var(--bg-base)')
+  hole.setAttribute('fill', 'rgb(var(--bg-base))')
 
   const g = document.createElementNS('http://www.w3.org/2000/svg', 'g')
   g.setAttribute('class', 'animate-spin-slow')

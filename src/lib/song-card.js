@@ -96,7 +96,7 @@ function renderPaidArtworkCenter(tab, { isPurchased, video, audio }) {
   if (isPurchased) {
     return `
       <div class="my-auto text-center flex flex-col items-center justify-center py-0.5" onclick="event.stopPropagation(); window.navigateToPurchasesTab()">
-        <button class="w-7 h-7 sm:w-10 sm:h-10 rounded-full bg-white text-[#0B0E1A] flex items-center justify-center shadow-lg transform group-hover:scale-110 transition-transform cursor-pointer" aria-label="Mở tab đã mua">
+        <button class="w-7 h-7 sm:w-10 sm:h-10 rounded-full bg-[#1b140f]/85 backdrop-blur-sm ring-1 ring-white/15 flex items-center justify-center shadow-lg transform group-hover:scale-110 transition-transform cursor-pointer" aria-label="Mở tab đã mua">
           <svg class="w-3.5 h-3.5 sm:w-4.5 sm:h-4.5 fill-current ml-0.5 text-accent-primary" viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
         </button>
         <span class="text-[8px] sm:text-[10px] font-bold mt-1 text-white/95 tracking-wide bg-black/60 px-2 py-0.5 rounded-full backdrop-blur-xs leading-none whitespace-nowrap">Xem Trong Tab Đã Mua</span>
@@ -107,7 +107,7 @@ function renderPaidArtworkCenter(tab, { isPurchased, video, audio }) {
   if (video) {
     return `
       <div class="my-auto text-center flex flex-col items-center justify-center py-0.5" onclick="event.stopPropagation(); window.openVideoDemoModal('${escapeJsString(tab.title)}', '${escapeJsString(video)}', false)">
-        <button class="w-7 h-7 sm:w-10 sm:h-10 rounded-full bg-white text-[#0B0E1A] flex items-center justify-center shadow-lg transform group-hover:scale-110 transition-transform cursor-pointer" aria-label="Xem Demo">
+        <button class="w-7 h-7 sm:w-10 sm:h-10 rounded-full bg-[#1b140f]/85 backdrop-blur-sm ring-1 ring-white/15 flex items-center justify-center shadow-lg transform group-hover:scale-110 transition-transform cursor-pointer" aria-label="Xem Demo">
           <svg class="w-3.5 h-3.5 sm:w-4.5 sm:h-4.5 fill-current ml-0.5 text-accent-primary" viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
         </button>
         <span class="text-[8px] sm:text-[10px] font-bold mt-1 text-white/95 tracking-wide bg-black/60 px-2 py-0.5 rounded-full backdrop-blur-xs leading-none whitespace-nowrap">Xem Demo</span>
@@ -118,7 +118,7 @@ function renderPaidArtworkCenter(tab, { isPurchased, video, audio }) {
   if (audio) {
     return `
       <div class="my-auto text-center flex flex-col items-center justify-center py-0.5" onclick="event.stopPropagation(); window.openVideoDemoModal('${escapeJsString(tab.title)}', '${escapeJsString(audio)}', true)">
-        <button class="w-7 h-7 sm:w-10 sm:h-10 rounded-full bg-white text-[#0B0E1A] flex items-center justify-center shadow-lg transform group-hover:scale-110 transition-transform cursor-pointer" aria-label="Nghe Audio Demo">
+        <button class="w-7 h-7 sm:w-10 sm:h-10 rounded-full bg-[#1b140f]/85 backdrop-blur-sm ring-1 ring-white/15 text-accent-primary flex items-center justify-center shadow-lg transform group-hover:scale-110 transition-transform cursor-pointer" aria-label="Nghe Audio Demo">
           ${iconHeadphones('w-3.5 h-3.5 sm:w-4 sm:h-4')}
         </button>
         <span class="text-[8px] sm:text-[10px] font-bold mt-1 text-white/95 tracking-wide bg-black/60 px-2 py-0.5 rounded-full backdrop-blur-xs leading-none whitespace-nowrap">Nghe Audio Demo</span>
@@ -200,7 +200,7 @@ export function renderSongCard(tab, options = {}) {
             </div>
 
             <div class="my-auto text-center flex flex-col items-center justify-center py-0.5">
-              <div class="w-7 h-7 sm:w-10 sm:h-10 rounded-full bg-white text-emerald-800 flex items-center justify-center shadow-lg transform group-hover:scale-110 transition-transform">
+              <div class="w-7 h-7 sm:w-10 sm:h-10 rounded-full bg-[#1b140f]/85 backdrop-blur-sm ring-1 ring-white/15 text-emerald-400 flex items-center justify-center shadow-lg transform group-hover:scale-110 transition-transform">
                 <svg class="w-3.5 h-3.5 sm:w-4.5 sm:h-4.5 fill-current ml-0.5" viewBox="0 0 24 24">
                   <path d="M8 5v14l11-7z"/>
                 </svg>
