@@ -21,12 +21,18 @@
      vang đô (wine — lớp nhung lót trong hộp đàn tốt) thay cho cam/terracotta
      mặc định hay gặp ở web AI tạo. */
   --bg-base: #1b140f;
-  --sec-hero-bg: #1b140f;
-  --sec-about-bg: #221a13;
-  --sec-featured-bg: #2a1b12;
-  --sec-tools-bg: #1f1912;
-  --sec-faq-bg: #1c1610;
-  --sec-contact-bg: #241c14;
+  /* Trước đây mỗi section một sắc riêng (6 tông khác nhau) khiến trang chủ
+     nhìn loang lổ, có "đường kẻ ngăn cách" giữa các khối. Giờ chỉ luân phiên
+     2 tông: nền gốc và một tông "nổi" hơn một chút — section nào đã có khung
+     spotlight/card riêng (Bài Hát Nổi Bật) thì để nền gốc, section trơn mới
+     cần tông nổi để tách bạch với section trơn liền kề. */
+  --sec-raised-bg: #241c14;
+  --sec-hero-bg: var(--bg-base);
+  --sec-about-bg: var(--sec-raised-bg);
+  --sec-featured-bg: var(--bg-base);
+  --sec-tools-bg: var(--bg-base);
+  --sec-faq-bg: var(--sec-raised-bg);
+  --sec-contact-bg: var(--bg-base);
   --header-bg: rgba(27, 20, 15, 0.9);
   --footer-bg-grad: linear-gradient(to bottom, #221a13, #120d09);
 
@@ -105,12 +111,13 @@
   /* Nền vải lanh xưởng mộc (linen), không phải kem #F4F1EA hay gặp — cùng bộ
      đôi đồng thau/rượu vang như bản tối để hai theme là một bảng màu duy nhất. */
   --bg-base: #e7e2d3;
-  --sec-hero-bg: #e7e2d3;
-  --sec-about-bg: #ded7c4;
-  --sec-featured-bg: #e3d4be;
-  --sec-tools-bg: #dad2be;
-  --sec-faq-bg: #e2dbc9;
-  --sec-contact-bg: #d5cbb2;
+  --sec-raised-bg: #ded7c4;
+  --sec-hero-bg: var(--bg-base);
+  --sec-about-bg: var(--sec-raised-bg);
+  --sec-featured-bg: var(--bg-base);
+  --sec-tools-bg: var(--bg-base);
+  --sec-faq-bg: var(--sec-raised-bg);
+  --sec-contact-bg: var(--bg-base);
   --header-bg: rgba(231, 226, 211, 0.92);
   --footer-bg: #c9bb9e;
   --footer-bg-grad: linear-gradient(180deg, #d2c4a6 0%, #c2b393 100%);
