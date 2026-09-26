@@ -284,8 +284,88 @@
 
 
     <!-- ================================================================
+           2. BÀI HÁT NỔI BẬT — trọng tâm của trang chủ (kho Video Tab là sản
+           phẩm chính), nên đặt ngay sau hero và đóng khung riêng thành một
+           khối "spotlight" nổi bật hơn hẳn các section khác, thay vì xếp
+           ngang hàng với phần giới thiệu đồ nghề/công cụ bên dưới.
+           ================================================================ -->
+    <section id="kho-tab" class="section-featured relative py-20 sm:py-28 overflow-hidden">
+      <div class="site-ambient-bg" aria-hidden="true">
+        <svg class="site-ambient-guitar" style="top:20%;left:90%;--rot:-16deg;animation-duration:7.6s;animation-delay:0.6s;" viewBox="0 0 260 480"><use href="#mini-guitar-icon" /></svg>
+        <svg class="site-ambient-guitar" style="top:70%;left:6%;--rot:10deg;animation-duration:8.4s;animation-delay:1.4s;" viewBox="0 0 260 480"><use href="#mini-guitar-icon" /></svg>
+        <span class="site-ambient-note" style="top:8%;left:14%;font-size:22px;--rot:-8deg;animation-duration:6.4s;animation-delay:0.2s;">♫</span>
+        <span class="site-ambient-note" style="top:85%;left:82%;font-size:24px;--rot:12deg;animation-duration:7s;animation-delay:1.6s;">♩</span>
+      </div>
+      <div class="relative z-10 max-w-7xl mx-auto px-6 sm:px-8 md:px-12">
+
+        <!-- Khung spotlight: viền + nền nâng cao riêng cho khối này để nó rõ
+             ràng là trọng tâm, không hoà lẫn với các section khác bên dưới -->
+        <div class="rounded-[2rem] sm:rounded-[2.5rem] border border-glass-border bg-glass-bg/40 backdrop-blur-sm shadow-2xl p-5 sm:p-10 lg:p-12">
+
+          <div
+            class="flex flex-col md:flex-row md:items-end justify-between mb-8 pb-6 border-b border-glass-border gap-4">
+            <div class="space-y-2.5 max-w-2xl">
+              <span
+                class="inline-flex items-center gap-2 text-xs font-mono font-bold uppercase tracking-wider text-accent-primary">
+                <svg class="w-4 h-4" viewBox="0 0 260 480" fill="currentColor" aria-hidden="true"><rect x="115" y="0" width="30" height="220" rx="14"/><rect x="102" y="0" width="56" height="32" rx="12"/><ellipse cx="130" cy="270" rx="72" ry="62"/><ellipse cx="130" cy="385" rx="108" ry="92"/></svg>
+                <span>Trọng tâm • Kho Video Tab</span>
+              </span>
+              <h2 class="font-display text-4xl sm:text-5xl lg:text-6xl text-text-primary font-semibold tracking-tight">Bài
+                Hát Nổi Bật</h2>
+              <p class="text-text-muted text-sm sm:text-base font-medium leading-relaxed pt-1">Đây là sản phẩm chính
+                của Guitar By Quang — mấy bài Video Tab được anh em xem và mua nhiều nhất. Xem hết rồi ghé qua Kho
+                Video Tab để khám phá toàn bộ kho bài nhé!</p>
+            </div>
+            <a href="/kho-tab.html"
+              class="flex-shrink-0 inline-flex items-center gap-2 text-sm font-bold text-text-muted hover:text-accent-primary transition-colors">
+              <span>Xem toàn bộ</span>
+              <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M17 8l4 4m0 0l-4 4m4-4H3">
+                </path>
+              </svg>
+            </a>
+          </div>
+
+          <!-- Featured Grid: swipeable horizontal row on mobile (snap-scroll),
+               regular 4-col grid from md: up -->
+          <div id="featured-grid"
+            class="flex overflow-x-auto scrollbar-none snap-x snap-mandatory -mx-4 px-4 sm:-mx-6 sm:px-6 md:mx-0 md:px-0 md:grid md:grid-cols-4 md:overflow-visible gap-3 sm:gap-5 lg:gap-6 w-full">
+            <div
+              class="shrink-0 snap-start w-[62%] sm:w-[38%] md:w-full skeleton-pulse rounded-xl sm:rounded-2xl bg-glass-bg border border-glass-border aspect-[3/4]">
+            </div>
+            <div
+              class="shrink-0 snap-start w-[62%] sm:w-[38%] md:w-full skeleton-pulse rounded-xl sm:rounded-2xl bg-glass-bg border border-glass-border aspect-[3/4]">
+            </div>
+            <div
+              class="shrink-0 snap-start w-[62%] sm:w-[38%] md:w-full skeleton-pulse rounded-xl sm:rounded-2xl bg-glass-bg border border-glass-border aspect-[3/4]">
+            </div>
+            <div
+              class="shrink-0 snap-start w-[62%] sm:w-[38%] md:w-full skeleton-pulse rounded-xl sm:rounded-2xl bg-glass-bg border border-glass-border aspect-[3/4]">
+            </div>
+          </div>
+
+          <div class="mt-10 sm:mt-12 text-center">
+            <a href="/kho-tab.html"
+              class="inline-flex items-center gap-3 px-8 py-4 rounded-full bg-warm-gradient hover:brightness-105 text-[#0B0E1A] font-bold text-sm transition-all shadow-md active:scale-98">
+              <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                  d="M9 19V6l12-3v13M9 19c0 1.105-1.343 2-3 2s-3-.895-3-2 1.343-2 3-2 3 .895 3 2zm12-3c0 1.105-1.343 2-3 2s-3-.895-3-2 1.343-2 3-2 3 .895 3 2zM9 10l12-3">
+                </path>
+              </svg>
+              <span>Xem toàn bộ kho Video Tab →</span>
+            </a>
+          </div>
+
+        </div>
+
+      </div>
+    </section>
+
+
+    <!-- ================================================================
            1B. MỜI CHƠI GAME LUYỆN CẢM ÂM — dải sáng, nhiều màu, mời gọi
-           bấm vào chơi ngay
+           bấm vào chơi ngay (đặt sau khối trọng tâm để không cạnh tranh
+           sự chú ý với Kho Video Tab)
            ================================================================ -->
     <section id="game-teaser" class="relative py-8 sm:py-10 px-6 sm:px-8 md:px-12">
       <a href="/luyen-cam-am.html"
@@ -333,70 +413,6 @@
           </span>
         </div>
       </a>
-    </section>
-
-
-    <!-- ================================================================
-           2. BÀI HÁT NỔI BẬT
-           ================================================================ -->
-    <section id="kho-tab" class="section-featured relative py-24 overflow-hidden">
-      <div class="site-ambient-bg" aria-hidden="true">
-        <svg class="site-ambient-guitar" style="top:20%;left:90%;--rot:-16deg;animation-duration:7.6s;animation-delay:0.6s;" viewBox="0 0 260 480"><use href="#mini-guitar-icon" /></svg>
-        <svg class="site-ambient-guitar" style="top:70%;left:6%;--rot:10deg;animation-duration:8.4s;animation-delay:1.4s;" viewBox="0 0 260 480"><use href="#mini-guitar-icon" /></svg>
-        <span class="site-ambient-note" style="top:8%;left:14%;font-size:22px;--rot:-8deg;animation-duration:6.4s;animation-delay:0.2s;">♫</span>
-        <span class="site-ambient-note" style="top:85%;left:82%;font-size:24px;--rot:12deg;animation-duration:7s;animation-delay:1.6s;">♩</span>
-      </div>
-      <div class="relative z-10 max-w-7xl mx-auto px-6 sm:px-8 md:px-12">
-
-        <div
-          class="flex flex-col md:flex-row md:items-end justify-between mb-8 pb-6 border-b border-glass-border gap-4">
-          <div class="space-y-2 max-w-2xl">
-            <span class="text-xs font-mono font-bold uppercase tracking-wider text-accent-primary">Kho Video Tab</span>
-            <h2 class="text-3xl sm:text-4xl lg:text-5xl text-text-primary font-extrabold">Bài Hát Nổi Bật</h2>
-            <p class="text-text-muted text-sm sm:text-base font-medium leading-relaxed pt-1">Mấy bài được anh em yêu
-              thích nhất — xem hết rồi ghé qua Kho Video Tab để khám phá thêm nhé!</p>
-          </div>
-          <a href="/kho-tab.html"
-            class="flex-shrink-0 inline-flex items-center gap-2 text-sm font-bold text-text-muted hover:text-accent-primary transition-colors">
-            <span>Xem toàn bộ</span>
-            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M17 8l4 4m0 0l-4 4m4-4H3">
-              </path>
-            </svg>
-          </a>
-        </div>
-
-        <!-- Featured Grid: swipeable horizontal row on mobile (snap-scroll),
-             regular 4-col grid from md: up -->
-        <div id="featured-grid"
-          class="flex overflow-x-auto scrollbar-none snap-x snap-mandatory -mx-4 px-4 sm:-mx-6 sm:px-6 md:mx-0 md:px-0 md:grid md:grid-cols-4 md:overflow-visible gap-3 sm:gap-5 lg:gap-6 w-full">
-          <div
-            class="shrink-0 snap-start w-[62%] sm:w-[38%] md:w-full skeleton-pulse rounded-xl sm:rounded-2xl bg-glass-bg border border-glass-border aspect-[3/4]">
-          </div>
-          <div
-            class="shrink-0 snap-start w-[62%] sm:w-[38%] md:w-full skeleton-pulse rounded-xl sm:rounded-2xl bg-glass-bg border border-glass-border aspect-[3/4]">
-          </div>
-          <div
-            class="shrink-0 snap-start w-[62%] sm:w-[38%] md:w-full skeleton-pulse rounded-xl sm:rounded-2xl bg-glass-bg border border-glass-border aspect-[3/4]">
-          </div>
-          <div
-            class="shrink-0 snap-start w-[62%] sm:w-[38%] md:w-full skeleton-pulse rounded-xl sm:rounded-2xl bg-glass-bg border border-glass-border aspect-[3/4]">
-          </div>
-        </div>
-
-        <div class="mt-12 text-center">
-          <a href="/kho-tab.html"
-            class="inline-flex items-center gap-3 px-8 py-4 rounded-full bg-warm-gradient hover:brightness-105 text-[#0B0E1A] font-bold text-sm transition-all shadow-md active:scale-98">
-            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                d="M9 19V6l12-3v13M9 19c0 1.105-1.343 2-3 2s-3-.895-3-2 1.343-2 3-2 3 .895 3 2zm12-3c0 1.105-1.343 2-3 2s-3-.895-3-2 1.343-2 3-2 3 .895 3 2zM9 10l12-3">
-              </path>
-            </svg>
-            <span>Xem toàn bộ kho Video Tab →</span>
-          </a>
-        </div>
-
-      </div>
     </section>
 
 
