@@ -1,7 +1,11 @@
-@import url('https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,400;1,600&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600;700;800&family=Fraunces:ital,opsz,wght@0,9..144,500;0,9..144,600;0,9..144,700;1,9..144,500&display=swap');
-/* Fraunces: chữ tiêu đề riêng cho h1/.text-h1 — có kèm dấu tiếng Việt (đã kiểm
-   tra glyph qua Google Fonts). Be Vietnam Pro (thiết kế riêng cho tiếng Việt)
-   vẫn giữ cho toàn bộ phần còn lại — không đổi để tránh rủi ro đổ vỡ hiển thị. */
+@import url('https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,400;1,600&family=JetBrains+Mono:wght@400;500;600;700;800&family=Fraunces:ital,opsz,wght@0,9..144,500;0,9..144,600;0,9..144,700;1,9..144,500&display=swap');
+/* Fraunces: chữ tiêu đề riêng cho h1/h2/.text-h1 — có kèm dấu tiếng Việt (đã
+   kiểm tra glyph qua Google Fonts). Be Vietnam Pro (thiết kế riêng cho tiếng
+   Việt) dùng cho toàn bộ phần còn lại. Đã bỏ Inter (2026-09-26): trước đây
+   đứng đầu danh sách font của <body> nên thực ra mọi chữ thân đang hiển thị
+   bằng Inter chứ không phải Be Vietnam Pro như tài liệu dự án vẫn ghi — dấu
+   tiếng Việt của Inter kém hơn, và Inter chỉ có duy nhất một chỗ dùng khác
+   (toast) nên không đáng giữ cả một font riêng. */
 
 @tailwind base;
 @tailwind components;
@@ -183,7 +187,6 @@ body {
   background-color: var(--bg-base);
   color: var(--text-primary);
   font-family:
-    'Inter',
     'Be Vietnam Pro',
     -apple-system,
     BlinkMacSystemFont,
@@ -216,10 +219,13 @@ h6 {
   color: var(--text-primary);
 }
 
-/* Tiêu đề lớn nhất mỗi trang (h1 thật, hoặc div/span dùng class .text-h1)
-   dùng một mặt chữ riêng có cá tính hơn — Be Vietnam Pro vẫn dùng cho mọi
-   heading còn lại và toàn bộ nội dung để giữ đồng nhất và an toàn dấu tiếng Việt. */
+/* Tiêu đề chính mỗi trang/mỗi khối lớn (h1 thật, h2, hoặc div/span dùng class
+   .text-h1) dùng một mặt chữ riêng có cá tính hơn — trước đây chỉ áp cho h1
+   nên các h2 khác (VD "Câu hỏi thường gặp", "Liên hệ & Giao lưu") vẫn hiện
+   sans đậm, nhìn như ghép từ hai bộ nhận diện khác nhau. h3 trở xuống vẫn
+   dùng Be Vietnam Pro để giữ phân cấp rõ giữa tiêu đề lớn và tiêu đề phụ. */
 h1,
+h2,
 .text-h1 {
   font-family: 'Fraunces', 'Be Vietnam Pro', serif;
   font-optical-sizing: auto;
@@ -1254,7 +1260,7 @@ input[type='range'].metro-slider::-webkit-slider-thumb:hover {
   transform: translateY(-25px) scale(0.92) !important;
   opacity: 0 !important;
   pointer-events: none !important;
-  font-family: 'Inter', 'Be Vietnam Pro', sans-serif !important;
+  font-family: 'Be Vietnam Pro', sans-serif !important;
 }
 
 #toast-notification.toast-visible {
