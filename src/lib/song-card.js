@@ -173,9 +173,8 @@ export function renderSongCard(tab, options = {}) {
 
   const levelRow = (accentClass, barClass) => `
     <div class="space-y-0.5 sm:space-y-1 pt-0.5">
-      <div class="flex items-center justify-between text-[10px] sm:text-xs font-bold text-text-muted">
+      <div class="text-[10px] sm:text-xs font-bold text-text-muted">
         <span>Độ khó: <strong class="${accentClass} font-mono tabular-nums">${tab.level || levelNum + '/10'}</strong></span>
-        <span class="text-[9px] sm:text-xs font-semibold text-text-faint hidden sm:inline">Tuning: ${tab.tuning || 'Standard'}</span>
       </div>
       <div class="w-full bg-glass-bg rounded-full h-1 sm:h-1.5 overflow-hidden border border-glass-border">
         <div class="${barClass} h-1 sm:h-1.5 rounded-full transition-all duration-500" style="width: ${percent}%"></div>
@@ -223,7 +222,7 @@ export function renderSongCard(tab, options = {}) {
         </div>
 
         <div class="pt-1 sm:pt-2">
-          <div class="w-full py-1.5 sm:py-2.5 px-1.5 rounded-full badge-semantic-success font-bold text-[10px] sm:text-xs transition-all shadow-sm flex items-center justify-center gap-1 active:scale-95 text-center cursor-pointer">
+          <div class="w-full py-1.5 sm:py-2.5 px-1.5 rounded-full bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-[10px] sm:text-xs transition-all shadow-md shadow-emerald-900/20 flex items-center justify-center gap-1 active:scale-95 text-center cursor-pointer">
             <span class="truncate">Xem Video Tab (Free)</span>
           </div>
         </div>
