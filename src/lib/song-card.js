@@ -35,7 +35,9 @@ export function renderPriceBadge(priceFormatted) {
 export function renderHssvNote(discountNote) {
   if (!discountNote) return ''
   const hssvLabel = extractDiscountPrice(discountNote) || discountNote
-  return `<span class="inline-flex items-center gap-0.5 text-[9px] sm:text-xs font-bold text-accent-primary whitespace-nowrap" title="Giá ưu đãi cho học sinh, sinh viên (xác minh thẻ khi thanh toán)">${iconGraduationCap('w-3 h-3 sm:w-3.5 sm:h-3.5 flex-shrink-0')}HSSV ${hssvLabel}</span>`
+  // Chip cam = màu "khuyến mãi", tách hẳn khỏi màu đồng của "Độ khó" ngay cạnh
+  // (trước cùng màu nên chìm), hồng của giá và xanh của "miễn phí".
+  return `<span class="inline-flex items-center gap-0.5 px-1.5 py-0.5 rounded-full text-[9px] sm:text-[11px] font-extrabold whitespace-nowrap bg-orange-100 text-orange-700 ring-1 ring-orange-300 dark:bg-orange-500/15 dark:text-orange-300 dark:ring-orange-400/40" title="Giá ưu đãi cho học sinh, sinh viên (xác minh thẻ khi thanh toán)">${iconGraduationCap('w-3 h-3 sm:w-3.5 sm:h-3.5 flex-shrink-0')}HSSV ${hssvLabel}</span>`
 }
 
 /** Tam giác play bo góc (mềm hơn tam giác nhọn cũ), lệch phải 1px cho cân thị giác. */
@@ -208,7 +210,7 @@ export function renderSongCard(tab, options = {}) {
 
   const levelRow = (accentClass, barClass, rightSlot = '') => `
     <div class="space-y-0.5 sm:space-y-1 pt-0.5">
-      <div class="flex items-center justify-between gap-1 text-[10px] sm:text-xs font-bold text-text-muted">
+      <div class="flex flex-wrap items-center justify-between gap-x-1 gap-y-1 text-[10px] sm:text-xs font-bold text-text-muted">
         <span class="whitespace-nowrap">Độ khó: <strong class="${accentClass} font-mono tabular-nums">${tab.level || levelNum + '/10'}</strong></span>
         ${rightSlot}
       </div>

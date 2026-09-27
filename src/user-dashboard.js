@@ -715,7 +715,7 @@ function renderOverviewFeatured() {
             </h3>
 
             <div class="space-y-0.5 sm:space-y-1 pt-0.5">
-              <div class="flex items-center justify-between gap-1 text-[10px] sm:text-xs font-bold text-text-muted">
+              <div class="flex flex-wrap items-center justify-between gap-x-1 gap-y-1 text-[10px] sm:text-xs font-bold text-text-muted">
                 <span class="whitespace-nowrap">Độ khó: <strong class="text-accent-primary font-mono tabular-nums">${song.level || levelNum + '/10'}</strong></span>
                 ${renderHssvNote(discountNote)}
               </div>
