@@ -31,6 +31,8 @@ import {
   renderCategoryBadge,
   renderPriceBadge,
   renderHssvNote,
+  renderPlayDisc,
+  PLAY_LABEL_CLASS,
 } from './lib/song-card.js'
 import {
   createOrderAndBuildQr,
@@ -565,12 +567,8 @@ function renderOverviewFeatured() {
 
               <!-- Center Play Demo Button -->
               <div class="my-auto text-center flex flex-col items-center justify-center py-0.5">
-                <div class="w-7 h-7 sm:w-10 sm:h-10 rounded-full bg-white text-emerald-800 flex items-center justify-center shadow-lg transform group-hover:scale-110 transition-transform">
-                  <svg class="w-3.5 h-3.5 sm:w-4.5 sm:h-4.5 fill-current ml-0.5" viewBox="0 0 24 24">
-                    <path d="M8 5v14l11-7z"/>
-                  </svg>
-                </div>
-                <span class="text-[8px] sm:text-[10px] font-bold mt-1 text-white/95 tracking-wide bg-black/60 px-2 py-0.5 rounded-full backdrop-blur-xs leading-none whitespace-nowrap">Xem Tab Miễn Phí</span>
+                ${renderPlayDisc({ label: 'Xem Tab Miễn Phí', tag: 'div' })}
+                <span class="${PLAY_LABEL_CLASS}">Xem Tab Miễn Phí</span>
               </div>
 
               ${renderThumbMetaRow(song, "04:15")}
@@ -631,12 +629,8 @@ function renderOverviewFeatured() {
 
               <!-- Center Play Demo Button -->
               <div class="my-auto text-center flex flex-col items-center justify-center py-0.5" onclick="event.stopPropagation(); window.navigateToPurchasesTab('${song.id}')">
-                <div class="w-7 h-7 sm:w-10 sm:h-10 rounded-full bg-white text-[#9a4b24] flex items-center justify-center shadow-lg transform group-hover:scale-110 transition-transform">
-                  <svg class="w-3.5 h-3.5 sm:w-4.5 sm:h-4.5 fill-current ml-0.5 text-accent-primary" viewBox="0 0 24 24">
-                    <path d="M8 5v14l11-7z"/>
-                  </svg>
-                </div>
-                <span class="text-[8px] sm:text-[10px] font-bold mt-1 text-white/95 tracking-wide bg-black/60 px-2 py-0.5 rounded-full backdrop-blur-xs leading-none whitespace-nowrap">Xem Trong Tab Đã Mua</span>
+                ${renderPlayDisc({ label: 'Mở tab đã mua' })}
+                <span class="${PLAY_LABEL_CLASS}">Xem Trong Tab Đã Mua</span>
               </div>
 
               ${renderThumbMetaRow(song, "03:40")}
@@ -690,19 +684,15 @@ function renderOverviewFeatured() {
               videoDemoUrl
                 ? `
             <div class="my-auto text-center flex flex-col items-center justify-center py-0.5" onclick="event.stopPropagation(); window.openVideoDemoModal('${escapeHtml(song.title)}', '${videoDemoUrl}', false)">
-              <div class="w-7 h-7 sm:w-10 sm:h-10 rounded-full bg-white text-[#9a4b24] flex items-center justify-center shadow-lg transform group-hover:scale-110 transition-transform">
-                <svg class="w-3.5 h-3.5 sm:w-4.5 sm:h-4.5 fill-current ml-0.5 text-accent-primary" viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
-              </div>
-              <span class="text-[8px] sm:text-[10px] font-bold mt-1 text-white/95 tracking-wide bg-black/60 px-2 py-0.5 rounded-full backdrop-blur-xs leading-none whitespace-nowrap">Xem Demo</span>
+              ${renderPlayDisc({ label: 'Xem Demo' })}
+              <span class="${PLAY_LABEL_CLASS}">Xem Demo</span>
             </div>
             `
                 : song.audio_demo || song.demo_audio_url || song.audio_url
                   ? `
             <div class="my-auto text-center flex flex-col items-center justify-center py-0.5" onclick="event.stopPropagation(); window.openVideoDemoModal('${escapeHtml(song.title)}', '${escapeHtml(song.audio_demo || song.demo_audio_url || song.audio_url)}', true)">
-              <div class="w-7 h-7 sm:w-10 sm:h-10 rounded-full bg-white text-[#9a4b24] flex items-center justify-center shadow-lg transform group-hover:scale-110 transition-transform">
-                ${iconHeadphones('w-3.5 h-3.5 sm:w-4 sm:h-4')}
-              </div>
-              <span class="text-[8px] sm:text-[10px] font-bold mt-1 text-white/95 tracking-wide bg-black/60 px-2 py-0.5 rounded-full backdrop-blur-xs leading-none whitespace-nowrap">Nghe Audio Demo</span>
+              ${renderPlayDisc({ label: 'Nghe Audio Demo', icon: iconHeadphones('w-3.5 h-3.5 sm:w-5 sm:h-5') })}
+              <span class="${PLAY_LABEL_CLASS}">Nghe Audio Demo</span>
             </div>
             `
                   : `

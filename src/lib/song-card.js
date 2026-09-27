@@ -38,6 +38,24 @@ export function renderHssvNote(discountNote) {
   return `<span class="inline-flex items-center gap-0.5 text-[9px] sm:text-xs font-bold text-accent-primary whitespace-nowrap" title="Giá ưu đãi cho học sinh, sinh viên (xác minh thẻ khi thanh toán)">${iconGraduationCap('w-3 h-3 sm:w-3.5 sm:h-3.5 flex-shrink-0')}HSSV ${hssvLabel}</span>`
 }
 
+/** Tam giác play bo góc (mềm hơn tam giác nhọn cũ), lệch phải 1px cho cân thị giác. */
+const PLAY_ICON =
+  '<svg class="w-3.5 h-3.5 sm:w-5 sm:h-5 translate-x-[1px]" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M8.5 5.9v12.2c0 .8.9 1.3 1.6.8l9.1-6.1c.6-.4.6-1.2 0-1.6l-9.1-6.1c-.7-.5-1.6 0-1.6.8z"/></svg>'
+
+/** Nhãn nhỏ dưới nút play ("Xem Demo"...). Cách nút đủ xa để không đè vòng khảm. */
+export const PLAY_LABEL_CLASS =
+  'text-[8px] sm:text-[10px] font-bold mt-3 sm:mt-3.5 text-white/95 tracking-wide bg-black/60 px-2 py-0.5 rounded-full backdrop-blur-xs leading-none whitespace-nowrap'
+
+/**
+ * Nút play giữa khung ảnh thẻ bài hát — hình lỗ thoát âm đàn acoustic (xem
+ * `.play-soundhole` trong style.css). Dùng chung cho mọi thẻ ở mọi trang.
+ * `tag: 'div'` khi cả thẻ đã là vùng bấm (thẻ miễn phí) để không lồng 2 nút.
+ */
+export function renderPlayDisc({ label, icon = PLAY_ICON, tag = 'button' }) {
+  const attrs = tag === 'button' ? ` type="button" aria-label="${label}"` : ' aria-hidden="true"'
+  return `<${tag} class="play-soundhole w-8 h-8 sm:w-11 sm:h-11"${attrs}>${icon}</${tag}>`
+}
+
 /** Escape nháy đơn cho chuỗi nhúng vào thuộc tính onclick="...('...')". */
 function escapeJsString(str) {
   return String(str || '').replace(/'/g, "\\'")
@@ -119,10 +137,8 @@ function renderPaidArtworkCenter(tab, { isPurchased, video, audio }) {
   if (isPurchased) {
     return `
       <div class="my-auto text-center flex flex-col items-center justify-center py-0.5" onclick="event.stopPropagation(); window.navigateToPurchasesTab()">
-        <button class="w-7 h-7 sm:w-10 sm:h-10 rounded-full bg-[#1b140f]/85 backdrop-blur-sm ring-1 ring-white/15 flex items-center justify-center shadow-lg transform group-hover:scale-110 transition-transform cursor-pointer" aria-label="Mở tab đã mua">
-          <svg class="w-3.5 h-3.5 sm:w-4.5 sm:h-4.5 fill-current ml-0.5 text-accent-primary" viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
-        </button>
-        <span class="text-[8px] sm:text-[10px] font-bold mt-1 text-white/95 tracking-wide bg-black/60 px-2 py-0.5 rounded-full backdrop-blur-xs leading-none whitespace-nowrap">Xem Trong Tab Đã Mua</span>
+        ${renderPlayDisc({ label: 'Mở tab đã mua' })}
+        <span class="${PLAY_LABEL_CLASS}">Xem Trong Tab Đã Mua</span>
       </div>
     `
   }
@@ -130,10 +146,8 @@ function renderPaidArtworkCenter(tab, { isPurchased, video, audio }) {
   if (video) {
     return `
       <div class="my-auto text-center flex flex-col items-center justify-center py-0.5" onclick="event.stopPropagation(); window.openVideoDemoModal('${escapeJsString(tab.title)}', '${escapeJsString(video)}', false)">
-        <button class="w-7 h-7 sm:w-10 sm:h-10 rounded-full bg-[#1b140f]/85 backdrop-blur-sm ring-1 ring-white/15 flex items-center justify-center shadow-lg transform group-hover:scale-110 transition-transform cursor-pointer" aria-label="Xem Demo">
-          <svg class="w-3.5 h-3.5 sm:w-4.5 sm:h-4.5 fill-current ml-0.5 text-accent-primary" viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
-        </button>
-        <span class="text-[8px] sm:text-[10px] font-bold mt-1 text-white/95 tracking-wide bg-black/60 px-2 py-0.5 rounded-full backdrop-blur-xs leading-none whitespace-nowrap">Xem Demo</span>
+        ${renderPlayDisc({ label: 'Xem Demo' })}
+        <span class="${PLAY_LABEL_CLASS}">Xem Demo</span>
       </div>
     `
   }
@@ -141,10 +155,8 @@ function renderPaidArtworkCenter(tab, { isPurchased, video, audio }) {
   if (audio) {
     return `
       <div class="my-auto text-center flex flex-col items-center justify-center py-0.5" onclick="event.stopPropagation(); window.openVideoDemoModal('${escapeJsString(tab.title)}', '${escapeJsString(audio)}', true)">
-        <button class="w-7 h-7 sm:w-10 sm:h-10 rounded-full bg-[#1b140f]/85 backdrop-blur-sm ring-1 ring-white/15 text-accent-primary flex items-center justify-center shadow-lg transform group-hover:scale-110 transition-transform cursor-pointer" aria-label="Nghe Audio Demo">
-          ${iconHeadphones('w-3.5 h-3.5 sm:w-4 sm:h-4')}
-        </button>
-        <span class="text-[8px] sm:text-[10px] font-bold mt-1 text-white/95 tracking-wide bg-black/60 px-2 py-0.5 rounded-full backdrop-blur-xs leading-none whitespace-nowrap">Nghe Audio Demo</span>
+        ${renderPlayDisc({ label: 'Nghe Audio Demo', icon: iconHeadphones('w-3.5 h-3.5 sm:w-5 sm:h-5') })}
+        <span class="${PLAY_LABEL_CLASS}">Nghe Audio Demo</span>
       </div>
     `
   }
@@ -223,12 +235,8 @@ export function renderSongCard(tab, options = {}) {
             </div>
 
             <div class="my-auto text-center flex flex-col items-center justify-center py-0.5">
-              <div class="w-7 h-7 sm:w-10 sm:h-10 rounded-full bg-[#1b140f]/85 backdrop-blur-sm ring-1 ring-white/15 text-emerald-400 flex items-center justify-center shadow-lg transform group-hover:scale-110 transition-transform">
-                <svg class="w-3.5 h-3.5 sm:w-4.5 sm:h-4.5 fill-current ml-0.5" viewBox="0 0 24 24">
-                  <path d="M8 5v14l11-7z"/>
-                </svg>
-              </div>
-              <span class="text-[8px] sm:text-[10px] font-bold mt-1 text-white/95 tracking-wide bg-black/60 px-2 py-0.5 rounded-full backdrop-blur-xs leading-none whitespace-nowrap">Xem Tab Miễn Phí</span>
+              ${renderPlayDisc({ label: 'Xem Tab Miễn Phí', tag: 'div' })}
+              <span class="${PLAY_LABEL_CLASS}">Xem Tab Miễn Phí</span>
             </div>
 
             ${renderThumbMetaRow(tab)}
