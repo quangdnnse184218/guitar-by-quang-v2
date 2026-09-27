@@ -34,3 +34,7 @@ export const iconChartBar = (cls = 'w-4 h-4') =>
 
 export const iconHeadphones = (cls = 'w-4 h-4') =>
   `<svg class="${cls}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path stroke-linecap="round" d="M4 14v-2.5a8 8 0 1116 0V14"/><rect x="2.5" y="13" width="4.5" height="6.5" rx="2"/><rect x="17" y="13" width="4.5" height="6.5" rx="2"/></svg>`
+
+/** Mũ tốt nghiệp — thay emoji 🎓 ở badge giảm giá HSSV. */
+export const iconGraduationCap = (cls = 'w-4 h-4') =>
+  `<svg class="${cls}" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 3L1 8.5l11 5.5 9-4.5V17h1.5V8.5L12 3z"/><path d="M5.5 11.5V16c0 1.66 3.5 3 6.5 3s6.5-1.34 6.5-3v-4.5L12 15.5l-6.5-4z"/></svg>`

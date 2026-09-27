@@ -13,7 +13,30 @@
  * lớp phủ khi vuốt để yêu thích.
  */
 import { normalizeVideoPath, normalizeAudioPath } from './songs-service.js'
-import { iconHeadphones, iconGuitar, iconHeart } from '../icons.js'
+import { iconHeadphones, iconGuitar, iconHeart, iconGraduationCap } from '../icons.js'
+import { extractDiscountPrice } from './song-format.js'
+
+/**
+ * Giá trên thẻ trả phí tách làm 2 chỗ thay vì nhồi 2 pill xếp dọc ở góc ảnh (góc
+ * đó còn phải chứa thể loại + nút tim, thẻ trên mobile chỉ rộng ~160px):
+ * - renderPriceBadge: góc ảnh chỉ còn giá gốc, gọn ngang badge "FREE" của thẻ
+ *   miễn phí — liếc lưới là thấy ngay bài nào tốn bao nhiêu.
+ * - renderHssvNote: giá HSSV thành chữ nhỏ ở hàng "Độ khó" trong thân thẻ.
+ * Cố ý không gạch ngang giá gốc: chỉ HSSV mới được giá thấp, gạch ngang sẽ
+ * khiến khách tưởng ai cũng được giảm.
+ */
+export function renderPriceBadge(priceFormatted) {
+  // Cùng khuôn (padding, cỡ chữ, font) với badge "FREE" — chỉ khác màu. Trên
+  // mobile hàng này chỉ rộng ~120px: badge dùng font mono cũ rộng hơn FREE
+  // đúng 2px là đủ đẩy nút tim xuống dòng.
+  return `<span class="px-1.5 sm:px-2 py-0.5 rounded-full text-[8px] sm:text-[10px] font-black text-white bg-gradient-to-r from-rose-600 to-rose-500 shadow-sm uppercase tracking-wide tabular-nums whitespace-nowrap" title="Giá ${priceFormatted}">${priceFormatted}</span>`
+}
+
+export function renderHssvNote(discountNote) {
+  if (!discountNote) return ''
+  const hssvLabel = extractDiscountPrice(discountNote) || discountNote
+  return `<span class="inline-flex items-center gap-0.5 text-[9px] sm:text-xs font-bold text-accent-primary whitespace-nowrap" title="Giá ưu đãi cho học sinh, sinh viên (xác minh thẻ khi thanh toán)">${iconGraduationCap('w-3 h-3 sm:w-3.5 sm:h-3.5 flex-shrink-0')}HSSV ${hssvLabel}</span>`
+}
 
 /** Escape nháy đơn cho chuỗi nhúng vào thuộc tính onclick="...('...')". */
 function escapeJsString(str) {
@@ -171,10 +194,11 @@ export function renderSongCard(tab, options = {}) {
   // aspect-ratio kèm chiều cao tối thiểu sẽ sinh ra chiều rộng tối thiểu tự
   // động làm khung ảnh phình rộng hơn thẻ rồi bị cắt mất mép phải.
 
-  const levelRow = (accentClass, barClass) => `
+  const levelRow = (accentClass, barClass, rightSlot = '') => `
     <div class="space-y-0.5 sm:space-y-1 pt-0.5">
-      <div class="text-[10px] sm:text-xs font-bold text-text-muted">
-        <span>Độ khó: <strong class="${accentClass} font-mono tabular-nums">${tab.level || levelNum + '/10'}</strong></span>
+      <div class="flex items-center justify-between gap-1 text-[10px] sm:text-xs font-bold text-text-muted">
+        <span class="whitespace-nowrap">Độ khó: <strong class="${accentClass} font-mono tabular-nums">${tab.level || levelNum + '/10'}</strong></span>
+        ${rightSlot}
       </div>
       <div class="w-full bg-glass-bg rounded-full h-1 sm:h-1.5 overflow-hidden border border-glass-border">
         <div class="${barClass} h-1 sm:h-1.5 rounded-full transition-all duration-500" style="width: ${percent}%"></div>
@@ -247,12 +271,7 @@ export function renderSongCard(tab, options = {}) {
       <span>ĐÃ MUA</span>
     </span>
   `
-    : `
-    <div class="flex flex-col items-end gap-1 sm:gap-1.5">
-      <span class="px-2 sm:px-2.5 py-0.5 sm:py-1 rounded-full text-[8px] sm:text-[9.5px] font-black text-white bg-gradient-to-r from-rose-600 via-rose-500 to-red-500 shadow-md shadow-rose-900/40 ring-1 ring-white/25 uppercase tracking-wide font-mono tabular-nums">BÁN • ${priceFormatted}</span>
-      ${discountNote ? `<span class="px-2 sm:px-2.5 py-0.5 rounded-full text-[7px] sm:text-[8.5px] font-extrabold text-white bg-gradient-to-r from-amber-500 to-accent-primary shadow-sm shadow-amber-900/30 ring-1 ring-white/25 inline-block leading-none whitespace-nowrap">🎓 ${discountNote}</span>` : ''}
-    </div>
-  `
+    : renderPriceBadge(priceFormatted)
 
   return `
     <div onclick="${isPurchased ? 'window.navigateToPurchasesTab()' : `window.openCheckoutModal('${tab.id}')`}" class="song-card glass-card card-interactive p-2.5 sm:p-4 rounded-2xl sm:rounded-3xl border ${isPurchased ? 'border-amber-500/40 hover:border-amber-400' : 'border-glass-border'} flex flex-col justify-between space-y-2.5 sm:space-y-3.5 group cursor-pointer card-paid ${pinnedClass} ${extraClass}" data-id="${tab.id}">
@@ -277,7 +296,7 @@ export function renderSongCard(tab, options = {}) {
           <h3 class="text-xs sm:text-base font-bold text-text-primary group-hover:text-accent-primary transition-colors leading-tight line-clamp-2">
             ${tab.title}
           </h3>
-          ${levelRow('text-accent-primary', 'bg-warm-gradient')}
+          ${levelRow('text-accent-primary', 'bg-warm-gradient', isPurchased ? '' : renderHssvNote(discountNote))}
           <p class="text-[10px] sm:text-xs text-text-muted font-medium leading-snug pt-0.5 line-clamp-2">
             ${tab.description || 'Bản tab guitar fingerstyle chuẩn âm thanh acoustic.'}
           </p>

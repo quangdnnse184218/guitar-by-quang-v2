@@ -33,6 +33,20 @@ export function formatCompactPrice(val) {
  * Rút gọn ghi chú ưu đãi HSSV về dạng "HSSV: 179k" để vừa badge trên thẻ.
  * Ghi chú dài (admin viết cả câu) sẽ được bóc lấy con số rồi dựng lại cho gọn.
  */
+/**
+ * Chỉ lấy giá ưu đãi HSSV dạng "179k" từ ghi chú admin nhập tay, để badge trên
+ * thẻ hiện icon mũ tốt nghiệp + giá thay cho cả cụm chữ "HSSV: 179k". Lấy nhóm
+ * số CUỐI CÙNG (ghi chú kiểu "HSSV 2026: 179k" không bị dính thành 2026179).
+ * Trả '' khi không bóc được số — nơi gọi tự quay về hiện nguyên ghi chú.
+ */
+export function extractDiscountPrice(note) {
+  if (!note) return ''
+  const groups = String(note).match(/\d[\d.,]*/g)
+  if (!groups) return ''
+  const digits = groups[groups.length - 1].replace(/[^0-9]/g, '')
+  return digits ? formatCompactPrice(digits) : ''
+}
+
 export function formatCompactDiscount(note) {
   if (!note) return 'HSSV: 179k'
   const str = String(note).trim()

@@ -4,7 +4,11 @@
  * phải quy về một dạng ngắn gọn — test ở đây khoá lại các quy tắc quy đổi đó.
  */
 import { describe, expect, it } from 'vitest'
-import { formatCompactPrice, formatCompactDiscount } from '../src/lib/song-format.js'
+import {
+  formatCompactPrice,
+  formatCompactDiscount,
+  extractDiscountPrice,
+} from '../src/lib/song-format.js'
 
 describe('formatCompactPrice', () => {
   it('quy số tiền đầy đủ về dạng rút gọn "k"', () => {
@@ -55,5 +59,25 @@ describe('formatCompactDiscount', () => {
     expect(formatCompactDiscount('Ưu đãi học sinh sinh viên chỉ còn 149000 đồng')).toBe(
       'HSSV: 149k'
     )
+  })
+})
+
+describe('extractDiscountPrice', () => {
+  it('bóc giá từ ghi chú chuẩn "HSSV: 179k"', () => {
+    expect(extractDiscountPrice('HSSV: 179k')).toBe('179k')
+  })
+
+  it('quy đổi số đồng đầy đủ về dạng nghìn', () => {
+    expect(extractDiscountPrice('Giảm còn 149.000đ cho HSSV')).toBe('149k')
+  })
+
+  it('lấy nhóm số cuối cùng, không dính năm vào giá', () => {
+    expect(extractDiscountPrice('HSSV 2026: 179k')).toBe('179k')
+  })
+
+  it('trả rỗng khi ghi chú không có số (để nơi gọi hiện nguyên ghi chú)', () => {
+    expect(extractDiscountPrice('Ưu đãi cho HSSV')).toBe('')
+    expect(extractDiscountPrice('')).toBe('')
+    expect(extractDiscountPrice(null)).toBe('')
   })
 })

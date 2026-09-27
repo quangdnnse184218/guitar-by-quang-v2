@@ -25,7 +25,13 @@ import { uploadToStorage, removeFromStorageByUrl, formatBytes, MAX_UPLOAD_BYTES 
 import { iconCrown, iconHeadphones, iconGuitar } from './icons.js'
 import { initShareButtons } from './lib/share-song.js'
 import { formatCompactPrice, formatCompactDiscount } from './lib/song-format.js'
-import { SONG_THUMB_CLASS, renderThumbMetaRow, renderCategoryBadge } from './lib/song-card.js'
+import {
+  SONG_THUMB_CLASS,
+  renderThumbMetaRow,
+  renderCategoryBadge,
+  renderPriceBadge,
+  renderHssvNote,
+} from './lib/song-card.js'
 import {
   createOrderAndBuildQr,
   downloadQrImage,
@@ -579,7 +585,6 @@ function renderOverviewFeatured() {
               <div class="space-y-0.5 sm:space-y-1 pt-0.5">
                 <div class="flex items-center justify-between text-[10px] sm:text-xs font-bold text-text-muted">
                   <span>Độ khó: <strong class="text-emerald-500 font-mono tabular-nums">${song.level || levelNum + '/10'}</strong></span>
-                  <span class="text-[9px] sm:text-xs font-semibold text-text-muted hidden sm:inline">Tuning: ${song.tuning || 'Standard'}</span>
                 </div>
                 <div class="w-full bg-glass-bg rounded-full h-1 sm:h-1.5 overflow-hidden border border-glass-border">
                   <div class="bg-emerald-500 h-1 sm:h-1.5 rounded-full transition-all duration-500" style="width: ${percent}%"></div>
@@ -646,7 +651,6 @@ function renderOverviewFeatured() {
               <div class="space-y-0.5 sm:space-y-1 pt-0.5">
                 <div class="flex items-center justify-between text-[10px] sm:text-xs font-bold text-text-muted">
                   <span>Độ khó: <strong class="text-accent-primary font-mono tabular-nums">${song.level || levelNum + '/10'}</strong></span>
-                  <span class="text-[9px] sm:text-xs font-semibold text-text-muted hidden sm:inline">Tuning: ${song.tuning || 'Standard'}</span>
                 </div>
                 <div class="w-full bg-glass-bg rounded-full h-1 sm:h-1.5 overflow-hidden border border-glass-border">
                   <div class="bg-warm-gradient h-1 sm:h-1.5 rounded-full transition-all duration-500" style="width: ${percent}%"></div>
@@ -677,10 +681,7 @@ function renderOverviewFeatured() {
               ${renderCategoryBadge(song, "NHẠC VIỆT")}
               <div class="flex items-start gap-1 justify-end">
                 ${userActionGroup}
-                <div class="flex flex-col items-end gap-1 sm:gap-1.5">
-                  <span class="px-2 sm:px-2.5 py-0.5 sm:py-1 rounded-full text-[8px] sm:text-[9.5px] font-black text-white bg-gradient-to-r from-rose-600 via-rose-500 to-red-500 shadow-md shadow-rose-900/40 ring-1 ring-white/25 uppercase tracking-wide font-mono tabular-nums">BÁN • ${priceFormatted}</span>
-                  ${discountNote ? `<span class="px-2 sm:px-2.5 py-0.5 rounded-full text-[7px] sm:text-[8.5px] font-extrabold text-white bg-gradient-to-r from-amber-500 to-accent-primary shadow-sm shadow-amber-900/30 ring-1 ring-white/25 inline-block leading-none whitespace-nowrap">🎓 ${discountNote}</span>` : ''}
-                </div>
+                ${renderPriceBadge(priceFormatted)}
               </div>
             </div>
 
@@ -724,9 +725,9 @@ function renderOverviewFeatured() {
             </h3>
 
             <div class="space-y-0.5 sm:space-y-1 pt-0.5">
-              <div class="flex items-center justify-between text-[10px] sm:text-xs font-bold text-text-muted">
-                <span>Độ khó: <strong class="text-accent-primary font-mono tabular-nums">${song.level || levelNum + '/10'}</strong></span>
-                <span class="text-[9px] sm:text-xs font-semibold text-text-muted hidden sm:inline">Tuning: ${song.tuning || 'Standard'}</span>
+              <div class="flex items-center justify-between gap-1 text-[10px] sm:text-xs font-bold text-text-muted">
+                <span class="whitespace-nowrap">Độ khó: <strong class="text-accent-primary font-mono tabular-nums">${song.level || levelNum + '/10'}</strong></span>
+                ${renderHssvNote(discountNote)}
               </div>
               <div class="w-full bg-glass-bg rounded-full h-1 sm:h-1.5 overflow-hidden border border-glass-border">
                 <div class="bg-warm-gradient h-1 sm:h-1.5 rounded-full transition-all duration-500" style="width: ${percent}%"></div>
