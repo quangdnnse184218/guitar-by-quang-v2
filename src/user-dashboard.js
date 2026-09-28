@@ -568,8 +568,8 @@ function renderOverviewFeatured() {
 
               <!-- Center Play Demo Button -->
               <div class="my-auto text-center flex flex-col items-center justify-center py-0.5">
-                ${renderPlayDisc({ label: 'Xem Tab Miễn Phí', tag: 'div' })}
-                <span class="${PLAY_LABEL_CLASS}">Xem Tab Miễn Phí</span>
+                ${renderPlayDisc({ label: 'Xem tab miễn phí', tag: 'div' })}
+                <span class="${PLAY_LABEL_CLASS}">Xem tab miễn phí</span>
               </div>
 
               ${renderThumbMetaRow(song, "04:15")}
@@ -628,7 +628,7 @@ function renderOverviewFeatured() {
               <!-- Center Play Demo Button -->
               <div class="my-auto text-center flex flex-col items-center justify-center py-0.5" onclick="event.stopPropagation(); window.navigateToPurchasesTab('${song.id}')">
                 ${renderPlayDisc({ label: 'Mở tab đã mua' })}
-                <span class="${PLAY_LABEL_CLASS}">Xem Trong Tab Đã Mua</span>
+                <span class="${PLAY_LABEL_CLASS}">Xem trong tab đã mua</span>
               </div>
 
               ${renderThumbMetaRow(song, "03:40")}
@@ -654,7 +654,7 @@ function renderOverviewFeatured() {
 
           <div class="pt-1 sm:pt-2">
             <div class="w-full py-1.5 sm:py-2.5 px-1.5 rounded-full bg-amber-500/15 border border-amber-500/30 hover:bg-amber-500/25 text-amber-600 dark:text-amber-300 font-extrabold text-[10px] sm:text-xs transition-all shadow-xs flex items-center justify-center gap-1 active:scale-95 text-center cursor-pointer">
-              <span class="truncate">Mở Tab Đã Mua</span>
+              <span class="truncate">Mở tab đã mua</span>
             </div>
           </div>
         </div>
@@ -679,15 +679,15 @@ function renderOverviewFeatured() {
               videoDemoUrl
                 ? `
             <div class="my-auto text-center flex flex-col items-center justify-center py-0.5" onclick="event.stopPropagation(); window.openVideoDemoModal('${escapeHtml(song.title)}', '${videoDemoUrl}', false)">
-              ${renderPlayDisc({ label: 'Xem Demo' })}
-              <span class="${PLAY_LABEL_CLASS}">Xem Demo</span>
+              ${renderPlayDisc({ label: 'Xem demo' })}
+              <span class="${PLAY_LABEL_CLASS}">Xem demo</span>
             </div>
             `
                 : song.audio_demo || song.demo_audio_url || song.audio_url
                   ? `
             <div class="my-auto text-center flex flex-col items-center justify-center py-0.5" onclick="event.stopPropagation(); window.openVideoDemoModal('${escapeHtml(song.title)}', '${escapeHtml(song.audio_demo || song.demo_audio_url || song.audio_url)}', true)">
-              ${renderPlayDisc({ label: 'Nghe Audio Demo', icon: iconHeadphones('w-3.5 h-3.5 sm:w-5 sm:h-5') })}
-              <span class="${PLAY_LABEL_CLASS}">Nghe Audio Demo</span>
+              ${renderPlayDisc({ label: 'Nghe audio demo', icon: iconHeadphones('w-3.5 h-3.5 sm:w-5 sm:h-5') })}
+              <span class="${PLAY_LABEL_CLASS}">Nghe audio demo</span>
             </div>
             `
                   : `
@@ -724,7 +724,7 @@ function renderOverviewFeatured() {
 
         <div class="pt-1 sm:pt-2">
           <div class="w-full py-1.5 sm:py-2.5 px-1.5 rounded-full bg-warm-gradient hover:brightness-105 text-white font-bold text-[10px] sm:text-xs transition-all shadow-md flex items-center justify-center gap-1 active:scale-95 text-center cursor-pointer">
-            <span class="truncate">Xem Chi Tiết</span>
+            <span class="truncate">Xem chi tiết</span>
           </div>
         </div>
       </div>
@@ -948,8 +948,8 @@ window.navigateToPurchasesTab = function (songId) {
 
   showToast(
     songTitle
-      ? `Đã chuyển sang Tab Đã Mua bài ${songTitle} 🎸`
-      : 'Đã chuyển sang mục Tab Đã Mua 🎸',
+      ? `Đã chuyển sang Tab đã mua bài ${songTitle} 🎸`
+      : 'Đã chuyển sang mục Tab đã mua 🎸',
     'success'
   )
 
@@ -1077,7 +1077,7 @@ window.openCheckoutModal = function openCheckoutModal(tabId) {
           qrTriggerEl.onclick = () =>
             window.openImageModal(
               qrUrl,
-              'Mã QR Chuyển Khoản TPBank (03970202801)',
+              'Mã QR chuyển khoản TPBank (03970202801)',
               'Quét mã QR bằng App Ngân hàng bất kỳ — số tiền và nội dung đã được điền sẵn, chỉ cần xác nhận chuyển khoản.'
             )
         }
@@ -1229,7 +1229,7 @@ window.openFreeTabModal = function openFreeTabModal(tabId) {
         'w-full py-3 rounded-2xl bg-warm-gradient hover:brightness-105 text-white font-extrabold text-xs transition-all shadow-md flex items-center justify-center gap-2 text-center cursor-pointer active:scale-95'
       pdfBtn.innerHTML = `
         <svg class="w-4 h-4 fill-none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>
-        <span>Tải file PDF Tab</span>
+        <span>Tải file PDF tab</span>
       `
     } else {
       pdfBtn.setAttribute('disabled', 'true')
@@ -1460,7 +1460,7 @@ document.getElementById('copy-syntax-btn')?.addEventListener('click', async () =
             qrTriggerEl.onclick = () =>
               window.openImageModal(
                 newQrUrl,
-                'Mã QR Chuyển Khoản TPBank (03970202801)',
+                'Mã QR chuyển khoản TPBank (03970202801)',
                 'Quét mã QR bằng App Ngân hàng bất kỳ — số tiền và nội dung đã được điền sẵn, chỉ cần xác nhận chuyển khoản.'
               )
           }
@@ -1565,7 +1565,7 @@ function renderFavorites() {
           Dạo qua Kho Video Tab và bấm biểu tượng trái tim ❤️ để lưu các bài hát bạn muốn tập vào đây nhé!
         </p>
         <a href="/kho-tab.html" class="inline-flex items-center gap-2 px-5 py-2.5 rounded-full bg-warm-gradient text-white font-bold text-xs shadow-glow hover:brightness-105 transition-all mt-2">
-          <span>Khám Phá Kho Tab</span>
+          <span>Khám phá kho tab</span>
           <span>→</span>
         </a>
       </div>
@@ -1661,7 +1661,7 @@ function renderPurchases() {
           Khi bạn sở hữu bản quyền Video Tab từ Quang, toàn bộ link tải chất lượng cao sẽ hiển thị vĩnh viễn tại đây mà không cần thanh toán lại!
         </p>
         <a href="/kho-tab.html" class="inline-flex items-center gap-2 px-5 py-2.5 rounded-full bg-warm-gradient text-white font-bold text-xs shadow-glow hover:brightness-105 transition-all mt-2">
-          <span>Khám Phá Video Tab Trả Phí</span>
+          <span>Khám phá Video Tab trả phí</span>
           <span>→</span>
         </a>
       </div>
@@ -1899,7 +1899,7 @@ if (profileForm) {
     } finally {
       if (saveProfileBtn) {
         saveProfileBtn.disabled = false
-        saveProfileBtn.textContent = 'Lưu Thay Đổi Hồ Sơ'
+        saveProfileBtn.textContent = 'Lưu thay đổi hồ sơ'
       }
     }
   })
@@ -1990,7 +1990,7 @@ if (changePasswordForm) {
     } finally {
       if (changePasswordBtn) {
         changePasswordBtn.disabled = false
-        if (pwdBtnText) pwdBtnText.textContent = 'Cập Nhật Mật Khẩu Mới'
+        if (pwdBtnText) pwdBtnText.textContent = 'Cập nhật mật khẩu mới'
         if (pwdBtnSpinner) pwdBtnSpinner.classList.add('hidden')
       }
     }

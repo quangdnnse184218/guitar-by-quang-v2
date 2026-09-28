@@ -593,7 +593,7 @@ function refreshBestLabels() {
   bestHearLabel.textContent = `Kỷ lục: ${getBest('hear')} vòng`
 }
 
-const modeName = (which) => (which === 'see' ? 'Nhìn & Nghe' : 'Chỉ Nghe')
+const modeName = (which) => (which === 'see' ? 'Nhìn & nghe' : 'Chỉ nghe')
 const otherMode = (which) => (which === 'see' ? 'hear' : 'see')
 
 // ==========================================================================
@@ -700,7 +700,7 @@ function ensurePlayerName() {
       nicknameError.textContent = message
       nicknameError.hidden = false
       nicknameSubmitBtn.disabled = false
-      nicknameSubmitBtn.textContent = 'Vào Chơi'
+      nicknameSubmitBtn.textContent = 'Vào chơi'
     }
 
     const onSubmit = async (event) => {
@@ -737,7 +737,7 @@ function ensurePlayerName() {
       nicknameModal.hidden = true
       nicknameForm.removeEventListener('submit', onSubmit)
       nicknameSubmitBtn.disabled = false
-      nicknameSubmitBtn.textContent = 'Vào Chơi'
+      nicknameSubmitBtn.textContent = 'Vào chơi'
       // Người chơi cũ đã có kỷ lục lưu sẵn trong localStorage TRƯỚC KHI tính
       // năng bảng xếp hạng ra đời — nếu đợi "phá kỷ lục mới" mới nộp thì kỷ
       // lục cũ đó sẽ không bao giờ lên bảng. Đồng bộ luôn cả hai chế độ ngay
@@ -840,7 +840,7 @@ function closeLeaderboard() {
  *  ở trên thì vẫn đọc được mình sắp chơi chế độ nào, và biết là có lựa chọn. */
 function updateStartLabel() {
   if (!audioReady) return
-  startBtn.textContent = `Bắt Đầu · ${modeName(mode)}`
+  startBtn.textContent = `Bắt đầu · ${modeName(mode)}`
 }
 
 function setMode(next) {
@@ -1311,7 +1311,7 @@ function stopLcTimer() {
 }
 
 /**
- * Trước khi vào vòng 1, dừng lại ở màn hình luật chơi (chữ "Bắt Đầu") để
+ * Trước khi vào vòng 1, dừng lại ở màn hình luật chơi (chữ "Bắt đầu") để
  * người chơi đọc kỹ trước khi bấm — tránh vào thẳng mà chưa hiểu luật.
  */
 async function startLastChance() {
@@ -1331,7 +1331,7 @@ async function startLastChance() {
   lcTimerBar.hidden = true
   lcStartBtn.hidden = false
   setHubLabel('')
-  setStatus('Đọc kỹ luật rồi bấm Bắt Đầu', 'turn')
+  setStatus('Đọc kỹ luật rồi bấm Bắt đầu', 'turn')
 }
 
 /**
@@ -1591,7 +1591,7 @@ volumeSlider.addEventListener('input', () => {
 
 // Thả tay ra thì phát thử một nốt để nghe ngay mức vừa chỉnh. Chỉ phát khi máy
 // không đang phát chuỗi và không đến lượt người chơi bấm — nếu không, ở chế độ
-// Chỉ Nghe người chơi sẽ tưởng đó là một nốt trong chuỗi cần nhớ.
+// Chỉ nghe người chơi sẽ tưởng đó là một nốt trong chuỗi cần nhớ.
 volumeSlider.addEventListener('change', () => {
   if (phase === 'playing' || phase === 'input' || phase === 'lc-listen' || phase === 'lc-input') return
   if (masterVolume > 0 && decodedSamples.size > 0) playNote('do')

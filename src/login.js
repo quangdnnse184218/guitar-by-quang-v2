@@ -64,7 +64,7 @@ document.addEventListener('DOMContentLoaded', () => {
     } else {
       submitBtn.disabled = false
       submitBtn.classList.remove('opacity-70', 'cursor-not-allowed')
-      btnText.textContent = 'Đăng Nhập Ngay'
+      btnText.textContent = 'Đăng nhập ngay'
       btnSpinner.classList.add('hidden')
     }
   }

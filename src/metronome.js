@@ -210,13 +210,13 @@ function updatePlayButtonUI(active) {
       'flex-1 py-3.5 rounded-2xl bg-rose-500 hover:bg-rose-600 text-white font-extrabold text-xs sm:text-sm transition-all active:scale-95 cursor-pointer shadow-lg shadow-rose-500/25 flex items-center justify-center gap-2'
     if (playIcon) playIcon.classList.add('hidden')
     if (pauseIcon) pauseIcon.classList.remove('hidden')
-    if (playLabel) playLabel.textContent = 'Dừng Lại'
+    if (playLabel) playLabel.textContent = 'Dừng lại'
   } else {
     playBtn.className =
       'flex-1 py-3.5 rounded-2xl bg-emerald-500 hover:bg-emerald-400 text-white font-extrabold text-xs sm:text-sm transition-all active:scale-95 cursor-pointer shadow-lg shadow-emerald-500/25 flex items-center justify-center gap-2'
     if (playIcon) playIcon.classList.remove('hidden')
     if (pauseIcon) pauseIcon.classList.add('hidden')
-    if (playLabel) playLabel.textContent = 'Bắt Đầu Gõ'
+    if (playLabel) playLabel.textContent = 'Bắt đầu gõ'
   }
 }
 

@@ -3,16 +3,16 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Game Luyện Cảm Âm Và Trí Nhớ | Guitar By Quang</title>
-    <meta name="description" content="Game luyện cảm âm và trí nhớ: nghe chuỗi nốt guitar rồi lặp lại đúng thứ tự, chuỗi càng dài càng khó. Đủ 7 nốt Đồ Rê Mi Fa Sol La Si, có chế độ Chỉ Nghe để luyện tai thật sự." />
+    <title>Game luyện cảm âm và trí nhớ | Guitar By Quang</title>
+    <meta name="description" content="Game luyện cảm âm và trí nhớ: nghe chuỗi nốt guitar rồi lặp lại đúng thứ tự, chuỗi càng dài càng khó. Đủ 7 nốt Đồ Rê Mi Fa Sol La Si, có chế độ Chỉ nghe để luyện tai thật sự." />
 
     <!-- Open Graph / Social Share Preview -->
     <meta property="og:type" content="website" />
-    <meta property="og:title" content="Game Luyện Cảm Âm Và Trí Nhớ | Guitar By Quang" />
+    <meta property="og:title" content="Game luyện cảm âm và trí nhớ | Guitar By Quang" />
     <meta property="og:description" content="Nghe chuỗi nốt guitar rồi lặp lại đúng thứ tự — luyện cảm âm và trí nhớ, có bảng xếp hạng." />
     <meta property="og:image" content="/assets/avatar.jpg" />
     <meta name="twitter:card" content="summary_large_image" />
-    <meta name="twitter:title" content="Game Luyện Cảm Âm Và Trí Nhớ | Guitar By Quang" />
+    <meta name="twitter:title" content="Game luyện cảm âm và trí nhớ | Guitar By Quang" />
     <meta name="twitter:description" content="Nghe chuỗi nốt guitar rồi lặp lại đúng thứ tự — chuỗi càng dài càng khó." />
     <meta name="twitter:image" content="/assets/avatar.jpg" />
 
@@ -566,7 +566,7 @@
         0%, 100% { transform: translate(-50%, -50%) scale(1); }
         50% { transform: translate(-50%, -50%) scale(1.045); }
       }
-      /* Vòng sáng lan ra mỗi khi một nốt vang lên — ở chế độ Chỉ Nghe đây là
+      /* Vòng sáng lan ra mỗi khi một nốt vang lên — ở chế độ Chỉ nghe đây là
          dấu hiệu duy nhất báo có nốt, mà không tiết lộ đó là phím nào.
          Đặt trên ::after để không giành thuộc tính animation với .playing. */
       .hub::after {
@@ -1094,7 +1094,7 @@
       .lc-choice-btns { display: grid; grid-template-columns: 1fr 1fr; gap: 9px; }
       .lc-choice-warn { margin: 0; text-align: center; font-size: 11.5px; color: var(--ink-faint); }
 
-      /* Nốt đúng hiện ra sau khi bấm sai — chỉ dùng ở chế độ Nhìn & Nghe */
+      /* Nốt đúng hiện ra sau khi bấm sai — chỉ dùng ở chế độ Nhìn & nghe */
       .pad.reveal { animation: pad-reveal 0.85s ease 2; }
       @keyframes pad-reveal {
         0%, 100% { filter: brightness(var(--pad-rest)); transform: translate(-50%, -50%) scale(1); }
@@ -1304,7 +1304,7 @@
         }
         /* Dải nhãn giờ đứng BÊN CẠNH vòng phím (không còn nằm trên nữa),
            nên ngân sách chiều cao gần như chơi thường — chỉ trừ thêm chút
-           cho hai nút "Vào Chơi/Bỏ qua" nằm dưới vòng phím. */
+           cho hai nút "Vào chơi/Bỏ qua" nằm dưới vòng phím. */
         #screen-game.is-warmup .turntable {
           width: min(100%, 560px, max(200px, calc(100vh - 410px)));
           width: min(100%, 560px, max(200px, calc(100dvh - 410px)));
@@ -1463,7 +1463,7 @@
             <rect x="44" y="35" width="14" height="21" rx="7" fill="currentColor" />
           </svg>
         </div>
-        <h1>Game Luyện Cảm Âm Và Trí Nhớ</h1>
+        <h1>Game luyện cảm âm và trí nhớ</h1>
         <p class="subtitle">Nghe · Nhớ · Lặp lại</p>
         <p class="lede">Máy phát một chuỗi nốt guitar, bạn bấm lại đúng thứ tự. Đúng thì chuỗi dài thêm một nốt. Bạn có một trái tim — bấm sai là mất tim, nhưng được nghe lại chuỗi và làm lại chính vòng đó.</p>
 
@@ -1511,7 +1511,7 @@
                   <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5" /></svg>
                 </span>
               </span>
-              <span class="mode-name">Chỉ Nghe</span>
+              <span class="mode-name">Chỉ nghe</span>
               <span class="mode-desc">Phím không sáng — phải mò bằng tai. Kỷ lục tính riêng.</span>
               <span class="mode-best" id="best-hear">Kỷ lục: 0 vòng</span>
             </button>
@@ -1629,7 +1629,7 @@
               <!-- Chỉ hiện đúng 1 lần trước vòng 1, cho người chơi đọc luật rồi tự
                    bấm vào chơi — vừa mất tim cuối xong không nên dí thẳng vào một
                    luật chơi hoàn toàn mới. -->
-              <button type="button" class="btn-primary lc-start-btn" id="lc-start-btn" hidden>Bắt Đầu</button>
+              <button type="button" class="btn-primary lc-start-btn" id="lc-start-btn" hidden>Bắt đầu</button>
             </div>
 
             <div class="game-center">
@@ -1659,7 +1659,7 @@
             </div>
 
             <div class="warmup-actions" id="warmup-actions" hidden>
-              <button type="button" class="btn-primary" id="play-now-btn" hidden>Vào Chơi</button>
+              <button type="button" class="btn-primary" id="play-now-btn" hidden>Vào chơi</button>
               <button type="button" class="btn-ghost" id="skip-warmup-btn">Bỏ qua, chơi luôn</button>
             </div>
 
@@ -1697,7 +1697,7 @@
           </div>
 
           <div class="over-actions">
-            <button type="button" class="btn-primary" id="again-btn">Chơi Lại</button>
+            <button type="button" class="btn-primary" id="again-btn">Chơi lại</button>
             <button type="button" class="btn-board" id="board-link-over">🏆 Xem bảng xếp hạng</button>
             <button type="button" class="btn-ghost" id="back-menu-btn">Đổi chế độ</button>
           </div>
@@ -1717,7 +1717,7 @@
         <form id="nickname-form">
           <input type="text" class="modal-input" id="nickname-input" maxlength="24" placeholder="Tên của bạn" autocomplete="off" required />
           <p class="modal-error" id="nickname-error" hidden></p>
-          <button type="submit" class="btn-primary" id="nickname-submit-btn">Vào Chơi</button>
+          <button type="submit" class="btn-primary" id="nickname-submit-btn">Vào chơi</button>
         </form>
       </div>
     </div>

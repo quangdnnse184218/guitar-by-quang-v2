@@ -68,7 +68,7 @@ document.addEventListener('DOMContentLoaded', () => {
     } else {
       submitBtn.disabled = false
       submitBtn.classList.remove('opacity-70', 'cursor-not-allowed')
-      btnText.textContent = 'Đăng Ký Tài Khoản'
+      btnText.textContent = 'Đăng ký tài khoản'
       btnSpinner.classList.add('hidden')
     }
   }

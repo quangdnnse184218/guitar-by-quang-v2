@@ -29,11 +29,9 @@
      CLI riêng để soi CSS thật sự sinh ra. Mọi nơi dùng trực tiếp `var(--token)`
      trong file này (và trong .html/.js) đều phải bọc lại thành
      `rgb(var(--token))` — đã rà và sửa hết khi đổi định dạng này.
-     `--glass-border` CỐ Ý không đổi: nó đang là một màu rgba() có sẵn độ mờ
-     10% dùng trơn (không qua modifier) ở hơn 400 chỗ — đổi sang định dạng này
-     sẽ khiến viền hiện rõ 100% ở khắp trang, một hồi quy lớn hơn nhiều so với
-     lợi ích. Vài chỗ dùng modifier trên glass-border (`/40`, `/60`) vẫn còn
-     bị lỗi tương tự, để lại cho một lượt riêng vì cần rà kỹ hơn. */
+     `--glass-border` không theo định dạng này: nó là rgba() mờ sẵn (10%) dùng
+     trơn ở hơn 400 chỗ; Tailwind khai nó bằng hàm NHÂN độ mờ (xem
+     --glass-border-rgb/--glass-border-alpha bên dưới và tailwind.config.js). */
   --bg-base: 27 20 15;
   /* Trước đây mỗi section một sắc riêng (6 tông khác nhau) khiến trang chủ
      nhìn loang lổ, có "đường kẻ ngăn cách" giữa các khối. Giờ chỉ luân phiên
@@ -58,6 +56,10 @@
   /* Card Surfaces — Dark Mode Elevation */
   --glass-bg: 36 27 20;
   --glass-border: rgba(230, 210, 180, 0.1);
+  /* Tách riêng màu + độ mờ gốc của --glass-border để Tailwind nhân độ mờ của
+     modifier (border-glass-border/60 = 60% của 0.1) — xem tailwind.config.js. */
+  --glass-border-rgb: 230 210 180;
+  --glass-border-alpha: 0.1;
   --glass-bg-hover: 44 33 24;
   --glass-blur: 20px;
 
@@ -149,6 +151,8 @@
   /* Card Surfaces — Light Mode Elevation */
   --glass-bg: 251 249 243;
   --glass-border: rgba(120, 95, 60, 0.22);
+  --glass-border-rgb: 120 95 60;
+  --glass-border-alpha: 0.22;
   --glass-bg-hover: 245 240 228;
 
   /* Legible Walnut & Charcoal Text */

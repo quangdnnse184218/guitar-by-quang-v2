@@ -44,7 +44,7 @@ export function renderHssvNote(discountNote) {
 const PLAY_ICON =
   '<svg class="w-3.5 h-3.5 sm:w-5 sm:h-5 translate-x-[1px]" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M8.5 5.9v12.2c0 .8.9 1.3 1.6.8l9.1-6.1c.6-.4.6-1.2 0-1.6l-9.1-6.1c-.7-.5-1.6 0-1.6.8z"/></svg>'
 
-/** Nhãn nhỏ dưới nút play ("Xem Demo"...). Cách nút đủ xa để không đè vòng khảm. */
+/** Nhãn nhỏ dưới nút play ("Xem demo"...). Cách nút đủ xa để không đè vòng khảm. */
 export const PLAY_LABEL_CLASS =
   'text-[8px] sm:text-[10px] font-bold mt-3 sm:mt-3.5 text-white/95 tracking-wide bg-black/60 px-2 py-0.5 rounded-full backdrop-blur-xs leading-none whitespace-nowrap'
 
@@ -142,7 +142,7 @@ function renderPaidArtworkCenter(tab, { isPurchased, video, audio }) {
     return `
       <div class="my-auto text-center flex flex-col items-center justify-center py-0.5" onclick="event.stopPropagation(); window.navigateToPurchasesTab()">
         ${renderPlayDisc({ label: 'Mở tab đã mua' })}
-        <span class="${PLAY_LABEL_CLASS}">Xem Trong Tab Đã Mua</span>
+        <span class="${PLAY_LABEL_CLASS}">Xem trong tab đã mua</span>
       </div>
     `
   }
@@ -150,8 +150,8 @@ function renderPaidArtworkCenter(tab, { isPurchased, video, audio }) {
   if (video) {
     return `
       <div class="my-auto text-center flex flex-col items-center justify-center py-0.5" onclick="event.stopPropagation(); window.openVideoDemoModal('${escapeJsString(tab.title)}', '${escapeJsString(video)}', false)">
-        ${renderPlayDisc({ label: 'Xem Demo' })}
-        <span class="${PLAY_LABEL_CLASS}">Xem Demo</span>
+        ${renderPlayDisc({ label: 'Xem demo' })}
+        <span class="${PLAY_LABEL_CLASS}">Xem demo</span>
       </div>
     `
   }
@@ -159,8 +159,8 @@ function renderPaidArtworkCenter(tab, { isPurchased, video, audio }) {
   if (audio) {
     return `
       <div class="my-auto text-center flex flex-col items-center justify-center py-0.5" onclick="event.stopPropagation(); window.openVideoDemoModal('${escapeJsString(tab.title)}', '${escapeJsString(audio)}', true)">
-        ${renderPlayDisc({ label: 'Nghe Audio Demo', icon: iconHeadphones('w-3.5 h-3.5 sm:w-5 sm:h-5') })}
-        <span class="${PLAY_LABEL_CLASS}">Nghe Audio Demo</span>
+        ${renderPlayDisc({ label: 'Nghe audio demo', icon: iconHeadphones('w-3.5 h-3.5 sm:w-5 sm:h-5') })}
+        <span class="${PLAY_LABEL_CLASS}">Nghe audio demo</span>
       </div>
     `
   }
@@ -239,8 +239,8 @@ export function renderSongCard(tab, options = {}) {
             </div>
 
             <div class="my-auto text-center flex flex-col items-center justify-center py-0.5">
-              ${renderPlayDisc({ label: 'Xem Tab Miễn Phí', tag: 'div' })}
-              <span class="${PLAY_LABEL_CLASS}">Xem Tab Miễn Phí</span>
+              ${renderPlayDisc({ label: 'Xem tab miễn phí', tag: 'div' })}
+              <span class="${PLAY_LABEL_CLASS}">Xem tab miễn phí</span>
             </div>
 
             ${renderThumbMetaRow(tab)}
@@ -313,10 +313,10 @@ export function renderSongCard(tab, options = {}) {
         ${
           isPurchased
             ? `<div class="w-full py-1.5 sm:py-2.5 px-1.5 rounded-full bg-amber-500/15 border border-amber-500/30 hover:bg-amber-500/25 text-amber-600 dark:text-amber-300 font-extrabold text-[10px] sm:text-xs transition-all shadow-xs flex items-center justify-center gap-1 active:scale-95 text-center cursor-pointer">
-          <span class="truncate">Mở Tab Đã Mua</span>
+          <span class="truncate">Mở tab đã mua</span>
         </div>`
             : `<div class="w-full py-1.5 sm:py-2.5 px-1.5 rounded-full bg-warm-gradient hover:opacity-90 text-white font-bold text-[10px] sm:text-xs transition-all shadow-md shadow-accent-primary/20 flex items-center justify-center gap-1 active:scale-95 text-center cursor-pointer">
-          <span class="truncate">Xem Chi Tiết</span>
+          <span class="truncate">Xem chi tiết</span>
         </div>`
         }
       </div>

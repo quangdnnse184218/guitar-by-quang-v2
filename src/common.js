@@ -239,12 +239,12 @@ export async function initAuthHeader() {
 
     // targetDashboardUrl = "công cụ chính" của tài khoản (nav tab, link nhanh
     // ở mobile) — admin thì đây là Bảng Quản Trị, thành viên thì là trang cá
-    // nhân. Trong dropdown thì "Trang Của Tôi" luôn trỏ tới user-dashboard.html
+    // nhân. Trong dropdown thì "Trang của tôi" luôn trỏ tới user-dashboard.html
     // (personalDashboardUrl) vì đó là trang hồ sơ/yêu thích/đã mua của CHÍNH
     // tài khoản đó — kể cả tài khoản admin cũng có thể có yêu thích/đã mua
     // riêng, và tránh trùng lặp với mục "⚡ Bảng Quản Trị Admin" ở trên.
     const targetDashboardUrl = isAdmin ? '/admin-dashboard.html' : '/user-dashboard.html'
-    const targetDashboardLabel = isAdmin ? 'Bảng Quản Trị Admin' : 'Trang Của Tôi'
+    const targetDashboardLabel = isAdmin ? 'Bảng Quản Trị Admin' : 'Trang của tôi'
     const personalDashboardUrl = '/user-dashboard.html'
 
     const roleBadgeHtml = isAdmin
@@ -278,19 +278,19 @@ export async function initAuthHeader() {
               : `
           <a href="${personalDashboardUrl}" class="block px-3 py-2 text-xs font-semibold text-text-primary hover:bg-glass-bg-hover hover:text-accent-primary rounded-xl transition-colors flex items-center gap-2">
             <span>${iconGuitar('w-3.5 h-3.5')}</span>
-            <span>Trang Của Tôi</span>
+            <span>Trang của tôi</span>
           </a>
           <a href="/user-dashboard.html#favorites" class="block px-3 py-2 text-xs font-semibold text-text-primary hover:bg-glass-bg-hover hover:text-accent-primary rounded-xl transition-colors flex items-center gap-2">
             <span>${iconHeart('w-3.5 h-3.5')}</span>
-            <span>Tab Yêu Thích</span>
+            <span>Tab yêu thích</span>
           </a>
           <a href="/user-dashboard.html#purchases" class="block px-3 py-2 text-xs font-semibold text-text-primary hover:bg-glass-bg-hover hover:text-accent-primary rounded-xl transition-colors flex items-center gap-2">
             <span>${iconBolt('w-3.5 h-3.5')}</span>
-            <span>Tab Đã Mua</span>
+            <span>Tab đã mua</span>
           </a>
           <a href="/user-dashboard.html#profile" class="block px-3 py-2 text-xs font-semibold text-text-primary hover:bg-glass-bg-hover hover:text-accent-primary rounded-xl transition-colors flex items-center gap-2">
             <span>${iconPerson('w-3.5 h-3.5')}</span>
-            <span>Hồ Sơ & Mật Khẩu</span>
+            <span>Hồ sơ & mật khẩu</span>
           </a>
           `
           }
@@ -390,7 +390,7 @@ export async function initAuthHeader() {
                  <p class="text-sm font-bold text-text-primary">${safeFullName}</p>
                </div>
                <a href="${targetDashboardUrl}" class="text-xs text-accent-primary font-bold hover:underline flex items-center gap-1 mt-0.5">
-                 <span>Vào ${isAdmin ? 'Bảng Quản Trị Admin' : 'Trang Của Tôi'} →</span>
+                 <span>Vào ${isAdmin ? 'Bảng Quản Trị Admin' : 'Trang của tôi'} →</span>
                </a>
              </div>
           </div>
@@ -491,9 +491,9 @@ export async function initAuthHeader() {
             </a>
             <a href="/kho-tab.html" class="nav-link py-1 text-[11px] sm:text-xs font-bold justify-center transition-colors">Kho Video Tab</a>
           </div>
-          <!-- Hàng 3: Công Cụ, Hỏi đáp, Liên hệ -->
+          <!-- Hàng 3: Công cụ, Hỏi đáp, Liên hệ -->
           <div class="grid grid-cols-3 text-center py-0.5 gap-1">
-            <a href="/index.html#tools" class="nav-link py-1 text-[11px] sm:text-xs font-bold justify-center transition-colors">Công Cụ</a>
+            <a href="/index.html#tools" class="nav-link py-1 text-[11px] sm:text-xs font-bold justify-center transition-colors">Công cụ</a>
             <a href="#faq" class="nav-link py-1 text-[11px] sm:text-xs font-bold justify-center transition-colors">Hỏi đáp</a>
             <a href="#contact" class="nav-link py-1 text-[11px] sm:text-xs font-bold justify-center transition-colors">Liên hệ</a>
           </div>
@@ -874,7 +874,7 @@ export function initForgotPasswordModal({
       if (btnSpinner) btnSpinner.classList.remove('hidden')
     } else {
       submitBtn.classList.remove('opacity-70', 'cursor-not-allowed')
-      if (btnText) btnText.textContent = 'Gửi Liên Kết Khôi Phục'
+      if (btnText) btnText.textContent = 'Gửi liên kết khôi phục'
       if (btnSpinner) btnSpinner.classList.add('hidden')
     }
   }

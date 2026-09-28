@@ -51,7 +51,7 @@ let activeCheckoutSyntax = ''
 let activeShareSong = null
 
 // Songs the logged-in user already bought — blocks re-purchase and shows an
-// "Đã Mua" state on the card instead, mirroring the same set in kho-tab.js.
+// "Đã mua" state on the card instead, mirroring the same set in kho-tab.js.
 let purchasedSongIds = new Set()
 
 // Hàm hủy theo dõi đơn hàng đang chờ thanh toán (xem watchOrderPayment) —
@@ -395,7 +395,7 @@ window.openImageModal = function openImageModal(src, title, caption) {
   const captionEl = document.getElementById('image-modal-caption')
 
   if (imgEl) imgEl.src = src
-  if (titleEl) titleEl.textContent = title || 'Xem Chi Tiết'
+  if (titleEl) titleEl.textContent = title || 'Xem chi tiết'
   if (captionEl) captionEl.textContent = caption || ''
 
   toggleModal('image-preview-modal', true)
@@ -541,7 +541,7 @@ window.openCheckoutModal = async function openCheckoutModal(tabId) {
           qrTriggerEl.onclick = () =>
             window.openImageModal(
               qrUrl,
-              'Mã QR Chuyển Khoản TPBank (03970202801)',
+              'Mã QR chuyển khoản TPBank (03970202801)',
               'Quét mã QR bằng App Ngân hàng bất kỳ — số tiền và nội dung đã được điền sẵn, chỉ cần xác nhận chuyển khoản.'
             )
         }
@@ -684,7 +684,7 @@ window.openFreeTabModal = function openFreeTabModal(tabId) {
         'w-full py-3 rounded-2xl bg-warm-gradient hover:brightness-105 text-white font-extrabold text-xs transition-all shadow-md flex items-center justify-center gap-2 text-center cursor-pointer active:scale-95'
       pdfBtn.innerHTML = `
         <svg class="w-4 h-4 fill-none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>
-        <span>Tải file PDF Tab</span>
+        <span>Tải file PDF tab</span>
       `
     } else {
       pdfBtn.setAttribute('disabled', 'true')
@@ -731,7 +731,7 @@ function setupEventListeners() {
     qrTrigger.addEventListener('click', () => {
       window.openImageModal(
         '/assets/qr.jpg',
-        'Mã QR Chuyển Khoản TpBank (03970202801)',
+        'Mã QR chuyển khoản TpBank (03970202801)',
         'Quét mã QR bằng App Ngân hàng bất kỳ để nhận bản Video Tab và hỗ trợ 1-1 qua Zalo.'
       )
     })
@@ -840,7 +840,7 @@ function initHssvVerification() {
             qrTriggerEl.onclick = () =>
               window.openImageModal(
                 newQrUrl,
-                'Mã QR Chuyển Khoản TPBank (03970202801)',
+                'Mã QR chuyển khoản TPBank (03970202801)',
                 'Quét mã QR bằng App Ngân hàng bất kỳ — số tiền và nội dung đã được điền sẵn, chỉ cần xác nhận chuyển khoản.'
               )
           }

@@ -15,7 +15,7 @@ document.addEventListener('DOMContentLoaded', () => {
     formId: 'reset-password-form',
     defaultAccountLabel: 'Tài khoản hợp lệ',
     loadingButtonText: 'Đang lưu mật khẩu...',
-    idleButtonText: 'Lưu Mật Khẩu Mới',
+    idleButtonText: 'Lưu mật khẩu mới',
     successMessage: 'Đặt lại mật khẩu thành công! Đang chuyển hướng về trang đăng nhập...',
     redirectPath: '/login.html',
     logPrefix: '[reset-password]',

@@ -66,7 +66,7 @@ async function loadFavoriteIds() {
 }
 
 // Songs the logged-in user already bought — used to block re-purchase and
-// show an "Đã Mua" state on the card instead of the checkout flow.
+// show an "Đã mua" state on the card instead of the checkout flow.
 let purchasedSongIds = new Set()
 
 // Hàm hủy theo dõi đơn hàng đang chờ thanh toán (xem watchOrderPayment) —
@@ -661,7 +661,7 @@ window.openCheckoutModal = async function openCheckoutModal(tabId) {
           qrTriggerEl.onclick = () =>
             window.openImageModal(
               qrUrl,
-              'Mã QR Chuyển Khoản TPBank (03970202801)',
+              'Mã QR chuyển khoản TPBank (03970202801)',
               'Quét mã QR bằng App Ngân hàng bất kỳ — số tiền và nội dung đã được điền sẵn, chỉ cần xác nhận chuyển khoản.'
             )
         }
@@ -963,7 +963,7 @@ function initHssvVerification() {
             qrTriggerEl.onclick = () =>
               window.openImageModal(
                 newQrUrl,
-                'Mã QR Chuyển Khoản TPBank (03970202801)',
+                'Mã QR chuyển khoản TPBank (03970202801)',
                 'Quét mã QR bằng App Ngân hàng bất kỳ — số tiền và nội dung đã được điền sẵn, chỉ cần xác nhận chuyển khoản.'
               )
           }

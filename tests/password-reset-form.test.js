@@ -51,7 +51,7 @@ const CONFIGS = [
       formId: 'reset-password-form',
       defaultAccountLabel: 'Tài khoản hợp lệ',
       loadingButtonText: 'Đang lưu mật khẩu...',
-      idleButtonText: 'Lưu Mật Khẩu Mới',
+      idleButtonText: 'Lưu mật khẩu mới',
       successMessage: 'Đặt lại mật khẩu thành công! Đang chuyển hướng về trang đăng nhập...',
       redirectPath: '/login.html',
       logPrefix: '[reset-password]',
@@ -63,7 +63,7 @@ const CONFIGS = [
       formId: 'admin-reset-password-form',
       defaultAccountLabel: 'Tài khoản Admin hợp lệ',
       loadingButtonText: 'Đang lưu mật khẩu Admin...',
-      idleButtonText: 'Lưu Mật Khẩu Quản Trị',
+      idleButtonText: 'Lưu Mật khẩu Quản Trị',
       successMessage:
         'Đặt lại mật khẩu Admin thành công! Đang chuyển hướng về trang đăng nhập Quản trị...',
       redirectPath: '/admin-login.html',

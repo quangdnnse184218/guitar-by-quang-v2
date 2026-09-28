@@ -77,7 +77,7 @@
           class="hidden xl:flex items-center space-x-6 lg:space-x-8 text-sm font-bold text-text-muted flex-nowrap whitespace-nowrap">
           <a href="/index.html" class="nav-link active font-bold text-accent-primary py-1 transition-colors">Trang chủ</a>
           <a href="/kho-tab.html" class="nav-link hover:text-text-primary py-1 transition-colors">Kho Video Tab</a>
-          <a href="/index.html#tools" class="nav-link hover:text-text-primary py-1 transition-colors">Công Cụ</a>
+          <a href="/index.html#tools" class="nav-link hover:text-text-primary py-1 transition-colors">Công cụ</a>
           <a href="/index.html#faq" class="nav-link hover:text-text-primary py-1 transition-colors">Hỏi đáp</a>
           <a href="/index.html#contact" class="nav-link hover:text-text-primary py-1 transition-colors">Liên hệ</a>
         </nav>
@@ -154,7 +154,7 @@
         <a href="/kho-tab.html"
           class="px-4 py-3 rounded-2xl hover:bg-glass-bg-hover text-text-primary transition-colors">Kho Video Tab</a>
         <a href="/index.html#tools"
-          class="px-4 py-3 rounded-2xl hover:bg-glass-bg-hover text-text-primary transition-colors">Công Cụ</a>
+          class="px-4 py-3 rounded-2xl hover:bg-glass-bg-hover text-text-primary transition-colors">Công cụ</a>
         <a href="/index.html#faq" class="px-4 py-3 rounded-2xl hover:bg-glass-bg-hover text-text-primary transition-colors">Hỏi
           đáp</a>
         <a href="/index.html#contact"
@@ -212,37 +212,53 @@
                 Tab</span>.
             </h1>
 
-            <div class="hero-reveal-item space-y-4 text-text-muted text-base sm:text-lg leading-relaxed max-w-2xl font-medium">
-              <p>Mình là <strong class="font-bold text-text-primary">Nhật Quang</strong>. Đây là góc nhỏ lưu giữ các bản
-                cover mộc mạc cùng kho Video Tab mình chuyển soạn và sưu tầm. Hi vọng sẽ giúp anh em tập đàn dễ dàng hơn,
-                đúng nhịp và đỡ mất công mò nốt.</p>
-              <div
-                class="p-4 sm:p-5 rounded-2xl bg-glass-bg border-l-4 border-accent-primary border-t border-r border-b border-glass-border shadow-sm text-sm sm:text-base text-text-primary font-medium leading-relaxed">
-                <svg class="inline-block w-4 h-4 -mt-0.5 mr-0.5 text-accent-primary" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="M9 18h6M10 21h4M12 3a6 6 0 00-4 10.472V15a1 1 0 001 1h6a1 1 0 001-1v-1.528A6 6 0 0012 3z"/></svg>
-                <span class="font-bold">Mẹo nhỏ:</span> Mỗi ngày chỉ cần 15-20 phút tập đều tay còn hiệu quả hơn
-                dồn 2 tiếng tập 1 lần rồi nghỉ cả tuần — cơ tay và phản xạ cần thời gian để "ngấm" đó anh em!
-              </div>
-            </div>
+            <p class="hero-reveal-item text-text-muted text-base sm:text-lg leading-relaxed max-w-2xl font-medium">
+              Mình là <strong class="font-bold text-text-primary">Nhật Quang</strong>. Đây là góc nhỏ lưu giữ các bản
+              cover mộc mạc cùng kho Video Tab mình chuyển soạn và sưu tầm. Hi vọng sẽ giúp anh em tập đàn dễ dàng hơn,
+              đúng nhịp và đỡ mất công mò nốt.</p>
 
-            <div class="hero-reveal-item pt-2 flex flex-wrap items-center gap-4 sm:gap-6">
+            <!-- Nút chính dẫn tới kho tab (sản phẩm chính); TikTok là nút phụ. Trước
+                 đây ngược lại: TikTok là nút đậm, kho tab chỉ là một dòng chữ link. -->
+            <div class="hero-reveal-item flex flex-col sm:flex-row sm:flex-wrap sm:items-center gap-3 sm:gap-4">
+              <a href="/kho-tab.html"
+                class="inline-flex items-center justify-center gap-2.5 px-7 py-3.5 rounded-full bg-warm-gradient hover:brightness-105 text-white text-sm font-bold shadow-md shadow-accent-primary/20 transition-all active:scale-95 group">
+                <span>Xem kho Video Tab</span>
+                <svg class="w-4 h-4 transition-transform group-hover:translate-x-1" fill="none" stroke="currentColor"
+                  viewBox="0 0 24 24" aria-hidden="true">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M17 8l4 4m0 0l-4 4m4-4H3" />
+                </svg>
+              </a>
               <a href="https://www.tiktok.com/@quangdnn104" target="_blank" rel="noopener noreferrer"
-                class="inline-flex items-center gap-2.5 px-6 py-3.5 rounded-full bg-glass-bg hover:bg-text-primary hover:text-bg-base text-text-primary border border-glass-border text-sm font-bold transition-all shadow-sm group">
-                <svg class="w-4 h-4 fill-current text-accent-primary group-hover:text-bg-base transition-colors"
-                  viewBox="0 0 24 24">
+                class="inline-flex items-center justify-center gap-2.5 px-6 py-3.5 rounded-full bg-glass-bg hover:bg-glass-bg-hover text-text-primary border border-glass-border text-sm font-bold transition-all">
+                <svg class="w-4 h-4 fill-current text-accent-primary" viewBox="0 0 24 24" aria-hidden="true">
                   <path
                     d="M19.59 6.69a4.83 4.83 0 0 1-3.77-4.25V2h-3.45v13.67a2.89 2.89 0 0 1-5.2 1.74 2.89 2.89 0 0 1 2.31-4.64 2.93 2.93 0 0 1 .88.13V9.4a6.84 6.84 0 0 0-1-.05A6.33 6.33 0 0 0 5 20.1a6.34 6.34 0 0 0 10.86-4.43v-7a8.16 8.16 0 0 0 4.77 1.52v-3.4a4.85 4.85 0 0 1-1.04-.1z" />
                 </svg>
                 <span>Xem TikTok của Quang</span>
               </a>
-              <a href="/kho-tab.html"
-                class="inline-flex items-center gap-2 text-sm font-bold text-text-primary hover:text-accent-primary group py-2 transition-colors">
-                <span>Xem kho Video Tab</span>
-                <svg class="w-4 h-4 transform group-hover:translate-x-1 transition-transform" fill="none"
-                  stroke="currentColor" viewBox="0 0 24 24">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M17 8l4 4m0 0l-4 4m4-4H3">
-                  </path>
-                </svg>
-              </a>
+            </div>
+
+            <!-- 3 điểm mạnh có thật (khớp nội dung phần Hỏi đáp), không dùng số liệu bịa. -->
+            <ul class="hero-reveal-item grid grid-cols-1 sm:grid-cols-3 gap-2.5 sm:gap-3 max-w-2xl text-sm text-text-muted font-medium">
+              <li class="flex items-center gap-2">
+                <svg class="w-4 h-4 flex-shrink-0 text-accent-primary" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/></svg>
+                Có tab miễn phí để tập thử
+              </li>
+              <li class="flex items-center gap-2">
+                <svg class="w-4 h-4 flex-shrink-0 text-accent-primary" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/></svg>
+                Nhận tab tự động sau khi chuyển khoản
+              </li>
+              <li class="flex items-center gap-2">
+                <svg class="w-4 h-4 flex-shrink-0 text-accent-primary" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/></svg>
+                Sửa ngón 1-1 qua Zalo
+              </li>
+            </ul>
+
+            <div
+              class="hero-reveal-item max-w-2xl p-4 rounded-2xl bg-glass-bg/60 border border-glass-border text-sm text-text-muted font-medium leading-relaxed">
+              <svg class="inline-block w-4 h-4 -mt-0.5 mr-0.5 text-accent-primary" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="M9 18h6M10 21h4M12 3a6 6 0 00-4 10.472V15a1 1 0 001 1h6a1 1 0 001-1v-1.528A6 6 0 0012 3z"/></svg>
+              <span class="font-bold text-text-primary">Mẹo nhỏ:</span> Mỗi ngày chỉ cần 15-20 phút tập đều tay còn hiệu quả hơn
+              dồn 2 tiếng tập 1 lần rồi nghỉ cả tuần — cơ tay và phản xạ cần thời gian để "ngấm" đó anh em!
             </div>
           </div>
 
@@ -276,6 +292,23 @@
                     Video Tab</a>
                 </div>
               </div>
+
+              <!-- Thẻ "tab mẫu": cho khách thấy ngay tab trông ra sao (thứ trang này bán).
+                   Là đoạn rải hợp âm C thật, không phải hình trang trí. Máy tính: chồng
+                   lệch góc dưới video; điện thoại: nằm dưới video. -->
+              <figure
+                class="relative z-10 mt-5 mx-auto w-fit lg:mt-0 lg:absolute lg:-bottom-36 lg:-left-8 lg:-rotate-2 rounded-2xl bg-glass-bg border border-glass-border shadow-xl px-4 py-3">
+                <figcaption class="flex items-center justify-between gap-6 mb-1.5 text-[10px] font-bold uppercase tracking-wider text-text-muted">
+                  <span>Tab mẫu · Hợp âm C</span>
+                  <span class="text-accent-primary normal-case tracking-normal">♩ = 80</span>
+                </figcaption>
+                <pre class="font-mono text-[11px] sm:text-xs leading-[1.5] text-text-faint" aria-label="Tab rải hợp âm C: dây A phím 3, dây D phím 2, dây G buông, dây B phím 1, dây e buông, rồi đi ngược lại"><span class="text-accent-primary font-bold">e</span>|-----------<b class="text-text-primary">0</b>-----------|
+<span class="text-accent-primary font-bold">B</span>|---------<b class="text-text-primary">1</b>---<b class="text-text-primary">1</b>---------|
+<span class="text-accent-primary font-bold">G</span>|-------<b class="text-text-primary">0</b>-------<b class="text-text-primary">0</b>-------|
+<span class="text-accent-primary font-bold">D</span>|-----<b class="text-text-primary">2</b>-----------<b class="text-text-primary">2</b>-----|
+<span class="text-accent-primary font-bold">A</span>|---<b class="text-text-primary">3</b>-------------------|
+<span class="text-accent-primary font-bold">E</span>|-----------------------|</pre>
+              </figure>
             </div>
           </div>
 
@@ -385,7 +418,7 @@
           </span>
 
           <div class="flex-grow min-w-0">
-            <h3 class="text-lg sm:text-2xl font-extrabold text-[#241609] leading-tight">Game Luyện Cảm Âm Và Trí Nhớ</h3>
+            <h3 class="text-lg sm:text-2xl font-extrabold text-[#241609] leading-tight">Game luyện cảm âm và trí nhớ</h3>
             <p class="text-xs sm:text-sm text-[#3f2410] font-semibold leading-snug mt-1">Nghe chuỗi nốt guitar rồi lặp
               lại đúng thứ tự — chuỗi càng dài càng khó. Vài phút mỗi ngày là tai thính hẳn lên.</p>
 
@@ -481,7 +514,7 @@
 
         <div class="text-center max-w-2xl mx-auto mb-10 space-y-2">
           <span class="text-xs font-bold uppercase tracking-wider text-accent-primary">Dụng cụ miễn phí</span>
-          <h2 class="text-3xl sm:text-4xl text-text-primary font-extrabold">Công Cụ Hỗ Trợ Tập Đàn</h2>
+          <h2 class="text-3xl sm:text-4xl text-text-primary font-extrabold">Công cụ hỗ trợ tập đàn</h2>
           <p class="text-text-muted text-sm sm:text-base font-medium leading-relaxed pt-1">
             Mình làm mấy công cụ nhỏ này để tập đúng nhịp hơn — anh em dùng miễn phí ngay trên trình duyệt, không cần
             cài gì cả!
@@ -533,7 +566,7 @@
               <div class="flex-grow space-y-1 sm:space-y-1.5">
                 <span class="text-[9px] sm:text-[10px] font-extrabold tracking-widest text-text-muted uppercase block">Công
                   Cụ #2</span>
-                <h3 class="text-xs sm:text-lg font-extrabold text-text-muted leading-tight">Lên Dây Đàn (Tuner)</h3>
+                <h3 class="text-xs sm:text-lg font-extrabold text-text-muted leading-tight">Lên dây đàn (Tuner)</h3>
                 <p class="text-[11px] sm:text-sm text-text-faint font-medium leading-snug">
                   Lên dây chuẩn bằng mic trực tiếp trên trình duyệt, không cần app ngoài.
                 </p>
@@ -587,7 +620,7 @@
             <button type="button" class="faq-filter-pill active" data-faq-filter="all">Tất cả</button>
             <button type="button" class="faq-filter-pill" data-faq-filter="payment">Thanh toán</button>
             <button type="button" class="faq-filter-pill" data-faq-filter="technique">Kỹ thuật</button>
-            <button type="button" class="faq-filter-pill" data-faq-filter="service">Dịch vụ đặt Tab</button>
+            <button type="button" class="faq-filter-pill" data-faq-filter="service">Dịch vụ đặt tab</button>
           </div>
         </div>
 
@@ -608,7 +641,7 @@
             </summary>
             <p
               class="pt-2.5 text-xs text-text-muted font-medium leading-relaxed border-t border-glass-border/40 mt-2.5">
-              Hệ thống tự động nhận diện giao dịch và mở khoá ngay trong mục <strong>"Trang Của Tôi" → "Đã Mua"</strong>,
+              Hệ thống tự động nhận diện giao dịch và mở khoá ngay trong mục <strong>"Trang của tôi" → "Đã mua"</strong>,
               thường chỉ trong vòng 1 phút sau khi chuyển khoản — không cần chụp bill hay nhắn Zalo. Nếu quá 15 phút vẫn
               chưa thấy, nhắn Zalo (0326.768.885) kèm ảnh giao dịch để mình kiểm tra và cấp quyền giúp bạn.</p>
           </details>
@@ -688,7 +721,7 @@
               cổ tay hay lực bấm) rồi gửi clip chỉ lại cho bạn. Yên tâm không lo bị bỏ rơi đâu nhé!</p>
           </details>
 
-          <!-- Item 6: Dịch vụ đặt Tab -->
+          <!-- Item 6: Dịch vụ đặt tab -->
           <details class="faq-item group p-3.5 sm:p-4 rounded-2xl glass-card border border-glass-border shadow-xs"
             data-category="service">
             <summary class="flex items-start justify-between gap-3 font-bold text-text-primary text-xs sm:text-sm cursor-pointer">
@@ -706,7 +739,7 @@
               nghe thử, tư vấn tone giọng/thế tay phù hợp, báo thời gian hoàn thành và chi phí cho bạn.</p>
           </details>
 
-          <!-- Item 7: Dịch vụ đặt Tab -->
+          <!-- Item 7: Dịch vụ đặt tab -->
           <details class="faq-item group p-3.5 sm:p-4 rounded-2xl glass-card border border-glass-border shadow-xs"
             data-category="service">
             <summary class="flex items-start justify-between gap-3 font-bold text-text-primary text-xs sm:text-sm cursor-pointer">
@@ -887,7 +920,7 @@
                   <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                     d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
                 </svg>
-                <span>Video Demo Thực Tế:</span>
+                <span>Video demo thực tế:</span>
               </span>
             </div>
             <div
@@ -914,7 +947,7 @@
             <div class="flex items-center justify-between text-xs font-bold text-text-primary">
               <span class="flex items-center gap-1.5 text-accent-primary">
                 <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path stroke-linecap="round" d="M4 14v-2.5a8 8 0 1116 0V14"/><rect x="2.5" y="13" width="4.5" height="6.5" rx="2"/><rect x="17" y="13" width="4.5" height="6.5" rx="2"/></svg>
-                <span>Âm Thanh Demo:</span>
+                <span>Âm thanh demo:</span>
               </span>
               <span class="text-[10px] text-text-muted">Chất lượng cao</span>
             </div>
@@ -941,8 +974,8 @@
               <div class="flex flex-col items-center gap-1.5 flex-shrink-0">
                 <div id="qr-preview-trigger"
                   class="relative group/qr w-24 h-24 sm:w-32 sm:h-32 bg-white p-1.5 sm:p-2 rounded-2xl border border-glass-border flex flex-col items-center justify-center shadow-sm cursor-zoom-in overflow-hidden"
-                  onclick="window.openImageModal('/assets/qr.jpg', 'Mã QR Chuyển Khoản TpBank (03970202801)', 'Quét mã QR bằng App Ngân hàng bất kỳ để nhận bản Video Tab và hỗ trợ 1-1 qua Zalo.')">
-                  <img id="modal-qr-img" src="/assets/qr.jpg" alt="Mã QR Chuyển Khoản TpBank"
+                  onclick="window.openImageModal('/assets/qr.jpg', 'Mã QR chuyển khoản TpBank (03970202801)', 'Quét mã QR bằng App Ngân hàng bất kỳ để nhận bản Video Tab và hỗ trợ 1-1 qua Zalo.')">
+                  <img id="modal-qr-img" src="/assets/qr.jpg" alt="Mã QR chuyển khoản TpBank"
                     class="w-full h-full object-contain group-hover/qr:scale-105 transition-transform duration-200" />
                   <div
                     class="absolute inset-0 bg-black/65 opacity-0 group-hover/qr:opacity-100 transition-opacity flex flex-col items-center justify-center gap-1 text-white text-[10px] sm:text-[11px] font-bold rounded-2xl backdrop-blur-xs p-2 text-center pointer-events-none">
@@ -1125,7 +1158,7 @@
           <div class="max-md:order-6 space-y-2 pt-2">
             <div class="p-3 rounded-xl bg-emerald-500/10 border border-emerald-500/20 text-[11px] text-text-primary leading-relaxed">
               <span class="font-bold text-emerald-600 dark:text-emerald-400 block mb-1">⚡ Tự động mở khoá, không cần chờ:</span>
-              Chuyển khoản đúng số tiền, giữ nguyên nội dung đã điền sẵn trong mã QR ở trên — hệ thống tự nhận diện và mở khoá ngay khi ngân hàng báo có tiền vào (thường trong 1 phút). Sau đó vào <strong>Trang Của Tôi → Đã Mua</strong> để xem Video Tab; quyền xem file Google Drive cũng được cấp tự động theo email tài khoản của bạn, không cần làm thêm gì.
+              Chuyển khoản đúng số tiền, giữ nguyên nội dung đã điền sẵn trong mã QR ở trên — hệ thống tự nhận diện và mở khoá ngay khi ngân hàng báo có tiền vào (thường trong 1 phút). Sau đó vào <strong>Trang của tôi → Đã mua</strong> để xem Video Tab; quyền xem file Google Drive cũng được cấp tự động theo email tài khoản của bạn, không cần làm thêm gì.
             </div>
             <a href="https://zalo.me/0326768885" target="_blank" rel="noopener noreferrer"
               class="w-full py-2.5 rounded-2xl bg-glass-bg hover:bg-glass-bg-hover border border-glass-border text-text-primary text-[11px] sm:text-xs font-bold transition-all active:scale-98 flex items-center justify-center gap-2 mt-2">
@@ -1172,7 +1205,7 @@
               class="w-full h-full aspect-video rounded-2xl object-cover hidden"></video>
           </div>
           <div class="flex items-center justify-between text-xs">
-            <span class="text-text-muted font-medium">Video Tab Fingerstyle Chuẩn</span>
+            <span class="text-text-muted font-medium">Video Tab fingerstyle chuẩn</span>
             <a id="free-tab-backup-link" href="#" target="_blank" rel="noopener noreferrer"
               class="inline-flex items-center gap-1 font-bold text-accent-primary hover:underline transition-colors">
               <span>Xem full tab qua link ↗</span>
@@ -1263,7 +1296,7 @@
                   d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z">
                 </path>
               </svg>
-              <span>Tải file PDF Tab</span>
+              <span>Tải file PDF tab</span>
             </a>
 
             <!-- Nút Chia Sẻ Nhanh -->
@@ -1380,7 +1413,7 @@
 
       <div class="space-y-2">
         <span class="text-xs font-bold uppercase tracking-wider text-accent-primary">Khu Vực Thành Viên</span>
-        <h3 id="auth-req-title" class="text-xl sm:text-2xl font-black text-text-primary tracking-tight">Cần Đăng Nhập Tài Khoản</h3>
+        <h3 id="auth-req-title" class="text-xl sm:text-2xl font-black text-text-primary tracking-tight">Cần đăng nhập tài khoản</h3>
         <p class="text-xs sm:text-sm text-text-muted font-medium leading-relaxed max-w-xs mx-auto">
           Vui lòng <strong class="text-accent-primary">Đăng nhập</strong> hoặc <strong class="text-accent-primary">Tạo tài khoản</strong> để xem thông tin chuyển khoản và nhận quyền truy cập Video Tab nhé!
         </p>
@@ -1390,7 +1423,7 @@
       <div class="space-y-2.5 pt-2">
         <a id="auth-required-login-btn" href="/login.html" class="w-full py-3.5 px-5 rounded-2xl bg-warm-gradient text-white font-extrabold text-sm shadow-md hover:brightness-105 active:scale-98 transition-all flex items-center justify-center gap-2 cursor-pointer">
           <svg class="w-4 h-4 fill-current" viewBox="0 0 24 24"><path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/></svg>
-          <span>Đăng Nhập Ngay</span>
+          <span>Đăng nhập ngay</span>
         </a>
 
         <a href="/register.html" class="w-full py-3 px-5 rounded-2xl bg-glass-bg hover:bg-glass-bg-hover border border-glass-border text-text-primary font-bold text-xs transition-all flex items-center justify-center gap-1.5 cursor-pointer">

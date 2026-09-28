@@ -16,8 +16,11 @@ export default {
         'blob-violet': 'var(--blob-violet)',
         'blob-rose': 'var(--blob-rose)',
         'glass-bg': 'rgb(var(--glass-bg) / <alpha-value>)',
-        // glass-border CỐ Ý giữ nguyên dạng cũ — xem ghi chú trong style.css.
-        'glass-border': 'var(--glass-border)',
+        // glass-border vốn đã mờ sẵn (10%/22%) và dùng trơn ở 400+ chỗ, nên không
+        // dùng <alpha-value> (sẽ thành đậm 100%). Hàm này NHÂN độ mờ: dùng trơn →
+        // ×1 như cũ; `/60` → 60% của độ mờ gốc (trước đây `/60`, `/40` ra trong suốt).
+        'glass-border': ({ opacityValue }) =>
+          `rgb(var(--glass-border-rgb) / calc(var(--glass-border-alpha) * ${opacityValue ?? 1}))`,
         'glass-bg-hover': 'rgb(var(--glass-bg-hover) / <alpha-value>)',
         'text-primary': 'rgb(var(--text-primary) / <alpha-value>)',
         'text-muted': 'rgb(var(--text-muted) / <alpha-value>)',
