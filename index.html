@@ -503,7 +503,7 @@
                   Cụ #1</span>
                 <h3 class="text-xs sm:text-lg font-extrabold text-text-primary group-hover:text-accent-primary transition-colors leading-tight">
                   Metronome Online</h3>
-                <p class="text-[11px] sm:text-sm text-text-muted font-medium leading-snug line-clamp-2 sm:line-clamp-none">
+                <p class="text-[11px] sm:text-sm text-text-muted font-medium leading-snug">
                   Đánh đúng nhịp ngay từ đầu — bấm chậm theo metronome để tăng tốc!
                 </p>
               </div>
@@ -533,7 +533,7 @@
                 <span class="text-[9px] sm:text-[10px] font-extrabold tracking-widest text-text-muted uppercase block">Công
                   Cụ #2</span>
                 <h3 class="text-xs sm:text-lg font-extrabold text-text-muted leading-tight">Lên Dây Đàn (Tuner)</h3>
-                <p class="text-[11px] sm:text-sm text-text-faint font-medium leading-snug line-clamp-2 sm:line-clamp-none">
+                <p class="text-[11px] sm:text-sm text-text-faint font-medium leading-snug">
                   Lên dây chuẩn bằng mic trực tiếp trên trình duyệt, không cần app ngoài.
                 </p>
               </div>
@@ -580,7 +580,7 @@
 
         <!-- Thanh Lọc Chủ Đề -->
         <div
-          class="flex items-center justify-center sm:justify-start gap-3 mb-5 pb-2.5 border-b border-glass-border/60">
+          class="max-w-3xl mx-auto flex items-center justify-center sm:justify-start gap-3 mb-5 pb-2.5 border-b border-glass-border/60">
           <!-- Filter Pills theo chủ đề -->
           <div class="flex flex-wrap items-center justify-center sm:justify-start gap-1.5 sm:gap-2" id="faq-filters">
             <button type="button" class="faq-filter-pill active" data-faq-filter="all">Tất cả</button>
@@ -590,8 +590,8 @@
           </div>
         </div>
 
-        <!-- Danh Sách Câu Hỏi (Lưới 2 Cột Trên Desktop, Tối Ưu Chiều Cao) -->
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-3 sm:gap-3.5 items-start" id="faq-list">
+        <!-- Danh Sách Câu Hỏi: 1 cột (2 cột bị lệch chiều cao mỗi khi mở một câu) -->
+        <div class="flex flex-col gap-3 sm:gap-3.5 max-w-3xl mx-auto" id="faq-list">
 
           <!-- Item 1: Thanh toán -->
           <details class="faq-item group p-3.5 sm:p-4 rounded-2xl glass-card border border-glass-border shadow-xs"
@@ -599,7 +599,7 @@
             <summary class="flex items-start justify-between gap-3 font-bold text-text-primary text-xs sm:text-sm cursor-pointer">
               <div class="flex items-start gap-2.5 flex-1 min-w-0">
                 <span
-                  class="text-[9px] font-bold uppercase tracking-wider px-1.5 py-0.5 rounded bg-accent-primary/10 text-accent-primary border border-accent-primary/20 flex-shrink-0 mt-0.5">Thanh toán</span>
+                  class="text-[9px] font-bold uppercase tracking-wider min-w-[5rem] text-center px-1.5 py-0.5 rounded bg-accent-primary/10 text-accent-primary border border-accent-primary/20 flex-shrink-0 mt-0.5">Thanh toán</span>
                 <span class="leading-snug flex-1">Sau khi chuyển khoản thì nhận Video Tab như thế nào?</span>
               </div>
               <span
@@ -618,7 +618,7 @@
             <summary class="flex items-start justify-between gap-3 font-bold text-text-primary text-xs sm:text-sm cursor-pointer">
               <div class="flex items-start gap-2.5 flex-1 min-w-0">
                 <span
-                  class="text-[9px] font-bold uppercase tracking-wider px-1.5 py-0.5 rounded bg-accent-primary/10 text-accent-primary border border-accent-primary/20 flex-shrink-0 mt-0.5">Thanh toán</span>
+                  class="text-[9px] font-bold uppercase tracking-wider min-w-[5rem] text-center px-1.5 py-0.5 rounded bg-accent-primary/10 text-accent-primary border border-accent-primary/20 flex-shrink-0 mt-0.5">Thanh toán</span>
                 <span class="leading-snug flex-1">Nếu chuyển khoản nhầm nội dung hoặc mua nhiều bài thì sao?</span>
               </div>
               <span
@@ -638,7 +638,7 @@
             <summary class="flex items-start justify-between gap-3 font-bold text-text-primary text-xs sm:text-sm cursor-pointer">
               <div class="flex items-start gap-2.5 flex-1 min-w-0">
                 <span
-                  class="text-[9px] font-bold uppercase tracking-wider px-1.5 py-0.5 rounded bg-emerald-500/10 text-emerald-500 border border-emerald-500/20 flex-shrink-0 mt-0.5">Kỹ thuật</span>
+                  class="text-[9px] font-bold uppercase tracking-wider min-w-[5rem] text-center px-1.5 py-0.5 rounded bg-emerald-500/10 text-emerald-500 border border-emerald-500/20 flex-shrink-0 mt-0.5">Kỹ thuật</span>
                 <span class="leading-snug flex-1">Người mới tập, chưa rành đọc tab có học được không?</span>
               </div>
               <span
@@ -656,7 +656,7 @@
             <summary class="flex items-start justify-between gap-3 font-bold text-text-primary text-xs sm:text-sm cursor-pointer">
               <div class="flex items-start gap-2.5 flex-1 min-w-0">
                 <span
-                  class="text-[9px] font-bold uppercase tracking-wider px-1.5 py-0.5 rounded bg-emerald-500/10 text-emerald-500 border border-emerald-500/20 flex-shrink-0 mt-0.5">Kỹ thuật</span>
+                  class="text-[9px] font-bold uppercase tracking-wider min-w-[5rem] text-center px-1.5 py-0.5 rounded bg-emerald-500/10 text-emerald-500 border border-emerald-500/20 flex-shrink-0 mt-0.5">Kỹ thuật</span>
                 <span class="leading-snug flex-1">Video Tab khác gì so với file Tab thông thường (Guitar Pro/PDF)?</span>
               </div>
               <span
@@ -675,7 +675,7 @@
             <summary class="flex items-start justify-between gap-3 font-bold text-text-primary text-xs sm:text-sm cursor-pointer">
               <div class="flex items-start gap-2.5 flex-1 min-w-0">
                 <span
-                  class="text-[9px] font-bold uppercase tracking-wider px-1.5 py-0.5 rounded bg-emerald-500/10 text-emerald-500 border border-emerald-500/20 flex-shrink-0 mt-0.5">Kỹ thuật</span>
+                  class="text-[9px] font-bold uppercase tracking-wider min-w-[5rem] text-center px-1.5 py-0.5 rounded bg-emerald-500/10 text-emerald-500 border border-emerald-500/20 flex-shrink-0 mt-0.5">Kỹ thuật</span>
                 <span class="leading-snug flex-1">Tập mãi một đoạn mà không bấm được thì làm sao?</span>
               </div>
               <span
@@ -693,7 +693,7 @@
             <summary class="flex items-start justify-between gap-3 font-bold text-text-primary text-xs sm:text-sm cursor-pointer">
               <div class="flex items-start gap-2.5 flex-1 min-w-0">
                 <span
-                  class="text-[9px] font-bold uppercase tracking-wider px-1.5 py-0.5 rounded bg-blue-500/10 text-blue-500 border border-blue-500/20 flex-shrink-0 mt-0.5">Dịch vụ</span>
+                  class="text-[9px] font-bold uppercase tracking-wider min-w-[5rem] text-center px-1.5 py-0.5 rounded bg-blue-500/10 text-blue-500 border border-blue-500/20 flex-shrink-0 mt-0.5">Dịch vụ</span>
                 <span class="leading-snug flex-1">Mình muốn đặt làm Video Tab bài hát riêng thì sao?</span>
               </div>
               <span
@@ -711,7 +711,7 @@
             <summary class="flex items-start justify-between gap-3 font-bold text-text-primary text-xs sm:text-sm cursor-pointer">
               <div class="flex items-start gap-2.5 flex-1 min-w-0">
                 <span
-                  class="text-[9px] font-bold uppercase tracking-wider px-1.5 py-0.5 rounded bg-blue-500/10 text-blue-500 border border-blue-500/20 flex-shrink-0 mt-0.5">Dịch vụ</span>
+                  class="text-[9px] font-bold uppercase tracking-wider min-w-[5rem] text-center px-1.5 py-0.5 rounded bg-blue-500/10 text-blue-500 border border-blue-500/20 flex-shrink-0 mt-0.5">Dịch vụ</span>
                 <span class="leading-snug flex-1">Thời gian hoàn thiện và tài liệu nhận được khi đặt làm tab riêng?</span>
               </div>
               <span
@@ -761,6 +761,30 @@
           <p class="text-text-muted text-sm sm:text-base max-w-xl mx-auto font-medium leading-relaxed">
             Anh em cần hỏi cách bấm nốt, trao đổi về fingerstyle hoặc muốn đặt làm tab riêng cứ nhắn cho mình nhé.
           </p>
+        </div>
+
+        <!-- 2 kênh liên hệ chính: trước đây chỉ có dạng chữ ở footer, section tên
+             "Liên hệ" mà không có nút nào để bấm. Giữ màu thương hiệu Zalo/Facebook
+             để khách nhận ra ngay. -->
+        <div class="flex flex-col sm:flex-row items-stretch sm:items-center justify-center gap-3 max-w-md sm:max-w-none mx-auto">
+          <a href="https://zalo.me/0326768885" target="_blank" rel="noopener noreferrer"
+            class="inline-flex items-center justify-center gap-3 px-6 py-3.5 rounded-full bg-[#0068FF] hover:bg-[#0052cc] text-white font-bold text-sm shadow-md shadow-blue-900/20 transition-all active:scale-95">
+            <span class="w-7 h-7 rounded-full bg-white text-[#0068FF] font-black grid place-items-center text-xs flex-shrink-0" aria-hidden="true">Z</span>
+            <span class="flex flex-col items-start leading-tight text-left">
+              <span>Nhắn Zalo</span>
+              <span class="text-[11px] font-semibold text-white/80 tabular-nums">0326.768.885</span>
+            </span>
+          </a>
+          <a href="https://www.facebook.com/quang.doan.969429" target="_blank" rel="noopener noreferrer"
+            class="inline-flex items-center justify-center gap-3 px-6 py-3.5 rounded-full bg-[#1877F2] hover:bg-[#0f63d1] text-white font-bold text-sm shadow-md shadow-blue-900/20 transition-all active:scale-95">
+            <span class="w-7 h-7 rounded-full bg-white text-[#1877F2] grid place-items-center flex-shrink-0" aria-hidden="true">
+              <svg class="w-4 h-4" viewBox="0 0 24 24" fill="currentColor"><path d="M14 8.5V6.8c0-.8.2-1.3 1.4-1.3H17V2.3c-.3 0-1.3-.1-2.5-.1-2.5 0-4.2 1.5-4.2 4.3v2H7.6v3.6h2.7V21h3.7v-9h2.8l.4-3.5H14z"/></svg>
+            </span>
+            <span class="flex flex-col items-start leading-tight text-left">
+              <span>Facebook</span>
+              <span class="text-[11px] font-semibold text-white/80">Nhật Quang</span>
+            </span>
+          </a>
         </div>
 
         <!-- Khung dịch vụ hỗ trợ -->

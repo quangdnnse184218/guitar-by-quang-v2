@@ -854,7 +854,7 @@ export function initFaq() {
 
   let currentCategory = 'all'
   let isShowMore = false
-  const INITIAL_LIMIT = 2
+  const INITIAL_LIMIT = 5
 
   function updateFaqDisplay() {
     const matchingItems = faqItems.filter((item) => {

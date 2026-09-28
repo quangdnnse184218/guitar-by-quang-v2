@@ -4,10 +4,16 @@ import { ScrollTrigger } from 'gsap/ScrollTrigger'
 gsap.registerPlugin(ScrollTrigger)
 
 /**
- * Apply a fast, responsive fade-up reveal to elements matching selector
+ * Hiện dần khi cuộn tới. Trước đây phần tử bị ẩn hẳn (opacity 0) và độ trễ so le
+ * tính theo thứ tự TRONG CẢ TRANG (phần tử `.reveal-item` thứ 10 chờ 0.8s dù vừa
+ * lọt màn hình) — cuộn nhanh là thấy cả khoảng trống. Giờ: chỉ mờ nhẹ (không
+ * bao giờ vô hình), kích hoạt trước khi vào khung nhìn 80px, và so le chỉ giữa
+ * các phần tử cùng lọt vào một lượt (ScrollTrigger.batch).
  */
 export function applyScrollReveal(selector, options = {}) {
-  const els = document.querySelectorAll(selector)
+  const els = Array.from(document.querySelectorAll(selector)).filter(
+    (el) => el.dataset.revealed !== 'true'
+  )
   if (els.length === 0) return
 
   // Mọi lời gọi applyScrollReveal (card bài hát, FAQ, gear...) đều phải tôn
@@ -23,26 +29,29 @@ export function applyScrollReveal(selector, options = {}) {
     return
   }
 
-  const { stagger = 0, ...gsapOptions } = options
+  const { stagger = 0.05, ...gsapOptions } = options
 
-  els.forEach((el, i) => {
-    if (el.dataset.revealed === 'true') return
+  els.forEach((el) => {
     el.dataset.revealed = 'true'
+  })
 
-    gsap.from(el, {
-      opacity: 0,
-      y: 10,
-      duration: 0.25,
-      delay: stagger * i,
-      ease: 'power2.out',
-      clearProps: 'transform,opacity',
-      scrollTrigger: {
-        trigger: el,
-        start: 'top 98%',
-        once: true,
-      },
-      ...gsapOptions,
-    })
+  gsap.set(els, { opacity: 0.35, y: 8 })
+
+  ScrollTrigger.batch(els, {
+    start: 'top bottom+=80',
+    once: true,
+    onEnter: (batch) =>
+      gsap.to(batch, {
+        opacity: 1,
+        y: 0,
+        duration: 0.3,
+        ease: 'power2.out',
+        // Tổng độ so le cả lượt tối đa 0.25s, dù lượt đó có bao nhiêu phần tử.
+        stagger: Math.min(stagger, 0.25 / Math.max(batch.length - 1, 1)),
+        overwrite: true,
+        clearProps: 'transform,opacity',
+        ...gsapOptions,
+      }),
   })
 }
 
