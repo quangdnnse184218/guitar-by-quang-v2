@@ -53,9 +53,17 @@ export const PLAY_LABEL_CLASS =
  * `.play-soundhole` trong style.css). Dùng chung cho mọi thẻ ở mọi trang.
  * `tag: 'div'` khi cả thẻ đã là vùng bấm (thẻ miễn phí) để không lồng 2 nút.
  */
-export function renderPlayDisc({ label, icon = PLAY_ICON, tag = 'button' }) {
-  const attrs = tag === 'button' ? ` type="button" aria-label="${label}"` : ' aria-hidden="true"'
-  return `<${tag} class="play-soundhole w-8 h-8 sm:w-11 sm:h-11"${attrs}>${icon}</${tag}>`
+export function renderPlayDisc({
+  label,
+  icon = PLAY_ICON,
+  tag = 'button',
+  size = 'w-8 h-8 sm:w-11 sm:h-11',
+  className = '',
+  attrs = '',
+}) {
+  const a11y = tag === 'button' ? ` type="button" aria-label="${label}"` : ' aria-hidden="true"'
+  const cls = ['play-soundhole', size, className].filter(Boolean).join(' ')
+  return `<${tag} class="${cls}"${a11y}${attrs ? ' ' + attrs : ''}>${icon}</${tag}>`
 }
 
 /** Escape nháy đơn cho chuỗi nhúng vào thuộc tính onclick="...('...')". */

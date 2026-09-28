@@ -23,7 +23,7 @@ import {
 import { fetchAllGears, DEFAULT_GEARS } from './lib/gears-service.js'
 import { renderGearCard } from './lib/gear-card.js'
 import { uploadToStorage, removeFromStorageByUrl, formatBytes, MAX_UPLOAD_BYTES } from './lib/storage-service.js'
-import { iconCrown, iconHeadphones, iconGuitar } from './icons.js'
+import { iconHeadphones, iconGuitar } from './icons.js'
 import { initShareButtons } from './lib/share-song.js'
 import { formatCompactPrice, formatCompactDiscount } from './lib/song-format.js'
 import {
@@ -76,7 +76,9 @@ let stopOrderWatch = null
 let activeOrder = null
 
 // State
-let activeTab = 'overview' // 'overview' | 'favorites' | 'purchases' | 'profile'
+let activeTab = 'purchases' // 'purchases' | 'favorites' | 'profile'
+// Mục thư viện đang xem trước khi mở Hồ sơ — "Quay lại thư viện" trả về đúng mục đó.
+let lastLibraryTab = null
 let favSearchQuery = ''
 let favFilter = 'all' // all, free, paid
 let purchasedSearchQuery = ''
@@ -88,23 +90,22 @@ let activeShareSong = null
 const adminNoticeBanner = document.getElementById('admin-notice-banner')
 const userAvatarInitial = document.getElementById('user-avatar-initial')
 const userAvatarImg = document.getElementById('user-avatar-img')
-const userRoleBadge = document.getElementById('user-role-badge')
 const userDisplayName = document.getElementById('user-display-name')
 const userEmailDisplay = document.getElementById('user-email-display')
 
-const statFavCount = document.getElementById('stat-fav-count')
-const statPurchasedCount = document.getElementById('stat-purchased-count')
 const statJoinDate = document.getElementById('stat-join-date')
 
 const tabFavCounter = document.getElementById('tab-fav-counter')
 const tabPurchasedCounter = document.getElementById('tab-purchased-counter')
 
 const dashboardTabBar = document.getElementById('dashboard-tab-bar')
-const navTabOverview = document.getElementById('nav-tab-overview')
 const navTabFavorites = document.getElementById('nav-tab-favorites')
 const navTabPurchases = document.getElementById('nav-tab-purchases')
 
-const sectionOverview = document.getElementById('section-overview')
+const librarySection = document.getElementById('library')
+const libraryHint = document.getElementById('library-hint')
+const favTools = document.getElementById('fav-tools')
+const purchasedTools = document.getElementById('purchased-tools')
 const sectionFavorites = document.getElementById('section-favorites')
 const sectionPurchases = document.getElementById('section-purchases')
 const sectionProfile = document.getElementById('section-profile')
@@ -192,110 +193,95 @@ window.showToast = showToast
 // ==========================================================================
 // TAB SWITCHING LOGIC
 // ==========================================================================
+// Trang có 2 phần: "Thư viện của tôi" (Đã mua / Yêu thích — chuyển bằng tab) và
+// các khối khám phá luôn hiện bên dưới. #profile thay cả hai bằng form Hồ sơ.
+const LIBRARY_TABS = ['purchases', 'favorites']
+const LIBRARY_HINTS = {
+  purchases: 'Tab bạn đã sở hữu — mở lại bất cứ lúc nào, không cần trả thêm.',
+  favorites: 'Những bài bạn đã thả tim để tập dần.',
+}
+// Hash cũ/khác vẫn trỏ về thư viện: #overview (tab Tổng quan đã bỏ), #library.
+const LIBRARY_ALIASES = ['overview', 'library']
+
+/** Mở "Đã mua" nếu khách đã mua bài, không thì "Yêu thích" khi có bài đã thả tim. */
+function defaultLibraryTab() {
+  if (lastLibraryTab) return lastLibraryTab
+  return purchasedSongIds.size === 0 && favoriteSongIds.size > 0 ? 'favorites' : 'purchases'
+}
+
 function setActiveTab(tab) {
+  if (!LIBRARY_TABS.includes(tab) && tab !== 'profile') tab = defaultLibraryTab()
   activeTab = tab
-  const tabs = [
-    { key: 'overview', btn: navTabOverview, sec: sectionOverview },
-    { key: 'favorites', btn: navTabFavorites, sec: sectionFavorites },
-    { key: 'purchases', btn: navTabPurchases, sec: sectionPurchases },
-    { key: 'profile', btn: null, sec: sectionProfile },
-  ]
 
   const isProfile = tab === 'profile'
   const commonSections = document.getElementById('dashboard-common-sections')
+  librarySection?.classList.toggle('hidden', isProfile)
+  commonSections?.classList.toggle('hidden', isProfile)
+  sectionProfile?.classList.toggle('hidden', !isProfile)
+  if (isProfile) return
 
-  if (isProfile) {
-    dashboardTabBar?.classList.add('hidden')
-    commonSections?.classList.add('hidden')
-    sectionOverview?.classList.add('hidden')
-    sectionFavorites?.classList.add('hidden')
-    sectionPurchases?.classList.add('hidden')
-    sectionProfile?.classList.remove('hidden')
-  } else {
-    dashboardTabBar?.classList.remove('hidden')
-    commonSections?.classList.remove('hidden')
-    sectionProfile?.classList.add('hidden')
+  lastLibraryTab = tab
+  const tabs = [
+    { key: 'purchases', btn: navTabPurchases, sec: sectionPurchases },
+    { key: 'favorites', btn: navTabFavorites, sec: sectionFavorites },
+  ]
+  tabs.forEach(({ key, btn, sec }) => {
+    const on = key === tab
+    btn?.setAttribute('aria-selected', String(on))
+    if (btn) btn.tabIndex = on ? 0 : -1
+    sec?.classList.toggle('hidden', !on)
+  })
+  if (libraryHint) libraryHint.textContent = LIBRARY_HINTS[tab]
 
-    tabs.slice(0, 3).forEach((t) => {
-      if (t.key === tab) {
-        if (t.btn) {
-          t.btn.classList.remove(
-            'bg-black/5',
-            'dark:bg-white/5',
-            'text-text-muted',
-            'hover:text-text-primary',
-            'hover:bg-black/10',
-            'dark:hover:bg-white/10'
-          )
-          t.btn.classList.add('bg-warm-gradient', 'text-white', 'shadow-md')
-        }
-        t.sec?.classList.remove('hidden')
-      } else {
-        if (t.btn) {
-          t.btn.classList.remove('bg-warm-gradient', 'text-white', 'shadow-md')
-          t.btn.classList.add(
-            'bg-black/5',
-            'dark:bg-white/5',
-            'text-text-muted',
-            'hover:text-text-primary',
-            'hover:bg-black/10',
-            'dark:hover:bg-white/10'
-          )
-        }
-        t.sec?.classList.add('hidden')
-      }
-    })
-  }
-
-  // Render content accordingly
-  if (tab === 'overview') {
-    renderOverviewFeatured()
-    renderOverviewGears()
-  }
   if (tab === 'favorites') renderFavorites()
-  if (tab === 'purchases') renderPurchases()
+  else renderPurchases()
 }
 
 window.setActiveDashboardTab = setActiveTab
 
-// Listen for hash changes
+// Bấm tab ngay trên trang: đổi hash nhưng không cuộn (khách đang đứng ở đó rồi).
+let skipHashScroll = false
+function goToTab(tab) {
+  if (window.location.hash !== '#' + tab) {
+    skipHashScroll = true
+    window.location.hash = tab
+  }
+  setActiveTab(tab)
+}
+
+// Listen for hash changes. Hash không thuộc trang (vd #faq từ menu "Hỏi đáp") chỉ
+// cần thoát khỏi Hồ sơ để khối hỏi đáp hiện lại, không đổi mục thư viện đang xem.
 window.addEventListener('hashchange', () => {
   const hash = window.location.hash.replace('#', '')
-  if (['overview', 'favorites', 'purchases', 'profile'].includes(hash)) {
+  if ([...LIBRARY_TABS, ...LIBRARY_ALIASES, 'profile'].includes(hash)) {
     setActiveTab(hash)
-    if (hash === 'profile') {
-      setTimeout(() => {
-        sectionProfile?.scrollIntoView({ behavior: 'smooth', block: 'start' })
-      }, 50)
+    if (skipHashScroll) {
+      skipHashScroll = false
+      return
     }
+    const target = hash === 'profile' ? sectionProfile : librarySection
+    setTimeout(() => target?.scrollIntoView({ behavior: 'smooth', block: 'start' }), 50)
+  } else if (activeTab === 'profile') {
+    setActiveTab(defaultLibraryTab())
   }
 })
 
-navTabOverview?.addEventListener('click', () => {
-  window.location.hash = 'overview'
-  setActiveTab('overview')
-})
-navTabFavorites?.addEventListener('click', () => {
-  window.location.hash = 'favorites'
-  setActiveTab('favorites')
-})
-navTabPurchases?.addEventListener('click', () => {
-  window.location.hash = 'purchases'
-  setActiveTab('purchases')
+navTabPurchases?.addEventListener('click', () => goToTab('purchases'))
+navTabFavorites?.addEventListener('click', () => goToTab('favorites'))
+
+// Phím mũi tên chuyển giữa 2 tab (chuẩn role="tablist").
+dashboardTabBar?.addEventListener('keydown', (e) => {
+  if (e.key !== 'ArrowLeft' && e.key !== 'ArrowRight') return
+  const next = activeTab === 'purchases' ? 'favorites' : 'purchases'
+  goToTab(next)
+  ;(next === 'purchases' ? navTabPurchases : navTabFavorites)?.focus()
 })
 
-// Swipe left/right on a tab section to move to the next/previous tab —
-// dashboard is mostly used on mobile, where tapping the tab bar every time
-// is more friction than a horizontal swipe on the content itself.
+// Vuốt ngang trên danh sách thư viện để chuyển Đã mua ↔ Yêu thích (trang dùng
+// nhiều trên điện thoại). Chỉ gắn vào danh sách, không gắn vào khối khám phá.
 function initTabSwipe() {
-  const order = ['overview', 'favorites', 'purchases']
-  // #section-overview itself stays empty — the "Tổng quan" tab's visible content
-  // (featured songs, gear) lives in #dashboard-common-sections, shared by all 3
-  // tabs — so that container needs the same listeners for swipe-from-overview to work.
-  const commonSections = document.getElementById('dashboard-common-sections')
-  const sections = [sectionOverview, sectionFavorites, sectionPurchases, commonSections].filter(
-    Boolean
-  )
+  const order = LIBRARY_TABS
+  const sections = [sectionPurchases, sectionFavorites].filter(Boolean)
   let touch = null
 
   sections.forEach((sec) => {
@@ -334,10 +320,7 @@ function initTabSwipe() {
           let nextIdx = idx
           if (dx < 0 && idx < order.length - 1) nextIdx = idx + 1
           if (dx > 0 && idx > 0) nextIdx = idx - 1
-          if (nextIdx !== idx) {
-            window.location.hash = order[nextIdx]
-            setActiveTab(order[nextIdx])
-          }
+          if (nextIdx !== idx) goToTab(order[nextIdx])
         }
       }
       touch = null
@@ -398,9 +381,6 @@ async function checkAuthAndInit() {
     // Check if admin
     if (currentProfile.role === 'admin') {
       adminNoticeBanner?.classList.remove('hidden')
-      userRoleBadge.innerHTML = `${iconCrown('w-2.5 h-2.5')}Quản Trị Viên (Admin)`
-      userRoleBadge.className =
-        'inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-purple-500/20 text-purple-700 dark:text-purple-300 text-[10px] font-bold border border-purple-500/30'
     }
 
     // Update Header & Banner UI
@@ -422,12 +402,7 @@ async function checkAuthAndInit() {
     renderOverviewGears()
 
     // Check URL Hash for initial tab
-    const hash = window.location.hash.replace('#', '')
-    if (['favorites', 'purchases', 'profile'].includes(hash)) {
-      setActiveTab(hash)
-    } else {
-      setActiveTab('overview')
-    }
+    setActiveTab(window.location.hash.replace('#', ''))
 
     initFaq()
   } catch (err) {
@@ -489,7 +464,7 @@ function updateUserInfoUI() {
   // Joined Date
   if (statJoinDate) {
     const d = new Date(currentProfile.created_at || currentUser.created_at || Date.now())
-    statJoinDate.textContent = `${String(d.getDate()).padStart(2, '0')}/${String(d.getMonth() + 1).padStart(2, '0')}/${d.getFullYear()}`
+    statJoinDate.textContent = `${String(d.getMonth() + 1).padStart(2, '0')}/${d.getFullYear()}`
   }
 
   // Populate Profile Form
@@ -503,8 +478,6 @@ function updateCounters() {
   const favCount = favoriteSongIds.size
   const purCount = purchasedSongIds.size
 
-  if (statFavCount) statFavCount.textContent = favCount
-  if (statPurchasedCount) statPurchasedCount.textContent = purCount
   if (tabFavCounter) tabFavCounter.textContent = favCount
   if (tabPurchasedCounter) tabPurchasedCounter.textContent = purCount
 }
@@ -1533,176 +1506,149 @@ window.addEventListener('keydown', (e) => {
 })
 
 // ==========================================================================
-// RENDER FAVORITES TAB
+// THƯ VIỆN CỦA TÔI (ĐÃ MUA / YÊU THÍCH)
 // ==========================================================================
+// Ô tìm/lọc chỉ đáng hiện khi danh sách dài; vài bài thì nhìn là thấy.
+const LIBRARY_TOOLS_MIN = 7
+
+function filterLibrary(songs, filter, query) {
+  let list = songs
+  if (filter === 'free') list = list.filter((s) => s.is_free)
+  else if (filter === 'paid') list = list.filter((s) => !s.is_free)
+  const q = query.toLowerCase().trim()
+  if (q) {
+    list = list.filter(
+      (s) => s?.title?.toLowerCase().includes(q) || s?.singer?.toLowerCase().includes(q)
+    )
+  }
+  return list
+}
+
+/**
+ * Một hàng trong thư viện: nút demo (lỗ đàn) · tên + thông số · nút chính.
+ * Điện thoại: nút chính xuống dòng dưới tên để tên bài không bị cắt cụt.
+ */
+function renderLibraryItem(song, { owned = false, removable = false } = {}) {
+  const id = escapeHtml(String(song.id))
+  const title = escapeHtml(song.title || 'Chưa có tên')
+  const meta = [song.singer || 'Various Artists', song.category]
+    .filter(Boolean)
+    .map(escapeHtml)
+    .join(' · ')
+  const capo = song.capo === 0 || song.capo === '0' || song.capo == null || song.capo === ''
+    ? 'Không capo'
+    : `Capo ${escapeHtml(String(song.capo))}`
+  const facts = [
+    song.level ? `Độ khó ${escapeHtml(String(song.level))}` : '',
+    capo,
+    // tempo có khi đã ghi sẵn "~120 BPM" — chỉ thêm đơn vị khi thiếu
+    song.tempo ? escapeHtml(/bpm/i.test(song.tempo) ? String(song.tempo) : `${song.tempo} BPM`) : '',
+  ]
+    .filter(Boolean)
+    .join(' · ')
+
+  const canOpen = owned || song.is_free
+  const primary = canOpen
+    ? `<button type="button" class="btn-open-material inline-flex items-center gap-1.5 px-4 py-2 rounded-full bg-warm-gradient hover:brightness-105 text-white text-xs sm:text-sm font-bold shadow-sm whitespace-nowrap transition-all active:scale-95 cursor-pointer" data-id="${id}">
+        <span>Mở Video Tab</span>
+        <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2.4" viewBox="0 0 24 24" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="M14 5h5v5M19 5l-8 8M10 5H6a1 1 0 00-1 1v12a1 1 0 001 1h12a1 1 0 001-1v-4"/></svg>
+      </button>`
+    : `<a href="/kho-tab.html?tab=${encodeURIComponent(song.id)}" class="inline-flex items-center gap-1.5 px-4 py-2 rounded-full bg-glass-bg border border-accent-primary/40 hover:border-accent-primary text-accent-primary text-xs sm:text-sm font-bold whitespace-nowrap transition-colors">
+        <span>Mua tab</span>
+        <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2.4" viewBox="0 0 24 24" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="M5 12h14M13 6l6 6-6 6"/></svg>
+      </a>`
+
+  const remove = removable
+    ? `<button type="button" class="btn-remove-fav col-start-3 row-start-1 sm:col-start-4 self-start sm:self-center w-9 h-9 -mr-1 grid place-items-center rounded-full text-rose-500 hover:bg-rose-500/10 transition-colors cursor-pointer" data-id="${id}" aria-label="Bỏ ${title} khỏi yêu thích" title="Bỏ khỏi yêu thích">
+        <svg class="w-4 h-4 fill-current" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg>
+      </button>`
+    : ''
+
+  return `
+    <article class="group grid grid-cols-[auto_minmax(0,1fr)_auto] sm:grid-cols-[auto_minmax(0,1fr)_auto_auto] items-center gap-x-3 sm:gap-x-4 gap-y-2.5 p-3 sm:p-4 rounded-2xl bg-glass-bg border border-glass-border hover:border-accent-primary/40 hover:shadow-md transition-all" data-song-id="${id}">
+      <div class="row-span-2 sm:row-span-1 self-start sm:self-center p-2.5">
+        ${renderPlayDisc({ label: `Xem demo ${title}`, size: 'w-9 h-9 sm:w-10 sm:h-10', className: 'btn-demo-view', attrs: `data-id="${id}"` })}
+      </div>
+      <div class="min-w-0">
+        <h3 class="text-sm sm:text-base font-bold text-text-primary leading-snug line-clamp-2">${title}</h3>
+        <p class="text-xs text-text-muted font-medium truncate">${meta}</p>
+        <p class="mt-0.5 text-[11px] sm:text-xs text-text-faint font-medium truncate">${facts}</p>
+      </div>
+      <div class="col-start-2 row-start-2 sm:col-start-3 sm:row-start-1 justify-self-start">${primary}</div>
+      ${remove}
+    </article>`
+}
+
+function renderLibraryEmpty({ title, body, cta }) {
+  return `
+    <div class="col-span-full py-10 px-6 text-center rounded-2xl border border-dashed border-glass-border space-y-2">
+      <h3 class="text-sm sm:text-base font-bold text-text-primary">${title}</h3>
+      <p class="text-xs sm:text-sm text-text-muted max-w-sm mx-auto">${body}</p>
+      ${
+        cta
+          ? `<a href="/kho-tab.html" class="inline-flex items-center gap-1.5 mt-2 px-5 py-2.5 rounded-full bg-warm-gradient hover:brightness-105 text-white text-xs sm:text-sm font-bold shadow-sm transition-all">${cta}<svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2.4" viewBox="0 0 24 24" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="M5 12h14M13 6l6 6-6 6"/></svg></a>`
+          : ''
+      }
+    </div>`
+}
+
+function toggleLibraryTools(el, total) {
+  el?.classList.toggle('hidden', total < LIBRARY_TOOLS_MIN)
+  el?.classList.toggle('flex', total >= LIBRARY_TOOLS_MIN)
+}
+
 function renderFavorites() {
   if (!favoritesGrid) return
 
   const favSongs = allSongs.filter((s) => favoriteSongIds.has(String(s.id)))
-
-  // Filter
-  let filtered = favSongs
-  if (favFilter === 'free') {
-    filtered = filtered.filter((s) => s.is_free)
-  } else if (favFilter === 'paid') {
-    filtered = filtered.filter((s) => !s.is_free)
-  }
-
-  // Search
-  const query = favSearchQuery.toLowerCase().trim()
-  if (query) {
-    filtered = filtered.filter(
-      (s) => s?.title?.toLowerCase().includes(query) || s?.singer?.toLowerCase().includes(query)
-    )
-  }
+  toggleLibraryTools(favTools, favSongs.length)
+  const filtered = filterLibrary(favSongs, favFilter, favSearchQuery)
 
   if (filtered.length === 0) {
-    favoritesGrid.innerHTML = `
-      <div class="col-span-full p-12 text-center glass-card rounded-3xl border border-glass-border space-y-3">
-        <span class="text-4xl block">💔</span>
-        <h3 class="text-base font-bold text-text-primary">Chưa có bài hát yêu thích nào</h3>
-        <p class="text-xs text-text-muted max-w-sm mx-auto">
-          Dạo qua Kho Video Tab và bấm biểu tượng trái tim ❤️ để lưu các bài hát bạn muốn tập vào đây nhé!
-        </p>
-        <a href="/kho-tab.html" class="inline-flex items-center gap-2 px-5 py-2.5 rounded-full bg-warm-gradient text-white font-bold text-xs shadow-glow hover:brightness-105 transition-all mt-2">
-          <span>Khám phá kho tab</span>
-          <span>→</span>
-        </a>
-      </div>
-    `
+    favoritesGrid.innerHTML = favSongs.length
+      ? renderLibraryEmpty({
+          title: 'Không có bài nào khớp',
+          body: 'Thử từ khoá khác hoặc chọn lại bộ lọc.',
+        })
+      : renderLibraryEmpty({
+          title: 'Chưa có bài yêu thích',
+          body: 'Bấm biểu tượng trái tim trên thẻ bài trong Kho Video Tab để lưu bài muốn tập vào đây.',
+          cta: 'Khám phá kho tab',
+        })
     return
   }
 
   favoritesGrid.innerHTML = filtered
-    .map((song) => {
-      const isBought = purchasedSongIds.has(String(song.id))
-      return `
-      <div class="glass-card rounded-2xl sm:rounded-3xl p-3 sm:p-5 border border-glass-border hover:border-amber-400/60 hover:shadow-xl transition-all flex flex-col justify-between group relative overflow-hidden" data-song-id="${song.id}">
-        <div>
-          <div class="flex items-center justify-between gap-1 sm:gap-2 mb-2 sm:mb-3">
-            <span class="px-2 sm:px-2.5 py-0.5 rounded-full text-[9px] sm:text-[10px] font-bold ${
-              song?.level === 'Dễ'
-                ? 'bg-emerald-500/15 text-emerald-600 dark:text-emerald-400 border border-emerald-500/30'
-                : song?.level === 'Trung bình'
-                  ? 'bg-amber-500/15 text-amber-600 dark:text-amber-400 border border-amber-500/30'
-                  : 'bg-rose-500/15 text-rose-600 dark:text-rose-400 border border-rose-500/30'
-            }">${song?.level || 'Cơ bản'}</span>
-            
-            <button class="btn-remove-fav p-1 sm:p-1.5 rounded-full text-rose-500 hover:bg-rose-500/15 transition-colors cursor-pointer" data-id="${song?.id}" title="Bỏ lưu khỏi mục yêu thích">
-              <svg class="w-3.5 h-3.5 sm:w-4 sm:h-4 fill-current" viewBox="0 0 24 24"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg>
-            </button>
-          </div>
-
-          <h3 class="text-xs sm:text-base font-extrabold text-text-primary group-hover:text-accent-primary transition-colors line-clamp-2">${song?.title || 'Chưa có tên'}</h3>
-          <p class="text-[10px] sm:text-xs text-text-muted font-medium mb-2 sm:mb-3 truncate">${song?.singer || 'Various Artists'} • <span class="font-mono">${song?.category || 'Fingerstyle'}</span></p>
-
-          <div class="grid grid-cols-2 gap-1.5 sm:gap-2 text-[10px] sm:text-[11px] bg-black/5 dark:bg-white/5 p-2 sm:p-2.5 rounded-xl border border-glass-border mb-3 sm:mb-4 font-mono">
-            <div><span class="text-text-muted block text-[9px] sm:text-[10px]">Capo:</span><strong class="text-text-primary truncate block">${song?.capo ?? 'Không kẹp'}</strong></div>
-            <div><span class="text-text-muted block text-[9px] sm:text-[10px]">Tuning:</span><strong class="text-text-primary truncate block">${song?.tuning || 'Standard'}</strong></div>
-          </div>
-        </div>
-
-        <div class="pt-2 sm:pt-3 border-t border-glass-border flex items-center justify-between gap-1.5 sm:gap-2">
-          <button class="btn-demo-view flex-1 py-1.5 sm:py-2 rounded-xl bg-black/5 dark:bg-white/5 hover:bg-glass-bg-hover text-[10px] sm:text-xs font-bold text-text-primary border border-glass-border transition-colors cursor-pointer" data-id="${song.id}">
-            🎬 Demo
-          </button>
-          ${
-            isBought || song.is_free
-              ? `
-            <button class="btn-open-material flex-1 py-1.5 sm:py-2 rounded-xl bg-emerald-500/20 text-emerald-600 dark:text-emerald-400 border border-emerald-500/30 text-[10px] sm:text-xs font-bold transition-colors cursor-pointer" data-id="${song.id}">
-              <span class="truncate">🎬 Xem Video Tab</span>
-            </button>
-          `
-              : `
-            <a href="/kho-tab.html" class="flex-1 py-1.5 sm:py-2 rounded-xl bg-warm-gradient text-white text-[10px] sm:text-xs font-bold text-center shadow-xs hover:brightness-105 transition-all">
-              Mua Tab
-            </a>
-          `
-          }
-        </div>
-      </div>
-    `
-    })
+    .map((song) =>
+      renderLibraryItem(song, { owned: purchasedSongIds.has(String(song.id)), removable: true })
+    )
     .join('')
 
   attachSongCardEvents(favoritesGrid)
 }
 
-// ==========================================================================
-// RENDER PURCHASES TAB
-// ==========================================================================
 function renderPurchases() {
   if (!purchasesGrid) return
 
   const boughtSongs = allSongs.filter((s) => purchasedSongIds.has(String(s.id)))
-
-  // Filter
-  let filtered = boughtSongs
-  if (purchasedFilter === 'free') {
-    filtered = filtered.filter((s) => s.is_free)
-  } else if (purchasedFilter === 'paid') {
-    filtered = filtered.filter((s) => !s.is_free)
-  }
-
-  // Search
-  const query = purchasedSearchQuery.toLowerCase().trim()
-  if (query) {
-    filtered = filtered.filter(
-      (s) => s?.title?.toLowerCase().includes(query) || s?.singer?.toLowerCase().includes(query)
-    )
-  }
+  toggleLibraryTools(purchasedTools, boughtSongs.length)
+  const filtered = filterLibrary(boughtSongs, purchasedFilter, purchasedSearchQuery)
 
   if (filtered.length === 0) {
-    purchasesGrid.innerHTML = `
-      <div class="col-span-full p-12 text-center glass-card rounded-3xl border border-glass-border space-y-3">
-        <span class="text-4xl block">📦</span>
-        <h3 class="text-base font-bold text-text-primary">Chưa có bài hát đã mua nào</h3>
-        <p class="text-xs text-text-muted max-w-sm mx-auto">
-          Khi bạn sở hữu bản quyền Video Tab từ Quang, toàn bộ link tải chất lượng cao sẽ hiển thị vĩnh viễn tại đây mà không cần thanh toán lại!
-        </p>
-        <a href="/kho-tab.html" class="inline-flex items-center gap-2 px-5 py-2.5 rounded-full bg-warm-gradient text-white font-bold text-xs shadow-glow hover:brightness-105 transition-all mt-2">
-          <span>Khám phá Video Tab trả phí</span>
-          <span>→</span>
-        </a>
-      </div>
-    `
+    purchasesGrid.innerHTML = boughtSongs.length
+      ? renderLibraryEmpty({
+          title: 'Không có bài nào khớp',
+          body: 'Thử từ khoá khác hoặc chọn lại bộ lọc.',
+        })
+      : renderLibraryEmpty({
+          title: 'Chưa có tab nào đã mua',
+          body: 'Tab bạn mua sẽ nằm ở đây vĩnh viễn — mở lại bất cứ lúc nào, không cần trả thêm.',
+          cta: 'Xem kho Video Tab',
+        })
     return
   }
 
-  purchasesGrid.innerHTML = filtered
-    .map((song) => {
-      return `
-      <div class="glass-card rounded-2xl sm:rounded-3xl p-3 sm:p-5 border border-amber-500/40 hover:border-amber-400 hover:shadow-xl transition-all flex flex-col justify-between group relative overflow-hidden bg-gradient-to-b from-amber-500/5 to-transparent" data-song-id="${song.id}">
-        <div>
-          <div class="flex items-center justify-between gap-1 sm:gap-2 mb-2 sm:mb-3">
-            <span class="px-2 sm:px-2.5 py-0.5 rounded-full text-[9px] sm:text-[10px] font-black bg-emerald-600 text-white shadow-sm flex items-center gap-1 uppercase tracking-wide">
-              <span>✓</span>
-              <span>ĐÃ SỞ HỮU</span>
-            </span>
-            <span class="text-[9px] sm:text-[11px] font-mono font-bold text-text-muted">${song?.category || 'Fingerstyle'}</span>
-          </div>
-
-          <h3 class="text-xs sm:text-base font-extrabold text-text-primary group-hover:text-accent-primary transition-colors line-clamp-2">${song?.title || 'Chưa có tên'}</h3>
-          <p class="text-[10px] sm:text-xs text-text-muted font-medium mb-2 sm:mb-3 truncate">${song?.singer || 'Various Artists'}</p>
-
-          <div class="grid grid-cols-2 gap-1.5 sm:gap-2 text-[10px] sm:text-[11px] bg-black/5 dark:bg-white/5 p-2 sm:p-2.5 rounded-xl border border-glass-border mb-3 sm:mb-4 font-mono">
-            <div><span class="text-text-muted block text-[9px] sm:text-[10px]">Capo:</span><strong class="text-text-primary truncate block">${song?.capo ?? 'Không kẹp'}</strong></div>
-            <div><span class="text-text-muted block text-[9px] sm:text-[10px]">Tempo:</span><strong class="text-text-primary truncate block">${song?.tempo ? song.tempo + ' BPM' : 'Tùy chỉnh'}</strong></div>
-          </div>
-        </div>
-
-        <div class="pt-2 sm:pt-3 border-t border-glass-border flex items-center justify-between gap-1.5 sm:gap-2">
-          <button class="btn-demo-view flex-1 py-1.5 sm:py-2 rounded-xl bg-black/5 dark:bg-white/5 hover:bg-glass-bg-hover text-[10px] sm:text-xs font-bold text-text-primary border border-glass-border transition-colors cursor-pointer" data-id="${song.id}">
-            🎬 Demo
-          </button>
-          <button class="btn-open-material flex-1 py-1.5 sm:py-2 rounded-xl bg-warm-gradient text-white text-[10px] sm:text-xs font-extrabold shadow-glow hover:brightness-105 transition-all cursor-pointer flex items-center justify-center gap-1" data-id="${song.id}">
-            <span class="truncate">🎬 Xem Video Tab</span>
-          </button>
-        </div>
-      </div>
-    `
-    })
-    .join('')
+  purchasesGrid.innerHTML = filtered.map((song) => renderLibraryItem(song, { owned: true })).join('')
 
   attachSongCardEvents(purchasesGrid)
 }
