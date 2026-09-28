@@ -285,13 +285,13 @@
         </svg>
       </button>
 
-      <div class="grid grid-cols-1 md:grid-cols-12 gap-5 sm:gap-6 items-start">
+      <div class="grid grid-cols-1 md:grid-cols-12 gap-3.5 md:gap-6 items-start">
 
         <!-- CỘT TRÁI (md:col-span-6): Video Demo Player & Khung Chuyển Khoản QR -->
-        <div class="md:col-span-6 space-y-4">
+        <div class="max-md:contents md:col-span-6 md:space-y-4">
 
           <!-- Khung Video Demo Player -->
-          <div id="checkout-modal-video-container" class="space-y-1.5">
+          <div id="checkout-modal-video-container" class="max-md:order-8 space-y-1.5">
             <div class="flex items-center justify-between text-xs font-bold text-text-muted">
               <span class="flex items-center gap-1.5">
                 <svg class="w-4 h-4 text-accent-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -323,7 +323,7 @@
           </div>
 
           <!-- Khung Audio Demo (Nếu có file âm thanh) -->
-          <div id="checkout-modal-audio-container" class="p-3.5 rounded-2xl modal-inner-card border border-glass-border space-y-2 hidden">
+          <div id="checkout-modal-audio-container" class="max-md:order-9 p-3.5 rounded-2xl modal-inner-card border border-glass-border space-y-2 hidden">
             <div class="flex items-center justify-between text-xs font-bold text-text-primary">
               <span class="flex items-center gap-1.5 text-accent-primary">
                 <svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path stroke-linecap="round" d="M4 14v-2.5a8 8 0 1116 0V14"/><rect x="2.5" y="13" width="4.5" height="6.5" rx="2"/><rect x="17" y="13" width="4.5" height="6.5" rx="2"/></svg>
@@ -335,7 +335,7 @@
           </div>
 
           <!-- Khối Quét Mã QR & Thông tin tài khoản -->
-          <div class="p-4 sm:p-5 rounded-2xl modal-inner-card space-y-3.5 shadow-sm border border-glass-border">
+          <div class="max-md:order-5 p-4 sm:p-5 rounded-2xl modal-inner-card space-y-3.5 shadow-sm border border-glass-border">
             <div class="flex items-center justify-between border-b border-glass-border/60 pb-2.5">
               <span
                 class="text-xs font-bold uppercase tracking-wider text-accent-primary flex items-center gap-1.5">
@@ -412,11 +412,11 @@
         </div>
 
         <!-- CỘT PHẢI (md:col-span-6): Thứ tự ưu tiên Giá -> Tài liệu nhận -> Thông số -> Nút Zalo -->
-        <div class="md:col-span-6 space-y-3.5 flex flex-col justify-between h-full">
+        <div class="max-md:contents md:col-span-6 md:space-y-3.5 flex flex-col justify-between h-full">
 
-          <div class="space-y-3.5">
+          <div class="max-md:contents md:space-y-3.5">
             <!-- 1. Header: Badge Trạng thái (Outline SVG) + Thời lượng + Tiêu đề -->
-            <div class="flex items-center justify-between flex-wrap gap-2 pr-12">
+            <div class="max-md:order-1 flex items-center justify-between flex-wrap gap-2 pr-12">
               <span
                 class="badge-paid inline-flex items-center gap-1.5 px-3.5 py-1 rounded-full text-xs font-black uppercase tracking-wider shadow-sm">
                 <svg class="w-3.5 h-3.5 fill-none stroke-current" stroke-width="2.5" viewBox="0 0 24 24">
@@ -435,7 +435,7 @@
               </span>
             </div>
 
-            <div>
+            <div class="max-md:order-2">
               <h3 id="modal-tab-title" class="text-2xl sm:text-3xl font-extrabold text-text-primary leading-tight">
                 Tên bài hát
               </h3>
@@ -446,18 +446,18 @@
 
             <!-- 2. Giá bán & Ưu đãi -->
             <div
-              class="p-4 rounded-2xl modal-inner-card flex items-center justify-between shadow-xs border border-glass-border">
+              class="max-md:order-3 p-4 rounded-2xl modal-inner-card flex flex-wrap items-center justify-between gap-x-3 gap-y-1 shadow-xs border border-glass-border">
               <div>
                 <span class="text-xs font-bold text-text-muted block">Giá bản Video Tab:</span>
                 <span
                   class="text-xs text-white bg-accent-primary px-2.5 py-0.5 rounded-full font-extrabold mt-1 inline-block shadow-xs"
                   id="modal-discount-tag">(HSSV: 179k)</span>
               </div>
-              <span id="modal-tab-price" class="text-2xl sm:text-3xl font-black text-accent-primary">239.000 VNĐ</span>
+              <span id="modal-tab-price" class="whitespace-nowrap text-2xl sm:text-3xl font-black text-accent-primary">239.000 VNĐ</span>
             </div>
 
             <!-- 2b. HSSV: tick + upload ảnh thẻ để AI tự kiểm tra và đổi sang giá ưu đãi -->
-            <div id="modal-hssv-block" class="p-3.5 rounded-2xl modal-inner-card border border-glass-border space-y-2.5 text-xs">
+            <div id="modal-hssv-block" class="max-md:order-4 p-3.5 rounded-2xl modal-inner-card border border-glass-border space-y-2.5 text-xs">
               <label class="flex items-center gap-2.5 cursor-pointer select-none">
                 <input type="checkbox" id="modal-hssv-checkbox"
                   class="w-4 h-4 rounded accent-accent-primary cursor-pointer flex-shrink-0">
@@ -497,7 +497,7 @@
 
             <!-- 3/4. Tài liệu nhận được + Thông số chi tiết + Metronome — gom vào 1
                  khối thu gọn để màn thanh toán không quá dài, bấm mới cần xem thêm -->
-            <details class="group rounded-2xl modal-inner-card border border-glass-border shadow-xs overflow-hidden">
+            <details class="max-md:order-7 group rounded-2xl modal-inner-card border border-glass-border shadow-xs overflow-hidden">
               <summary
                 class="list-none [&::-webkit-details-marker]:hidden cursor-pointer select-none flex items-center justify-between gap-2 p-4 text-[11px] font-extrabold text-accent-primary uppercase tracking-wider">
                 <span>Xem tài liệu nhận được & thông số chi tiết</span>
@@ -555,7 +555,7 @@
           </div>
 
           <!-- 5. Hướng dẫn Mua / Cấp quyền (tự động qua SePay webhook, xem sepay-ipn Edge Function) -->
-          <div class="space-y-2 pt-2">
+          <div class="max-md:order-6 space-y-2 pt-2">
             <div class="p-3 rounded-xl bg-emerald-500/10 border border-emerald-500/20 text-[11px] text-text-primary leading-relaxed">
               <span class="font-bold text-emerald-600 dark:text-emerald-400 block mb-1">⚡ Tự động mở khoá, không cần chờ:</span>
               Chuyển khoản đúng số tiền, giữ nguyên nội dung đã điền sẵn trong mã QR ở trên — hệ thống tự nhận diện và mở khoá ngay khi ngân hàng báo có tiền vào (thường trong 1 phút). Sau đó vào <strong>Trang Của Tôi → Đã Mua</strong> để xem Video Tab; quyền xem file Google Drive cũng được cấp tự động theo email tài khoản của bạn, không cần làm thêm gì.
