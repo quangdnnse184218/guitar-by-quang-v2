@@ -79,7 +79,9 @@ export const SONG_THUMB_CLASS =
 
 /** Badge thể loại ở góc trái khung ảnh (cắt bớt nếu tên thể loại quá dài). */
 export function renderCategoryBadge(song, fallback = 'Fingerstyle') {
-  return `<span class="bg-black/50 backdrop-blur px-1.5 sm:px-2 py-0.5 rounded-full text-white/95 text-[8px] sm:text-[10px] font-mono truncate min-w-0 max-w-[70px] sm:max-w-none">${song.category || fallback}</span>`
+  // Không dùng font mono + giãn chữ trên mobile: 2 thứ đó làm chữ rộng hơn và bị cắt
+  // ("Nhạc Vi…") khi thẻ 2 cột chỉ rộng ~150px.
+  return `<span class="bg-black/50 backdrop-blur px-1 sm:px-2 py-0.5 rounded-full text-white/95 text-[8px] sm:text-[10px] tracking-normal sm:tracking-wider truncate min-w-0 max-w-[76px] sm:max-w-none">${song.category || fallback}</span>`
 }
 
 /**
@@ -127,7 +129,7 @@ function renderFavoriteButton(tab, isFavorite) {
       onclick="event.stopPropagation(); window.handleToggleFavorite(event, '${tab.id}')"
       data-fav-btn="${tab.id}"
       title="${isFavorite ? 'Bỏ yêu thích' : 'Yêu thích'}"
-      class="flex-shrink-0 w-5 h-5 sm:w-6 sm:h-6 rounded-full flex items-center justify-center transition-all cursor-pointer shadow-sm ${isFavorite ? 'bg-rose-500 text-white' : 'bg-black/40 text-white/80 hover:text-white hover:bg-black/60'}"
+      class="relative before:absolute before:-inset-2 flex-shrink-0 w-5 h-5 sm:w-6 sm:h-6 rounded-full flex items-center justify-center transition-all cursor-pointer shadow-sm ${isFavorite ? 'bg-rose-500 text-white' : 'bg-black/40 text-white/80 hover:text-white hover:bg-black/60'}"
     >
       ${isFavorite ? filledHeart : outlineHeart}
     </button>
@@ -228,7 +230,7 @@ export function renderSongCard(tab, options = {}) {
         <div class="space-y-2 sm:space-y-3">
           <div class="${SONG_THUMB_CLASS} bg-gradient-to-br from-[#1E3A2F] via-[#2A4D3E] to-[#172A22]">
             <div class="flex justify-between items-start text-xs uppercase font-bold tracking-wider">
-              <span class="bg-black/50 backdrop-blur px-1.5 sm:px-2 py-0.5 rounded-full text-white/95 text-[8px] sm:text-[10px] font-mono truncate min-w-0 max-w-[70px] sm:max-w-none">${tab.category || 'Fingerstyle'}</span>
+              ${renderCategoryBadge(tab, 'Fingerstyle')}
               <div class="flex items-center gap-1 flex-wrap justify-end">
                 ${pinnedBadge}
                 <span class="px-1.5 sm:px-2 py-0.5 rounded-full text-[8px] sm:text-[10px] font-black bg-emerald-600 text-white shadow-sm uppercase tracking-wide">FREE</span>
@@ -245,13 +247,10 @@ export function renderSongCard(tab, options = {}) {
           </div>
 
           <div class="space-y-1">
-            <h3 class="text-xs sm:text-base font-bold text-text-primary group-hover:text-emerald-600 dark:group-hover:text-emerald-400 transition-colors leading-tight line-clamp-2">
+            <h3 class="text-xs sm:text-base font-bold text-text-primary group-hover:text-emerald-600 dark:group-hover:text-emerald-400 transition-colors leading-tight line-clamp-3">
               ${tab.title}
             </h3>
             ${levelRow('text-emerald-700 dark:text-emerald-400', 'bg-emerald-600 dark:bg-emerald-400')}
-            <p class="text-[10px] sm:text-xs text-text-muted font-medium leading-snug pt-0.5 line-clamp-2">
-              ${tab.description || 'Bản tab guitar fingerstyle miễn phí kèm video hướng dẫn.'}
-            </p>
           </div>
         </div>
 
@@ -289,7 +288,7 @@ export function renderSongCard(tab, options = {}) {
       <div class="space-y-2 sm:space-y-3">
         <div class="${SONG_THUMB_CLASS} bg-gradient-to-br ${thumbnailBg}">
           <div class="flex justify-between items-start text-xs uppercase font-bold tracking-wider">
-            <span class="bg-black/50 backdrop-blur px-1.5 sm:px-2 py-0.5 rounded-full text-white/95 text-[8px] sm:text-[10px] font-mono truncate min-w-0 max-w-[70px] sm:max-w-none">${tab.category || 'Nhạc Việt'}</span>
+            ${renderCategoryBadge(tab, 'Nhạc Việt')}
             <div class="flex items-start gap-1 flex-wrap justify-end">
               ${pinnedBadge}
               ${badgeHtml}
@@ -303,13 +302,10 @@ export function renderSongCard(tab, options = {}) {
         </div>
 
         <div class="space-y-1">
-          <h3 class="text-xs sm:text-base font-bold text-text-primary group-hover:text-accent-primary transition-colors leading-tight line-clamp-2">
+          <h3 class="text-xs sm:text-base font-bold text-text-primary group-hover:text-accent-primary transition-colors leading-tight line-clamp-3">
             ${tab.title}
           </h3>
           ${levelRow('text-accent-primary', 'bg-warm-gradient', isPurchased ? '' : renderHssvNote(discountNote))}
-          <p class="text-[10px] sm:text-xs text-text-muted font-medium leading-snug pt-0.5 line-clamp-2">
-            ${tab.description || 'Bản tab guitar fingerstyle chuẩn âm thanh acoustic.'}
-          </p>
         </div>
       </div>
 

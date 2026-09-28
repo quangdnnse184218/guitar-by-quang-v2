@@ -89,12 +89,12 @@
 
           <!-- Đăng nhập Button (Nút chính CTA cam nổi bật) -->
           <a href="/login.html"
-            class="bg-warm-gradient text-white font-extrabold shadow-md hover:brightness-105 active:scale-95 transition-all duration-200 px-2.5 sm:px-4 py-1.5 sm:py-2 rounded-full text-xs sm:text-sm flex items-center gap-1 whitespace-nowrap flex-shrink-0">
+            class="bg-warm-gradient text-white font-extrabold shadow-md hover:brightness-105 active:scale-95 transition-all duration-200 px-2.5 sm:px-4 py-2 rounded-full text-xs sm:text-sm flex items-center gap-1 whitespace-nowrap flex-shrink-0">
             <svg class="w-3.5 h-3.5 fill-current" viewBox="0 0 24 24">
               <path
                 d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z" />
             </svg>
-            <span>Đăng nhập</span>
+            <span class="max-[374px]:sr-only">Đăng nhập</span>
           </a>
 
           <!-- Theme Toggle Button -->
@@ -318,7 +318,7 @@
                 Video Tab để khám phá toàn bộ kho bài nhé!</p>
             </div>
             <a href="/kho-tab.html"
-              class="flex-shrink-0 inline-flex items-center gap-2 text-sm font-bold text-text-muted hover:text-accent-primary transition-colors">
+              class="flex-shrink-0 inline-flex items-center gap-2 py-2 text-sm font-bold text-text-muted hover:text-accent-primary transition-colors">
               <span>Xem toàn bộ</span>
               <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M17 8l4 4m0 0l-4 4m4-4H3">
@@ -330,30 +330,31 @@
           <!-- Featured Grid: swipeable horizontal row on mobile (snap-scroll),
                regular 4-col grid from md: up -->
           <div id="featured-grid"
-            class="flex overflow-x-auto scrollbar-none snap-x snap-mandatory -mx-4 px-4 sm:-mx-6 sm:px-6 md:mx-0 md:px-0 md:grid md:grid-cols-4 md:overflow-visible gap-3 sm:gap-5 lg:gap-6 w-full">
+            class="flex overflow-x-auto scrollbar-none snap-x snap-mandatory -mx-5 px-5 scroll-px-5 sm:-mx-10 sm:px-10 sm:scroll-px-10 md:mx-0 md:px-0 md:grid md:grid-cols-4 md:overflow-visible gap-3 sm:gap-5 lg:gap-6 md:w-full">
             <div
-              class="shrink-0 snap-start w-[62%] sm:w-[38%] md:w-full skeleton-pulse rounded-xl sm:rounded-2xl bg-glass-bg border border-glass-border aspect-[3/4]">
+              class="shrink-0 snap-start w-[62%] min-w-[160px] sm:w-[38%] md:w-full md:min-w-0 skeleton-pulse rounded-xl sm:rounded-2xl bg-glass-bg border border-glass-border aspect-[3/4]">
             </div>
             <div
-              class="shrink-0 snap-start w-[62%] sm:w-[38%] md:w-full skeleton-pulse rounded-xl sm:rounded-2xl bg-glass-bg border border-glass-border aspect-[3/4]">
+              class="shrink-0 snap-start w-[62%] min-w-[160px] sm:w-[38%] md:w-full md:min-w-0 skeleton-pulse rounded-xl sm:rounded-2xl bg-glass-bg border border-glass-border aspect-[3/4]">
             </div>
             <div
-              class="shrink-0 snap-start w-[62%] sm:w-[38%] md:w-full skeleton-pulse rounded-xl sm:rounded-2xl bg-glass-bg border border-glass-border aspect-[3/4]">
+              class="shrink-0 snap-start w-[62%] min-w-[160px] sm:w-[38%] md:w-full md:min-w-0 skeleton-pulse rounded-xl sm:rounded-2xl bg-glass-bg border border-glass-border aspect-[3/4]">
             </div>
             <div
-              class="shrink-0 snap-start w-[62%] sm:w-[38%] md:w-full skeleton-pulse rounded-xl sm:rounded-2xl bg-glass-bg border border-glass-border aspect-[3/4]">
+              class="shrink-0 snap-start w-[62%] min-w-[160px] sm:w-[38%] md:w-full md:min-w-0 skeleton-pulse rounded-xl sm:rounded-2xl bg-glass-bg border border-glass-border aspect-[3/4]">
             </div>
           </div>
 
           <div class="mt-10 sm:mt-12 text-center">
             <a href="/kho-tab.html"
-              class="inline-flex items-center gap-3 px-8 py-4 rounded-full bg-warm-gradient hover:brightness-105 text-white font-bold text-sm transition-all shadow-md active:scale-98">
-              <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              class="w-full sm:w-auto inline-flex items-center justify-center gap-2.5 px-6 sm:px-8 py-4 rounded-full bg-warm-gradient hover:brightness-105 text-white font-bold text-sm transition-all shadow-md active:scale-98">
+              <svg class="hidden sm:block w-5 h-5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                   d="M9 19V6l12-3v13M9 19c0 1.105-1.343 2-3 2s-3-.895-3-2 1.343-2 3-2 3 .895 3 2zm12-3c0 1.105-1.343 2-3 2s-3-.895-3-2 1.343-2 3-2 3 .895 3 2zM9 10l12-3">
                 </path>
               </svg>
-              <span>Xem toàn bộ kho Video Tab →</span>
+              <span>Xem toàn bộ kho Video Tab</span>
+              <svg class="w-4 h-4 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M17 8l4 4m0 0l-4 4m4-4H3" /></svg>
             </a>
           </div>
 
@@ -782,7 +783,7 @@
             </span>
             <span class="flex flex-col items-start leading-tight text-left">
               <span>Facebook</span>
-              <span class="text-[11px] font-semibold text-white/80">Nhật Quang</span>
+              <span class="text-[11px] font-semibold text-white/80">Quang Doan</span>
             </span>
           </a>
         </div>
@@ -970,7 +971,7 @@
                     <span class="font-mono text-xs sm:text-base font-black text-accent-primary tracking-wide"
                       id="bank-acc-num">03970202801</span>
                     <button id="copy-stk-btn"
-                      class="px-2 sm:px-2.5 py-1 rounded-lg bg-accent-primary/10 hover:bg-accent-primary hover:text-white text-[9px] sm:text-[10px] font-extrabold text-accent-primary border border-accent-primary/30 transition-all cursor-pointer shadow-xs active:scale-95 flex-shrink-0">Copy</button>
+                      class="px-2.5 py-1.5 rounded-lg bg-accent-primary/10 hover:bg-accent-primary hover:text-white text-[10px] font-extrabold text-accent-primary border border-accent-primary/30 transition-all cursor-pointer shadow-xs active:scale-95 flex-shrink-0">Copy</button>
                   </div>
                 </div>
                 <div class="bg-glass-bg/50 dark:bg-white/[0.04] p-2 sm:p-2.5 rounded-xl border border-glass-border/60">
@@ -988,7 +989,7 @@
                       class="font-mono font-black text-accent-primary bg-accent-primary/15 px-1.5 sm:px-2 py-0.5 rounded text-[9px] sm:text-[11px] border border-accent-primary/20 break-all leading-tight">VIDEOTAB
                       TAB</span>
                     <button id="copy-syntax-btn"
-                      class="px-2 sm:px-2.5 py-1 rounded-lg bg-accent-primary/10 hover:bg-accent-primary hover:text-white text-[9px] sm:text-[10px] font-extrabold text-accent-primary border border-accent-primary/30 transition-all cursor-pointer shadow-xs active:scale-95 flex-shrink-0">Copy</button>
+                      class="px-2.5 py-1.5 rounded-lg bg-accent-primary/10 hover:bg-accent-primary hover:text-white text-[10px] font-extrabold text-accent-primary border border-accent-primary/30 transition-all cursor-pointer shadow-xs active:scale-95 flex-shrink-0">Copy</button>
                   </div>
                 </div>
               </div>
@@ -1431,25 +1432,25 @@
         </div>
         <div class="md:col-span-3 space-y-4">
           <h4 class="text-[11px] font-bold uppercase tracking-[0.12em] text-text-primary">Khám phá</h4>
-          <nav class="flex flex-col gap-2.5 text-sm font-medium text-text-muted" aria-label="Khám phá">
-            <a href="/kho-tab.html" class="hover:text-accent-primary transition-colors w-fit">Kho Video Tab</a>
-            <a href="/cong-cu.html" class="hover:text-accent-primary transition-colors w-fit">Công cụ luyện tập</a>
-            <a href="#faq" class="hover:text-accent-primary transition-colors w-fit">Hỏi đáp</a>
+          <nav class="flex flex-col gap-0.5 text-sm font-medium text-text-muted" aria-label="Khám phá">
+            <a href="/kho-tab.html" class="hover:text-accent-primary transition-colors w-fit py-1.5">Kho Video Tab</a>
+            <a href="/cong-cu.html" class="hover:text-accent-primary transition-colors w-fit py-1.5">Công cụ luyện tập</a>
+            <a href="#faq" class="hover:text-accent-primary transition-colors w-fit py-1.5">Hỏi đáp</a>
           </nav>
         </div>
         <div class="md:col-span-3 space-y-4">
           <h4 class="text-[11px] font-bold uppercase tracking-[0.12em] text-text-primary">Liên hệ</h4>
-          <div class="flex flex-col gap-2.5 text-sm font-medium text-text-muted">
-            <a href="https://zalo.me/0326768885" target="_blank" rel="noopener noreferrer" class="hover:text-accent-primary transition-colors w-fit">Zalo: 0326.768.885</a>
-            <a href="https://www.facebook.com/quang.doan.969429" target="_blank" rel="noopener noreferrer" class="hover:text-accent-primary transition-colors w-fit">Facebook: Nhật Quang</a>
+          <div class="flex flex-col gap-0.5 text-sm font-medium text-text-muted">
+            <a href="https://zalo.me/0326768885" target="_blank" rel="noopener noreferrer" class="hover:text-accent-primary transition-colors w-fit py-1.5">Zalo: 0326.768.885</a>
+            <a href="https://www.facebook.com/quang.doan.969429" target="_blank" rel="noopener noreferrer" class="hover:text-accent-primary transition-colors w-fit py-1.5">Facebook: Quang Doan</a>
           </div>
         </div>
       </div>
       <div class="py-5 border-t border-glass-border flex flex-col-reverse sm:flex-row items-center justify-between gap-3 text-xs text-text-muted">
         <p>© 2026 Guitar By Quang. Bảo lưu mọi quyền.</p>
         <div class="flex items-center gap-5">
-          <a href="/chinh-sach-bao-mat.html" class="hover:text-accent-primary transition-colors w-fit">Chính sách bảo mật</a>
-          <button type="button" onclick="window.scrollTo({top:0, behavior:'smooth'})" class="inline-flex items-center gap-1 hover:text-accent-primary transition-colors w-fit cursor-pointer">
+          <a href="/chinh-sach-bao-mat.html" class="hover:text-accent-primary transition-colors w-fit py-1.5">Chính sách bảo mật</a>
+          <button type="button" onclick="window.scrollTo({top:0, behavior:'smooth'})" class="inline-flex items-center gap-1 py-1.5 hover:text-accent-primary transition-colors w-fit cursor-pointer">
             <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 15l7-7 7 7"/></svg>
             <span>Về đầu trang</span>
           </button>

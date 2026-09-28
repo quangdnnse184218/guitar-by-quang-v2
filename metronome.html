@@ -104,11 +104,11 @@
           <!-- Header Actions: Register + Login + Theme Toggle -->
           <div class="flex items-center gap-1.5 sm:gap-2.5 flex-shrink-0" id="desktop-auth-container">
             <a href="/register.html" class="hidden sm:inline-flex items-center bg-glass-bg border border-glass-border text-text-primary font-semibold hover:bg-glass-bg-hover hover:border-accent-primary hover:text-accent-primary px-3.5 sm:px-4 py-1.5 sm:py-2 rounded-full text-xs sm:text-sm transition-all duration-200 cursor-pointer flex-shrink-0">Đăng ký</a>
-            <a href="/login.html" class="bg-warm-gradient text-white font-extrabold shadow-md hover:brightness-105 active:scale-95 transition-all duration-200 px-2.5 sm:px-4 py-1.5 sm:py-2 rounded-full text-xs sm:text-sm flex items-center gap-1 whitespace-nowrap flex-shrink-0">
+            <a href="/login.html" class="bg-warm-gradient text-white font-extrabold shadow-md hover:brightness-105 active:scale-95 transition-all duration-200 px-2.5 sm:px-4 py-2 rounded-full text-xs sm:text-sm flex items-center gap-1 whitespace-nowrap flex-shrink-0">
               <svg class="w-3.5 h-3.5 fill-current" viewBox="0 0 24 24">
                 <path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z" />
               </svg>
-              <span>Đăng nhập</span>
+              <span class="max-[374px]:sr-only">Đăng nhập</span>
             </a>
 
             <!-- Theme Toggle Button -->
@@ -187,12 +187,16 @@
       <div class="w-full max-w-xl glass-card rounded-3xl p-6 sm:p-8 border border-glass-border shadow-2xl space-y-6">
         
         <!-- Header Controls -->
-        <div class="flex items-center justify-between border-b border-glass-border pb-4">
-          <div class="flex items-center gap-2.5">
-            <span class="text-2xl">⏱️</span>
-            <div>
-              <h1 class="text-xl font-extrabold text-text-primary tracking-tight">Máy Gõ Nhịp Metronome</h1>
-              <span class="text-xs text-text-muted font-mono font-semibold" id="tempo-marking-label">Andante (Thong thả)</span>
+        <!-- Trên điện thoại badge xuống dòng dưới tiêu đề (trước bị ép chung hàng làm
+             tiêu đề vỡ 3 dòng); emoji ⏱️ đổi sang icon SVG cùng bộ với cả site. -->
+        <div class="flex flex-wrap items-center justify-between gap-3 border-b border-glass-border pb-4">
+          <div class="flex items-center gap-2.5 min-w-0">
+            <span class="w-10 h-10 rounded-xl bg-accent-primary/15 text-accent-primary grid place-items-center flex-shrink-0" aria-hidden="true">
+              <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M8 20h8l-2-14h-4z"/><path stroke-linecap="round" d="M12 18l3-7"/></svg>
+            </span>
+            <div class="min-w-0">
+              <h1 class="text-xl font-extrabold text-text-primary tracking-tight leading-tight">Máy Gõ Nhịp Metronome</h1>
+              <span class="block text-xs text-text-muted font-semibold leading-snug mt-0.5" id="tempo-marking-label">Andante (Thong thả)</span>
             </div>
           </div>
           <span class="metro-badge text-xs font-mono font-bold px-3 py-1.5 rounded-full flex items-center gap-2 shadow-xs">
@@ -205,7 +209,7 @@
         <div class="grid grid-cols-12 gap-4 items-center justify-between">
           
           <!-- Left: Beat Visual Flash -->
-          <div class="col-span-4 flex flex-col items-center justify-center gap-2">
+          <div class="col-span-6 sm:col-span-4 flex flex-col items-center justify-center gap-2">
             <div id="beat-flash" class="metro-pulse metro-pulse-box w-16 h-16 rounded-2xl flex items-center justify-center cursor-default">
               <span class="metro-pulse-dot w-4 h-4 rounded-full"></span>
             </div>
@@ -216,8 +220,8 @@
           </div>
 
           <!-- Middle: Large BPM Display with +/- Buttons -->
-          <div class="col-span-5 flex items-center justify-center gap-2 sm:gap-3">
-            <button id="bpm-minus" class="w-10 h-10 rounded-full bg-glass-bg hover:bg-glass-bg-hover border border-glass-border text-text-primary text-xl font-black transition-all active:scale-90 flex items-center justify-center cursor-pointer shadow-xs" title="Giảm 1 BPM (Phím mũi tên xuống)">
+          <div class="col-span-12 sm:col-span-5 order-first sm:order-none flex items-center justify-center gap-4 sm:gap-3">
+            <button id="bpm-minus" class="flex-shrink-0 w-11 h-11 sm:w-10 sm:h-10 rounded-full bg-glass-bg hover:bg-glass-bg-hover border border-glass-border text-text-primary text-xl font-black transition-all active:scale-90 flex items-center justify-center cursor-pointer shadow-xs" title="Giảm 1 BPM (Phím mũi tên xuống)">
               -
             </button>
 
@@ -228,13 +232,13 @@
               <span class="metro-bpm-sub text-xs font-mono font-black tracking-widest uppercase mt-1.5 block">BPM</span>
             </div>
 
-            <button id="bpm-plus" class="w-10 h-10 rounded-full bg-glass-bg hover:bg-glass-bg-hover border border-glass-border text-text-primary text-xl font-black transition-all active:scale-90 flex items-center justify-center cursor-pointer shadow-xs" title="Tăng 1 BPM (Phím mũi tên lên)">
+            <button id="bpm-plus" class="flex-shrink-0 w-11 h-11 sm:w-10 sm:h-10 rounded-full bg-glass-bg hover:bg-glass-bg-hover border border-glass-border text-text-primary text-xl font-black transition-all active:scale-90 flex items-center justify-center cursor-pointer shadow-xs" title="Tăng 1 BPM (Phím mũi tên lên)">
               +
             </button>
           </div>
 
           <!-- Right: Time Signature Selector -->
-          <div class="col-span-3 flex flex-col items-center justify-center gap-1.5">
+          <div class="col-span-6 sm:col-span-3 flex flex-col items-center justify-center gap-1.5">
             <label for="time-signature-select" class="text-[13px] font-mono uppercase tracking-wider text-text-muted font-bold">
               Chỉ Số Nhịp
             </label>
@@ -283,7 +287,7 @@
         </div>
 
         <!-- Keyboard Shortcuts Helper -->
-        <div class="pt-4 border-t border-glass-border flex justify-center items-center gap-4 text-xs text-text-muted font-medium flex-wrap">
+        <div class="pt-4 border-t border-glass-border hidden sm:flex justify-center items-center gap-4 text-xs text-text-muted font-medium flex-wrap">
           <span class="flex items-center gap-1.5"><kbd class="metro-kbd px-2 py-1 rounded-lg text-xs font-mono font-bold">Space</kbd> Play/Pause</span>
           <span class="flex items-center gap-1.5"><kbd class="metro-kbd px-2 py-1 rounded-lg text-xs font-mono font-bold">T</kbd> Tap Tempo</span>
           <span class="flex items-center gap-1.5"><kbd class="metro-kbd px-2 py-1 rounded-lg text-xs font-mono font-bold">↑ / ↓</kbd> ±1 BPM</span>
@@ -335,25 +339,25 @@
           </div>
           <div class="md:col-span-3 space-y-4">
             <h4 class="text-[11px] font-bold uppercase tracking-[0.12em] text-text-primary">Khám phá</h4>
-            <nav class="flex flex-col gap-2.5 text-sm font-medium text-text-muted" aria-label="Khám phá">
-              <a href="/kho-tab.html" class="hover:text-accent-primary transition-colors w-fit">Kho Video Tab</a>
-              <a href="/cong-cu.html" class="hover:text-accent-primary transition-colors w-fit">Công cụ luyện tập</a>
-              <a href="/index.html#faq" class="hover:text-accent-primary transition-colors w-fit">Hỏi đáp</a>
+            <nav class="flex flex-col gap-0.5 text-sm font-medium text-text-muted" aria-label="Khám phá">
+              <a href="/kho-tab.html" class="hover:text-accent-primary transition-colors w-fit py-1.5">Kho Video Tab</a>
+              <a href="/cong-cu.html" class="hover:text-accent-primary transition-colors w-fit py-1.5">Công cụ luyện tập</a>
+              <a href="/index.html#faq" class="hover:text-accent-primary transition-colors w-fit py-1.5">Hỏi đáp</a>
             </nav>
           </div>
           <div class="md:col-span-3 space-y-4">
             <h4 class="text-[11px] font-bold uppercase tracking-[0.12em] text-text-primary">Liên hệ</h4>
-            <div class="flex flex-col gap-2.5 text-sm font-medium text-text-muted">
-              <a href="https://zalo.me/0326768885" target="_blank" rel="noopener noreferrer" class="hover:text-accent-primary transition-colors w-fit">Zalo: 0326.768.885</a>
-              <a href="https://www.facebook.com/quang.doan.969429" target="_blank" rel="noopener noreferrer" class="hover:text-accent-primary transition-colors w-fit">Facebook: Nhật Quang</a>
+            <div class="flex flex-col gap-0.5 text-sm font-medium text-text-muted">
+              <a href="https://zalo.me/0326768885" target="_blank" rel="noopener noreferrer" class="hover:text-accent-primary transition-colors w-fit py-1.5">Zalo: 0326.768.885</a>
+              <a href="https://www.facebook.com/quang.doan.969429" target="_blank" rel="noopener noreferrer" class="hover:text-accent-primary transition-colors w-fit py-1.5">Facebook: Quang Doan</a>
             </div>
           </div>
         </div>
         <div class="py-5 border-t border-glass-border flex flex-col-reverse sm:flex-row items-center justify-between gap-3 text-xs text-text-muted">
           <p>© 2026 Guitar By Quang. Bảo lưu mọi quyền.</p>
           <div class="flex items-center gap-5">
-            <a href="/chinh-sach-bao-mat.html" class="hover:text-accent-primary transition-colors w-fit">Chính sách bảo mật</a>
-            <button type="button" onclick="window.scrollTo({top:0, behavior:'smooth'})" class="inline-flex items-center gap-1 hover:text-accent-primary transition-colors w-fit cursor-pointer">
+            <a href="/chinh-sach-bao-mat.html" class="hover:text-accent-primary transition-colors w-fit py-1.5">Chính sách bảo mật</a>
+            <button type="button" onclick="window.scrollTo({top:0, behavior:'smooth'})" class="inline-flex items-center gap-1 py-1.5 hover:text-accent-primary transition-colors w-fit cursor-pointer">
               <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 15l7-7 7 7"/></svg>
               <span>Về đầu trang</span>
             </button>
