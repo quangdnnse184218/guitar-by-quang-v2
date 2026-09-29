@@ -90,13 +90,11 @@
         </a>
 
         <!-- Desktop Navigation -->
-        <nav id="desktop-nav"
-          class="hidden xl:flex items-center space-x-6 lg:space-x-8 text-sm font-bold text-text-muted flex-nowrap whitespace-nowrap">
-          <a href="/index.html" class="nav-link hover:text-text-primary py-1 transition-colors">Trang chủ</a>
-          <a href="/kho-tab.html" class="nav-link active font-bold text-accent-primary py-1 transition-colors">Kho Video Tab</a>
-          <a href="/index.html#tools" class="nav-link hover:text-text-primary py-1 transition-colors">Công cụ</a>
-          <a href="/index.html#faq" class="nav-link hover:text-text-primary py-1 transition-colors">Hỏi đáp</a>
-          <a href="/index.html#contact" class="nav-link hover:text-text-primary py-1 transition-colors">Liên hệ</a>
+        <nav id="desktop-nav" aria-label="Điều hướng chính"
+          class="hidden md:flex items-center gap-7 lg:gap-9 whitespace-nowrap">
+          <a href="/kho-tab.html" class="nav-link active" aria-current="page">Kho Video Tab</a>
+          <a href="/cong-cu.html" class="nav-link">Công cụ</a>
+          <a href="/luyen-cam-am.html" class="nav-link">Luyện cảm âm</a>
         </nav>
 
         <!-- Header Actions: Register + Login + Theme Toggle -->
@@ -133,7 +131,7 @@
 
           <!-- Mobile Hamburger Button -->
           <button id="mobile-menu-btn"
-            class="xl:hidden p-1.5 sm:p-2 rounded-xl bg-glass-bg hover:bg-glass-bg-hover text-text-primary border border-glass-border transition-colors cursor-pointer flex-shrink-0"
+            class="hidden p-1.5 sm:p-2 rounded-xl bg-glass-bg hover:bg-glass-bg-hover text-text-primary border border-glass-border transition-colors cursor-pointer flex-shrink-0"
             aria-label="Mở menu">
             <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path>

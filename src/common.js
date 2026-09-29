@@ -249,7 +249,7 @@ export async function initAuthHeader() {
 
     const roleBadgeHtml = isAdmin
       ? `<span class="inline-flex items-center gap-1 px-1.5 py-0.5 rounded-full bg-purple-500/20 text-purple-600 dark:text-purple-300 text-[10px] font-bold border border-purple-500/30">${iconCrown('w-2.5 h-2.5')}Admin</span>`
-      : `<span class="inline-flex items-center gap-1 px-1.5 py-0.5 rounded-full bg-amber-500/20 text-amber-600 dark:text-amber-300 text-[10px] font-bold border border-amber-500/30">${iconCrown('w-2.5 h-2.5')}Thành viên</span>`
+      : ''
 
     const adminDropdownOption = isAdmin
       ? `<a href="/admin-dashboard.html" class="block px-3 py-2 text-xs font-bold text-purple-600 dark:text-purple-400 hover:bg-purple-500/10 rounded-xl transition-colors flex items-center gap-2 border-b border-glass-border mb-1"><span>${iconBolt('w-3.5 h-3.5')}</span><span>Bảng Quản Trị Admin</span></a>`
@@ -408,35 +408,6 @@ export async function initAuthHeader() {
       }
     }
 
-    // Update Desktop Nav for logged-in user
-    const desktopNav = document.getElementById('desktop-nav')
-    if (desktopNav) {
-      const oldTab =
-        desktopNav.querySelector('a[href*="user-dashboard"]') ||
-        desktopNav.querySelector('a[href*="admin-dashboard"]')
-      if (oldTab) {
-        oldTab.href = targetDashboardUrl
-        oldTab.innerHTML = `<span>${targetDashboardLabel}</span>`
-      } else {
-        const isUserDashPage =
-          window.location.pathname.includes('user-dashboard') ||
-          window.location.pathname.includes('admin-dashboard')
-        const userTab = document.createElement('a')
-        userTab.href = targetDashboardUrl
-        userTab.className = isUserDashPage
-          ? 'nav-link active font-bold text-accent-primary py-1 transition-colors flex items-center gap-1'
-          : 'nav-link hover:text-text-primary py-1 transition-colors flex items-center gap-1'
-        userTab.innerHTML = `<span>${targetDashboardLabel}</span>`
-
-        const firstLink = desktopNav.firstElementChild
-        if (firstLink && firstLink.nextElementSibling) {
-          desktopNav.insertBefore(userTab, firstLink.nextElementSibling)
-        } else {
-          desktopNav.appendChild(userTab)
-        }
-      }
-    }
-
     // Update Mobile Drawer Nav for logged-in user
     const mobileNav = document.querySelector('#mobile-menu-drawer nav')
     if (mobileNav) {
@@ -466,46 +437,11 @@ export async function initAuthHeader() {
       }
     }
 
-    // Hide mobile hamburger button when logged in (tabs shown directly in rows 2 & 3)
-    const mobileMenuBtn = document.getElementById('mobile-menu-btn')
-    if (mobileMenuBtn) mobileMenuBtn.classList.add('hidden')
-
-    // Show or create 3-row layout for mobile logged-in navigation (Row 2 & Row 3)
-    let mobileLoggedInNav = document.getElementById('mobile-logged-in-nav')
-    if (!mobileLoggedInNav) {
-      const mainNavContainer =
-        document.querySelector('#main-nav > div') ||
-        document.querySelector('header .container') ||
-        document.querySelector('header > div')
-      if (mainNavContainer) {
-        mobileLoggedInNav = document.createElement('div')
-        mobileLoggedInNav.id = 'mobile-logged-in-nav'
-        mobileLoggedInNav.className =
-          'md:hidden flex flex-col pt-1 mt-0.5 text-xs font-bold text-text-muted'
-        mobileLoggedInNav.innerHTML = `
-          <!-- Hàng 2: Trang chủ, Trang của tôi, Kho Video Tab -->
-          <div class="grid grid-cols-3 text-center py-0.5 gap-1">
-            <a href="/index.html" class="nav-link py-1 text-[11px] sm:text-xs font-bold justify-center transition-colors">Trang chủ</a>
-            <a href="${targetDashboardUrl}" class="nav-link py-1 text-[11px] sm:text-xs font-bold justify-center transition-colors flex items-center gap-0.5">
-              <span>${targetDashboardLabel}</span>
-            </a>
-            <a href="/kho-tab.html" class="nav-link py-1 text-[11px] sm:text-xs font-bold justify-center transition-colors">Kho Video Tab</a>
-          </div>
-          <!-- Hàng 3: Công cụ, Hỏi đáp, Liên hệ -->
-          <div class="grid grid-cols-3 text-center py-0.5 gap-1">
-            <a href="/index.html#tools" class="nav-link py-1 text-[11px] sm:text-xs font-bold justify-center transition-colors">Công cụ</a>
-            <a href="#faq" class="nav-link py-1 text-[11px] sm:text-xs font-bold justify-center transition-colors">Hỏi đáp</a>
-            <a href="#contact" class="nav-link py-1 text-[11px] sm:text-xs font-bold justify-center transition-colors">Liên hệ</a>
-          </div>
-        `
-        mainNavContainer.appendChild(mobileLoggedInNav)
-      }
-    } else {
-      const userTabInMobile = mobileLoggedInNav.querySelector('a[href*="dashboard"]')
-      if (userTabInMobile) userTabInMobile.href = targetDashboardUrl
-      mobileLoggedInNav.classList.remove('hidden')
-      mobileLoggedInNav.classList.add('flex')
-    }
+    updateBottomNavAccount({
+      href: targetDashboardUrl,
+      label: isAdmin ? 'Quản trị' : 'Của tôi',
+      avatarHtml: avatarHtml,
+    })
 
     // Refresh active navigation link highlights after header update
     initNavActiveSpy()
@@ -614,135 +550,137 @@ export function initMobileHeaderScroll() {
 /**
  * Synchronizes and highlights the active navigation tab underline across all pages, hash links and sections.
  */
+/** Khoá của trang đang mở — dùng chung cho menu máy tính và thanh dưới đáy. */
+function currentPageKey() {
+  const p = window.location.pathname
+  if (p.includes('kho-tab')) return 'kho-tab'
+  if (p.includes('cong-cu') || p.includes('metronome')) return 'tools'
+  if (p.includes('luyen-cam-am')) return 'game'
+  if (p.includes('user-dashboard') || p.includes('admin-dashboard')) return 'account'
+  if (p === '/' || p.endsWith('/index.html')) return 'home'
+  return ''
+}
+
+function getLinkKey(href) {
+  if (!href) return ''
+  if (href.includes('kho-tab')) return 'kho-tab'
+  if (href.includes('#tools') || href.includes('cong-cu') || href.includes('metronome'))
+    return 'tools'
+  if (href.includes('luyen-cam-am')) return 'game'
+  if (href.includes('dashboard') && !href.includes('#')) return 'account'
+  if (href === '/' || href === '/index.html') return 'home'
+  return ''
+}
+
+/**
+ * Đánh dấu mục menu của trang hiện tại. Trước đây đổi theo vị trí cuộn (cuộn
+ * tới FAQ thì "Hỏi đáp" sáng) nên đang ở Trang của tôi mà lại gạch chân mục
+ * khác — người xem không biết mình đang ở đâu. Giờ chỉ theo trang.
+ */
 export function initNavActiveSpy() {
-  const desktopNav = document.getElementById('desktop-nav')
-  const mobileNav = document.querySelector('#mobile-menu-drawer nav')
+  const key = currentPageKey()
+  document.querySelectorAll('#desktop-nav a.nav-link').forEach((link) => {
+    const on = key !== '' && getLinkKey(link.getAttribute('href')) === key
+    link.classList.toggle('active', on)
+    if (on) link.setAttribute('aria-current', 'page')
+    else link.removeAttribute('aria-current')
+  })
+  document.querySelectorAll('#mobile-menu-drawer nav a').forEach((link) => {
+    const on = key !== '' && getLinkKey(link.getAttribute('href')) === key
+    link.classList.toggle('text-accent-primary', on)
+    link.classList.toggle('font-bold', on)
+    link.classList.toggle('text-text-primary', !on)
+  })
+}
 
-  function getAllNavLinks() {
-    const desktopLinks = desktopNav ? Array.from(desktopNav.querySelectorAll('a.nav-link')) : []
-    const mobileHeaderLinks = Array.from(
-      document.querySelectorAll('#mobile-logged-in-nav a.nav-link')
-    )
-    const mobileLinks = mobileNav ? Array.from(mobileNav.querySelectorAll('a')) : []
-    return { desktopLinks: [...desktopLinks, ...mobileHeaderLinks], mobileLinks }
-  }
+// ==========================================================================
+// THANH ĐIỀU HƯỚNG DƯỚI ĐÁY (điện thoại) — kiểu "kính trong" nổi như app
+// ==========================================================================
+// Dựng bằng JS ở MỘT chỗ cho mọi trang có header công khai (#desktop-nav), để
+// không phải chép tay 5 lần. Kiểu dáng ở .bottom-nav trong style.css.
+const NAV_ICON = (d) =>
+  `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${d}</svg>`
+const BOTTOM_NAV_ITEMS = [
+  {
+    key: 'home',
+    href: '/index.html',
+    label: 'Trang chủ',
+    icon: NAV_ICON('<path d="M3.5 10.5 12 3.8l8.5 6.7V19a1.5 1.5 0 0 1-1.5 1.5h-4v-6h-6v6H5A1.5 1.5 0 0 1 3.5 19z"/>'),
+  },
+  {
+    key: 'kho-tab',
+    href: '/kho-tab.html',
+    label: 'Kho tab',
+    icon: NAV_ICON('<path d="M9 18V5.5l11-2V16"/><circle cx="6.5" cy="18" r="2.5"/><circle cx="17.5" cy="16" r="2.5"/>'),
+  },
+  {
+    key: 'tools',
+    href: '/cong-cu.html',
+    label: 'Công cụ',
+    icon: NAV_ICON('<path d="M9.5 3.5h5l3.5 17h-12z"/><path d="M12 16.5 15.5 6"/><path d="M8.2 14h7.6"/>'),
+  },
+  {
+    key: 'game',
+    href: '/luyen-cam-am.html',
+    label: 'Cảm âm',
+    icon: NAV_ICON('<path d="M4 15v-3a8 8 0 0 1 16 0v3"/><rect x="3" y="14" width="4.5" height="7" rx="2"/><rect x="16.5" y="14" width="4.5" height="7" rx="2"/>'),
+  },
+  {
+    key: 'account',
+    href: '/login.html',
+    label: 'Tài khoản',
+    icon: NAV_ICON('<circle cx="12" cy="8" r="4"/><path d="M4.5 20.5a7.5 7.5 0 0 1 15 0"/>'),
+  },
+]
 
-  function getLinkKey(href) {
-    if (!href) return ''
-    if (href.includes('kho-tab')) return 'kho-tab'
-    if (href.includes('user-dashboard') && !href.includes('#')) return 'dashboard'
-    if (href.includes('#tools') || href.includes('cong-cu') || href.includes('metronome'))
-      return 'tools'
-    if (href.includes('#faq') || href.includes('faq')) return 'faq'
-    if (href.includes('#contact') || href.includes('contact')) return 'contact'
-    if (
-      href.includes('index.html') ||
-      href === '/' ||
-      href.includes('#about') ||
-      href.includes('#hero')
-    )
-      return 'home'
-    return ''
-  }
+export function initBottomNav() {
+  if (document.getElementById('bottom-nav') || !document.getElementById('desktop-nav')) return
+  const key = currentPageKey()
+  const activeIdx = BOTTOM_NAV_ITEMS.findIndex((i) => i.key === key)
 
-  function setActiveKey(key) {
-    if (!key) return
-    const { desktopLinks, mobileLinks } = getAllNavLinks()
+  const nav = document.createElement('nav')
+  nav.id = 'bottom-nav'
+  nav.className = 'bottom-nav' + (activeIdx >= 0 ? ' has-active' : '')
+  nav.setAttribute('aria-label', 'Điều hướng')
+  nav.style.setProperty('--active', String(Math.max(activeIdx, 0)))
+  nav.innerHTML =
+    '<span class="bottom-nav__glow" aria-hidden="true"></span>' +
+    BOTTOM_NAV_ITEMS.map(
+      (item, i) => `
+      <a href="${item.href}" class="bottom-nav__item" data-i="${i}" data-key="${item.key}"${i === activeIdx ? ' aria-current="page"' : ''}>
+        <span class="bottom-nav__icon">${item.icon}</span>
+        <span class="bottom-nav__label">${item.label}</span>
+      </a>`
+    ).join('')
+  document.body.appendChild(nav)
+  document.body.classList.add('has-bottom-nav')
 
-    desktopLinks.forEach((link) => {
-      const linkKey = getLinkKey(link.getAttribute('href'))
-      if (linkKey === key) {
-        link.classList.add('active', 'font-bold', 'text-accent-primary')
-        link.classList.remove('text-text-muted')
-      } else {
-        link.classList.remove('active', 'font-bold', 'text-accent-primary')
-        link.classList.add('text-text-muted')
-      }
-    })
-
-    mobileLinks.forEach((link) => {
-      const linkKey = getLinkKey(link.getAttribute('href'))
-      if (linkKey === key) {
-        link.classList.add('text-accent-primary', 'font-bold')
-        link.classList.remove('text-text-primary')
-      } else {
-        link.classList.remove('text-accent-primary', 'font-bold')
-        link.classList.add('text-text-primary')
-      }
-    })
-  }
-
-  function getActiveSectionOnPage() {
-    // Check if scrolled near bottom of page (for footer/contact)
-    const isNearBottom =
-      window.innerHeight + window.scrollY >= document.documentElement.scrollHeight - 150
-    if (isNearBottom) {
-      const contactEl = document.getElementById('contact')
-      if (contactEl) return 'contact'
-    }
-
-    const sections = [
-      { id: 'contact', key: 'contact' },
-      { id: 'faq', key: 'faq' },
-      { id: 'tools', key: 'tools' },
-      { id: 'gear', key: 'tools' },
-      { id: 'featured', key: 'home' },
-      { id: 'about', key: 'home' },
-      { id: 'hero', key: 'home' },
-    ]
-
-    const scrollY = window.scrollY + 200
-
-    for (const s of sections) {
-      const el = document.getElementById(s.id)
-      if (el) {
-        const top = el.offsetTop
-        const height = el.offsetHeight
-        if (scrollY >= top && scrollY < top + height) {
-          return s.key
-        }
-      }
-    }
-
-    // Default base page key when near top
-    const path = window.location.pathname
-    if (path.includes('kho-tab')) return 'kho-tab'
-    if (path.includes('user-dashboard')) return 'dashboard'
-    if (path.includes('cong-cu') || path.includes('metronome')) return 'tools'
-    return 'home'
-  }
-
-  function updateSpy() {
-    setActiveKey(getActiveSectionOnPage())
-  }
-
-  window.addEventListener('scroll', updateSpy, { passive: true })
-  window.addEventListener('resize', updateSpy, { passive: true })
-  window.addEventListener('hashchange', () => {
-    setTimeout(updateSpy, 50)
+  // Nhấn mục khác: "giọt kính" trượt sang ngay, trong lúc trang mới đang tải.
+  nav.addEventListener('click', (e) => {
+    const link = e.target.closest('a[data-i]')
+    if (!link) return
+    nav.style.setProperty('--active', link.dataset.i)
+    nav.classList.add('has-active')
   })
 
-  // Listen to clicks on nav links
-  document.addEventListener('click', (e) => {
-    const targetLink = e.target.closest('a')
-    if (!targetLink) return
-    const href = targetLink.getAttribute('href')
-    if (!href) return
-
-    if (
-      targetLink.classList.contains('nav-link') ||
-      targetLink.closest('#desktop-nav') ||
-      targetLink.closest('#mobile-menu-drawer') ||
-      targetLink.closest('#mobile-logged-in-nav')
-    ) {
-      const key = getLinkKey(href)
-      if (key) {
-        setActiveKey(key)
-      }
-    }
+  // Bàn phím ảo đang mở: ẩn thanh để không đè lên ô đang nhập.
+  const isField = (el) => el?.matches?.('input, textarea, select, [contenteditable="true"]')
+  document.addEventListener('focusin', (e) => {
+    if (isField(e.target)) nav.classList.add('is-hidden')
   })
+  document.addEventListener('focusout', (e) => {
+    if (isField(e.target)) nav.classList.remove('is-hidden')
+  })
+}
 
-  updateSpy()
+/** Đã đăng nhập: mục cuối thành "Của tôi" kèm ảnh đại diện nhỏ. */
+function updateBottomNavAccount({ href, label, avatarHtml }) {
+  const item = document.querySelector('#bottom-nav [data-key="account"]')
+  if (!item) return
+  item.href = href
+  item.querySelector('.bottom-nav__label').textContent = label
+  item.querySelector('.bottom-nav__icon').innerHTML = avatarHtml
+  item.classList.add('has-avatar')
 }
 
 /**
@@ -1228,12 +1166,14 @@ export function initPasswordToggles() {
 }
 
 document.addEventListener('DOMContentLoaded', () => {
+  initBottomNav()
   initAuthHeader()
   initNavActiveSpy()
   initMobileHeaderScroll()
   initPasswordToggles()
   initMobileKeyboardScroll()
 })
+initBottomNav()
 initNavActiveSpy()
 initMobileHeaderScroll()
 initPasswordToggles()
