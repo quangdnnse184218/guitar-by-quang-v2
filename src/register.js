@@ -2,7 +2,7 @@ import { supabase } from './lib/supabase.js'
 import { initThemeToggle } from './theme-toggle.js'
 import { getPasswordWeaknessReason, initPasswordMatchHint } from './common.js'
 import { watchEmailConfirmation } from './lib/email-confirmation-watch.js'
-import { redirectTo } from './lib/navigate.js'
+import { redirectTo, safeRedirectPath } from './lib/navigate.js'
 
 // Supabase chỉ cho gửi lại email xác nhận sau mỗi 60 giây.
 const RESEND_COOLDOWN_SECONDS = 60
@@ -182,7 +182,7 @@ document.addEventListener('DOMContentLoaded', () => {
       onConfirmed: () => {
         stopWaiting()
         setWaitingStatus('Đã xác nhận! Đang đưa bạn vào tài khoản…', { spinning: true })
-        setTimeout(() => redirectTo('/user-dashboard.html'), 800)
+        setTimeout(() => redirectTo(safeRedirectPath(new URLSearchParams(window.location.search).get('redirect'))), 800)
       },
       onGiveUp: () => {
         setWaitingStatus(
@@ -376,7 +376,7 @@ document.addEventListener('DOMContentLoaded', () => {
       } else {
         showAlert('Đăng ký thành công! Đang chuyển hướng vào tài khoản...', true)
         setTimeout(() => {
-          redirectTo('/user-dashboard.html')
+          redirectTo(safeRedirectPath(new URLSearchParams(window.location.search).get('redirect')))
         }, 1200)
       }
     } catch (error) {
@@ -422,3 +422,14 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   })
 })
+
+// Khách bấm qua lại Đăng nhập ↔ Đăng ký vẫn giữ trang cần quay về (?redirect=).
+const returnParam = new URLSearchParams(window.location.search).get('redirect')
+if (returnParam) {
+  const back = safeRedirectPath(returnParam, '')
+  if (back) {
+    document.querySelectorAll('a[href="/login.html"]').forEach((a) => {
+      a.href = `/login.html?redirect=${encodeURIComponent(back)}`
+    })
+  }
+}

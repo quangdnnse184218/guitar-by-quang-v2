@@ -37,8 +37,8 @@ export function showToast(msg, type = 'success') {
       toastIcon.textContent = '✕'
       toastIcon.className = ''
     } else if (type === 'info') {
-      toastIcon.textContent = '⟳'
-      toastIcon.className = 'animate-spin'
+      toastIcon.textContent = 'i'
+      toastIcon.className = ''
     } else {
       toastIcon.textContent = '✓'
       toastIcon.className = ''

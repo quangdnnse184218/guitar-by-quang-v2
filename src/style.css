@@ -1893,10 +1893,30 @@ input[type='range'].metro-slider::-webkit-slider-thumb:hover {
 /* ==============================================================================
    USER HEADER DROPDOWN TOGGLE (MOBILE & DESKTOP)
    ============================================================================== */
+/* Menu tài khoản: ẩn mặc định, trượt nhẹ xuống khi .open (JS quyết định mở bằng
+   rê chuột hay bấm — xem initAuthHeader trong common.js). */
+.user-menu {
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
+  transform: translateY(-4px);
+  transition:
+    opacity 0.16s ease,
+    transform 0.16s ease,
+    visibility 0.16s;
+}
+
 #user-header-dropdown-wrap.open #user-header-dropdown-menu {
   opacity: 1 !important;
   visibility: visible !important;
   pointer-events: auto !important;
+  transform: none;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .user-menu {
+    transition: none;
+  }
 }
 
 #user-header-dropdown-wrap.open #user-header-dropdown-arrow {

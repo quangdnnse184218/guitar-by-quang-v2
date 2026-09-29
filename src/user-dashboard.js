@@ -170,9 +170,9 @@ export function showToast(msg, type = 'success') {
       toastIconEl.className =
         'w-8 h-8 rounded-full flex items-center justify-center flex-shrink-0 text-sm font-extrabold shadow-md'
     } else if (type === 'info') {
-      toastIconEl.textContent = '⟳'
+      toastIconEl.textContent = 'i'
       toastIconEl.className =
-        'w-8 h-8 rounded-full flex items-center justify-center flex-shrink-0 text-sm font-extrabold shadow-md animate-spin'
+        'w-8 h-8 rounded-full flex items-center justify-center flex-shrink-0 text-sm font-extrabold shadow-md'
     } else {
       toastIconEl.textContent = '✓'
       toastIconEl.className =

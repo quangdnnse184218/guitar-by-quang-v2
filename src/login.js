@@ -1,6 +1,7 @@
 import { supabase } from './lib/supabase.js'
 import { initThemeToggle } from './theme-toggle.js'
 import { initForgotPasswordModal } from './common.js'
+import { safeRedirectPath } from './lib/navigate.js'
 
 document.addEventListener('DOMContentLoaded', () => {
   initThemeToggle()
@@ -143,10 +144,8 @@ document.addEventListener('DOMContentLoaded', () => {
           console.warn('Could not fetch profile role:', profErr)
         }
 
-        const params = new URLSearchParams(window.location.search)
-        const redirectParam = params.get('redirect')
-        const targetUrl =
-          redirectParam && redirectParam.startsWith('/') ? redirectParam : '/user-dashboard.html'
+        // Chỉ quay về trang trong site (chặn open redirect kiểu ?redirect=//trang-la.com)
+        const targetUrl = safeRedirectPath(new URLSearchParams(window.location.search).get('redirect'))
 
         showAlert('Đăng nhập thành công! Đang chuyển hướng...', true)
 
@@ -167,3 +166,14 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   })
 })
+
+// Khách bấm qua lại Đăng nhập ↔ Đăng ký vẫn giữ trang cần quay về (?redirect=).
+const returnParam = new URLSearchParams(window.location.search).get('redirect')
+if (returnParam) {
+  const back = safeRedirectPath(returnParam, '')
+  if (back) {
+    document.querySelectorAll('a[href="/register.html"]').forEach((a) => {
+      a.href = `/register.html?redirect=${encodeURIComponent(back)}`
+    })
+  }
+}

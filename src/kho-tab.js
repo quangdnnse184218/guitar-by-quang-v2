@@ -16,6 +16,7 @@ import { toggleCompleted } from './lib/local-storage-service.js'
 import { supabase } from './lib/supabase.js'
 import { renderSongCard } from './lib/song-card.js'
 import { initShareButtons } from './lib/share-song.js'
+import { withReturnTo } from './lib/navigate.js'
 import {
   createOrderAndBuildQr,
   downloadQrImage,
@@ -98,7 +99,7 @@ const toastNotification = document.getElementById('toast-notification')
 const toastMessage = document.getElementById('toast-message')
 let toastTimer = null
 
-window.showToast = function showToast(msg, type = 'success') {
+window.showToast = function showToast(msg, type = 'success', action = null) {
   if (!toastNotification || !toastMessage) return
   if (toastTimer) clearTimeout(toastTimer)
 
@@ -106,6 +107,14 @@ window.showToast = function showToast(msg, type = 'success') {
 
   const cleanMsg = msg.replace(/^[✓✕❌⟳•\s]+/, '').trim()
   toastMessage.textContent = cleanMsg || msg
+  // Nút hành động (vd "Đăng nhập") — tạo bằng DOM, không ghép chuỗi HTML
+  if (action) {
+    const link = document.createElement('a')
+    link.href = action.href
+    link.textContent = action.label
+    link.className = 'ml-2 underline underline-offset-2 whitespace-nowrap'
+    toastMessage.append(' ', link)
+  }
 
   toastNotification.className = `toast-${type} toast-visible`
 
@@ -114,8 +123,8 @@ window.showToast = function showToast(msg, type = 'success') {
       toastIcon.textContent = '✕'
       toastIcon.className = ''
     } else if (type === 'info') {
-      toastIcon.textContent = '⟳'
-      toastIcon.className = 'animate-spin'
+      toastIcon.textContent = 'i'
+      toastIcon.className = ''
     } else {
       toastIcon.textContent = '✓'
       toastIcon.className = ''
@@ -341,7 +350,10 @@ window.handleToggleFavorite = async function handleToggleFavorite(event, songId)
     data: { session },
   } = await supabase.auth.getSession()
   if (!session?.user) {
-    showToast('Vui lòng đăng nhập để lưu bài hát yêu thích!', 'info')
+    showToast('Đăng nhập để lưu bài yêu thích.', 'info', {
+      label: 'Đăng nhập',
+      href: withReturnTo('/login.html'),
+    })
     return
   }
 
@@ -552,7 +564,7 @@ window.openCheckoutModal = async function openCheckoutModal(tabId) {
     if (!session || !session.user) {
       const loginBtn = document.getElementById('auth-required-login-btn')
       if (loginBtn) {
-        loginBtn.href = `/login.html?redirect=${encodeURIComponent(window.location.pathname + window.location.search)}`
+        loginBtn.href = `/login.html?redirect=${encodeURIComponent(`/kho-tab.html?tab=${encodeURIComponent(tabId)}`)}`
       }
       toggleModal('auth-required-modal', true)
       return

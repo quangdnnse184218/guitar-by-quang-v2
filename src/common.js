@@ -1,5 +1,6 @@
 import { supabase } from './lib/supabase.js'
-import { iconGuitar, iconHeart, iconBolt, iconPerson, iconLogout, iconCrown } from './icons.js'
+import { withReturnTo } from './lib/navigate.js'
+import { iconBolt, iconPerson, iconLogout, iconCrown } from './icons.js'
 
 // profiles.full_name/avatar_url do chính người dùng tự đặt (qua form Hồ Sơ) —
 // phải escape trước khi chèn vào innerHTML, nếu không ai cũng có thể đặt tên
@@ -172,6 +173,23 @@ export function initCardTouchFeedback() {
 /**
  * Checks authentication state and updates the header if user is logged in
  */
+/** Điền số "Tab đã mua" / "Yêu thích" vào menu tài khoản (RLS: chỉ đọc được dòng của chính mình). */
+async function loadUserCounts(menu, userId) {
+  const count = (table) =>
+    supabase.from(table).select('song_id', { count: 'exact', head: true }).eq('user_id', userId)
+  try {
+    const [p, f] = await Promise.all([count('purchases'), count('favorites')])
+    const set = (key, res) => {
+      const el = menu.querySelector(`[data-user-count="${key}"]`)
+      if (el) el.textContent = res.error || res.count == null ? '–' : String(res.count)
+    }
+    set('purchases', p)
+    set('favorites', f)
+  } catch (e) {
+    console.warn('Không lấy được số bài cho menu tài khoản:', e)
+  }
+}
+
 export async function initAuthHeader() {
   const desktopContainer = document.getElementById('desktop-auth-container')
   const mobileContainer = document.getElementById('mobile-auth-container')
@@ -251,53 +269,61 @@ export async function initAuthHeader() {
       ? `<span class="inline-flex items-center gap-1 px-1.5 py-0.5 rounded-full bg-purple-500/20 text-purple-600 dark:text-purple-300 text-[10px] font-bold border border-purple-500/30">${iconCrown('w-2.5 h-2.5')}Admin</span>`
       : ''
 
-    const adminDropdownOption = isAdmin
-      ? `<a href="/admin-dashboard.html" class="block px-3 py-2 text-xs font-bold text-purple-600 dark:text-purple-400 hover:bg-purple-500/10 rounded-xl transition-colors flex items-center gap-2 border-b border-glass-border mb-1"><span>${iconBolt('w-3.5 h-3.5')}</span><span>Bảng Quản Trị Admin</span></a>`
-      : ''
+    const bigAvatarHtml = avatarUrl
+      ? `<img src="${safeAvatarUrl}" alt="" class="w-10 h-10 rounded-full object-cover flex-shrink-0" />`
+      : `<span class="w-10 h-10 rounded-full bg-warm-gradient text-white grid place-items-center text-base font-bold flex-shrink-0">${initial}</span>`
 
+    const menuItem = (href, icon, label, extra = '') =>
+      `<a href="${href}" role="menuitem" ${extra} class="flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-semibold text-text-primary hover:bg-glass-bg-hover hover:text-accent-primary focus-visible:bg-glass-bg-hover outline-none transition-colors">
+          <span class="w-4 h-4 text-text-muted flex-shrink-0">${icon}</span><span>${label}</span></a>`
+
+    const ICON_ZALO = '<svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="M4.5 18.5 6 15a7.5 7.5 0 1 1 3 2.5z"/></svg>'
+    const ICON_HELP = '<svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path stroke-linecap="round" d="M9.5 9a2.5 2.5 0 0 1 5 0c0 1.5-2.5 2-2.5 4"/><circle cx="12" cy="16.5" r=".6" fill="currentColor"/></svg>'
+
+    // Menu tài khoản: thẻ tên (vào trang cá nhân) · 2 ô số liệu bấm được · các lối
+    // tắt khách hay cần (hồ sơ, nhắn Zalo hỗ trợ, hỏi đáp) · đăng xuất.
+    // Lớp ngoài có pt-2 làm "cầu nối" vô hình giữa nút và menu: rê chuột từ nút
+    // xuống không bị rơi vào khe hở làm menu tắt.
     const userDropdownHtml = `
-      <div class="relative group" id="user-header-dropdown-wrap">
-        <button id="user-header-dropdown-btn" type="button" aria-expanded="false" aria-haspopup="true" class="flex items-center gap-2 px-3 py-1.5 sm:px-3.5 sm:py-1.5 rounded-full bg-glass-bg border border-amber-500/40 hover:border-amber-400 shadow-sm hover:shadow-amber-500/10 transition-all cursor-pointer">
+      <div class="relative" id="user-header-dropdown-wrap">
+        <button id="user-header-dropdown-btn" type="button" aria-expanded="false" aria-haspopup="menu" aria-controls="user-header-dropdown-menu" aria-label="Tài khoản của ${safeFullName}" class="flex items-center gap-2 pl-1.5 pr-2.5 py-1.5 sm:pr-3 rounded-full bg-glass-bg border border-glass-border hover:border-accent-primary/50 shadow-sm transition-colors cursor-pointer">
           ${avatarHtml}
-          <div class="flex items-center gap-1.5 text-left">
-            <span class="text-xs sm:text-sm font-bold text-text-primary hidden sm:inline-block truncate max-w-[110px]">${safeFullName}</span>
-            <span class="hidden md:inline-block">${roleBadgeHtml}</span>
-          </div>
-          <svg id="user-header-dropdown-arrow" class="w-3.5 h-3.5 text-text-muted transition-transform md:group-hover:rotate-180" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
+          <span class="text-sm font-bold text-text-primary hidden sm:inline-block truncate max-w-[110px]">${safeFullName}</span>
+          <span class="hidden md:inline-flex">${roleBadgeHtml}</span>
+          <svg id="user-header-dropdown-arrow" class="w-3.5 h-3.5 text-text-muted transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
         </button>
-        <!-- Dropdown Menu -->
-        <div id="user-header-dropdown-menu" class="absolute right-0 mt-2 w-52 rounded-2xl bg-glass-bg backdrop-blur-2xl border border-glass-border shadow-2xl opacity-0 invisible md:group-hover:opacity-100 md:group-hover:visible transition-all duration-200 z-50 p-2 pointer-events-none md:pointer-events-auto">
-          <div class="px-3 py-2 border-b border-glass-border mb-1">
-            <p class="text-xs font-bold text-text-primary truncate">${safeFullName}</p>
-            <p class="text-[10px] text-text-muted truncate">${safeEmail}</p>
+        <div id="user-header-dropdown-menu" role="menu" aria-label="Tài khoản" class="user-menu absolute right-0 top-full pt-2 w-[18rem] max-w-[calc(100vw-1.5rem)] z-50">
+          <div class="rounded-2xl bg-glass-bg border border-glass-border shadow-2xl p-2">
+            <a href="${personalDashboardUrl}" role="menuitem" class="flex items-center gap-3 p-2.5 rounded-xl hover:bg-glass-bg-hover focus-visible:bg-glass-bg-hover outline-none transition-colors group/me">
+              ${bigAvatarHtml}
+              <span class="min-w-0 flex-1">
+                <span class="block text-sm font-bold text-text-primary truncate">${safeFullName}</span>
+                <span class="block text-xs text-text-muted truncate">${safeEmail}</span>
+              </span>
+              <svg class="w-4 h-4 text-text-muted group-hover/me:text-accent-primary group-hover/me:translate-x-0.5 transition" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7"/></svg>
+            </a>
+            <div class="grid grid-cols-2 gap-1.5 px-1 pt-1 pb-2">
+              <a href="/user-dashboard.html#purchases" role="menuitem" class="rounded-xl bg-black/5 dark:bg-white/5 hover:bg-glass-bg-hover focus-visible:bg-glass-bg-hover outline-none px-3 py-2 transition-colors">
+                <span class="block text-lg font-extrabold tabular-nums text-text-primary" data-user-count="purchases">–</span>
+                <span class="block text-[11px] font-semibold text-text-muted">Tab đã mua</span>
+              </a>
+              <a href="/user-dashboard.html#favorites" role="menuitem" class="rounded-xl bg-black/5 dark:bg-white/5 hover:bg-glass-bg-hover focus-visible:bg-glass-bg-hover outline-none px-3 py-2 transition-colors">
+                <span class="block text-lg font-extrabold tabular-nums text-text-primary" data-user-count="favorites">–</span>
+                <span class="block text-[11px] font-semibold text-text-muted">Yêu thích</span>
+              </a>
+            </div>
+            <div class="border-t border-glass-border pt-1">
+              ${isAdmin ? menuItem('/admin-dashboard.html', iconBolt('w-4 h-4'), 'Bảng quản trị') : ''}
+              ${menuItem('/user-dashboard.html#profile', iconPerson('w-4 h-4'), 'Hồ sơ & mật khẩu')}
+              ${menuItem('https://zalo.me/0326768885', ICON_ZALO, 'Nhắn Zalo hỗ trợ', 'target="_blank" rel="noopener"')}
+              ${menuItem('/index.html#faq', ICON_HELP, 'Câu hỏi thường gặp')}
+            </div>
+            <div class="border-t border-glass-border mt-1 pt-1">
+              <button id="auth-logout-btn" type="button" role="menuitem" class="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-semibold text-rose-600 dark:text-rose-400 hover:bg-rose-500/10 focus-visible:bg-rose-500/10 outline-none transition-colors cursor-pointer">
+                <span class="w-4 h-4 flex-shrink-0">${iconLogout('w-4 h-4')}</span><span>Đăng xuất</span>
+              </button>
+            </div>
           </div>
-          ${adminDropdownOption}
-          ${
-            isAdmin
-              ? ''
-              : `
-          <a href="${personalDashboardUrl}" class="block px-3 py-2 text-xs font-semibold text-text-primary hover:bg-glass-bg-hover hover:text-accent-primary rounded-xl transition-colors flex items-center gap-2">
-            <span>${iconGuitar('w-3.5 h-3.5')}</span>
-            <span>Trang của tôi</span>
-          </a>
-          <a href="/user-dashboard.html#favorites" class="block px-3 py-2 text-xs font-semibold text-text-primary hover:bg-glass-bg-hover hover:text-accent-primary rounded-xl transition-colors flex items-center gap-2">
-            <span>${iconHeart('w-3.5 h-3.5')}</span>
-            <span>Tab yêu thích</span>
-          </a>
-          <a href="/user-dashboard.html#purchases" class="block px-3 py-2 text-xs font-semibold text-text-primary hover:bg-glass-bg-hover hover:text-accent-primary rounded-xl transition-colors flex items-center gap-2">
-            <span>${iconBolt('w-3.5 h-3.5')}</span>
-            <span>Tab đã mua</span>
-          </a>
-          <a href="/user-dashboard.html#profile" class="block px-3 py-2 text-xs font-semibold text-text-primary hover:bg-glass-bg-hover hover:text-accent-primary rounded-xl transition-colors flex items-center gap-2">
-            <span>${iconPerson('w-3.5 h-3.5')}</span>
-            <span>Hồ sơ & mật khẩu</span>
-          </a>
-          `
-          }
-          <button id="auth-logout-btn" class="w-full text-left px-3 py-2 text-xs font-bold text-rose-500 hover:bg-rose-500/10 rounded-xl transition-colors mt-1 border-t border-glass-border flex items-center gap-2 cursor-pointer">
-            <span>${iconLogout('w-3.5 h-3.5')}</span>
-            <span>Đăng xuất</span>
-          </button>
         </div>
       </div>
     `
@@ -318,35 +344,55 @@ export async function initAuthHeader() {
       const dropdownMenu = desktopContainer.querySelector('#user-header-dropdown-menu')
 
       if (dropdownBtn && dropdownWrap) {
+        // Máy tính (có chuột): rê vào là mở, rời ra đóng sau một nhịp ngắn. Điện
+        // thoại: bấm để mở/đóng. Trước đây vừa hover (CSS) vừa click (JS) chồng
+        // nhau nên bấm lúc đang rê chuột trông như không có tác dụng.
+        const canHover = window.matchMedia('(hover: hover) and (pointer: fine)').matches
+        const items = () => [...dropdownMenu.querySelectorAll('[role="menuitem"]')]
+        let closeTimer = null
+        const setOpen = (open) => {
+          clearTimeout(closeTimer)
+          if (dropdownWrap.classList.contains('open') === open) return
+          dropdownWrap.classList.toggle('open', open)
+          dropdownBtn.setAttribute('aria-expanded', String(open))
+          if (open) loadUserCounts(dropdownMenu, user.id)
+        }
+
         dropdownBtn.addEventListener('click', (e) => {
           e.stopPropagation()
-          const isOpen = dropdownWrap.classList.toggle('open')
-          dropdownBtn.setAttribute('aria-expanded', isOpen ? 'true' : 'false')
+          setOpen(canHover ? true : !dropdownWrap.classList.contains('open'))
         })
-
-        // Close dropdown when clicking outside
-        document.addEventListener('click', (e) => {
-          if (dropdownWrap && !dropdownWrap.contains(e.target)) {
-            dropdownWrap.classList.remove('open')
-            dropdownBtn.setAttribute('aria-expanded', 'false')
-          }
-        })
-
-        // Close dropdown on Escape key
-        document.addEventListener('keydown', (e) => {
-          if (e.key === 'Escape' && dropdownWrap.classList.contains('open')) {
-            dropdownWrap.classList.remove('open')
-            dropdownBtn.setAttribute('aria-expanded', 'false')
-          }
-        })
-
-        // Close dropdown when any item inside is clicked
-        dropdownMenu?.querySelectorAll('a, button').forEach((item) => {
-          item.addEventListener('click', () => {
-            dropdownWrap.classList.remove('open')
-            dropdownBtn.setAttribute('aria-expanded', 'false')
+        if (canHover) {
+          dropdownWrap.addEventListener('mouseenter', () => setOpen(true))
+          dropdownWrap.addEventListener('mouseleave', () => {
+            closeTimer = setTimeout(() => setOpen(false), 200)
           })
+        }
+
+        document.addEventListener('click', (e) => {
+          if (!dropdownWrap.contains(e.target)) setOpen(false)
         })
+
+        dropdownWrap.addEventListener('keydown', (e) => {
+          const list = items()
+          const idx = list.indexOf(document.activeElement)
+          if (e.key === 'Escape') {
+            setOpen(false)
+            dropdownBtn.focus()
+          } else if (e.key === 'ArrowDown') {
+            e.preventDefault()
+            setOpen(true)
+            list[(idx + 1) % list.length]?.focus()
+          } else if (e.key === 'ArrowUp') {
+            e.preventDefault()
+            list[(idx - 1 + list.length) % list.length]?.focus()
+          }
+        })
+        dropdownWrap.addEventListener('focusout', (e) => {
+          if (!dropdownWrap.contains(e.relatedTarget)) setOpen(false)
+        })
+
+        items().forEach((item) => item.addEventListener('click', () => setOpen(false)))
       }
 
       // Wire up dropdown navigation links for single-page tab switching
@@ -654,6 +700,8 @@ export function initBottomNav() {
     ).join('')
   document.body.appendChild(nav)
   document.body.classList.add('has-bottom-nav')
+  const accountItem = nav.querySelector('[data-key="account"]')
+  if (accountItem) accountItem.href = withReturnTo('/login.html')
 
   // Nhấn mục khác: "giọt kính" trượt sang ngay, trong lúc trang mới đang tải.
   nav.addEventListener('click', (e) => {
@@ -1165,7 +1213,22 @@ export function initPasswordToggles() {
   })
 }
 
+/**
+ * Đăng nhập xong khách quay lại đúng trang đang xem (vd một bài trong Kho tab),
+ * thay vì luôn bị đưa sang trang cá nhân. login.js kiểm tra ?redirect= bằng
+ * safeRedirectPath() nên chỉ chấp nhận đường dẫn trong site.
+ */
+function initAuthReturnLinks() {
+  document
+    .querySelectorAll('#desktop-auth-container a[href="/login.html"], #mobile-auth-container a[href="/login.html"]')
+    .forEach((a) => (a.href = withReturnTo('/login.html')))
+  document
+    .querySelectorAll('#desktop-auth-container a[href="/register.html"], #mobile-auth-container a[href="/register.html"]')
+    .forEach((a) => (a.href = withReturnTo('/register.html')))
+}
+
 document.addEventListener('DOMContentLoaded', () => {
+  initAuthReturnLinks()
   initBottomNav()
   initAuthHeader()
   initNavActiveSpy()

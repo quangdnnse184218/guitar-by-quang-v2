@@ -105,8 +105,8 @@ export function showToast(msg, type = 'success') {
       toastIcon.textContent = '✕'
       toastIcon.className = ''
     } else if (type === 'info') {
-      toastIcon.textContent = '⟳'
-      toastIcon.className = 'animate-spin'
+      toastIcon.textContent = 'i'
+      toastIcon.className = ''
     } else {
       toastIcon.textContent = '✓'
       toastIcon.className = ''
@@ -428,7 +428,7 @@ window.openCheckoutModal = async function openCheckoutModal(tabId) {
     if (!session || !session.user) {
       const loginBtn = document.getElementById('auth-required-login-btn')
       if (loginBtn) {
-        loginBtn.href = `/login.html?redirect=${encodeURIComponent(window.location.pathname + window.location.search)}`
+        loginBtn.href = `/login.html?redirect=${encodeURIComponent(`/kho-tab.html?tab=${encodeURIComponent(tabId)}`)}`
       }
       toggleModal('auth-required-modal', true)
       return
@@ -439,7 +439,7 @@ window.openCheckoutModal = async function openCheckoutModal(tabId) {
     console.warn('Auth check error in openCheckoutModal:', e)
     const loginBtn = document.getElementById('auth-required-login-btn')
     if (loginBtn) {
-      loginBtn.href = `/login.html?redirect=${encodeURIComponent(window.location.pathname + window.location.search)}`
+      loginBtn.href = `/login.html?redirect=${encodeURIComponent(`/kho-tab.html?tab=${encodeURIComponent(tabId)}`)}`
     }
     toggleModal('auth-required-modal', true)
     return

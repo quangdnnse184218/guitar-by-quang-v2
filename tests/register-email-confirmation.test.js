@@ -23,7 +23,10 @@ vi.mock('../src/common.js', () => ({
   getPasswordWeaknessReason: vi.fn(() => null),
   initPasswordMatchHint: vi.fn(),
 }))
-vi.mock('../src/lib/navigate.js', () => ({ redirectTo }))
+vi.mock('../src/lib/navigate.js', async (importOriginal) => ({
+  ...(await importOriginal()),
+  redirectTo,
+}))
 
 const html = fs.readFileSync(path.resolve(import.meta.dirname, '../register.html'), 'utf8')
 
