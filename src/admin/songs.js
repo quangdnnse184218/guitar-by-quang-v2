@@ -306,7 +306,7 @@ window.openAddSongModal = function (type = 'free') {
     document.getElementById('song-duration').value = '03:15'
     document.getElementById('song-free-audio-url').value = ''
     document.getElementById('song-thumbnail-bg').value = 'from-[#D8C4AC] to-[#647A6C]'
-    if (songModalTitle) songModalTitle.textContent = '🎁 Thêm Tab Miễn Phí Mới (Free Tab)'
+    if (songModalTitle) songModalTitle.textContent = 'Thêm tab miễn phí'
   } else {
     document.getElementById('song-level').value = '8'
     document.getElementById('song-tuning').value = 'Standard'
@@ -316,7 +316,7 @@ window.openAddSongModal = function (type = 'free') {
     document.getElementById('song-paid-discount').value = 'HSSV: 179k'
     document.getElementById('song-paid-audio-url').value = ''
     document.getElementById('song-thumbnail-bg').value = 'from-[#C1602F] to-[#6E3B1F]'
-    if (songModalTitle) songModalTitle.textContent = '💎 Thêm Video Tab Có Phí Mới (Mua Tab)'
+    if (songModalTitle) songModalTitle.textContent = 'Thêm Video Tab có phí'
   }
   toggleModal(songModal, true)
 }
@@ -383,7 +383,7 @@ window.editSong = function (id) {
   window.setSongModalType(songType)
 
   if (songModalTitle) {
-    songModalTitle.textContent = `Sửa Bài Hát: ${song.title}`
+    songModalTitle.textContent = `Sửa bài: ${song.title}`
   }
   toggleModal(songModal, true)
 }

@@ -49,7 +49,7 @@
           </a>
           <a href="#/do-nghe" data-route-link="do-nghe" class="admin-nav-item">
             <svg class="w-4 h-4 flex-shrink-0" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"/><path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
-            <span>Bộ Đồ Nghề</span>
+            <span>Đồ nghề</span>
           </a>
 
           <p class="admin-nav-group">Kinh doanh</p>
@@ -113,7 +113,7 @@
           </button>
 
           <div class="min-w-0 flex-1">
-            <h1 id="page-title" class="text-base sm:text-xl font-extrabold text-text-primary tracking-tight truncate">Tổng Quan</h1>
+            <h1 id="page-title" class="text-base sm:text-xl font-extrabold text-text-primary tracking-tight truncate">Tổng quan</h1>
             <p id="page-subtitle" class="text-[11px] sm:text-xs text-text-muted font-medium truncate hidden sm:block">Doanh thu, đơn hàng và sức khoẻ hệ thống trong một màn hình</p>
           </div>
 
@@ -150,7 +150,7 @@
                 </a>
                 <a href="/" class="px-3 py-2 text-xs font-semibold text-text-primary hover:bg-glass-bg-hover hover:text-accent-primary rounded-xl transition-colors flex items-center gap-2">
                   <span><svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="1.6" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path stroke-linecap="round" d="M3 12h18M12 3c2.5 2.5 2.5 15.5 0 18M12 3c-2.5 2.5-2.5 15.5 0 18"/></svg></span>
-                  <span>Xem Website</span>
+                  <span>Xem website</span>
                   <svg class="w-3 h-3 text-text-muted ml-auto" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"/></svg>
                 </a>
                 <button id="logout-btn" type="button" class="w-full text-left px-3 py-2 text-xs font-bold text-rose-500 hover:bg-rose-500/10 rounded-xl transition-colors mt-1 border-t border-glass-border flex items-center gap-2 cursor-pointer">
@@ -226,17 +226,13 @@
           <!-- ============================================================ -->
           <div id="section-songs" class="space-y-5 hidden">
             <!-- Action Bar -->
-            <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
-              <p class="text-xs text-text-muted font-medium">Đồng bộ trực tiếp với cơ sở dữ liệu Supabase table <code class="bg-black/5 dark:bg-white/10 px-1.5 py-0.5 rounded font-mono text-[11px]">songs</code></p>
-
+            <div class="flex flex-col sm:flex-row sm:items-center sm:justify-end gap-3">
               <div class="flex items-center gap-2 flex-wrap">
                 <button type="button" id="add-free-song-btn" onclick="window.openAddSongModal('free')" class="flex-1 sm:flex-none px-4 py-2.5 rounded-full bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-xs sm:text-sm transition-all shadow-sm active:scale-95 flex items-center justify-center gap-1.5 cursor-pointer whitespace-nowrap">
-                  <span>🎁</span>
-                  <span>+ Tab Miễn Phí</span>
+                  <span>+ Tab miễn phí</span>
                 </button>
                 <button type="button" id="add-paid-song-btn" onclick="window.openAddSongModal('paid')" class="flex-1 sm:flex-none px-4 py-2.5 rounded-full bg-warm-gradient hover:brightness-105 text-white font-bold text-xs sm:text-sm transition-all shadow-glow active:scale-95 flex items-center justify-center gap-1.5 cursor-pointer whitespace-nowrap">
-                  <span>💎</span>
-                  <span>+ Video Tab Có Phí</span>
+                  <span>+ Video Tab có phí</span>
                 </button>
               </div>
             </div>
@@ -252,14 +248,14 @@
               </div>
               <div class="glass-card border border-glass-border shadow-sm rounded-2xl p-4 flex items-center justify-between gap-2">
                 <div class="min-w-0">
-                  <span class="text-[11px] font-bold text-text-muted uppercase tracking-wider block">Tab Miễn Phí</span>
+                  <span class="text-[11px] font-bold text-text-muted uppercase tracking-wider block">Tab miễn phí</span>
                   <span id="stat-free-songs" class="text-2xl font-extrabold text-emerald-700 dark:text-emerald-400 mt-0.5 block font-mono tabular-nums">0</span>
                 </div>
                 <div class="w-10 h-10 rounded-xl bg-emerald-500/15 text-emerald-700 dark:text-emerald-400 flex items-center justify-center text-xl flex-shrink-0">🎁</div>
               </div>
               <div class="glass-card border border-glass-border shadow-sm rounded-2xl p-4 flex items-center justify-between gap-2">
                 <div class="min-w-0">
-                  <span class="text-[11px] font-bold text-text-muted uppercase tracking-wider block">Tab Có Phí</span>
+                  <span class="text-[11px] font-bold text-text-muted uppercase tracking-wider block">Tab có phí</span>
                   <span id="stat-paid-songs" class="text-2xl font-extrabold text-rose-600 dark:text-rose-400 mt-0.5 block font-mono tabular-nums">0</span>
                 </div>
                 <div class="w-10 h-10 rounded-xl bg-rose-500/15 text-rose-600 dark:text-rose-400 flex items-center justify-center text-xl flex-shrink-0">💎</div>
@@ -307,14 +303,14 @@
                 <table class="w-full text-left text-xs text-text-primary admin-responsive-table">
                   <thead class="bg-black/5 dark:bg-white/5 text-[11px] font-mono uppercase tracking-wider text-text-muted border-b border-glass-border">
                     <tr>
-                      <th class="py-3.5 px-3 text-center w-36">Vị Trí &amp; Thứ Tự</th>
-                      <th class="py-3.5 px-4">Bài Hát</th>
+                      <th class="py-3.5 px-3 text-center w-36">Vị trí &amp; thứ tự</th>
+                      <th class="py-3.5 px-4">Bài hát</th>
                       <th class="py-3.5 px-3">Thể Loại</th>
                       <th class="py-3.5 px-3">Độ Khó</th>
                       <th class="py-3.5 px-3">Tuning / Capo</th>
                       <th class="py-3.5 px-3">Loại / Giá</th>
                       <th class="py-3.5 px-3">Nổi Bật</th>
-                      <th class="py-3.5 px-4 text-right">Thao Tác</th>
+                      <th class="py-3.5 px-4 text-right">Thao tác</th>
                     </tr>
                   </thead>
                   <tbody id="admin-songs-tbody" class="divide-y divide-glass-border">
@@ -329,18 +325,16 @@
           <!-- TRANG: BỘ ĐỒ NGHỀ (GEARS)                                    -->
           <!-- ============================================================ -->
           <div id="section-gears" class="space-y-5 hidden">
-            <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
-              <p class="text-xs text-text-muted font-medium">Đồng bộ trực tiếp với cơ sở dữ liệu Supabase table <code class="bg-black/5 dark:bg-white/10 px-1.5 py-0.5 rounded font-mono text-[11px]">gears</code></p>
-
+            <div class="flex flex-col sm:flex-row sm:items-center sm:justify-end gap-3">
               <button id="add-gear-btn" class="px-5 py-2.5 rounded-full bg-warm-gradient hover:brightness-105 text-white font-bold text-xs sm:text-sm transition-all shadow-glow active:scale-95 flex items-center justify-center gap-2 cursor-pointer whitespace-nowrap">
                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M12 4v16m8-8H4"/></svg>
-                <span>Thêm Gear Mới</span>
+                <span>Thêm đồ nghề</span>
               </button>
             </div>
 
             <div class="px-4 py-2.5 rounded-2xl bg-accent-primary/10 border border-accent-primary/20 text-xs text-text-primary flex items-start gap-2">
               <span class="flex-shrink-0">💡</span>
-              <span><strong>Mẹo sắp xếp vị trí:</strong> Nhập số thứ tự hoặc bấm nút <strong>▲ / ▼</strong> để di chuyển đồ nghề trên trang chủ và trang Công Cụ.</span>
+              <span><strong>Mẹo sắp xếp vị trí:</strong> Nhập số thứ tự hoặc bấm nút <strong>▲ / ▼</strong> để di chuyển đồ nghề trên trang chủ và trang Công cụ.</span>
             </div>
 
             <!-- Gears Data Table -->
@@ -350,11 +344,11 @@
                   <thead class="bg-black/5 dark:bg-white/5 text-[11px] font-mono uppercase tracking-wider text-text-muted border-b border-glass-border">
                     <tr>
                       <th class="py-3.5 px-3 text-center w-36">Vị Trí</th>
-                      <th class="py-3.5 px-4">Ảnh &amp; Tên Thiết Bị</th>
-                      <th class="py-3.5 px-3">Phân Loại</th>
-                      <th class="py-3.5 px-3">Mô Tả Ngắn</th>
-                      <th class="py-3.5 px-3">Giá Hiển Thị</th>
-                      <th class="py-3.5 px-4 text-right">Thao Tác</th>
+                      <th class="py-3.5 px-4">Ảnh &amp; tên</th>
+                      <th class="py-3.5 px-3">Phân loại</th>
+                      <th class="py-3.5 px-3">Mô tả ngắn</th>
+                      <th class="py-3.5 px-3">Giá hiển thị</th>
+                      <th class="py-3.5 px-4 text-right">Thao tác</th>
                     </tr>
                   </thead>
                   <tbody id="admin-gears-tbody" class="divide-y divide-glass-border">
@@ -372,7 +366,7 @@
             <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
               <p class="text-xs text-text-muted font-medium">Bấm vào một dòng để mở hồ sơ chi tiết: tab đã mua, lịch sử đơn hàng, yêu thích.</p>
               <div class="glass-card px-4 py-2 rounded-xl border border-glass-border flex items-center gap-2 flex-shrink-0 self-start sm:self-auto">
-                <span class="text-xs font-bold text-text-muted uppercase tracking-wider">Tổng Thành Viên:</span>
+                <span class="text-xs font-bold text-text-muted uppercase tracking-wider">Tổng thành viên:</span>
                 <span id="stat-total-users" class="text-lg font-extrabold text-accent-primary font-mono tabular-nums">0</span>
               </div>
             </div>
@@ -400,7 +394,7 @@
                   <thead>
                     <tr class="bg-black/5 dark:bg-white/5 border-b border-glass-border text-[11px] font-mono uppercase tracking-wider text-text-muted">
                       <th class="p-3">Thành viên</th>
-                      <th class="p-3">Mã User</th>
+                      <th class="p-3">Mã khách</th>
                       <th class="p-3 text-center">Vai trò</th>
                       <th class="p-3 text-center">Hoạt động</th>
                       <th class="p-3">Ngày đăng ký</th>
@@ -637,7 +631,7 @@
               <div class="p-4 sm:p-5 border-b border-glass-border flex flex-col sm:flex-row sm:items-center justify-between gap-3">
                 <div>
                   <h3 class="text-sm font-extrabold text-text-primary flex items-center gap-2">
-                    <span>🧾</span> Lượt mở khoá tab
+                    Lượt mở khoá tab
                   </h3>
                   <p class="text-[11px] text-text-muted mt-0.5">Gồm cả đơn tự động qua SePay và các lần admin cấp tay (có ghi ai cấp, vì sao).</p>
                 </div>
@@ -672,7 +666,7 @@
             <div class="glass-card border border-glass-border rounded-2xl overflow-hidden">
               <div class="p-4 sm:p-5 border-b border-glass-border">
                 <h3 class="text-sm font-extrabold text-text-primary flex items-center gap-2">
-                  <span>🚫</span> Lượt thu hồi
+                  Lượt thu hồi
                   <span id="revocations-count-badge" class="px-2 py-0.5 rounded-full bg-rose-500/15 text-rose-600 dark:text-rose-400 text-[10px] font-black">0</span>
                 </h3>
                 <p class="text-[11px] text-text-muted mt-0.5">Mỗi lượt thu hồi ghi rõ ai thu hồi, vì sao, và quyền Google Drive đã gỡ được chưa.</p>
@@ -860,19 +854,17 @@
         </button>
 
         <div class="mb-5 pr-8">
-          <h3 id="song-modal-title" class="text-xl font-extrabold text-text-primary">Thêm Bài Hát Mới</h3>
+          <h3 id="song-modal-title" class="text-xl font-extrabold text-text-primary">Thêm bài mới</h3>
           <p id="song-modal-desc" class="text-xs text-text-muted mt-0.5">Chọn loại tab tương ứng để cấu hình thông tin hiển thị chính xác nhất</p>
         </div>
 
         <!-- Loai The Switcher Tabs -->
         <div class="grid grid-cols-2 gap-2 p-1.5 rounded-2xl bg-black/10 dark:bg-white/5 border border-glass-border mb-6">
           <button type="button" id="tab-btn-free" onclick="window.setSongModalType('free')" class="py-2.5 px-3 rounded-xl font-bold text-xs sm:text-sm flex items-center justify-center gap-2 transition-all cursor-pointer bg-emerald-600 text-white shadow-xs">
-            <span>🎁</span>
-            <span>Tab Miễn Phí (Free Tab)</span>
+            <span>Tab miễn phí</span>
           </button>
           <button type="button" id="tab-btn-paid" onclick="window.setSongModalType('paid')" class="py-2.5 px-3 rounded-xl font-bold text-xs sm:text-sm flex items-center justify-center gap-2 transition-all cursor-pointer text-text-muted hover:text-text-primary">
-            <span>💎</span>
-            <span>Video Tab Có Phí (Mua Tab)</span>
+            <span>Video Tab có phí</span>
           </button>
         </div>
 
@@ -883,11 +875,11 @@
           <!-- Thông tin chung -->
           <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div class="space-y-1">
-              <label class="text-xs font-bold text-text-primary">Tên Bài Hát *</label>
+              <label class="text-xs font-bold text-text-primary">Tên bài *</label>
               <input type="text" id="song-title" required placeholder="VD: Nàng Thơ, Âm thầm bên em..." class="w-full px-3.5 py-2.5 rounded-xl bg-white dark:bg-white/5 border border-neutral-300 dark:border-glass-border text-xs text-text-primary focus:outline-none focus:border-accent-primary" />
             </div>
             <div class="space-y-1">
-              <label class="text-xs font-bold text-text-primary">Ca Sĩ / Tác Giả</label>
+              <label class="text-xs font-bold text-text-primary">Ca sĩ / tác giả</label>
               <input type="text" id="song-singer" placeholder="VD: Sơn Tùng M-TP, Hoàng Dũng..." class="w-full px-3.5 py-2.5 rounded-xl bg-white dark:bg-white/5 border border-neutral-300 dark:border-glass-border text-xs text-text-primary focus:outline-none focus:border-accent-primary" />
             </div>
           </div>
@@ -914,8 +906,7 @@
           <!-- PHẦN 1: DÀNH CHO TAB MIỄN PHÍ -->
           <div id="fields-free-song" class="space-y-4 p-4 rounded-2xl bg-emerald-500/5 border border-emerald-500/20">
             <div class="flex items-center gap-2 text-emerald-700 dark:text-emerald-400 text-xs font-extrabold uppercase tracking-wider">
-              <span>🎁</span>
-              <span>Cấu hình Tab Miễn Phí</span>
+              <span>Cấu hình tab miễn phí</span>
             </div>
 
             <div class="space-y-1">
@@ -932,7 +923,7 @@
             </div>
 
             <div class="space-y-1">
-              <label class="text-xs font-bold text-text-primary">Âm Thanh Demo (File MP3 / Audio trên máy hoặc Link / Tùy chọn)</label>
+              <label class="text-xs font-bold text-text-primary">Âm thanh demo (file MP3 hoặc link, tuỳ chọn)</label>
               <input type="text" id="song-free-audio-url" placeholder="/assets/demo.mp3 hoặc dán link, hoặc chọn file bên dưới" class="w-full px-3.5 py-2.5 rounded-xl bg-white dark:bg-white/5 border border-neutral-300 dark:border-glass-border text-xs text-text-primary focus:outline-none focus:border-emerald-500" />
               <p class="text-[11px] text-text-muted">Nhập đường dẫn file MP3/Audio trên máy (VD: <code class="bg-black/5 dark:bg-white/10 px-1 py-0.5 rounded font-mono">/assets/tenbai.mp3</code>) hoặc link audio online. Tự động xử lý bỏ dấu ngoặc kép.</p>
               <div class="flex items-center gap-2 pt-1">
@@ -945,7 +936,7 @@
             </div>
 
             <div class="space-y-1">
-              <label class="text-xs font-bold text-text-primary">Link Tải File PDF Tab (Tùy chọn)</label>
+              <label class="text-xs font-bold text-text-primary">Link file PDF tab (tuỳ chọn)</label>
               <input type="text" id="song-free-pdf-url" placeholder="https://drive.google.com/... (Link tải PDF nếu có)" class="w-full px-3.5 py-2.5 rounded-xl bg-white dark:bg-white/5 border border-neutral-300 dark:border-glass-border text-xs text-text-primary focus:outline-none focus:border-emerald-500" />
             </div>
           </div>
@@ -953,23 +944,22 @@
           <!-- PHẦN 2: DÀNH CHO VIDEO TAB CÓ PHÍ -->
           <div id="fields-paid-song" class="space-y-4 p-4 rounded-2xl bg-rose-500/5 border border-rose-500/20 hidden">
             <div class="flex items-center gap-2 text-rose-600 dark:text-rose-400 text-xs font-extrabold uppercase tracking-wider">
-              <span>💎</span>
-              <span>Cấu hình Video Tab Có Phí (Bán Tab)</span>
+              <span>Cấu hình Video Tab có phí</span>
             </div>
 
             <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <div class="space-y-1">
-                <label class="text-xs font-bold text-text-primary">Giá Bán</label>
+                <label class="text-xs font-bold text-text-primary">Giá bán</label>
                 <input type="text" id="song-paid-price" placeholder="239k (hoặc 239000)" value="239k" class="w-full px-3.5 py-2.5 rounded-xl bg-white dark:bg-white/5 border border-neutral-300 dark:border-glass-border text-xs text-text-primary focus:outline-none focus:border-rose-500" />
               </div>
               <div class="space-y-1">
-                <label class="text-xs font-bold text-text-primary">Ghi Chú Giảm Giá</label>
+                <label class="text-xs font-bold text-text-primary">Ghi chú giảm giá</label>
                 <input type="text" id="song-paid-discount" placeholder="HSSV: 179k" value="HSSV: 179k" class="w-full px-3.5 py-2.5 rounded-xl bg-white dark:bg-white/5 border border-neutral-300 dark:border-glass-border text-xs text-text-primary focus:outline-none focus:border-rose-500" />
               </div>
             </div>
 
             <div class="space-y-1">
-              <label class="text-xs font-bold text-text-primary">Link Video Demo Xem Trước (YouTube hoặc MP4 / Tùy chọn)</label>
+              <label class="text-xs font-bold text-text-primary">Video demo (YouTube hoặc MP4, tuỳ chọn)</label>
               <input type="text" id="song-paid-demo-url" placeholder="https://youtu.be/... hoặc dán link, hoặc chọn file bên dưới" class="w-full px-3.5 py-2.5 rounded-xl bg-white dark:bg-white/5 border border-neutral-300 dark:border-glass-border text-xs text-text-primary focus:outline-none focus:border-rose-500" />
               <p class="text-[11px] text-text-muted">Dán link YouTube hoặc video MP4 local <code class="bg-black/5 dark:bg-white/10 px-1 py-0.5 rounded font-mono">/assets/tenvideo.mp4</code> (có thể để trống, chấp nhận cả dấu ngoặc kép).</p>
               <div class="flex items-center gap-2 pt-1">
@@ -982,7 +972,7 @@
             </div>
 
             <div class="space-y-1">
-              <label class="text-xs font-bold text-text-primary">Âm Thanh Demo (File MP3 / Audio trên máy hoặc Link / Tùy chọn)</label>
+              <label class="text-xs font-bold text-text-primary">Âm thanh demo (file MP3 hoặc link, tuỳ chọn)</label>
               <input type="text" id="song-paid-audio-url" placeholder="/assets/demo.mp3 hoặc dán link, hoặc chọn file bên dưới" class="w-full px-3.5 py-2.5 rounded-xl bg-white dark:bg-white/5 border border-neutral-300 dark:border-glass-border text-xs text-text-primary focus:outline-none focus:border-rose-500" />
               <p class="text-[11px] text-text-muted">Nhập đường dẫn file MP3/Audio trên máy (VD: <code class="bg-black/5 dark:bg-white/10 px-1 py-0.5 rounded font-mono">/assets/tenbai.mp3</code>) hoặc link audio online. Tự động xử lý bỏ dấu ngoặc kép.</p>
               <div class="flex items-center gap-2 pt-1">
@@ -1007,7 +997,7 @@
               <input type="text" id="song-duration" placeholder="03:45" value="03:30" class="w-full px-3.5 py-2.5 rounded-xl bg-white dark:bg-white/5 border border-neutral-300 dark:border-glass-border text-xs text-text-primary focus:outline-none focus:border-accent-primary" />
             </div>
             <div class="space-y-1">
-              <label class="text-xs font-bold text-text-primary">Màu Nền Thumbnail Gradient</label>
+              <label class="text-xs font-bold text-text-primary">Màu nền ảnh bìa</label>
               <select id="song-thumbnail-bg" class="w-full px-3.5 py-2.5 rounded-xl bg-white dark:bg-[#151A27] border border-neutral-300 dark:border-glass-border text-xs text-text-primary focus:outline-none focus:border-accent-primary cursor-pointer shadow-xs">
                 <option value="from-[#C1602F] to-[#6E3B1F]">Cam Nâu Ấm (Classic Signature)</option>
                 <option value="from-[#D8C4AC] to-[#647A6C]">Be Xanh Rêu (Rustic Sage)</option>
@@ -1020,7 +1010,7 @@
           </div>
 
           <div class="space-y-1">
-            <label class="text-xs font-bold text-text-primary">Mô Tả / Hướng Dẫn Kỹ Thuật (Fingerstyle tips)</label>
+            <label class="text-xs font-bold text-text-primary">Mô tả / mẹo kỹ thuật</label>
             <textarea id="song-description" rows="2" placeholder="Ghi chú kỹ thuật nổi bật (slap, hammer-on, thế tay, nhịp bass...)" class="w-full px-3.5 py-2.5 rounded-xl bg-white dark:bg-white/5 border border-neutral-300 dark:border-glass-border text-xs text-text-primary focus:outline-none focus:border-accent-primary resize-none"></textarea>
           </div>
 
@@ -1028,7 +1018,7 @@
             <div class="flex items-center gap-4">
               <label class="flex items-center gap-2 cursor-pointer text-xs font-bold text-text-primary select-none">
                 <input type="checkbox" id="song-is-featured" class="w-4 h-4 rounded text-amber-500 accent-amber-500" />
-                <span>Ghim nổi bật Trang Chủ (Featured Top 4)</span>
+                <span>Ghim lên 4 bài nổi bật ở trang chủ</span>
               </label>
             </div>
           </div>
@@ -1053,35 +1043,35 @@
         <button id="close-gear-modal" class="absolute top-5 right-5 p-2 rounded-full text-text-muted hover:text-text-primary hover:bg-glass-bg-hover transition-colors cursor-pointer" aria-label="Đóng modal">
           <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
         </button>
-        <h3 id="gear-modal-title" class="text-xl font-extrabold text-text-primary mb-4">Thêm Gear Mới</h3>
+        <h3 id="gear-modal-title" class="text-xl font-extrabold text-text-primary mb-4">Thêm đồ nghề</h3>
 
         <form id="gear-form" class="space-y-4">
           <input type="hidden" id="gear-id" />
 
           <div class="space-y-1">
-            <label class="text-xs font-bold text-text-primary">Tên Thiết Bị / Phụ Kiện *</label>
+            <label class="text-xs font-bold text-text-primary">Tên đồ nghề *</label>
             <input type="text" id="gear-name" required placeholder="VD: Capo Guitar G7th" class="w-full px-3.5 py-2.5 rounded-xl bg-white dark:bg-white/5 border border-neutral-300 dark:border-glass-border text-xs text-text-primary focus:outline-none focus:border-accent-primary" />
           </div>
 
           <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div class="space-y-1">
-              <label class="text-xs font-bold text-text-primary">Phân Loại</label>
+              <label class="text-xs font-bold text-text-primary">Phân loại</label>
               <input type="text" id="gear-category" placeholder="Phụ kiện" class="w-full px-3.5 py-2.5 rounded-xl bg-white dark:bg-white/5 border border-neutral-300 dark:border-glass-border text-xs text-text-primary focus:outline-none focus:border-accent-primary" />
             </div>
             <div class="space-y-1">
-              <label class="text-xs font-bold text-text-primary">Giá Hiển Thị</label>
+              <label class="text-xs font-bold text-text-primary">Giá hiển thị</label>
               <input type="text" id="gear-price" placeholder="850.000đ" class="w-full px-3.5 py-2.5 rounded-xl bg-white dark:bg-white/5 border border-neutral-300 dark:border-glass-border text-xs text-text-primary focus:outline-none focus:border-accent-primary" />
             </div>
           </div>
 
           <div class="space-y-1">
-            <label class="text-xs font-bold text-text-primary">Mô Tả Ngắn</label>
+            <label class="text-xs font-bold text-text-primary">Mô tả ngắn</label>
             <textarea id="gear-description" rows="3" placeholder="Mô tả chất lượng, tính năng nổi bật..." class="w-full px-3.5 py-2.5 rounded-xl bg-white dark:bg-white/5 border border-neutral-300 dark:border-glass-border text-xs text-text-primary focus:outline-none focus:border-accent-primary resize-none"></textarea>
           </div>
 
           <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div class="space-y-1">
-              <label class="text-xs font-bold text-text-primary">Link Mua / Tư Vấn</label>
+              <label class="text-xs font-bold text-text-primary">Link mua / tư vấn</label>
               <input type="text" id="gear-link" placeholder="https://zalo.me/..." class="w-full px-3.5 py-2.5 rounded-xl bg-white dark:bg-white/5 border border-neutral-300 dark:border-glass-border text-xs text-text-primary focus:outline-none focus:border-accent-primary" />
             </div>
             <div class="space-y-1">

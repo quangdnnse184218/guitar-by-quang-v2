@@ -21,7 +21,7 @@ export const ROUTES = {
   'tong-quan': {
     section: 'section-overview',
     nav: 'tong-quan',
-    title: 'Tổng Quan',
+    title: 'Tổng quan',
     subtitle: 'Doanh thu, đơn hàng và sức khoẻ hệ thống trong một màn hình',
   },
   'kho-tab': {
@@ -33,13 +33,13 @@ export const ROUTES = {
   'do-nghe': {
     section: 'section-gears',
     nav: 'do-nghe',
-    title: 'Bộ Đồ Nghề',
-    subtitle: 'Danh sách đàn, phụ kiện hiển thị ở trang chủ và trang Công Cụ',
+    title: 'Đồ nghề',
+    subtitle: 'Danh sách đàn, phụ kiện hiển thị ở trang chủ và trang Công cụ',
   },
   'tien-ve': {
     section: 'section-payments',
     nav: 'tien-ve',
-    title: 'Tiền Về',
+    title: 'Tiền về',
     subtitle: 'Khoản tiền vào tài khoản chưa khớp đơn nào — gán cho đúng khách',
   },
   'duyet-hssv': {
@@ -51,31 +51,31 @@ export const ROUTES = {
   'don-hang': {
     section: 'section-orders',
     nav: 'don-hang',
-    title: 'Đơn Chờ Thanh Toán',
+    title: 'Đơn chờ thanh toán',
     subtitle: 'Đơn khách đã tạo nhưng chưa có tiền nào về — phần lớn là bỏ dở',
   },
   'cap-quyen': {
     section: 'section-grant',
     nav: 'cap-quyen',
-    title: 'Cấp Quyền Thủ Công',
+    title: 'Cấp quyền thủ công',
     subtitle: 'Mở tab cho khách khi thanh toán không tự khớp, hoặc để tặng tab',
   },
   'lich-su': {
     section: 'section-history',
     nav: 'lich-su',
-    title: 'Lịch Sử Mở Khoá',
+    title: 'Lịch sử mở khoá',
     subtitle: 'Mọi lượt mở khoá tự động, cấp tay và thu hồi đều ghi lại ở đây',
   },
   'thanh-vien': {
     section: 'section-users',
     nav: 'thanh-vien',
-    title: 'Thành Viên',
+    title: 'Thành viên',
     subtitle: 'Tra cứu học viên, xem chi tiết và cấp quyền cho từng người',
   },
   'thanh-vien-chi-tiet': {
     section: 'section-user-detail',
     nav: 'thanh-vien',
-    title: 'Chi Tiết Thành Viên',
+    title: 'Chi tiết thành viên',
     subtitle: 'Hồ sơ, tab đang sở hữu, lịch sử đơn hàng và yêu thích',
     // Route này không có mục sidebar riêng — nó nằm dưới "Thành viên".
     hidden: true,
@@ -83,7 +83,7 @@ export const ROUTES = {
   'cai-dat': {
     section: 'section-settings',
     nav: 'cai-dat',
-    title: 'Cài Đặt Tài Khoản',
+    title: 'Cài đặt tài khoản',
     subtitle: 'Hồ sơ, ảnh đại diện, mật khẩu và giao diện',
   },
 }

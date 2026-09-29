@@ -20,8 +20,6 @@ import {
   normalizeVideoPath,
   normalizeAudioPath,
 } from './lib/songs-service.js'
-import { fetchAllGears, DEFAULT_GEARS } from './lib/gears-service.js'
-import { renderGearCard } from './lib/gear-card.js'
 import { uploadToStorage, removeFromStorageByUrl, formatBytes, MAX_UPLOAD_BYTES } from './lib/storage-service.js'
 import { iconHeadphones, iconGuitar } from './icons.js'
 import { initShareButtons } from './lib/share-song.js'
@@ -97,8 +95,6 @@ const statJoinDate = document.getElementById('stat-join-date')
 const statPurchasedCount = document.getElementById('stat-purchased-count')
 const statFavCount = document.getElementById('stat-fav-count')
 
-const tabFavCounter = document.getElementById('tab-fav-counter')
-const tabPurchasedCounter = document.getElementById('tab-purchased-counter')
 
 const dashboardTabBar = document.getElementById('dashboard-tab-bar')
 const navTabFavorites = document.getElementById('nav-tab-favorites')
@@ -113,7 +109,6 @@ const sectionPurchases = document.getElementById('section-purchases')
 const sectionProfile = document.getElementById('section-profile')
 
 const overviewFeaturedTabs = document.getElementById('overview-featured-tabs')
-const overviewGearsCarousel = document.getElementById('overview-gears-carousel')
 const favoritesGrid = document.getElementById('favorites-grid')
 const purchasesGrid = document.getElementById('purchases-grid')
 
@@ -407,12 +402,10 @@ async function checkAuthAndInit() {
 
     updateCounters()
     renderOverviewFeatured()
-    renderOverviewGears()
 
     // Check URL Hash for initial tab
     setActiveTab(window.location.hash.replace('#', ''))
 
-    initFaq()
   } catch (err) {
     console.error('Initialization error:', err)
     showToast('Lỗi tải dữ liệu thành viên. Vui lòng thử lại!', 'error')
@@ -486,10 +479,8 @@ function updateCounters() {
   const favCount = favoriteSongIds.size
   const purCount = purchasedSongIds.size
 
-  if (tabFavCounter) tabFavCounter.textContent = favCount
   if (statFavCount) statFavCount.textContent = favCount
   if (statPurchasedCount) statPurchasedCount.textContent = purCount
-  if (tabPurchasedCounter) tabPurchasedCounter.textContent = purCount
 }
 
 // ==========================================================================
@@ -714,138 +705,6 @@ function renderOverviewFeatured() {
     `
     })
     .join('')
-}
-
-// ==========================================================================
-// RENDER OVERVIEW GEARS (2-COLUMN ON MOBILE / MAX 4 INITIALLY WITH SEE MORE)
-// ==========================================================================
-async function renderOverviewGears() {
-  if (!overviewGearsCarousel) return
-
-  let gears = []
-  try {
-    gears = await fetchAllGears()
-  } catch (e) {
-    gears = DEFAULT_GEARS
-  }
-  if (!gears || gears.length === 0) gears = DEFAULT_GEARS
-
-  const showMoreWrap = document.getElementById('overview-gears-show-more-wrap')
-  const showMoreBtn = document.getElementById('overview-gears-show-more-btn')
-  const showMoreText = document.getElementById('overview-gears-show-more-text')
-  const showMoreIcon = document.getElementById('overview-gears-show-more-icon')
-
-  overviewGearsCarousel.innerHTML = gears
-    .map((gear, idx) => renderGearCard(gear, idx))
-    .join('')
-
-  // Configure Show More Button
-  if (showMoreWrap && showMoreBtn && gears.length > 4) {
-    showMoreWrap.classList.remove('hidden')
-    let isExpanded = false
-    const extraCount = gears.length - 4
-
-    showMoreText.textContent = `Xem thêm (${extraCount} món đồ khác)`
-
-    showMoreBtn.onclick = () => {
-      isExpanded = !isExpanded
-      const extraCards = overviewGearsCarousel.querySelectorAll('.gear-card-extra')
-      extraCards.forEach((card) => {
-        if (isExpanded) {
-          card.classList.remove('hidden')
-          card.classList.add('animate-in', 'fade-in', 'zoom-in-95', 'duration-200')
-        } else {
-          card.classList.add('hidden')
-          card.classList.remove('animate-in', 'fade-in', 'zoom-in-95', 'duration-200')
-        }
-      })
-
-      if (isExpanded) {
-        showMoreText.textContent = 'Thu gọn bớt'
-        if (showMoreIcon) showMoreIcon.classList.add('rotate-180')
-      } else {
-        showMoreText.textContent = `Xem thêm (${extraCount} món đồ khác)`
-        if (showMoreIcon) showMoreIcon.classList.remove('rotate-180')
-      }
-    }
-  } else if (showMoreWrap) {
-    showMoreWrap.classList.add('hidden')
-  }
-}
-
-// ==========================================================================
-// FAQ INTERACTIONS (CATEGORIES & EXPAND/COLLAPSE ALL)
-// ==========================================================================
-export function initFaq() {
-  const faqItems = Array.from(document.querySelectorAll('#faq .faq-item'))
-  const filterBtns = document.querySelectorAll('[data-faq-filter]')
-  const showMoreWrap = document.getElementById('faq-show-more-wrap')
-  const showMoreBtn = document.getElementById('faq-show-more-btn')
-  const showMoreText = document.getElementById('faq-show-more-text')
-  const showMoreIcon = document.getElementById('faq-show-more-icon')
-
-  if (!faqItems.length) return
-
-  let currentCategory = 'all'
-  let isShowMore = false
-  const INITIAL_LIMIT = 5
-
-  function updateFaqDisplay() {
-    const matchingItems = faqItems.filter((item) => {
-      const itemCat = item.getAttribute('data-category')
-      return currentCategory === 'all' || itemCat === currentCategory
-    })
-
-    const totalMatching = matchingItems.length
-    const visibleCount = isShowMore ? totalMatching : Math.min(INITIAL_LIMIT, totalMatching)
-
-    faqItems.forEach((item) => {
-      item.classList.add('hidden')
-    })
-
-    matchingItems.slice(0, visibleCount).forEach((item) => {
-      item.classList.remove('hidden')
-    })
-
-    // Cập nhật nút Xem thêm / Thu gọn bớt
-    if (showMoreWrap && showMoreBtn && showMoreText) {
-      if (totalMatching > INITIAL_LIMIT) {
-        showMoreWrap.classList.remove('hidden')
-        if (isShowMore) {
-          showMoreText.textContent = 'Thu gọn bớt'
-          if (showMoreIcon) showMoreIcon.classList.add('rotate-180')
-        } else {
-          const remaining = totalMatching - INITIAL_LIMIT
-          showMoreText.textContent = `Xem thêm ${remaining} câu hỏi`
-          if (showMoreIcon) showMoreIcon.classList.remove('rotate-180')
-        }
-      } else {
-        showMoreWrap.classList.add('hidden')
-      }
-    }
-  }
-
-  // Lọc theo chủ đề
-  filterBtns.forEach((btn) => {
-    btn.addEventListener('click', () => {
-      filterBtns.forEach((b) => b.classList.remove('active'))
-      btn.classList.add('active')
-      currentCategory = btn.getAttribute('data-faq-filter') || 'all'
-      isShowMore = false
-      updateFaqDisplay()
-    })
-  })
-
-  // Nút xem thêm
-  if (showMoreBtn) {
-    showMoreBtn.addEventListener('click', () => {
-      isShowMore = !isShowMore
-      updateFaqDisplay()
-    })
-  }
-
-  // Khởi chạy lần đầu
-  updateFaqDisplay()
 }
 
 // ==========================================================================
@@ -1343,7 +1202,6 @@ window.toggleFavoriteSong = async function (event, songId) {
     updateUserInfoUI()
     updateCounters()
     renderOverviewFeatured()
-    renderOverviewGears()
     renderFavorites()
     renderPurchases()
   } catch (err) {

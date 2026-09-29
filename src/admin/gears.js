@@ -36,7 +36,7 @@ function renderGearsTable() {
     adminGearsTbody.innerHTML = `
       <tr>
         <td colspan="6" class="py-8 text-center text-text-muted">
-          Chưa có món đồ nghề nào trong danh sách. Bấm "+ Thêm Gear Mới" để thêm nhé!
+          Chưa có món đồ nghề nào trong danh sách. Bấm "Thêm đồ nghề" để thêm nhé!
         </td>
       </tr>
     `
@@ -219,7 +219,7 @@ window.openAddGearModal = function () {
   document.getElementById('gear-id').value = ''
   if (gearImageFileInput) gearImageFileInput.value = ''
   if (gearImageFileName) gearImageFileName.textContent = ''
-  if (gearModalTitle) gearModalTitle.textContent = 'Thêm Gear Mới'
+  if (gearModalTitle) gearModalTitle.textContent = 'Thêm đồ nghề'
   toggleModal(gearModal, true)
 }
 
@@ -241,7 +241,7 @@ window.editGear = function (id) {
     gear.image || gear.image_url || ''
   )
 
-  if (gearModalTitle) gearModalTitle.textContent = `Sửa Gear: ${gear.name || gear.title}`
+  if (gearModalTitle) gearModalTitle.textContent = `Sửa đồ nghề: ${gear.name || gear.title}`
   toggleModal(gearModal, true)
 }
 
