@@ -1020,7 +1020,7 @@ function shakeTick() {
 /** Pháo hoa ruy băng: nổ toả tròn từ tâm màn hình rồi rơi nhẹ xuống, thay vì
  *  rơi thẳng từ trên như confetti thường — đúng chất "pháo hoa" hơn. */
 function burstConfetti() {
-  const colors = ['#f5c044', '#f49a45', '#ee7b6e', '#d97bae', '#9c8be8', '#4fc2ac', '#a8c554']
+  const colors = ['#e2b34a', '#e08d4b', '#d0674f', '#c26a86', '#8f7cc0', '#5aa294', '#9fae5a']
   const count = 60
   for (let i = 0; i < count; i++) {
     const bit = document.createElement('i')

@@ -101,7 +101,6 @@ const navTabFavorites = document.getElementById('nav-tab-favorites')
 const navTabPurchases = document.getElementById('nav-tab-purchases')
 
 const librarySection = document.getElementById('library')
-const libraryHint = document.getElementById('library-hint')
 const favTools = document.getElementById('fav-tools')
 const purchasedTools = document.getElementById('purchased-tools')
 const sectionFavorites = document.getElementById('section-favorites')
@@ -193,10 +192,6 @@ window.showToast = showToast
 // Trang có 2 phần: "Thư viện của tôi" (Đã mua / Yêu thích — chuyển bằng tab) và
 // các khối khám phá luôn hiện bên dưới. #profile thay cả hai bằng form Hồ sơ.
 const LIBRARY_TABS = ['purchases', 'favorites']
-const LIBRARY_HINTS = {
-  purchases: 'Tab bạn đã sở hữu — mở lại bất cứ lúc nào, không cần trả thêm.',
-  favorites: 'Những bài bạn đã thả tim để tập dần.',
-}
 // Hash cũ/khác vẫn trỏ về thư viện: #overview (tab Tổng quan đã bỏ), #library.
 const LIBRARY_ALIASES = ['overview', 'library']
 
@@ -228,7 +223,6 @@ function setActiveTab(tab) {
     if (btn) btn.tabIndex = on ? 0 : -1
     sec?.classList.toggle('hidden', !on)
   })
-  if (libraryHint) libraryHint.textContent = LIBRARY_HINTS[tab]
 
   if (tab === 'favorites') renderFavorites()
   else renderPurchases()

@@ -12,7 +12,7 @@ import {
   normalizeAudioPath,
 } from './lib/songs-service.js'
 import { applyScrollReveal } from './animations/scroll-reveal.js'
-import { toggleCompleted } from './lib/local-storage-service.js'
+import { toggleCompleted, getCompleted } from './lib/local-storage-service.js'
 import { supabase } from './lib/supabase.js'
 import { renderSongCard } from './lib/song-card.js'
 import { initShareButtons } from './lib/share-song.js'
@@ -36,8 +36,13 @@ initCardTouchFeedback()
 // STATE
 // ==========================================================================
 let allSongs = []
-let activeFilter = 'all' // all, free, paid
+// Bộ lọc: nhóm chọn một (giá, thể loại, độ khó, capo), nhóm "Của tôi" chọn nhiều.
+const DEFAULT_FILTERS = { price: 'all', category: 'all', level: 'all', capo: 'all' }
+let filters = { ...DEFAULT_FILTERS }
+let mineFilters = new Set() // purchased | favorite | learned | unlearned
+let sortMode = 'default'
 let searchQuery = ''
+let isLoggedIn = false
 let activeCheckoutSyntax = ''
 // Bài đang mở trong modal — để nút chia sẻ biết đang chia sẻ bài nào.
 let activeShareSong = null
@@ -54,6 +59,7 @@ async function loadFavoriteIds() {
   const {
     data: { session },
   } = await supabase.auth.getSession()
+  isLoggedIn = Boolean(session?.user)
   if (!session?.user) {
     favoriteSongIds = new Set()
     return
@@ -145,34 +151,85 @@ function removeAccents(str) {
     .toLowerCase()
 }
 
+/** "6.5/10" → 6.5; thiếu thì coi như giữa thang. */
+function levelNumber(song) {
+  const n = parseFloat(String(song.level ?? '').replace(',', '.'))
+  return Number.isFinite(n) ? n : 5
+}
+
+function levelBucket(song) {
+  const n = levelNumber(song)
+  if (n <= 5) return 'easy'
+  if (n < 7.5) return 'medium'
+  return 'hard'
+}
+
+function hasCapo(song) {
+  const c = String(song.capo ?? '').trim()
+  return c !== '' && c !== '0' && !/không/i.test(c)
+}
+
+function activeFilterCount() {
+  return Object.keys(DEFAULT_FILTERS).filter((k) => filters[k] !== DEFAULT_FILTERS[k]).length + mineFilters.size
+}
+
+function applyFilters(songs) {
+  const learned = new Set(getCompleted().map(String))
+  let list = songs.filter((s) => {
+    const id = String(s.id)
+    const free = Boolean(s.is_free || s.isFree)
+    if (filters.price === 'free' && !free) return false
+    if (filters.price === 'paid' && free) return false
+    if (filters.category !== 'all' && (s.category || '') !== filters.category) return false
+    if (filters.level !== 'all' && levelBucket(s) !== filters.level) return false
+    if (filters.capo === 'none' && hasCapo(s)) return false
+    if (filters.capo === 'with' && !hasCapo(s)) return false
+    if (mineFilters.has('purchased') && !purchasedSongIds.has(id)) return false
+    if (mineFilters.has('favorite') && !favoriteSongIds.has(id)) return false
+    if (mineFilters.has('learned') && !learned.has(id)) return false
+    if (mineFilters.has('unlearned') && learned.has(id)) return false
+    return true
+  })
+
+  if (searchQuery) {
+    const q = removeAccents(searchQuery)
+    list = list.filter(
+      (s) => removeAccents(s.title || '').includes(q) || removeAccents(s.singer || '').includes(q)
+    )
+  }
+
+  if (sortMode === 'easy') list = [...list].sort((x, y) => levelNumber(x) - levelNumber(y))
+  else if (sortMode === 'hard') list = [...list].sort((x, y) => levelNumber(y) - levelNumber(x))
+  else if (sortMode === 'az') list = [...list].sort((x, y) => (x.title || '').localeCompare(y.title || '', 'vi'))
+  return list
+}
+
 function updateGrid() {
   const grid = document.getElementById('songs-grid')
   if (!grid) return
 
-  let filtered = allSongs
+  const filtered = applyFilters(allSongs)
+  const count = activeFilterCount()
 
-  // Lọc theo tag
-  if (activeFilter === 'free') {
-    filtered = filtered.filter((s) => s.is_free || s.isFree)
-  } else if (activeFilter === 'paid') {
-    filtered = filtered.filter((s) => !s.is_free && !s.isFree)
+  const resultCount = document.getElementById('result-count')
+  if (resultCount) resultCount.textContent = `${filtered.length} bài`
+  const badge = document.getElementById('filter-count')
+  if (badge) {
+    badge.textContent = String(count)
+    badge.classList.toggle('hidden', count === 0)
   }
-
-  // Lọc theo search
-  if (searchQuery) {
-    const q = removeAccents(searchQuery)
-    filtered = filtered.filter((s) => {
-      const titleMatch = removeAccents(s.title || '').includes(q)
-      const singerMatch = removeAccents(s.singer || '').includes(q)
-      return titleMatch || singerMatch
-    })
-  }
+  const reset = document.getElementById('filter-reset')
+  if (reset) reset.disabled = count === 0 && !searchQuery
+  const apply = document.getElementById('filter-apply')
+  if (apply) apply.textContent = `Xem ${filtered.length} bài`
 
   if (filtered.length === 0) {
-    grid.innerHTML = `<div class="col-span-full text-center py-20">
-      <span class="text-4xl block mb-4">🎵</span>
-      <p class="text-text-muted font-medium">Không tìm thấy bài hát nào phù hợp.</p>
+    grid.innerHTML = `<div class="col-span-full text-center py-16 px-6 rounded-2xl border border-dashed border-glass-border">
+      <p class="text-sm font-bold text-text-primary">Không có bài nào khớp bộ lọc</p>
+      <p class="text-xs text-text-muted mt-1">Thử bỏ bớt điều kiện lọc hoặc đổi từ khoá.</p>
+      <button type="button" data-reset-filters class="mt-3 px-4 py-2 rounded-full bg-glass-bg border border-glass-border text-xs font-bold text-accent-primary cursor-pointer">Xoá lọc</button>
     </div>`
+    grid.querySelector('[data-reset-filters]')?.addEventListener('click', resetFilters)
     return
   }
 
@@ -194,29 +251,107 @@ function updateGrid() {
   }, 50)
 }
 
-function initSearchAndFilter() {
-  const searchInput = document.getElementById('search-input')
-  const filterPills = document.querySelectorAll('#filter-pills .filter-pill')
+function syncChips() {
+  document.querySelectorAll('#filter-panel .filter-chips').forEach((group) => {
+    const key = group.dataset.group
+    group.querySelectorAll('.filter-chip').forEach((chip) => {
+      chip.setAttribute('aria-pressed', String(chip.dataset.value === filters[key]))
+    })
+  })
+  document.querySelectorAll('#filter-panel [data-group="mine"] input').forEach((box) => {
+    box.checked = mineFilters.has(box.value)
+  })
+}
 
-  if (searchInput) {
-    searchInput.addEventListener('input', (e) => {
-      searchQuery = e.target.value
-      updateGrid()
+function resetFilters() {
+  filters = { ...DEFAULT_FILTERS }
+  mineFilters = new Set()
+  searchQuery = ''
+  const searchInput = document.getElementById('search-input')
+  if (searchInput) searchInput.value = ''
+  syncChips()
+  updateGrid()
+}
+
+/** Thể loại lấy từ dữ liệu thật; mục "Của tôi · Đã mua/Yêu thích" chỉ hiện khi đã đăng nhập. */
+function populateFilterOptions() {
+  const group = document.querySelector('#filter-panel [data-group="category"]')
+  if (group) {
+    group.querySelectorAll('.filter-chip:not([data-value="all"])').forEach((c) => c.remove())
+    const cats = [...new Set(allSongs.map((s) => s.category).filter(Boolean))].sort((x, y) =>
+      x.localeCompare(y, 'vi')
+    )
+    cats.forEach((cat) => {
+      const chip = document.createElement('button')
+      chip.type = 'button'
+      chip.className = 'filter-chip'
+      chip.dataset.value = cat
+      chip.textContent = cat
+      group.appendChild(chip)
     })
   }
+  document
+    .querySelectorAll('#filter-panel .account-only')
+    .forEach((el) => el.classList.toggle('hidden', !isLoggedIn))
+  syncChips()
+}
 
-  filterPills.forEach((pill) => {
-    pill.addEventListener('click', () => {
-      filterPills.forEach((p) => {
-        p.classList.remove('active', 'text-text-primary')
-        p.classList.add('text-text-muted')
-      })
-      pill.classList.add('active', 'text-text-primary')
-      pill.classList.remove('text-text-muted')
+function initSearchAndFilter() {
+  const panel = document.getElementById('filter-panel')
+  const backdrop = document.getElementById('filter-backdrop')
+  const openBtn = document.getElementById('filter-open')
 
-      activeFilter = pill.getAttribute('data-filter') || 'all'
-      updateGrid()
-    })
+  document.getElementById('search-input')?.addEventListener('input', (e) => {
+    searchQuery = e.target.value
+    updateGrid()
+  })
+  document.getElementById('sort-select')?.addEventListener('change', (e) => {
+    sortMode = e.target.value
+    updateGrid()
+  })
+
+  // Chip trong mọi nhóm (kể cả chip thể loại thêm sau) — bắt ở cấp panel
+  panel?.addEventListener('click', (e) => {
+    const chip = e.target.closest('.filter-chip')
+    if (!chip) return
+    const key = chip.closest('.filter-chips')?.dataset.group
+    if (!key) return
+    filters[key] = chip.dataset.value
+    syncChips()
+    updateGrid()
+  })
+  panel?.addEventListener('change', (e) => {
+    const box = e.target.closest('[data-group="mine"] input')
+    if (!box) return
+    if (box.checked) {
+      mineFilters.add(box.value)
+      // "Đã học" và "Chưa học" loại trừ nhau
+      if (box.value === 'learned') mineFilters.delete('unlearned')
+      if (box.value === 'unlearned') mineFilters.delete('learned')
+    } else {
+      mineFilters.delete(box.value)
+    }
+    syncChips()
+    updateGrid()
+  })
+  document.getElementById('filter-reset')?.addEventListener('click', resetFilters)
+
+  // Điện thoại: bảng lọc trượt lên
+  const setSheet = (open) => {
+    panel?.classList.toggle('is-open', open)
+    backdrop?.classList.toggle('hidden', !open)
+    openBtn?.setAttribute('aria-expanded', String(open))
+    document.body.classList.toggle('overflow-hidden', open)
+  }
+  openBtn?.addEventListener('click', () => setSheet(true))
+  backdrop?.addEventListener('click', () => setSheet(false))
+  document.getElementById('filter-close')?.addEventListener('click', () => setSheet(false))
+  document.getElementById('filter-apply')?.addEventListener('click', () => {
+    setSheet(false)
+    document.getElementById('songs-grid')?.scrollIntoView({ behavior: 'smooth', block: 'start' })
+  })
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape' && panel?.classList.contains('is-open')) setSheet(false)
   })
 }
 
@@ -304,6 +439,7 @@ function initSwipeToFavorite() {
 async function loadData() {
   const [songs] = await Promise.all([fetchAllSongs(), loadFavoriteIds(), loadPurchasedIds()])
   allSongs = songs
+  populateFilterOptions()
   updateGrid()
   openSongFromUrlParam()
 }

@@ -78,6 +78,7 @@
           <a href="/kho-tab.html" class="nav-link">Kho Video Tab</a>
           <a href="/cong-cu.html" class="nav-link">Công cụ</a>
           <a href="/luyen-cam-am.html" class="nav-link">Luyện cảm âm</a>
+          <a href="/user-dashboard.html" class="nav-link">Của tôi</a>
         </nav>
 
         <!-- Header Actions: Register + Login + Theme Toggle -->
@@ -214,27 +215,6 @@
               Mình là <strong class="font-bold text-text-primary">Nhật Quang</strong>. Nơi mình lưu các bản cover và
               kho Video Tab tự soạn — giúp anh em tập đúng nhịp, đỡ mất công mò nốt.</p>
 
-            <!-- Nút chính dẫn tới kho tab (sản phẩm chính); TikTok là nút phụ. Trước
-                 đây ngược lại: TikTok là nút đậm, kho tab chỉ là một dòng chữ link. -->
-            <div class="hero-reveal-item flex flex-col sm:flex-row sm:flex-wrap sm:items-center gap-3 sm:gap-4">
-              <a href="/kho-tab.html"
-                class="inline-flex items-center justify-center gap-2.5 px-7 py-3.5 rounded-full bg-warm-gradient hover:brightness-105 text-white text-sm font-bold shadow-md shadow-accent-primary/20 transition-all active:scale-95 group">
-                <span>Xem kho Video Tab</span>
-                <svg class="w-4 h-4 transition-transform group-hover:translate-x-1" fill="none" stroke="currentColor"
-                  viewBox="0 0 24 24" aria-hidden="true">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M17 8l4 4m0 0l-4 4m4-4H3" />
-                </svg>
-              </a>
-              <a href="https://www.tiktok.com/@quangdnn104" target="_blank" rel="noopener noreferrer"
-                class="inline-flex items-center justify-center gap-2.5 px-6 py-3.5 rounded-full bg-glass-bg hover:bg-glass-bg-hover text-text-primary border border-glass-border text-sm font-bold transition-all">
-                <svg class="w-4 h-4 fill-current text-accent-primary" viewBox="0 0 24 24" aria-hidden="true">
-                  <path
-                    d="M19.59 6.69a4.83 4.83 0 0 1-3.77-4.25V2h-3.45v13.67a2.89 2.89 0 0 1-5.2 1.74 2.89 2.89 0 0 1 2.31-4.64 2.93 2.93 0 0 1 .88.13V9.4a6.84 6.84 0 0 0-1-.05A6.33 6.33 0 0 0 5 20.1a6.34 6.34 0 0 0 10.86-4.43v-7a8.16 8.16 0 0 0 4.77 1.52v-3.4a4.85 4.85 0 0 1-1.04-.1z" />
-                </svg>
-                <span>Xem TikTok của Quang</span>
-              </a>
-            </div>
-
             <!-- 3 điểm mạnh có thật (khớp nội dung phần Hỏi đáp), không dùng số liệu bịa. -->
             <ul class="hero-reveal-item grid grid-cols-1 sm:grid-cols-3 gap-2.5 sm:gap-3 max-w-2xl text-sm text-text-muted font-medium">
               <li class="flex items-center gap-2">
@@ -364,14 +344,12 @@
            sự chú ý với Kho Video Tab)
            ================================================================ -->
     <section id="game-teaser" class="relative py-8 sm:py-10 px-6 sm:px-8 md:px-12">
-      <a href="/luyen-cam-am.html"
-        class="group relative block max-w-4xl mx-auto rounded-3xl overflow-hidden px-5 py-6 sm:px-8 sm:py-7 shadow-lg hover:shadow-2xl transition-all duration-300 hover:-translate-y-1"
-        style="background-image: linear-gradient(115deg, #d4af37 0%, #b8862f 42%, #8a3d4c 100%);">
-        <div class="flex items-center gap-4 sm:gap-6">
-          <!-- Đĩa than mini, quay khi rê chuột vào -->
-          <span aria-hidden="true"
-            class="flex-shrink-0 w-14 h-14 sm:w-20 sm:h-20 rounded-full grid place-items-center bg-[#1b140f] shadow-lg transition-transform duration-300 group-hover:scale-110">
-            <svg class="w-8 h-8 sm:w-11 sm:h-11 text-[#d4af37]" viewBox="0 0 64 64" fill="none">
+      <!-- Nền gỗ tối có ánh đồng (cùng chất liệu nút play "lỗ đàn"); 7 chấm = đúng 7 màu phím trong game.
+           Trước là dải gradient vàng→nâu→đỏ, chữ nâu trên nền nâu nên đục và khó đọc. -->
+      <a href="/luyen-cam-am.html" class="game-teaser-card group relative block max-w-4xl mx-auto rounded-3xl overflow-hidden px-5 py-6 sm:px-8 sm:py-7 transition-all duration-300 hover:-translate-y-1">
+        <div class="relative flex items-center gap-4 sm:gap-6">
+          <span aria-hidden="true" class="game-teaser-disc flex-shrink-0 w-14 h-14 sm:w-20 sm:h-20 rounded-full grid place-items-center transition-transform duration-300 group-hover:scale-105">
+            <svg class="w-7 h-7 sm:w-10 sm:h-10 text-[#e2b34a]" viewBox="0 0 64 64" fill="none">
               <path d="M13 40V32a19 19 0 0 1 38 0v8" stroke="currentColor" stroke-width="5" stroke-linecap="round" />
               <rect x="6" y="35" width="14" height="21" rx="7" fill="currentColor" />
               <rect x="44" y="35" width="14" height="21" rx="7" fill="currentColor" />
@@ -379,31 +357,28 @@
           </span>
 
           <div class="flex-grow min-w-0">
-            <h3 class="text-lg sm:text-2xl font-extrabold text-[#241609] leading-tight">Game luyện cảm âm và trí nhớ</h3>
-            <p class="text-xs sm:text-sm text-[#3f2410] font-semibold leading-snug mt-1">Nghe chuỗi nốt rồi lặp lại
+            <h3 class="text-lg sm:text-2xl font-extrabold text-[#f6ead3] leading-tight">Game luyện cảm âm và trí nhớ</h3>
+            <p class="text-xs sm:text-sm text-[#cdb99b] font-medium leading-snug mt-1">Nghe chuỗi nốt rồi lặp lại
               đúng thứ tự — vài phút mỗi ngày là tai thính hẳn lên.</p>
-
-            <!-- Bảy chấm màu ứng với bảy phím nốt trong game -->
-            <span class="flex items-center gap-1.5 mt-2.5" aria-hidden="true">
-              <span class="w-2.5 h-2.5 sm:w-3 sm:h-3 rounded-full bg-[#f5c044] ring-2 ring-[#1b140f]/25"></span>
-              <span class="w-2.5 h-2.5 sm:w-3 sm:h-3 rounded-full bg-[#e2973f] ring-2 ring-[#1b140f]/25"></span>
-              <span class="w-2.5 h-2.5 sm:w-3 sm:h-3 rounded-full bg-[#c96a4a] ring-2 ring-[#1b140f]/25"></span>
-              <span class="w-2.5 h-2.5 sm:w-3 sm:h-3 rounded-full bg-[#a8455a] ring-2 ring-[#1b140f]/25"></span>
-              <span class="w-2.5 h-2.5 sm:w-3 sm:h-3 rounded-full bg-[#7e4a6b] ring-2 ring-[#1b140f]/25"></span>
-              <span class="w-2.5 h-2.5 sm:w-3 sm:h-3 rounded-full bg-[#5c6b4a] ring-2 ring-[#1b140f]/25"></span>
-              <span class="w-2.5 h-2.5 sm:w-3 sm:h-3 rounded-full bg-[#8a7327] ring-2 ring-[#1b140f]/25"></span>
+            <span class="flex items-center gap-1.5 mt-3" aria-hidden="true">
+              <span class="w-2.5 h-2.5 sm:w-3 sm:h-3 rounded-full ring-2 ring-black/30" style="background:#e2b34a"></span>
+              <span class="w-2.5 h-2.5 sm:w-3 sm:h-3 rounded-full ring-2 ring-black/30" style="background:#e08d4b"></span>
+              <span class="w-2.5 h-2.5 sm:w-3 sm:h-3 rounded-full ring-2 ring-black/30" style="background:#d0674f"></span>
+              <span class="w-2.5 h-2.5 sm:w-3 sm:h-3 rounded-full ring-2 ring-black/30" style="background:#c26a86"></span>
+              <span class="w-2.5 h-2.5 sm:w-3 sm:h-3 rounded-full ring-2 ring-black/30" style="background:#8f7cc0"></span>
+              <span class="w-2.5 h-2.5 sm:w-3 sm:h-3 rounded-full ring-2 ring-black/30" style="background:#5aa294"></span>
+              <span class="w-2.5 h-2.5 sm:w-3 sm:h-3 rounded-full ring-2 ring-black/30" style="background:#9fae5a"></span>
             </span>
           </div>
 
-          <span
-            class="flex-shrink-0 hidden sm:inline-flex items-center gap-2 px-6 py-3 rounded-full bg-[#1b140f] text-[#f3ede2] text-sm font-extrabold whitespace-nowrap shadow-md transition-transform group-hover:scale-105">
+          <span class="flex-shrink-0 hidden sm:inline-flex items-center gap-2 px-6 py-3 rounded-full bg-gradient-to-b from-[#ecc25e] to-[#c9922e] text-[#2a1a0c] text-sm font-extrabold whitespace-nowrap shadow-md transition-transform group-hover:scale-105">
             <span>Chơi thử ngay</span>
-            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M17 8l4 4m0 0l-4 4m4-4H3" />
             </svg>
           </span>
-          <span class="sm:hidden flex-shrink-0 w-9 h-9 rounded-full bg-[#1b140f] grid place-items-center shadow-md">
-            <svg class="w-4 h-4 text-[#f3ede2]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <span class="sm:hidden flex-shrink-0 w-9 h-9 rounded-full bg-gradient-to-b from-[#ecc25e] to-[#c9922e] grid place-items-center shadow-md">
+            <svg class="w-4 h-4 text-[#2a1a0c]" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M9 5l7 7-7 7" />
             </svg>
           </span>
@@ -1413,6 +1388,7 @@
           <div class="flex flex-col gap-0.5 text-sm font-medium text-text-muted">
             <a href="https://zalo.me/0326768885" target="_blank" rel="noopener noreferrer" class="hover:text-accent-primary transition-colors w-fit py-1.5">Zalo: 0326.768.885</a>
             <a href="https://www.facebook.com/quang.doan.969429" target="_blank" rel="noopener noreferrer" class="hover:text-accent-primary transition-colors w-fit py-1.5">Facebook: Quang Doan</a>
+            <a href="https://www.tiktok.com/@quangdnn104" target="_blank" rel="noopener noreferrer" class="hover:text-accent-primary transition-colors w-fit py-1.5">TikTok: @quangdnn104</a>
           </div>
         </div>
       </div>

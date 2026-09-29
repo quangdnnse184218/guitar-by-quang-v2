@@ -95,6 +95,7 @@
           <a href="/kho-tab.html" class="nav-link active" aria-current="page">Kho Video Tab</a>
           <a href="/cong-cu.html" class="nav-link">Công cụ</a>
           <a href="/luyen-cam-am.html" class="nav-link">Luyện cảm âm</a>
+          <a href="/user-dashboard.html" class="nav-link">Của tôi</a>
         </nav>
 
         <!-- Header Actions: Register + Login + Theme Toggle -->
@@ -203,7 +204,7 @@
          MAIN CONTENT AREA
          ==================================================================== -->
   <main class="flex-grow pt-28 pb-20">
-    <div class="max-w-7xl mx-auto px-6 sm:px-8 md:px-12 space-y-8">
+    <div class="max-w-7xl mx-auto px-5 sm:px-8 md:px-12 space-y-6 sm:space-y-8">
 
       <!-- Header -->
       <div class="flex flex-col md:flex-row md:items-end justify-between pb-6 border-b border-glass-border gap-4">
@@ -213,38 +214,108 @@
         </div>
       </div>
 
-      <!-- Search and Filter -->
-      <div class="flex flex-col md:flex-row items-center gap-4 sm:gap-6 mb-8">
-        <div class="relative w-full md:w-96">
-          <input type="text" id="search-input" placeholder="Tìm kiếm bài hát..."
-            class="w-full pl-10 pr-4 py-2.5 bg-glass-bg border border-glass-border rounded-full text-text-primary placeholder:text-text-faint focus:outline-none focus:border-accent-primary/50 transition-colors shadow-inner text-sm font-medium" />
-          <svg class="w-4 h-4 absolute left-3.5 top-1/2 -translate-y-1/2 text-text-muted" fill="none"
-            stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-              d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
-          </svg>
-        </div>
-        <div class="flex items-center gap-2 overflow-x-auto w-full md:w-auto scrollbar-none pb-2 md:pb-0"
-          id="filter-pills">
-          <button type="button"
-            class="filter-pill active px-4 py-2 rounded-full text-xs font-bold border transition-colors bg-glass-bg border-glass-border hover:border-accent-primary text-text-primary shadow-sm"
-            data-filter="all">Tất cả</button>
-          <button type="button"
-            class="filter-pill px-4 py-2 rounded-full text-xs font-bold border transition-colors bg-glass-bg border-glass-border hover:border-accent-primary text-text-muted shadow-sm"
-            data-filter="free">Miễn phí</button>
-          <button type="button"
-            class="filter-pill px-4 py-2 rounded-full text-xs font-bold border transition-colors bg-glass-bg border-glass-border hover:border-accent-primary text-text-muted shadow-sm"
-            data-filter="paid">Trả phí</button>
-        </div>
-      </div>
+      <!-- Bộ lọc + lưới bài. Máy tính (lg): cột lọc bên trái đứng yên khi cuộn.
+           Điện thoại/tablet: cùng khối lọc đó thành bảng trượt lên từ dưới (xem
+           .filter-panel trong style.css), mở bằng nút "Bộ lọc". Logic ở kho-tab.js. -->
+      <div class="lg:grid lg:grid-cols-[232px_minmax(0,1fr)] lg:gap-8 xl:gap-10 items-start">
 
-      <!-- Grid (2 Columns on Mobile / 4 Columns on Desktop) -->
-      <div id="songs-grid" class="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3 sm:gap-5 lg:gap-6">
-        <!-- Skeletons... -->
-        <div class="skeleton-pulse rounded-2xl sm:rounded-3xl bg-glass-bg border border-glass-border aspect-[3/4] glass-card"></div>
-        <div class="skeleton-pulse rounded-2xl sm:rounded-3xl bg-glass-bg border border-glass-border aspect-[3/4] glass-card"></div>
-        <div class="skeleton-pulse rounded-2xl sm:rounded-3xl bg-glass-bg border border-glass-border aspect-[3/4] glass-card"></div>
-        <div class="skeleton-pulse rounded-2xl sm:rounded-3xl bg-glass-bg border border-glass-border aspect-[3/4] glass-card"></div>
+        <div id="filter-backdrop" class="fixed inset-0 z-[55] bg-black/50 backdrop-blur-sm hidden lg:!hidden" aria-hidden="true"></div>
+
+        <aside id="filter-panel" class="filter-panel" aria-label="Bộ lọc bài hát">
+          <div class="flex items-center justify-between gap-3 mb-4">
+            <h2 class="text-base font-extrabold text-text-primary">Bộ lọc</h2>
+            <div class="flex items-center gap-1">
+              <button type="button" id="filter-reset" class="px-2.5 py-1.5 rounded-full text-xs font-bold text-accent-primary hover:bg-accent-primary/10 transition-colors cursor-pointer disabled:opacity-40 disabled:cursor-default disabled:hover:bg-transparent" disabled>Xoá lọc</button>
+              <button type="button" id="filter-close" class="lg:hidden w-9 h-9 grid place-items-center rounded-full hover:bg-glass-bg-hover text-text-muted cursor-pointer" aria-label="Đóng bộ lọc">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/></svg>
+              </button>
+            </div>
+          </div>
+
+          <div class="space-y-5">
+            <fieldset class="filter-group">
+              <legend>Giá</legend>
+              <div class="filter-chips" data-group="price">
+                <button type="button" class="filter-chip" data-value="all" aria-pressed="true">Tất cả</button>
+                <button type="button" class="filter-chip" data-value="free" aria-pressed="false">Miễn phí</button>
+                <button type="button" class="filter-chip" data-value="paid" aria-pressed="false">Trả phí</button>
+              </div>
+            </fieldset>
+
+            <fieldset class="filter-group">
+              <legend>Của tôi</legend>
+              <div class="space-y-1" data-group="mine">
+                <label class="filter-check account-only hidden"><input type="checkbox" value="purchased" /><span>Đã mua</span></label>
+                <label class="filter-check account-only hidden"><input type="checkbox" value="favorite" /><span>Yêu thích</span></label>
+                <label class="filter-check"><input type="checkbox" value="learned" /><span>Đã học xong</span></label>
+                <label class="filter-check"><input type="checkbox" value="unlearned" /><span>Chưa học</span></label>
+              </div>
+            </fieldset>
+
+            <fieldset class="filter-group">
+              <legend>Thể loại</legend>
+              <div class="filter-chips" data-group="category">
+                <button type="button" class="filter-chip" data-value="all" aria-pressed="true">Tất cả</button>
+                <!-- Các thể loại thật được thêm từ dữ liệu (kho-tab.js) -->
+              </div>
+            </fieldset>
+
+            <fieldset class="filter-group">
+              <legend>Độ khó</legend>
+              <div class="filter-chips" data-group="level">
+                <button type="button" class="filter-chip" data-value="all" aria-pressed="true">Tất cả</button>
+                <button type="button" class="filter-chip" data-value="easy" aria-pressed="false">Dễ</button>
+                <button type="button" class="filter-chip" data-value="medium" aria-pressed="false">Vừa</button>
+                <button type="button" class="filter-chip" data-value="hard" aria-pressed="false">Khó</button>
+              </div>
+            </fieldset>
+
+            <fieldset class="filter-group">
+              <legend>Capo</legend>
+              <div class="filter-chips" data-group="capo">
+                <button type="button" class="filter-chip" data-value="all" aria-pressed="true">Tất cả</button>
+                <button type="button" class="filter-chip" data-value="none" aria-pressed="false">Không capo</button>
+                <button type="button" class="filter-chip" data-value="with" aria-pressed="false">Có capo</button>
+              </div>
+            </fieldset>
+          </div>
+
+          <button type="button" id="filter-apply" class="lg:hidden mt-6 w-full py-3 rounded-full bg-warm-gradient text-white text-sm font-bold shadow-md cursor-pointer">Xem kết quả</button>
+        </aside>
+
+        <div class="min-w-0 space-y-4">
+          <div class="relative">
+            <input type="search" id="search-input" placeholder="Tìm tên bài hoặc ca sĩ..." aria-label="Tìm bài hát"
+              class="w-full pl-10 pr-4 py-2.5 bg-glass-bg border border-glass-border rounded-full text-text-primary placeholder:text-text-faint focus:outline-none focus:border-accent-primary/50 transition-colors text-sm font-medium" />
+            <svg class="w-4 h-4 absolute left-3.5 top-1/2 -translate-y-1/2 text-text-muted" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
+            </svg>
+          </div>
+
+          <div class="flex items-center gap-2">
+            <button type="button" id="filter-open" class="lg:hidden inline-flex items-center gap-1.5 px-3.5 py-2 rounded-full bg-glass-bg border border-glass-border text-xs font-bold text-text-primary cursor-pointer" aria-controls="filter-panel" aria-expanded="false">
+              <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" aria-hidden="true"><path stroke-linecap="round" d="M4 6h16M7 12h10M10 18h4"/></svg>
+              <span>Bộ lọc</span>
+              <span id="filter-count" class="hidden min-w-[1.25rem] px-1.5 rounded-full bg-accent-primary text-white text-[11px] tabular-nums text-center"></span>
+            </button>
+            <p id="result-count" class="text-xs sm:text-sm font-semibold text-text-muted" aria-live="polite"></p>
+            <label class="ml-auto flex items-center gap-2 text-xs font-semibold text-text-muted">
+              <span class="hidden sm:inline">Sắp xếp</span>
+              <select id="sort-select" class="px-3 py-2 rounded-full bg-glass-bg border border-glass-border text-xs font-bold text-text-primary focus:outline-none focus:border-accent-primary cursor-pointer">
+                <option value="default">Nổi bật</option>
+                <option value="easy">Dễ → khó</option>
+                <option value="hard">Khó → dễ</option>
+                <option value="az">Tên A–Z</option>
+              </select>
+            </label>
+          </div>
+
+          <div id="songs-grid" class="grid grid-cols-2 md:grid-cols-3 gap-3 sm:gap-5 lg:gap-6">
+            <div class="skeleton-pulse rounded-2xl sm:rounded-3xl bg-glass-bg border border-glass-border aspect-[3/4] glass-card"></div>
+            <div class="skeleton-pulse rounded-2xl sm:rounded-3xl bg-glass-bg border border-glass-border aspect-[3/4] glass-card"></div>
+            <div class="skeleton-pulse rounded-2xl sm:rounded-3xl bg-glass-bg border border-glass-border aspect-[3/4] glass-card"></div>
+          </div>
+        </div>
       </div>
 
     </div>
@@ -860,6 +931,7 @@
           <div class="flex flex-col gap-0.5 text-sm font-medium text-text-muted">
             <a href="https://zalo.me/0326768885" target="_blank" rel="noopener noreferrer" class="hover:text-accent-primary transition-colors w-fit py-1.5">Zalo: 0326.768.885</a>
             <a href="https://www.facebook.com/quang.doan.969429" target="_blank" rel="noopener noreferrer" class="hover:text-accent-primary transition-colors w-fit py-1.5">Facebook: Quang Doan</a>
+            <a href="https://www.tiktok.com/@quangdnn104" target="_blank" rel="noopener noreferrer" class="hover:text-accent-primary transition-colors w-fit py-1.5">TikTok: @quangdnn104</a>
           </div>
         </div>
       </div>
