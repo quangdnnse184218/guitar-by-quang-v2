@@ -187,7 +187,7 @@
     </div>
 
     <!-- Main Content -->
-    <main class="pt-32 sm:pt-28 pb-20 flex-grow">
+    <main class="pt-24 sm:pt-28 pb-20 flex-grow">
       <div class="max-w-6xl mx-auto px-4 sm:px-6 space-y-6 sm:space-y-8">
         
         <!-- Admin Notice Banner (If logged in as Admin) -->
@@ -217,7 +217,7 @@
               <span id="greeting-prefix">Xin chào</span>, <span id="user-display-name" class="text-accent-primary">...</span>
             </h1>
             <p class="mt-1 text-xs sm:text-sm text-text-muted font-medium truncate">
-              <span id="user-email-display">...</span><span class="hidden sm:inline"> · Thành viên từ <span id="stat-join-date">...</span></span>
+              <span id="user-email-display">...</span>
             </p>
           </div>
 
@@ -228,12 +228,38 @@
           </a>
         </header>
 
+        <!-- Tóm tắt nhanh: 4 ô trong MỘT khung, ngăn bằng đường mảnh (gap-px trên nền
+             màu viền; ô dùng glass-bg đục) — không phải 4 thẻ rời. Hai ô Tab đã mua /
+             Yêu thích bấm được để mở đúng mục thư viện. -->
+        <div id="member-stats" class="grid grid-cols-2 sm:grid-cols-4 gap-px rounded-2xl overflow-hidden border border-glass-border bg-glass-border">
+          <button type="button" data-go-tab="purchases" class="group text-left bg-glass-bg hover:bg-glass-bg-hover p-4 sm:p-5 transition-colors cursor-pointer">
+            <span class="flex items-center justify-between text-xs font-semibold text-text-muted">Tab đã mua
+              <svg class="w-3.5 h-3.5 opacity-0 group-hover:opacity-100 transition-opacity" fill="none" stroke="currentColor" stroke-width="2.4" viewBox="0 0 24 24" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="M5 12h14M13 6l6 6-6 6"/></svg>
+            </span>
+            <span id="stat-purchased-count" class="block mt-1 text-xl sm:text-3xl font-extrabold tabular-nums text-text-primary">0</span>
+          </button>
+          <div class="bg-glass-bg p-4 sm:p-5">
+            <span class="block text-xs font-semibold text-text-muted">Đã ủng hộ</span>
+            <span id="stat-spent" class="block mt-1 text-xl sm:text-3xl font-extrabold tabular-nums text-accent-primary">0đ</span>
+          </div>
+          <button type="button" data-go-tab="favorites" class="group text-left bg-glass-bg hover:bg-glass-bg-hover p-4 sm:p-5 transition-colors cursor-pointer">
+            <span class="flex items-center justify-between text-xs font-semibold text-text-muted">Yêu thích
+              <svg class="w-3.5 h-3.5 opacity-0 group-hover:opacity-100 transition-opacity" fill="none" stroke="currentColor" stroke-width="2.4" viewBox="0 0 24 24" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="M5 12h14M13 6l6 6-6 6"/></svg>
+            </span>
+            <span id="stat-fav-count" class="block mt-1 text-xl sm:text-3xl font-extrabold tabular-nums text-text-primary">0</span>
+          </button>
+          <div class="bg-glass-bg p-4 sm:p-5">
+            <span class="block text-xs font-semibold text-text-muted">Thành viên từ</span>
+            <span id="stat-join-date" class="block mt-1 text-xl sm:text-3xl font-extrabold tabular-nums text-text-primary">...</span>
+          </div>
+        </div>
+
         <!-- Thư viện của tôi: chỉ 2 mục thật sự của riêng khách. Các khối khám phá
              bên dưới (game, bài nổi bật, đồ nghề, hỏi đáp) luôn hiện, không đổi theo tab. -->
         <section id="library" class="space-y-4 sm:space-y-5 pt-2 scroll-mt-32" aria-labelledby="library-heading">
           <div class="flex flex-col sm:flex-row sm:items-end justify-between gap-3">
             <div class="min-w-0">
-              <h2 id="library-heading" class="text-xl sm:text-2xl font-extrabold text-text-primary">Thư viện của tôi</h2>
+              <h2 id="library-heading" class="text-2xl sm:text-3xl font-extrabold text-text-primary">Thư viện của tôi</h2>
               <p id="library-hint" class="text-xs sm:text-sm text-text-muted font-medium mt-0.5">Tab bạn đã sở hữu — mở lại bất cứ lúc nào, không cần trả thêm.</p>
             </div>
 
@@ -293,53 +319,14 @@
         <!-- ====================================================================
              KHÁM PHÁ THÊM — luôn hiện dưới thư viện (ẩn khi mở Hồ sơ)
              ==================================================================== -->
-        <div id="dashboard-common-sections" class="space-y-10 pt-4">
-
-          <!-- 0. MỜI CHƠI GAME LUYỆN CẢM ÂM (dải sáng nhiều màu, mời bấm vào chơi) -->
-          <a href="/luyen-cam-am.html"
-            class="group relative block rounded-3xl overflow-hidden px-5 py-6 sm:px-7 sm:py-6 shadow-lg hover:shadow-2xl transition-all duration-300 hover:-translate-y-1"
-            style="background-image: linear-gradient(115deg, #fcd34d 0%, #fbbf24 38%, #fb923c 70%, #fb7185 100%);">
-            <div class="flex items-center gap-4 sm:gap-5">
-              <span aria-hidden="true"
-                class="flex-shrink-0 w-14 h-14 sm:w-16 sm:h-16 rounded-full grid place-items-center bg-white shadow-lg transition-transform duration-300 group-hover:scale-110">
-                <svg class="w-8 h-8 sm:w-9 sm:h-9 text-[#b4530f]" viewBox="0 0 64 64" fill="none">
-                  <path d="M13 40V32a19 19 0 0 1 38 0v8" stroke="currentColor" stroke-width="5" stroke-linecap="round" />
-                  <rect x="6" y="35" width="14" height="21" rx="7" fill="currentColor" />
-                  <rect x="44" y="35" width="14" height="21" rx="7" fill="currentColor" />
-                </svg>
-              </span>
-
-              <div class="flex-grow min-w-0">
-                <h3 class="text-lg sm:text-xl font-extrabold text-[#3b1a08] leading-tight">Game luyện cảm âm và trí nhớ</h3>
-                <p class="text-xs sm:text-sm text-[#6b2f12] font-semibold leading-snug mt-1">Nghe chuỗi nốt guitar rồi lặp lại đúng thứ tự — chuỗi càng dài càng khó. Vài phút mỗi ngày là tai thính hẳn lên.</p>
-
-                <span class="flex items-center gap-1.5 mt-2.5" aria-hidden="true">
-                  <span class="w-2.5 h-2.5 sm:w-3 sm:h-3 rounded-full bg-[#f5c044] ring-2 ring-white/70"></span>
-                  <span class="w-2.5 h-2.5 sm:w-3 sm:h-3 rounded-full bg-[#f49a45] ring-2 ring-white/70"></span>
-                  <span class="w-2.5 h-2.5 sm:w-3 sm:h-3 rounded-full bg-[#ee7b6e] ring-2 ring-white/70"></span>
-                  <span class="w-2.5 h-2.5 sm:w-3 sm:h-3 rounded-full bg-[#d97bae] ring-2 ring-white/70"></span>
-                  <span class="w-2.5 h-2.5 sm:w-3 sm:h-3 rounded-full bg-[#9c8be8] ring-2 ring-white/70"></span>
-                  <span class="w-2.5 h-2.5 sm:w-3 sm:h-3 rounded-full bg-[#4fc2ac] ring-2 ring-white/70"></span>
-                  <span class="w-2.5 h-2.5 sm:w-3 sm:h-3 rounded-full bg-[#a8c554] ring-2 ring-white/70"></span>
-                </span>
-              </div>
-
-              <span class="flex-shrink-0 hidden sm:inline-flex items-center gap-2 px-6 py-3 rounded-full bg-white text-[#3b1a08] text-sm font-extrabold whitespace-nowrap shadow-md transition-transform group-hover:scale-105">
-                <span>Chơi thử ngay</span>
-                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M17 8l4 4m0 0l-4 4m4-4H3"/></svg>
-              </span>
-              <span class="sm:hidden flex-shrink-0 w-9 h-9 rounded-full bg-white grid place-items-center shadow-md">
-                <svg class="w-4 h-4 text-[#3b1a08]" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M9 5l7 7-7 7"/></svg>
-              </span>
-            </div>
-          </a>
+        <div id="dashboard-common-sections" class="space-y-10 pt-6 sm:pt-8">
 
           <!-- 1. BÀI HÁT NỔI BẬT (KHO VIDEO TAB) -->
           <div class="space-y-6 pt-4">
             <div class="flex flex-col md:flex-row md:items-end justify-between gap-4 pb-4 border-b border-glass-border">
               <div class="space-y-1.5 max-w-2xl">
-                <span class="text-xs font-mono font-bold uppercase tracking-wider text-accent-primary block">KHO VIDEO TAB</span>
-                <h2 class="text-2xl sm:text-3xl lg:text-4xl text-text-primary font-extrabold tracking-tight">Bài hát nổi bật</h2>
+                <span class="text-xs font-mono font-bold uppercase tracking-wider text-accent-primary block">Kho Video Tab</span>
+                <h2 class="text-xl sm:text-2xl text-text-primary font-extrabold tracking-tight">Bài hát nổi bật</h2>
                 <p class="text-text-muted text-xs sm:text-sm font-medium leading-relaxed">
                   Mấy bài được anh em yêu thích nhất — xem hết rồi ghé qua Kho Video Tab để khám phá thêm nhé!
                 </p>
@@ -366,8 +353,8 @@
           <!-- 2. BỘ ĐỒ NGHỀ MÌNH ĐANG DÙNG (THIẾT BỊ & PHỤ KIỆN) -->
           <div class="pt-6 w-full">
             <div class="text-center max-w-2xl mx-auto mb-8 space-y-2">
-              <span class="text-xs font-mono font-bold uppercase tracking-wider text-accent-primary block">Thiết Bị & Phụ Kiện</span>
-              <h3 class="text-2xl sm:text-3xl font-extrabold text-text-primary">Bộ đồ nghề mình đang dùng</h3>
+              <span class="text-xs font-mono font-bold uppercase tracking-wider text-accent-primary block">Thiết bị & phụ kiện</span>
+              <h3 class="text-xl sm:text-2xl font-extrabold text-text-primary">Bộ đồ nghề mình đang dùng</h3>
               <p class="text-xs sm:text-sm text-text-muted font-medium">Mấy món đồ đơn giản mình dùng để quay clip và thu âm hằng ngày.</p>
             </div>
 
@@ -394,7 +381,7 @@
           <div id="faq" class="pt-10 w-full space-y-6">
             <div class="text-center max-w-2xl mx-auto space-y-1.5 mb-2">
               <span class="text-xs font-mono font-bold uppercase tracking-wider text-accent-primary block">Giải đáp thắc mắc</span>
-              <h3 class="text-2xl sm:text-3xl font-extrabold text-text-primary">Câu hỏi thường gặp</h3>
+              <h3 class="text-xl sm:text-2xl font-extrabold text-text-primary">Câu hỏi thường gặp</h3>
               <p class="text-xs sm:text-sm text-text-muted font-medium">Mấy thắc mắc anh em hay nhắn hỏi mình nhất trước khi bắt đầu tập.</p>
             </div>
 
@@ -552,6 +539,26 @@
               </button>
             </div>
           </div>
+          <!-- 4. GAME LUYỆN CẢM ÂM — nội dung phụ nên nằm cuối trang, dạng thẻ gọn
+               (trước là dải gradient rực ngay dưới thư viện, lấn át nội dung chính). -->
+          <a href="/luyen-cam-am.html"
+            class="group flex items-center gap-4 p-4 sm:p-5 rounded-2xl bg-glass-bg border border-glass-border hover:border-accent-primary/40 hover:shadow-md transition-all">
+            <span aria-hidden="true" class="flex-shrink-0 w-11 h-11 sm:w-12 sm:h-12 rounded-full grid place-items-center bg-amber-100 text-amber-700 dark:bg-amber-500/15 dark:text-amber-300">
+              <svg class="w-6 h-6" viewBox="0 0 64 64" fill="none">
+                <path d="M13 40V32a19 19 0 0 1 38 0v8" stroke="currentColor" stroke-width="5" stroke-linecap="round" />
+                <rect x="6" y="35" width="14" height="21" rx="7" fill="currentColor" />
+                <rect x="44" y="35" width="14" height="21" rx="7" fill="currentColor" />
+              </svg>
+            </span>
+            <span class="min-w-0 flex-1">
+              <span class="block text-sm sm:text-base font-bold text-text-primary">Game luyện cảm âm và trí nhớ</span>
+              <span class="block text-xs sm:text-sm text-text-muted font-medium">Nghe chuỗi nốt guitar rồi lặp lại đúng thứ tự — vài phút mỗi ngày là tai thính hẳn lên.</span>
+            </span>
+            <span class="flex-shrink-0 inline-flex items-center gap-1.5 text-sm font-bold text-accent-primary">
+              <span class="hidden sm:inline">Chơi thử</span>
+              <svg class="w-4 h-4 transition-transform group-hover:translate-x-0.5" fill="none" stroke="currentColor" stroke-width="2.4" viewBox="0 0 24 24" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="M5 12h14M13 6l6 6-6 6"/></svg>
+            </span>
+          </a>
         </div>
 
         <!-- TAB CONTENT 4: HỒ SƠ & MẬT KHẨU (PROFILE & SETTINGS) -->
