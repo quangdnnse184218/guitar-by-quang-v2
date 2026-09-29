@@ -96,7 +96,6 @@ const userEmailDisplay = document.getElementById('user-email-display')
 const statJoinDate = document.getElementById('stat-join-date')
 const statPurchasedCount = document.getElementById('stat-purchased-count')
 const statFavCount = document.getElementById('stat-fav-count')
-const statSpent = document.getElementById('stat-spent')
 
 const tabFavCounter = document.getElementById('tab-fav-counter')
 const tabPurchasedCounter = document.getElementById('tab-purchased-counter')
@@ -402,7 +401,6 @@ async function checkAuthAndInit() {
       supabase.from('purchases').select('song_id').eq('user_id', currentUser.id),
     ])
 
-    loadSpentTotal()
     allSongs = songs || []
     favoriteSongIds = new Set((favRes.data || []).map((f) => String(f.song_id)))
     purchasedSongIds = new Set((purRes.data || []).map((p) => String(p.song_id)))
@@ -419,31 +417,6 @@ async function checkAuthAndInit() {
     console.error('Initialization error:', err)
     showToast('Lỗi tải dữ liệu thành viên. Vui lòng thử lại!', 'error')
   }
-}
-
-/** 239.000đ; từ 1 triệu rút gọn "1,2 tr" để vừa ô số liệu trên điện thoại. */
-function formatSpent(n) {
-  if (n >= 1_000_000) {
-    return `${(n / 1_000_000).toLocaleString('vi-VN', { maximumFractionDigits: 1 })} tr`
-  }
-  return `${n.toLocaleString('vi-VN')}đ`
-}
-
-// Ô "Đã ủng hộ" = tổng các đơn đã thanh toán của chính khách. Lỗi thì để "—",
-// không làm hỏng phần còn lại của trang.
-async function loadSpentTotal() {
-  if (!statSpent) return
-  const { data, error } = await supabase
-    .from('orders')
-    .select('amount')
-    .eq('user_id', currentUser.id)
-    .eq('status', 'paid')
-  if (error) {
-    statSpent.textContent = '—'
-    return
-  }
-  const total = (data || []).reduce((sum, o) => sum + (Number(o.amount) || 0), 0)
-  statSpent.textContent = formatSpent(total)
 }
 
 // Viết hoa chữ cái đầu mỗi từ cho tên hiển thị ở lời chào — chỉ ảnh hưởng

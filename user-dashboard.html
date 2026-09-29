@@ -228,29 +228,25 @@
           </a>
         </header>
 
-        <!-- Tóm tắt nhanh: 4 ô trong MỘT khung, ngăn bằng đường mảnh (gap-px trên nền
+        <!-- Tóm tắt nhanh: 3 ô trong MỘT khung, ngăn bằng đường mảnh (gap-px trên nền
              màu viền; ô dùng glass-bg đục) — không phải 4 thẻ rời. Hai ô Tab đã mua /
              Yêu thích bấm được để mở đúng mục thư viện. -->
-        <div id="member-stats" class="grid grid-cols-2 sm:grid-cols-4 gap-px rounded-2xl overflow-hidden border border-glass-border bg-glass-border">
-          <button type="button" data-go-tab="purchases" class="group text-left bg-glass-bg hover:bg-glass-bg-hover p-4 sm:p-5 transition-colors cursor-pointer">
-            <span class="flex items-center justify-between text-xs font-semibold text-text-muted">Tab đã mua
+        <div id="member-stats" class="grid grid-cols-3 gap-px rounded-2xl overflow-hidden border border-glass-border bg-glass-border">
+          <button type="button" data-go-tab="purchases" class="group text-left bg-glass-bg hover:bg-glass-bg-hover p-3 sm:p-5 transition-colors cursor-pointer">
+            <span class="flex items-center justify-between text-xs font-semibold text-text-muted">Đã mua
               <svg class="w-3.5 h-3.5 opacity-0 group-hover:opacity-100 transition-opacity" fill="none" stroke="currentColor" stroke-width="2.4" viewBox="0 0 24 24" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="M5 12h14M13 6l6 6-6 6"/></svg>
             </span>
-            <span id="stat-purchased-count" class="block mt-1 text-xl sm:text-3xl font-extrabold tabular-nums text-text-primary">0</span>
+            <span id="stat-purchased-count" class="block mt-1 text-lg sm:text-3xl font-extrabold tabular-nums text-text-primary">0</span>
           </button>
-          <div class="bg-glass-bg p-4 sm:p-5">
-            <span class="block text-xs font-semibold text-text-muted">Đã ủng hộ</span>
-            <span id="stat-spent" class="block mt-1 text-xl sm:text-3xl font-extrabold tabular-nums text-accent-primary">0đ</span>
-          </div>
-          <button type="button" data-go-tab="favorites" class="group text-left bg-glass-bg hover:bg-glass-bg-hover p-4 sm:p-5 transition-colors cursor-pointer">
+          <button type="button" data-go-tab="favorites" class="group text-left bg-glass-bg hover:bg-glass-bg-hover p-3 sm:p-5 transition-colors cursor-pointer">
             <span class="flex items-center justify-between text-xs font-semibold text-text-muted">Yêu thích
               <svg class="w-3.5 h-3.5 opacity-0 group-hover:opacity-100 transition-opacity" fill="none" stroke="currentColor" stroke-width="2.4" viewBox="0 0 24 24" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="M5 12h14M13 6l6 6-6 6"/></svg>
             </span>
-            <span id="stat-fav-count" class="block mt-1 text-xl sm:text-3xl font-extrabold tabular-nums text-text-primary">0</span>
+            <span id="stat-fav-count" class="block mt-1 text-lg sm:text-3xl font-extrabold tabular-nums text-text-primary">0</span>
           </button>
-          <div class="bg-glass-bg p-4 sm:p-5">
-            <span class="block text-xs font-semibold text-text-muted">Thành viên từ</span>
-            <span id="stat-join-date" class="block mt-1 text-xl sm:text-3xl font-extrabold tabular-nums text-text-primary">...</span>
+          <div class="bg-glass-bg p-3 sm:p-5">
+            <span class="block text-xs font-semibold text-text-muted">Tham gia</span>
+            <span id="stat-join-date" class="block mt-1 text-sm leading-7 sm:leading-normal sm:text-3xl font-extrabold tabular-nums text-text-primary">...</span>
           </div>
         </div>
 
