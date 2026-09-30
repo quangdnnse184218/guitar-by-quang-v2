@@ -2651,3 +2651,9 @@ body.modal-open {
     display: none;
   }
 }
+
+/* Bàn phím ảo đang mở: chừa khoảng trống cuối trang bằng chiều cao bàn phím để trang
+   ngắn (form căn giữa) vẫn cuộn được ô nhập lên trên bàn phím. Xem keyboard-reveal.js. */
+body.kb-open {
+  padding-bottom: var(--kb-space, 0px);
+}

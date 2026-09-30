@@ -1,5 +1,6 @@
 import { supabase } from './lib/supabase.js'
 import { withReturnTo } from './lib/navigate.js'
+import { initKeyboardReveal } from './lib/keyboard-reveal.js'
 import { iconBolt, iconPerson, iconLogout, iconCrown } from './icons.js'
 
 // profiles.full_name/avatar_url do chính người dùng tự đặt (qua form Hồ Sơ) —
@@ -737,64 +738,9 @@ function updateBottomNavAccount({ href, label, avatarHtml }) {
  * Keeps focused inputs visible above the mobile keyboard
  */
 export function initMobileKeyboardScroll() {
-  if (window._gbq_keyboard_scroll_initialized) return
-  window._gbq_keyboard_scroll_initialized = true
-
-  function scrollIntoVisibleArea(el) {
-    if (!el || !(el instanceof HTMLElement)) return
-
-    // Immediate gentle scroll
-    setTimeout(() => {
-      el.scrollIntoView({
-        behavior: 'smooth',
-        block: 'center',
-        inline: 'nearest',
-      })
-    }, 150)
-
-    // Keyboard animation sync scroll (~300-400ms on iOS/Android)
-    setTimeout(() => {
-      el.scrollIntoView({
-        behavior: 'smooth',
-        block: 'center',
-        inline: 'nearest',
-      })
-    }, 350)
-  }
-
-  // Listen to focus on all inputs/textareas
-  document.addEventListener(
-    'focusin',
-    (e) => {
-      const target = e.target
-      if (
-        target &&
-        (target.tagName === 'INPUT' || target.tagName === 'TEXTAREA' || target.tagName === 'SELECT')
-      ) {
-        scrollIntoVisibleArea(target)
-      }
-    },
-    { passive: true }
-  )
-
-  // Handle virtual viewport resize when keyboard opens or closes
-  if (window.visualViewport) {
-    window.visualViewport.addEventListener(
-      'resize',
-      () => {
-        const active = document.activeElement
-        if (
-          active &&
-          (active.tagName === 'INPUT' ||
-            active.tagName === 'TEXTAREA' ||
-            active.tagName === 'SELECT')
-        ) {
-          scrollIntoVisibleArea(active)
-        }
-      },
-      { passive: true }
-    )
-  }
+  // Logic ở src/lib/keyboard-reveal.js (đo vùng trên bàn phím bằng visualViewport,
+  // chừa chỗ cuộn cho trang ngắn, cuộn cả hộp thoại cố định) — có test riêng.
+  initKeyboardReveal()
 }
 
 /**
