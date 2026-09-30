@@ -7,8 +7,8 @@
  */
 import { escapeHtml } from '../admin/format.js'
 
-/** Số món hiện sẵn trước khi bấm "Xem thêm" (dạng hàng gọn nên hiện đủ 6). */
-export const GEAR_INITIAL_LIMIT = 6
+/** Số món hiện sẵn trước khi bấm "Xem thêm" (món thứ 5 trở đi mang class ẩn). */
+export const GEAR_INITIAL_LIMIT = 4
 
 const ARROW_ICON =
   '<svg class="w-3.5 h-3.5 transition-transform group-hover/link:translate-x-0.5" fill="none" stroke="currentColor" stroke-width="2.4" viewBox="0 0 24 24" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="M5 12h14M13 6l6 6-6 6"/></svg>'
@@ -52,7 +52,7 @@ export function renderGearCard(gear, idx) {
     : `<div class="${thumbClass}">${imgInner}</div>`
 
   return `
-      <article class="gear-row flex gap-3.5 sm:gap-4 p-3 sm:p-4 rounded-2xl bg-glass-bg border border-glass-border hover:border-accent-primary/40 hover:shadow-md transition-all ${extraClass}">
+      <article class="gear-row flex gap-3.5 sm:gap-4 p-3 sm:p-4 rounded-2xl ${extraClass}">
         ${thumbHtml}
         <div class="min-w-0 flex-1 flex flex-col gap-1">
           <span class="text-[10px] font-bold uppercase tracking-wider text-accent-primary truncate">${escapeHtml(gear.category || 'Phụ kiện')}</span>

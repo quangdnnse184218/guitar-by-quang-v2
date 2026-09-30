@@ -567,6 +567,11 @@ nav,
   transition: color 0.2s ease;
 }
 
+/* "Của tôi" chỉ hiện khi đã đăng nhập (common.js thêm .is-member) — khách không thấy nháy. */
+.nav-link[data-member-only]:not(.is-member) {
+  display: none;
+}
+
 .nav-link:hover,
 .nav-link.active {
   color: rgb(var(--text-primary));
@@ -2572,4 +2577,65 @@ body.modal-open {
     0 0 0 2px rgb(226 179 74 / 0.55),
     0 0 0 6px rgb(226 179 74 / 0.12),
     0 8px 18px rgb(0 0 0 / 0.45);
+}
+
+/* ==========================================================================
+   THẺ ĐỒ NGHỀ — "nổi khối": viền mảnh + mép dưới dày hơn (như một khối có độ
+   dày), vệt sáng mép trên, bóng 2 lớp. Mặc định là giao diện tối (:root),
+   [data-theme='light'] ghi đè cho giao diện sáng.
+   ========================================================================== */
+.gear-row {
+  background: linear-gradient(180deg, rgb(var(--glass-bg-hover)), rgb(var(--glass-bg)));
+  border: 1px solid rgb(255 255 255 / 0.08);
+  border-bottom: 3px solid rgb(0 0 0 / 0.45);
+  box-shadow:
+    inset 0 1px 0 rgb(255 255 255 / 0.07),
+    0 1px 2px rgb(0 0 0 / 0.3),
+    0 12px 24px -14px rgb(0 0 0 / 0.7);
+  transition:
+    transform 0.2s ease,
+    box-shadow 0.2s ease,
+    border-color 0.2s ease;
+}
+
+.gear-row:hover {
+  transform: translateY(-2px);
+  border-color: rgb(var(--accent-primary) / 0.45);
+  border-bottom-color: rgb(var(--accent-primary) / 0.55);
+  box-shadow:
+    inset 0 1px 0 rgb(255 255 255 / 0.09),
+    0 2px 4px rgb(0 0 0 / 0.3),
+    0 20px 34px -16px rgb(0 0 0 / 0.75);
+}
+
+[data-theme='light'] .gear-row {
+  background: linear-gradient(180deg, #fffdf8, #f7f0e3);
+  border-color: rgb(120 88 48 / 0.16);
+  border-bottom-color: rgb(120 88 48 / 0.3);
+  box-shadow:
+    inset 0 1px 0 rgb(255 255 255 / 0.95),
+    0 1px 2px rgb(70 45 20 / 0.08),
+    0 12px 24px -14px rgb(70 45 20 / 0.38);
+}
+
+[data-theme='light'] .gear-row:hover {
+  border-color: rgb(var(--accent-primary) / 0.45);
+  border-bottom-color: rgb(var(--accent-primary) / 0.6);
+  box-shadow:
+    inset 0 1px 0 rgb(255 255 255 / 0.95),
+    0 2px 4px rgb(70 45 20 / 0.1),
+    0 22px 36px -16px rgb(70 45 20 / 0.45);
+}
+
+/* Ô ảnh lõm nhẹ vào trong khối */
+.gear-row .group\/img {
+  box-shadow: inset 0 1px 3px rgb(0 0 0 / 0.12);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .gear-row,
+  .gear-row:hover {
+    transition: none;
+    transform: none;
+  }
 }

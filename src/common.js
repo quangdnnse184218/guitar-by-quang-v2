@@ -483,6 +483,7 @@ export async function initAuthHeader() {
       }
     }
 
+    document.querySelectorAll('#desktop-nav [data-member-only]').forEach((a) => a.classList.add('is-member'))
     updateBottomNavAccount({
       href: targetDashboardUrl,
       label: isAdmin ? 'Quản trị' : 'Của tôi',
