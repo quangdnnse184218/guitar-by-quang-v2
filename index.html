@@ -406,14 +406,10 @@
             <p class="text-xs sm:text-sm text-text-muted font-medium">Đồ mình dùng để quay clip và thu âm hằng ngày.</p>
           </div>
 
-          <!-- 4-col Grid on Desktop / 2-col on Mobile -->
-          <div id="gear-container"
-            class="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-4 gap-3.5 sm:gap-4 md:gap-5 lg:gap-6 w-full">
-            <!-- Skeletons: Populated by JS -->
-            <div class="w-full rounded-2xl sm:rounded-3xl bg-glass-bg animate-pulse aspect-square border border-glass-border"></div>
-            <div class="w-full rounded-2xl sm:rounded-3xl bg-glass-bg animate-pulse aspect-square border border-glass-border"></div>
-            <div class="w-full rounded-2xl sm:rounded-3xl bg-glass-bg animate-pulse aspect-square border border-glass-border"></div>
-            <div class="w-full rounded-2xl sm:rounded-3xl bg-glass-bg animate-pulse aspect-square border border-glass-border"></div>
+          <!-- Danh sách hàng ngang: máy tính 2 cột, điện thoại 1 cột (thẻ ở src/lib/gear-card.js) -->
+          <div id="gear-container" class="grid grid-cols-1 md:grid-cols-2 gap-3 sm:gap-4 max-w-5xl mx-auto">
+            <div class="h-28 sm:h-32 rounded-2xl bg-glass-bg animate-pulse border border-glass-border"></div>
+            <div class="h-28 sm:h-32 rounded-2xl bg-glass-bg animate-pulse border border-glass-border"></div>
           </div>
 
           <!-- Nút Xem thêm phụ kiện -->

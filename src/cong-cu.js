@@ -7,7 +7,7 @@
 import { initNavbarShrink, initMobileMenu, initHeaderOverlapFix } from './common.js'
 import { initThemeToggle } from './theme-toggle.js'
 import { fetchAllGears } from './lib/gears-service.js'
-import { renderGearCard } from './lib/gear-card.js'
+import { renderGearCard, GEAR_INITIAL_LIMIT } from './lib/gear-card.js'
 
 initNavbarShrink()
 initMobileMenu()
@@ -119,10 +119,10 @@ async function renderGears() {
     .join('')
 
   // Configure Show More Button
-  if (showMoreWrap && showMoreBtn && gears.length > 4) {
+  if (showMoreWrap && showMoreBtn && gears.length > GEAR_INITIAL_LIMIT) {
     showMoreWrap.classList.remove('hidden')
     let isExpanded = false
-    const extraCount = gears.length - 4
+    const extraCount = gears.length - GEAR_INITIAL_LIMIT
 
     showMoreText.textContent = `Xem thêm (${extraCount} món đồ khác)`
 
