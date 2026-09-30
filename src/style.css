@@ -887,6 +887,8 @@ nav,
 }
 
 .faq-filter-pill {
+  flex-shrink: 0;
+  white-space: nowrap;
   position: relative;
   padding: 6px 14px;
   border-radius: 9999px;
@@ -1224,8 +1226,22 @@ nav,
 }
 
 .faq-item[open] {
-  border-color: rgb(var(--accent-primary));
   background: rgb(var(--glass-bg-hover));
+}
+
+/* Hỏi đáp: một khung chung, các câu ngăn bằng đường kẻ mảnh (bỏ qua câu đang ẩn
+   do bộ lọc / "Xem thêm"). */
+.faq-list > .faq-item:not(.hidden) ~ .faq-item:not(.hidden) {
+  border-top: 1px solid rgb(var(--glass-border-rgb) / var(--glass-border-alpha));
+}
+
+.faq-item summary:hover .faq-icon,
+.faq-item[open] summary .faq-icon {
+  color: rgb(var(--accent-primary));
+}
+
+.faq-item[open] summary {
+  color: rgb(var(--accent-primary));
 }
 
 .faq-item summary {
@@ -1242,7 +1258,7 @@ nav,
 }
 
 .faq-item[open] summary .faq-icon {
-  transform: rotate(45deg);
+  transform: rotate(180deg);
 }
 
 /* Scrollbar none utility */
