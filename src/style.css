@@ -2657,3 +2657,44 @@ body.modal-open {
 body.kb-open {
   padding-bottom: var(--kb-space, 0px);
 }
+
+/* Ô liên hệ (Zalo/Facebook) ở phần Liên hệ trang chủ — gọn, cùng tông trang, nổi nhẹ. */
+.contact-chip {
+  display: flex;
+  align-items: center;
+  gap: 0.625rem;
+  padding: 0.625rem 0.75rem;
+  border-radius: 1rem;
+  background: rgb(var(--glass-bg));
+  border: 1px solid rgb(var(--glass-border-rgb) / var(--glass-border-alpha));
+  box-shadow: 0 6px 16px -10px rgb(0 0 0 / 0.35);
+  transition:
+    transform 0.15s ease,
+    border-color 0.15s ease;
+}
+
+.contact-chip:hover {
+  transform: translateY(-1px);
+  border-color: rgb(var(--accent-primary) / 0.45);
+}
+
+.contact-chip:active {
+  transform: scale(0.98);
+}
+
+/* Màn rất hẹp (< 360px, vd iPhone SE đời đầu): ô liên hệ chỉ rộng ~135px → thu đệm
+   và biểu tượng để số điện thoại không bị cắt. */
+@media (max-width: 359.98px) {
+  .contact-chip {
+    gap: 0.4rem;
+    padding: 0.5rem 0.55rem;
+  }
+  .contact-chip > span:first-child {
+    width: 1.75rem;
+    height: 1.75rem;
+  }
+  .contact-chip > span:last-child > span:last-child {
+    font-size: 10.5px;
+    letter-spacing: -0.01em;
+  }
+}
