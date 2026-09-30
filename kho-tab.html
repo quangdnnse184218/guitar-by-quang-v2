@@ -221,9 +221,20 @@
 
         <div id="filter-backdrop" class="fixed inset-0 z-[55] bg-black/50 backdrop-blur-sm hidden lg:!hidden" aria-hidden="true"></div>
 
+        <!-- Cột trái: ô tìm kiếm + bộ lọc, đứng yên cùng nhau (lg+), không cuộn bên trong.
+             Dưới lg: ô tìm kiếm nằm trên lưới bài, bộ lọc thành bảng trượt. -->
+        <div class="space-y-3 mb-4 lg:mb-0 lg:sticky lg:top-28">
+          <div class="relative">
+            <input type="search" id="search-input" placeholder="Tìm bài hoặc ca sĩ..." aria-label="Tìm bài hát"
+              class="w-full pl-10 pr-4 py-2.5 bg-glass-bg border border-glass-border rounded-full text-text-primary placeholder:text-text-faint focus:outline-none focus:border-accent-primary/50 transition-colors text-sm font-medium" />
+            <svg class="w-4 h-4 absolute left-3.5 top-1/2 -translate-y-1/2 text-text-muted" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
+            </svg>
+          </div>
+
         <aside id="filter-panel" class="filter-panel" aria-label="Bộ lọc bài hát">
-          <div class="flex items-center justify-between gap-3 mb-4">
-            <h2 class="text-base font-extrabold text-text-primary">Bộ lọc</h2>
+          <div class="flex items-center justify-between gap-3 mb-3">
+            <h2 class="text-sm font-extrabold text-text-primary">Bộ lọc</h2>
             <div class="flex items-center gap-1">
               <button type="button" id="filter-reset" class="px-2.5 py-1.5 rounded-full text-xs font-bold text-accent-primary hover:bg-accent-primary/10 transition-colors cursor-pointer disabled:opacity-40 disabled:cursor-default disabled:hover:bg-transparent" disabled>Xoá lọc</button>
               <button type="button" id="filter-close" class="lg:hidden w-9 h-9 grid place-items-center rounded-full hover:bg-glass-bg-hover text-text-muted cursor-pointer" aria-label="Đóng bộ lọc">
@@ -232,7 +243,7 @@
             </div>
           </div>
 
-          <div class="space-y-5">
+          <div class="space-y-4">
             <fieldset class="filter-group">
               <legend>Giá</legend>
               <div class="filter-chips" data-group="price">
@@ -260,37 +271,14 @@
               </div>
             </fieldset>
 
-            <fieldset class="filter-group">
-              <legend>Độ khó</legend>
-              <div class="filter-chips" data-group="level">
-                <button type="button" class="filter-chip" data-value="all" aria-pressed="true">Tất cả</button>
-                <button type="button" class="filter-chip" data-value="easy" aria-pressed="false">Dễ</button>
-                <button type="button" class="filter-chip" data-value="medium" aria-pressed="false">Vừa</button>
-                <button type="button" class="filter-chip" data-value="hard" aria-pressed="false">Khó</button>
-              </div>
-            </fieldset>
 
-            <fieldset class="filter-group">
-              <legend>Capo</legend>
-              <div class="filter-chips" data-group="capo">
-                <button type="button" class="filter-chip" data-value="all" aria-pressed="true">Tất cả</button>
-                <button type="button" class="filter-chip" data-value="none" aria-pressed="false">Không capo</button>
-                <button type="button" class="filter-chip" data-value="with" aria-pressed="false">Có capo</button>
-              </div>
-            </fieldset>
           </div>
 
           <button type="button" id="filter-apply" class="lg:hidden mt-6 w-full py-3 rounded-full bg-warm-gradient text-white text-sm font-bold shadow-md cursor-pointer">Xem kết quả</button>
         </aside>
+        </div>
 
         <div class="min-w-0 space-y-4">
-          <div class="relative">
-            <input type="search" id="search-input" placeholder="Tìm tên bài hoặc ca sĩ..." aria-label="Tìm bài hát"
-              class="w-full pl-10 pr-4 py-2.5 bg-glass-bg border border-glass-border rounded-full text-text-primary placeholder:text-text-faint focus:outline-none focus:border-accent-primary/50 transition-colors text-sm font-medium" />
-            <svg class="w-4 h-4 absolute left-3.5 top-1/2 -translate-y-1/2 text-text-muted" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
-            </svg>
-          </div>
 
           <div class="flex items-center gap-2">
             <button type="button" id="filter-open" class="lg:hidden inline-flex items-center gap-1.5 px-3.5 py-2 rounded-full bg-glass-bg border border-glass-border text-xs font-bold text-text-primary cursor-pointer" aria-controls="filter-panel" aria-expanded="false">

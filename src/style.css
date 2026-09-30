@@ -2443,19 +2443,10 @@ body.modal-open {
 .filter-panel {
   background: rgb(var(--glass-bg));
   border: 1px solid rgb(var(--glass-border-rgb) / var(--glass-border-alpha));
-  border-radius: 1.5rem;
-  padding: 1.25rem;
+  border-radius: 1.25rem;
+  padding: 1rem;
 }
 
-@media (min-width: 1024px) {
-  .filter-panel {
-    position: sticky;
-    top: 7rem;
-    max-height: calc(100vh - 8rem);
-    overflow-y: auto;
-    scrollbar-width: thin;
-  }
-}
 
 @media (max-width: 1023.98px) {
   .filter-panel {
@@ -2489,7 +2480,7 @@ body.modal-open {
 }
 
 .filter-group legend {
-  margin-bottom: 0.5rem;
+  margin-bottom: 0.4rem;
   font-size: 0.75rem;
   font-weight: 700;
   color: rgb(var(--text-muted));
@@ -2531,7 +2522,7 @@ body.modal-open {
   display: flex;
   align-items: center;
   gap: 0.6rem;
-  padding: 0.4rem 0.25rem;
+  padding: 0.3rem 0.25rem;
   border-radius: 0.6rem;
   font-size: 0.8125rem;
   font-weight: 600;

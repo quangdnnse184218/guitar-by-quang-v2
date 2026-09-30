@@ -36,8 +36,8 @@ initCardTouchFeedback()
 // STATE
 // ==========================================================================
 let allSongs = []
-// Bộ lọc: nhóm chọn một (giá, thể loại, độ khó, capo), nhóm "Của tôi" chọn nhiều.
-const DEFAULT_FILTERS = { price: 'all', category: 'all', level: 'all', capo: 'all' }
+// Bộ lọc: nhóm chọn một (giá, thể loại), nhóm "Của tôi" chọn nhiều.
+const DEFAULT_FILTERS = { price: 'all', category: 'all' }
 let filters = { ...DEFAULT_FILTERS }
 let mineFilters = new Set() // purchased | favorite | learned | unlearned
 let sortMode = 'default'
@@ -151,22 +151,10 @@ function removeAccents(str) {
     .toLowerCase()
 }
 
-/** "6.5/10" → 6.5; thiếu thì coi như giữa thang. */
+/** "6.5/10" → 6.5 (dùng cho sắp xếp theo độ khó); thiếu thì coi như giữa thang. */
 function levelNumber(song) {
   const n = parseFloat(String(song.level ?? '').replace(',', '.'))
   return Number.isFinite(n) ? n : 5
-}
-
-function levelBucket(song) {
-  const n = levelNumber(song)
-  if (n <= 5) return 'easy'
-  if (n < 7.5) return 'medium'
-  return 'hard'
-}
-
-function hasCapo(song) {
-  const c = String(song.capo ?? '').trim()
-  return c !== '' && c !== '0' && !/không/i.test(c)
 }
 
 function activeFilterCount() {
@@ -181,9 +169,6 @@ function applyFilters(songs) {
     if (filters.price === 'free' && !free) return false
     if (filters.price === 'paid' && free) return false
     if (filters.category !== 'all' && (s.category || '') !== filters.category) return false
-    if (filters.level !== 'all' && levelBucket(s) !== filters.level) return false
-    if (filters.capo === 'none' && hasCapo(s)) return false
-    if (filters.capo === 'with' && !hasCapo(s)) return false
     if (mineFilters.has('purchased') && !purchasedSongIds.has(id)) return false
     if (mineFilters.has('favorite') && !favoriteSongIds.has(id)) return false
     if (mineFilters.has('learned') && !learned.has(id)) return false
