@@ -7,7 +7,7 @@
 import { initNavbarShrink, initMobileMenu, initHeaderOverlapFix } from './common.js'
 import { initThemeToggle } from './theme-toggle.js'
 import { fetchAllGears } from './lib/gears-service.js'
-import { renderGearCard, GEAR_INITIAL_LIMIT } from './lib/gear-card.js'
+import { renderGearCard, setupGearShowMore } from './lib/gear-card.js'
 
 initNavbarShrink()
 initMobileMenu()
@@ -118,38 +118,14 @@ async function renderGears() {
     .map((gear, idx) => renderGearCard(gear, idx))
     .join('')
 
-  // Configure Show More Button
-  if (showMoreWrap && showMoreBtn && gears.length > GEAR_INITIAL_LIMIT) {
-    showMoreWrap.classList.remove('hidden')
-    let isExpanded = false
-    const extraCount = gears.length - GEAR_INITIAL_LIMIT
-
-    showMoreText.textContent = `Xem thêm (${extraCount} món đồ khác)`
-
-    showMoreBtn.onclick = () => {
-      isExpanded = !isExpanded
-      const extraCards = gearsGrid.querySelectorAll('.gear-card-extra')
-      extraCards.forEach((card) => {
-        if (isExpanded) {
-          card.classList.remove('hidden')
-          card.classList.add('animate-in', 'fade-in', 'zoom-in-95', 'duration-200')
-        } else {
-          card.classList.add('hidden')
-          card.classList.remove('animate-in', 'fade-in', 'zoom-in-95', 'duration-200')
-        }
-      })
-
-      if (isExpanded) {
-        showMoreText.textContent = 'Thu gọn bớt'
-        if (showMoreIcon) showMoreIcon.classList.add('rotate-180')
-      } else {
-        showMoreText.textContent = `Xem thêm (${extraCount} món đồ khác)`
-        if (showMoreIcon) showMoreIcon.classList.remove('rotate-180')
-      }
-    }
-  } else if (showMoreWrap) {
-    showMoreWrap.classList.add('hidden')
-  }
+  setupGearShowMore({
+    container: gearsGrid,
+    wrap: showMoreWrap,
+    btn: showMoreBtn,
+    textEl: showMoreText,
+    icon: showMoreIcon,
+    total: gears.length,
+  })
 }
 
 document.addEventListener('DOMContentLoaded', () => {

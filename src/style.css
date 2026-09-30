@@ -2639,3 +2639,15 @@ body.modal-open {
     transform: none;
   }
 }
+
+/* Đồ nghề: số món hiện sẵn theo cỡ màn (điện thoại 2, máy tính 4); .is-expanded mở hết.
+   JS ở setupGearShowMore() trong src/lib/gear-card.js. */
+.gear-list:not(.is-expanded) .gear-extra {
+  display: none;
+}
+
+@media (max-width: 767.98px) {
+  .gear-list:not(.is-expanded) .gear-extra-mobile {
+    display: none;
+  }
+}

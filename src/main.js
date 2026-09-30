@@ -20,7 +20,7 @@ import {
   normalizeAudioPath,
 } from './lib/songs-service.js'
 import { fetchAllGears } from './lib/gears-service.js'
-import { renderGearCard, GEAR_INITIAL_LIMIT } from './lib/gear-card.js'
+import { renderGearCard, setupGearShowMore } from './lib/gear-card.js'
 import { applyScrollReveal, applyHeroEntrance } from './animations/scroll-reveal.js'
 import { toggleCompleted } from './lib/local-storage-service.js'
 import { supabase } from './lib/supabase.js'
@@ -136,38 +136,14 @@ export function renderGears(gears) {
     .map((gear, idx) => renderGearCard(gear, idx))
     .join('')
 
-  // Configure Show More Button
-  if (showMoreWrap && showMoreBtn && gears.length > GEAR_INITIAL_LIMIT) {
-    showMoreWrap.classList.remove('hidden')
-    let isExpanded = false
-    const extraCount = gears.length - GEAR_INITIAL_LIMIT
-
-    showMoreText.textContent = `Xem thêm (${extraCount} món đồ khác)`
-
-    showMoreBtn.onclick = () => {
-      isExpanded = !isExpanded
-      const extraCards = container.querySelectorAll('.gear-card-extra')
-      extraCards.forEach((card) => {
-        if (isExpanded) {
-          card.classList.remove('hidden')
-          card.classList.add('animate-in', 'fade-in', 'zoom-in-95', 'duration-200')
-        } else {
-          card.classList.add('hidden')
-          card.classList.remove('animate-in', 'fade-in', 'zoom-in-95', 'duration-200')
-        }
-      })
-
-      if (isExpanded) {
-        showMoreText.textContent = 'Thu gọn bớt'
-        if (showMoreIcon) showMoreIcon.classList.add('rotate-180')
-      } else {
-        showMoreText.textContent = `Xem thêm (${extraCount} món đồ khác)`
-        if (showMoreIcon) showMoreIcon.classList.remove('rotate-180')
-      }
-    }
-  } else if (showMoreWrap) {
-    showMoreWrap.classList.add('hidden')
-  }
+  setupGearShowMore({
+    container: container,
+    wrap: showMoreWrap,
+    btn: showMoreBtn,
+    textEl: showMoreText,
+    icon: showMoreIcon,
+    total: gears.length,
+  })
 
   applyScrollReveal('#gear-container .glass-card')
 }

@@ -7,8 +7,9 @@
  */
 import { escapeHtml } from '../admin/format.js'
 
-/** Số món hiện sẵn trước khi bấm "Xem thêm" (món thứ 5 trở đi mang class ẩn). */
+/** Số món hiện sẵn trước khi bấm "Xem thêm": máy tính 4, điện thoại 2. */
 export const GEAR_INITIAL_LIMIT = 4
+export const GEAR_INITIAL_LIMIT_MOBILE = 2
 
 const ARROW_ICON =
   '<svg class="w-3.5 h-3.5 transition-transform group-hover/link:translate-x-0.5" fill="none" stroke="currentColor" stroke-width="2.4" viewBox="0 0 24 24" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="M5 12h14M13 6l6 6-6 6"/></svg>'
@@ -31,7 +32,13 @@ export function renderGearCard(gear, idx) {
       ? gear.image
       : '/' + gear.image
     : '/assets/clover.jpg'
-  const extraClass = idx >= GEAR_INITIAL_LIMIT ? 'gear-card-extra hidden' : ''
+  // Ẩn/hiện bằng CSS theo cỡ màn (.gear-list trong style.css), không dùng class hidden
+  const extraClass = [
+    idx >= GEAR_INITIAL_LIMIT_MOBILE ? 'gear-extra-mobile' : '',
+    idx >= GEAR_INITIAL_LIMIT ? 'gear-extra' : '',
+  ]
+    .filter(Boolean)
+    .join(' ')
 
   // Có link mua → "Mua ngay"; không có → ghi chú của admin (nếu có) + hỏi qua Zalo.
   const actionHtml = buyUrl
@@ -63,4 +70,35 @@ export function renderGearCard(gear, idx) {
         </div>
       </article>
     `
+}
+
+/**
+ * Nút "Xem thêm" dưới danh sách đồ nghề (trang chủ + trang Công cụ). Số món hiện sẵn
+ * do CSS quyết định theo cỡ màn; nút ghi đúng số món còn ẩn ở cỡ màn đang xem.
+ */
+export function setupGearShowMore({ container, wrap, btn, textEl, icon, total }) {
+  if (!container) return
+  container.classList.add('gear-list')
+  container.classList.remove('is-expanded')
+  const moreMobile = total - GEAR_INITIAL_LIMIT_MOBILE
+  const moreDesktop = total - GEAR_INITIAL_LIMIT
+  if (!wrap || !btn || moreMobile <= 0) {
+    wrap?.classList.add('hidden')
+    return
+  }
+  wrap.classList.remove('hidden')
+  // Máy tính không còn món nào ẩn thì nút chỉ hiện trên điện thoại
+  wrap.classList.toggle('md:hidden', moreDesktop <= 0)
+  const label = () =>
+    moreDesktop > 0
+      ? `Xem thêm (<span class="md:hidden">${moreMobile}</span><span class="hidden md:inline">${moreDesktop}</span> món đồ khác)`
+      : `Xem thêm (${moreMobile} món đồ khác)`
+  if (textEl) textEl.innerHTML = label()
+  btn.setAttribute('aria-expanded', 'false')
+  btn.onclick = () => {
+    const open = container.classList.toggle('is-expanded')
+    if (textEl) textEl.innerHTML = open ? 'Thu gọn bớt' : label()
+    icon?.classList.toggle('rotate-180', open)
+    btn.setAttribute('aria-expanded', String(open))
+  }
 }
