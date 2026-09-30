@@ -529,14 +529,19 @@
           <p class="text-xs sm:text-sm text-text-muted font-medium">Những câu anh em hay hỏi nhất.</p>
         </div>
 
-        <!-- Thanh Lọc Chủ Đề -->
-        <div class="max-w-3xl mx-auto mb-4 sm:mb-5">
-          <!-- Filter Pills theo chủ đề -->
-          <div class="flex items-center sm:justify-center gap-1.5 sm:gap-2 overflow-x-auto scrollbar-none -mx-5 px-5 sm:mx-0 sm:px-0" id="faq-filters">
+        <!-- Tìm câu hỏi + lọc chủ đề. Máy tính: một hàng (tìm bên trái, lọc bên phải).
+             Điện thoại: ô tìm ở trên, 4 nút lọc chia đều một hàng — không phải vuốt ngang. -->
+        <div class="max-w-3xl mx-auto mb-4 sm:mb-5 flex flex-col sm:flex-row sm:items-center gap-2.5 sm:gap-3">
+          <div class="relative sm:w-60 flex-shrink-0">
+            <input id="faq-search" type="search" placeholder="Tìm câu hỏi..." aria-label="Tìm câu hỏi" autocomplete="off"
+              class="w-full pl-9 pr-3 py-2 rounded-full bg-glass-bg border border-glass-border text-sm text-text-primary placeholder:text-text-faint focus:outline-none focus:border-accent-primary/60 transition-colors" />
+            <svg class="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 text-text-muted pointer-events-none" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg>
+          </div>
+          <div class="flex items-center gap-1.5 sm:gap-2 sm:ml-auto" id="faq-filters" role="group" aria-label="Lọc theo chủ đề">
             <button type="button" class="faq-filter-pill active" data-faq-filter="all">Tất cả</button>
             <button type="button" class="faq-filter-pill" data-faq-filter="payment">Thanh toán</button>
             <button type="button" class="faq-filter-pill" data-faq-filter="technique">Kỹ thuật</button>
-            <button type="button" class="faq-filter-pill" data-faq-filter="service">Dịch vụ đặt tab</button>
+            <button type="button" class="faq-filter-pill" data-faq-filter="service">Dịch vụ</button>
           </div>
         </div>
 
@@ -649,6 +654,10 @@
         </div>
 
         <!-- Nút Xem Thêm / Thu Gọn Bớt Câu Hỏi -->
+        <p id="faq-empty" class="hidden max-w-3xl mx-auto text-center text-sm text-text-muted py-8 px-4 rounded-2xl border border-dashed border-glass-border">
+          Chưa có câu hỏi nào khớp. Cứ <a href="https://zalo.me/0326768885" target="_blank" rel="noopener noreferrer" class="font-bold text-accent-primary hover:underline">nhắn Zalo</a> hỏi mình nhé.
+        </p>
+
         <div class="mt-6 text-center" id="faq-show-more-wrap">
           <button type="button" id="faq-show-more-btn"
             class="inline-flex items-center gap-2 px-5 py-2.5 rounded-full bg-glass-bg border border-glass-border hover:border-accent-primary text-xs font-bold text-text-primary hover:text-accent-primary transition-all shadow-xs cursor-pointer active:scale-98">

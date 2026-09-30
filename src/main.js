@@ -164,16 +164,34 @@ export function initFaq() {
 
   let currentCategory = 'all'
   let isShowMore = false
+  let query = ''
   const INITIAL_LIMIT = 5
+  const searchInput = document.getElementById('faq-search')
+  const emptyNote = document.getElementById('faq-empty')
+  const faqList = document.getElementById('faq-list')
+  // Tìm không phân biệt dấu ("thanh toan" khớp "Thanh toán"), trong cả câu hỏi lẫn câu trả lời
+  const fold = (s) =>
+    s
+      .normalize('NFD')
+      .replace(/[\u0300-\u036f]/g, '')
+      .replace(/đ/g, 'd')
+      .replace(/Đ/g, 'D')
+      .toLowerCase()
+  const itemText = new Map(faqItems.map((item) => [item, fold(item.textContent || '')]))
 
   function updateFaqDisplay() {
     const matchingItems = faqItems.filter((item) => {
       const itemCat = item.getAttribute('data-category')
-      return currentCategory === 'all' || itemCat === currentCategory
+      const inCategory = currentCategory === 'all' || itemCat === currentCategory
+      return inCategory && (!query || itemText.get(item).includes(query))
     })
 
     const totalMatching = matchingItems.length
-    const visibleCount = isShowMore ? totalMatching : Math.min(INITIAL_LIMIT, totalMatching)
+    // Đang tìm thì hiện hết kết quả (thường chỉ vài câu), không cần "Xem thêm"
+    const visibleCount =
+      isShowMore || query ? totalMatching : Math.min(INITIAL_LIMIT, totalMatching)
+    emptyNote?.classList.toggle('hidden', totalMatching > 0)
+    faqList?.classList.toggle('hidden', totalMatching === 0)
 
     faqItems.forEach((item) => {
       item.classList.add('hidden')
@@ -185,7 +203,7 @@ export function initFaq() {
 
     // Cập nhật nút Xem thêm / Thu gọn bớt
     if (showMoreWrap && showMoreBtn && showMoreText) {
-      if (totalMatching > INITIAL_LIMIT) {
+      if (!query && totalMatching > INITIAL_LIMIT) {
         showMoreWrap.classList.remove('hidden')
         if (isShowMore) {
           showMoreText.textContent = 'Thu gọn bớt'
@@ -210,6 +228,13 @@ export function initFaq() {
       isShowMore = false
       updateFaqDisplay()
     })
+  })
+
+  // 1b. Ô tìm câu hỏi
+  searchInput?.addEventListener('input', () => {
+    query = fold(searchInput.value.trim())
+    isShowMore = false
+    updateFaqDisplay()
   })
 
   // 2. Nút Xem thêm / Thu gọn bớt

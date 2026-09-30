@@ -887,8 +887,8 @@ nav,
 }
 
 .faq-filter-pill {
-  flex-shrink: 0;
   white-space: nowrap;
+  text-align: center;
   position: relative;
   padding: 6px 14px;
   border-radius: 9999px;
@@ -2712,5 +2712,24 @@ body.kb-open {
   .contact-chip > span:last-child > span:last-child {
     font-size: 10.5px;
     letter-spacing: -0.01em;
+  }
+}
+
+/* Điện thoại: 4 nút lọc hỏi đáp chia đều một hàng (không phải vuốt ngang). */
+@media (max-width: 639.98px) {
+  #faq-filters .faq-filter-pill {
+    flex: 1 1 0;
+    min-width: 0;
+    padding: 7px 4px;
+  }
+}
+
+@media (max-width: 359.98px) {
+  #faq-filters {
+    gap: 4px;
+  }
+  #faq-filters .faq-filter-pill {
+    font-size: 11px;
+    padding: 7px 2px;
   }
 }
