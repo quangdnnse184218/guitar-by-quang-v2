@@ -522,7 +522,7 @@ function renderOverviewFeatured() {
       // 1. FREE TAB CARD
       if (isFree) {
         return `
-        <div onclick="window.openFreeTabModal('${song.id}')" class="song-card glass-card card-interactive p-2.5 sm:p-4 rounded-2xl sm:rounded-3xl border border-glass-border flex flex-col justify-between space-y-2.5 sm:space-y-3.5 group cursor-pointer w-full" data-id="${song.id}">
+        <div onclick="window.openFreeTabModal('${song.id}')" class="song-card glass-card card-interactive p-2.5 sm:p-4 rounded-2xl border border-glass-border flex flex-col justify-between space-y-2.5 sm:space-y-3.5 group cursor-pointer w-full" data-id="${song.id}">
           <div class="space-y-2 sm:space-y-3">
             <!-- Thumbnail Visual (Emerald Green Gradient) -->
             <div class="${SONG_THUMB_CLASS} bg-gradient-to-br from-[#1E3A2F] via-[#2A4D3E] to-[#172A22]">
@@ -530,7 +530,7 @@ function renderOverviewFeatured() {
                 ${renderCategoryBadge(song, "Fingerstyle")}
                 <div class="flex items-center gap-1 justify-end">
                   ${userActionGroup}
-                  <span class="px-1.5 sm:px-2 py-0.5 rounded-full text-[8px] sm:text-[10px] font-black bg-emerald-600 text-white shadow-sm uppercase tracking-wide">FREE</span>
+                  <span class="px-1.5 sm:px-2 py-0.5 rounded-full text-[11px] sm:text-xs font-black bg-emerald-700 text-white uppercase tracking-wide">FREE</span>
                 </div>
               </div>
 
@@ -550,7 +550,7 @@ function renderOverviewFeatured() {
               </h3>
 
               <div class="space-y-0.5 sm:space-y-1 pt-0.5">
-                <div class="flex items-center justify-between text-[10px] sm:text-xs font-bold text-text-muted">
+                <div class="flex items-center justify-between text-[11px] sm:text-xs font-bold text-text-muted">
                   <span>Độ khó: <strong class="text-emerald-500 font-mono tabular-nums">${song.level || levelNum + '/10'}</strong></span>
                 </div>
                 <div class="w-full bg-glass-bg rounded-full h-1 sm:h-1.5 overflow-hidden border border-glass-border">
@@ -562,7 +562,7 @@ function renderOverviewFeatured() {
           </div>
 
           <div class="pt-1 sm:pt-2">
-            <div class="w-full py-1.5 sm:py-2.5 px-1.5 rounded-full bg-emerald-500/15 border border-emerald-500/30 text-emerald-600 dark:text-emerald-400 font-bold text-[10px] sm:text-xs transition-all shadow-xs flex items-center justify-center gap-1 active:scale-95 text-center cursor-pointer group-hover:bg-emerald-500/25">
+            <div class="w-full py-1.5 sm:py-2.5 px-1.5 rounded-full bg-emerald-500/15 border border-emerald-500/30 text-emerald-600 dark:text-emerald-400 font-bold text-[11px] sm:text-xs transition-all shadow-xs flex items-center justify-center gap-1 active:scale-95 text-center cursor-pointer group-hover:bg-emerald-500/25">
               <span class="truncate">Xem Video Tab (Free)</span>
             </div>
           </div>
@@ -578,7 +578,7 @@ function renderOverviewFeatured() {
 
       if (isBought) {
         return `
-        <div onclick="window.navigateToPurchasesTab('${song.id}')" class="song-card glass-card card-interactive p-2.5 sm:p-4 flex flex-col justify-between space-y-2.5 sm:space-y-3.5 group cursor-pointer rounded-2xl sm:rounded-3xl border border-amber-500/40 hover:border-amber-400 hover:shadow-xl transition-all w-full" data-id="${song.id}">
+        <div onclick="window.navigateToPurchasesTab('${song.id}')" class="song-card glass-card card-interactive p-2.5 sm:p-4 flex flex-col justify-between space-y-2.5 sm:space-y-3.5 group cursor-pointer rounded-2xl border border-amber-500/40 hover:border-amber-400 hover:shadow-xl transition-all w-full" data-id="${song.id}">
           <div class="space-y-2 sm:space-y-3">
             <!-- Thumbnail Visual (Warm Brown/Orange Gradient) -->
             <div class="${SONG_THUMB_CLASS} bg-gradient-to-br from-[#9a4b24] via-[#7d3b19] to-[#54240d]">
@@ -586,7 +586,7 @@ function renderOverviewFeatured() {
                 ${renderCategoryBadge(song, "NHẠC VIỆT")}
                 <div class="flex items-center gap-1 justify-end">
                   ${userActionGroup}
-                  <span class="px-1.5 sm:px-2 py-0.5 rounded-full text-[8px] sm:text-[9.5px] font-black bg-emerald-600 text-white shadow-sm uppercase tracking-wide flex items-center gap-0.5">
+                  <span class="px-1.5 sm:px-2 py-0.5 rounded-full text-[11px] sm:text-xs font-black bg-emerald-700 text-white uppercase tracking-wide flex items-center gap-0.5">
                     <span>✓</span>
                     <span>ĐÃ SỞ HỮU</span>
                   </span>
@@ -609,7 +609,7 @@ function renderOverviewFeatured() {
               </h3>
 
               <div class="space-y-0.5 sm:space-y-1 pt-0.5">
-                <div class="flex items-center justify-between text-[10px] sm:text-xs font-bold text-text-muted">
+                <div class="flex items-center justify-between text-[11px] sm:text-xs font-bold text-text-muted">
                   <span>Độ khó: <strong class="text-accent-primary font-mono tabular-nums">${song.level || levelNum + '/10'}</strong></span>
                 </div>
                 <div class="w-full bg-glass-bg rounded-full h-1 sm:h-1.5 overflow-hidden border border-glass-border">
@@ -621,7 +621,7 @@ function renderOverviewFeatured() {
           </div>
 
           <div class="pt-1 sm:pt-2">
-            <div class="w-full py-1.5 sm:py-2.5 px-1.5 rounded-full bg-amber-500/15 border border-amber-500/30 hover:bg-amber-500/25 text-amber-600 dark:text-amber-300 font-extrabold text-[10px] sm:text-xs transition-all shadow-xs flex items-center justify-center gap-1 active:scale-95 text-center cursor-pointer">
+            <div class="w-full py-1.5 sm:py-2.5 px-1.5 rounded-full bg-amber-500/15 border border-amber-500/30 hover:bg-amber-500/25 text-amber-600 dark:text-amber-300 font-extrabold text-[11px] sm:text-xs transition-all shadow-xs flex items-center justify-center gap-1 active:scale-95 text-center cursor-pointer">
               <span class="truncate">Mở tab đã mua</span>
             </div>
           </div>
@@ -630,7 +630,7 @@ function renderOverviewFeatured() {
       }
 
       return `
-      <div onclick="window.openCheckoutModal('${song.id}')" class="song-card glass-card card-interactive p-2.5 sm:p-4 flex flex-col justify-between space-y-2.5 sm:space-y-3.5 group cursor-pointer rounded-2xl sm:rounded-3xl border border-glass-border hover:border-amber-400 hover:shadow-xl transition-all w-full" data-id="${song.id}">
+      <div onclick="window.openCheckoutModal('${song.id}')" class="song-card glass-card card-interactive p-2.5 sm:p-4 flex flex-col justify-between space-y-2.5 sm:space-y-3.5 group cursor-pointer rounded-2xl border border-glass-border hover:border-amber-400 hover:shadow-xl transition-all w-full" data-id="${song.id}">
         <div class="space-y-2 sm:space-y-3">
           <!-- Thumbnail Visual (Warm Brown/Orange Gradient) -->
           <div class="${SONG_THUMB_CLASS} bg-gradient-to-br from-[#9a4b24] via-[#7d3b19] to-[#54240d]">
@@ -663,7 +663,7 @@ function renderOverviewFeatured() {
               <div class="w-6 h-6 sm:w-8 sm:h-8 rounded-full bg-black/30 flex items-center justify-center text-white shadow-sm">
                 ${iconGuitar('w-3 h-3 sm:w-3.5 sm:h-3.5')}
               </div>
-              <span class="text-[8px] sm:text-[10px] font-bold mt-0.5 text-white/80 tracking-wide">Acoustic Tab</span>
+              <span class="text-[11px] sm:text-xs font-bold mt-0.5 text-white/80 tracking-wide">Acoustic Tab</span>
             </div>
             `
             }
@@ -678,7 +678,7 @@ function renderOverviewFeatured() {
             </h3>
 
             <div class="space-y-0.5 sm:space-y-1 pt-0.5">
-              <div class="flex flex-wrap items-center justify-between gap-x-1 gap-y-1 text-[10px] sm:text-xs font-bold text-text-muted">
+              <div class="flex flex-wrap items-center justify-between gap-x-1 gap-y-1 text-[11px] sm:text-xs font-bold text-text-muted">
                 <span class="whitespace-nowrap">Độ khó: <strong class="text-accent-primary font-mono tabular-nums">${song.level || levelNum + '/10'}</strong></span>
                 ${renderHssvNote(discountNote)}
               </div>
@@ -691,7 +691,7 @@ function renderOverviewFeatured() {
         </div>
 
         <div class="pt-1 sm:pt-2">
-          <div class="w-full py-1.5 sm:py-2.5 px-1.5 rounded-full bg-warm-gradient hover:brightness-105 text-white font-bold text-[10px] sm:text-xs transition-all shadow-md flex items-center justify-center gap-1 active:scale-95 text-center cursor-pointer">
+          <div class="w-full py-1.5 sm:py-2.5 px-1.5 rounded-full bg-warm-gradient hover:brightness-105 text-white font-bold text-[11px] sm:text-xs transition-all shadow-md flex items-center justify-center gap-1 active:scale-95 text-center cursor-pointer">
             <span class="truncate">Xem chi tiết</span>
           </div>
         </div>

@@ -40,9 +40,9 @@
      cần tông nổi để tách bạch với section trơn liền kề. */
   --sec-raised-bg: #241c14;
   --sec-hero-bg: rgb(var(--bg-base));
-  --sec-about-bg: var(--sec-raised-bg);
+  --sec-about-bg: rgb(var(--bg-base));
   --sec-featured-bg: rgb(var(--bg-base));
-  --sec-tools-bg: rgb(var(--bg-base));
+  --sec-tools-bg: var(--sec-raised-bg);
   --sec-faq-bg: var(--sec-raised-bg);
   --sec-contact-bg: rgb(var(--bg-base));
   --header-bg: rgba(27, 20, 15, 0.9);
@@ -135,9 +135,9 @@
   --bg-base: 231 226 211;
   --sec-raised-bg: #ded7c4;
   --sec-hero-bg: rgb(var(--bg-base));
-  --sec-about-bg: var(--sec-raised-bg);
+  --sec-about-bg: rgb(var(--bg-base));
   --sec-featured-bg: rgb(var(--bg-base));
-  --sec-tools-bg: rgb(var(--bg-base));
+  --sec-tools-bg: var(--sec-raised-bg);
   --sec-faq-bg: var(--sec-raised-bg);
   --sec-contact-bg: rgb(var(--bg-base));
   --header-bg: rgba(231, 226, 211, 0.92);
@@ -364,35 +364,60 @@ nav,
 /* ==============================================================================
    UNIFIED RADIUS SYSTEM
    ============================================================================== */
-.radius-btn {
-  border-radius: 12px;
-}
-.radius-card {
-  border-radius: 20px;
-}
-.radius-container {
-  border-radius: 28px;
+/* 3 mức bo góc cho mọi khối (nút/nhãn thì tròn hẳn):
+   - --r-inner 12px: phần tử nằm TRONG thẻ (ô ảnh, ô biểu tượng)
+   - --r-card  16px: thẻ thường (thẻ bài, thẻ đồ nghề, ô liên hệ, danh sách hỏi đáp)
+   - --r-panel 24px: khối lớn / thẻ nhấn mạnh (khung video, thẻ Luyện tập, khung dịch vụ)
+   Custom class trong file này thắng lớp rounded-* thường của Tailwind (chỉ thua biến thể
+   sm:/md:), nên muốn .glass-card bo 24px thì thêm .radius-panel thay vì rounded-3xl. */
+:root {
+  --r-inner: 12px;
+  --r-card: 16px;
+  --r-panel: 24px;
 }
 
 /* ==============================================================================
    CARD ELEVATION SYSTEM (DARK & LIGHT)
    ============================================================================== */
+/* 3 mức đổ bóng dùng chung + 1 kiểu lõm cho ô ảnh. Đừng viết bóng riêng cho từng khối:
+   - --elev-card:   thẻ đang nằm yên
+   - --elev-raised: thẻ đang rê chuột / thẻ nhấn mạnh
+   - --elev-button: nút bấm đặc (trùng shadow-md của Tailwind)
+   - --well:        ô ảnh lõm vào trong thẻ */
+:root {
+  --elev-card: 0 1px 2px rgb(0 0 0 / 0.3), 0 10px 24px -12px rgb(0 0 0 / 0.6);
+  --elev-raised: 0 2px 4px rgb(0 0 0 / 0.3), 0 20px 36px -16px rgb(0 0 0 / 0.75);
+  --elev-button: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+  --well: inset 0 1px 3px rgb(0 0 0 / 0.3);
+}
+
+[data-theme='light'] {
+  --elev-card: 0 1px 2px rgb(70 45 20 / 0.08), 0 10px 24px -12px rgb(70 45 20 / 0.3);
+  --elev-raised: 0 2px 4px rgb(70 45 20 / 0.1), 0 20px 36px -16px rgb(70 45 20 / 0.42);
+  --well: inset 0 1px 3px rgb(0 0 0 / 0.12);
+}
+
 .glass-card {
   position: relative;
   background-color: rgb(var(--glass-bg));
   border: 1px solid var(--glass-border);
-  border-radius: 20px;
-  box-shadow:
-    0 10px 30px -5px rgba(0, 0, 0, 0.4),
-    0 0 0 1px rgba(255, 255, 255, 0.04);
+  border-radius: var(--r-card);
+  box-shadow: var(--elev-card);
   transform: translateZ(0);
   backface-visibility: hidden;
 }
 
-[data-theme='light'] .glass-card {
-  box-shadow:
-    0 8px 24px rgba(60, 40, 20, 0.06),
-    0 0 0 1px rgba(180, 150, 120, 0.12);
+.radius-inner {
+  border-radius: var(--r-inner);
+}
+.radius-card {
+  border-radius: var(--r-card);
+}
+.radius-panel {
+  border-radius: var(--r-panel);
+}
+.thumb-well {
+  box-shadow: var(--well);
 }
 
 /* Interactive Cards (Song cards, Gear cards, clickables) */
@@ -462,10 +487,8 @@ nav,
 .gear-card.touch-active,
 .card-interactive.touch-active {
   background-color: rgb(var(--glass-bg-hover));
-  transform: translateY(-5px);
-  box-shadow:
-    0 16px 36px rgba(0, 0, 0, 0.45),
-    0 0 20px rgba(212, 175, 55, 0.18);
+  transform: translateY(-4px);
+  box-shadow: var(--elev-raised);
   border-color: rgba(212, 175, 55, 0.4);
 }
 
@@ -475,9 +498,6 @@ nav,
 [data-theme='light'] .song-card.touch-active,
 [data-theme='light'] .gear-card.touch-active,
 [data-theme='light'] .card-interactive.touch-active {
-  box-shadow:
-    0 16px 32px rgba(60, 40, 20, 0.12),
-    0 0 16px rgba(138, 106, 42, 0.16);
   border-color: rgba(138, 106, 42, 0.4);
 }
 
@@ -694,8 +714,8 @@ nav,
     gap: 3px;
     min-height: 52px;
     border-radius: 20px;
-    color: rgb(var(--text-muted));
-    font-size: 10.5px;
+    color: rgb(var(--text-primary) / 0.74);
+    font-size: 11px;
     font-weight: 600;
     line-height: 1;
     white-space: nowrap;
@@ -714,9 +734,15 @@ nav,
     outline-offset: -2px;
   }
 
+  /* Mục đang chọn: chữ dùng màu chữ chính (màu đồng trên nền kính chỉ đạt 4,43:1),
+     biểu tượng mới mang màu đồng. */
   .bottom-nav__item[aria-current='page'] {
-    color: rgb(var(--accent-primary));
+    color: rgb(var(--text-primary));
     font-weight: 700;
+  }
+
+  .bottom-nav__item[aria-current='page'] .bottom-nav__icon {
+    color: rgb(var(--accent-primary));
   }
 
   .bottom-nav__icon {
@@ -890,6 +916,7 @@ nav,
   white-space: nowrap;
   text-align: center;
   position: relative;
+  min-height: 40px;
   padding: 6px 14px;
   border-radius: 9999px;
   font-size: 0.75rem;
@@ -914,14 +941,13 @@ nav,
   color: #1b140f;
   background: rgb(var(--accent-primary));
   border-color: rgb(var(--accent-primary));
-  box-shadow: 0 2px 12px rgba(212, 175, 55, 0.35);
+  box-shadow: var(--elev-button);
 }
 
 [data-theme='light'] .faq-filter-pill.active {
   color: #ffffff;
   background: rgb(var(--accent-primary));
   border-color: rgb(var(--accent-primary));
-  box-shadow: 0 2px 12px rgba(138, 106, 42, 0.25);
 }
 
 /* ==============================================================================
@@ -936,7 +962,6 @@ nav,
 
 .section-about {
   background-color: var(--sec-about-bg);
-  border-top: 1px solid var(--glass-border);
   border-bottom: 1px solid var(--glass-border);
 }
 
@@ -1168,6 +1193,13 @@ nav,
   transition:
     transform 0.35s cubic-bezier(0.2, 0.8, 0.2, 1),
     color 0.3s ease;
+}
+
+.play-soundhole::after {
+  content: '';
+  position: absolute;
+  inset: -6px;
+  border-radius: 9999px;
 }
 
 .play-soundhole::before {
@@ -2568,31 +2600,59 @@ body.modal-open {
   }
 }
 
-/* Khối mời chơi game (trang chủ): gỗ tối + ánh đồng góc trái, viền đồng mảnh.
-   Giữ nguyên ở cả 2 giao diện sáng/tối — là một "vật" có chất liệu riêng. */
-.game-teaser-card {
+/* Thẻ mục Luyện tập (trang chủ: Máy gõ nhịp, Game cảm âm): gỗ tối + ánh đồng góc trái,
+   viền đồng mảnh. Giữ nguyên ở cả 2 giao diện sáng/tối — là một "vật" có chất liệu riêng. */
+.practice-card {
   background:
     radial-gradient(120% 150% at 0% 0%, rgb(226 179 74 / 0.24), transparent 55%),
     radial-gradient(90% 120% at 100% 100%, rgb(176 69 92 / 0.22), transparent 60%),
     linear-gradient(135deg, #2c1e15 0%, #1c140e 60%, #24151a 100%);
   border: 1px solid rgb(226 179 74 / 0.28);
+  border-radius: var(--r-panel);
   box-shadow:
     inset 0 1px 0 rgb(255 240 210 / 0.08),
-    0 18px 40px -18px rgb(40 22 10 / 0.55);
+    var(--elev-card);
+  transition:
+    transform 0.25s ease,
+    box-shadow 0.25s ease,
+    border-color 0.25s ease;
 }
 
-.game-teaser-card:hover {
+.practice-card:hover {
+  transform: translateY(-3px);
+  border-color: rgb(226 179 74 / 0.5);
   box-shadow:
     inset 0 1px 0 rgb(255 240 210 / 0.1),
-    0 26px 50px -18px rgb(40 22 10 / 0.65);
+    var(--elev-raised);
 }
 
-.game-teaser-disc {
+.practice-disc {
   background: radial-gradient(circle at 35% 30%, #3a291d, #140e0a 70%);
   box-shadow:
     0 0 0 2px rgb(226 179 74 / 0.55),
     0 0 0 6px rgb(226 179 74 / 0.12),
     0 8px 18px rgb(0 0 0 / 0.45);
+}
+
+/* Nút mũi tên đồng ở mép phải thẻ */
+.practice-go {
+  background: linear-gradient(180deg, #ecc25e, #c9922e);
+  color: #2a1a0c;
+  box-shadow: var(--elev-button);
+  transition: transform 0.25s ease;
+}
+
+.practice-card:hover .practice-go {
+  transform: translateX(3px);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .practice-card,
+  .practice-card:hover,
+  .practice-go {
+    transition: none;
+    transform: none;
+  }
 }
 
 /* ==========================================================================
@@ -2604,10 +2664,10 @@ body.modal-open {
   background: linear-gradient(180deg, rgb(var(--glass-bg-hover)), rgb(var(--glass-bg)));
   border: 1px solid rgb(255 255 255 / 0.08);
   border-bottom: 3px solid rgb(0 0 0 / 0.45);
+  border-radius: var(--r-card);
   box-shadow:
     inset 0 1px 0 rgb(255 255 255 / 0.07),
-    0 1px 2px rgb(0 0 0 / 0.3),
-    0 12px 24px -14px rgb(0 0 0 / 0.7);
+    var(--elev-card);
   transition:
     transform 0.2s ease,
     box-shadow 0.2s ease,
@@ -2620,8 +2680,7 @@ body.modal-open {
   border-bottom-color: rgb(var(--accent-primary) / 0.55);
   box-shadow:
     inset 0 1px 0 rgb(255 255 255 / 0.09),
-    0 2px 4px rgb(0 0 0 / 0.3),
-    0 20px 34px -16px rgb(0 0 0 / 0.75);
+    var(--elev-raised);
 }
 
 [data-theme='light'] .gear-row {
@@ -2630,8 +2689,7 @@ body.modal-open {
   border-bottom-color: rgb(120 88 48 / 0.3);
   box-shadow:
     inset 0 1px 0 rgb(255 255 255 / 0.95),
-    0 1px 2px rgb(70 45 20 / 0.08),
-    0 12px 24px -14px rgb(70 45 20 / 0.38);
+    var(--elev-card);
 }
 
 [data-theme='light'] .gear-row:hover {
@@ -2639,13 +2697,13 @@ body.modal-open {
   border-bottom-color: rgb(var(--accent-primary) / 0.6);
   box-shadow:
     inset 0 1px 0 rgb(255 255 255 / 0.95),
-    0 2px 4px rgb(70 45 20 / 0.1),
-    0 22px 36px -16px rgb(70 45 20 / 0.45);
+    var(--elev-raised);
 }
 
 /* Ô ảnh lõm nhẹ vào trong khối */
 .gear-row .group\/img {
-  box-shadow: inset 0 1px 3px rgb(0 0 0 / 0.12);
+  border-radius: var(--r-inner);
+  box-shadow: var(--well);
 }
 
 @media (prefers-reduced-motion: reduce) {
@@ -2680,10 +2738,10 @@ body.kb-open {
   align-items: center;
   gap: 0.625rem;
   padding: 0.625rem 0.75rem;
-  border-radius: 1rem;
+  border-radius: var(--r-card);
   background: rgb(var(--glass-bg));
   border: 1px solid rgb(var(--glass-border-rgb) / var(--glass-border-alpha));
-  box-shadow: 0 6px 16px -10px rgb(0 0 0 / 0.35);
+  box-shadow: var(--elev-card);
   transition:
     transform 0.15s ease,
     border-color 0.15s ease;

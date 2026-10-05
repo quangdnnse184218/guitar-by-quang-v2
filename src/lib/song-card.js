@@ -29,7 +29,7 @@ export function renderPriceBadge(priceFormatted) {
   // Cùng khuôn (padding, cỡ chữ, font) với badge "FREE" — chỉ khác màu. Trên
   // mobile hàng này chỉ rộng ~120px: badge dùng font mono cũ rộng hơn FREE
   // đúng 2px là đủ đẩy nút tim xuống dòng.
-  return `<span class="px-1.5 sm:px-2 py-0.5 rounded-full text-[8px] sm:text-[10px] font-black text-white bg-gradient-to-r from-rose-600 to-rose-500 shadow-sm uppercase tracking-wide tabular-nums whitespace-nowrap" title="Giá ${priceFormatted}">${priceFormatted}</span>`
+  return `<span class="px-1.5 sm:px-2 py-0.5 rounded-full text-[11px] sm:text-xs font-black text-white bg-gradient-to-r from-rose-600 to-rose-500 uppercase tracking-wide tabular-nums whitespace-nowrap" title="Giá ${priceFormatted}">${priceFormatted}</span>`
 }
 
 export function renderHssvNote(discountNote) {
@@ -37,7 +37,7 @@ export function renderHssvNote(discountNote) {
   const hssvLabel = extractDiscountPrice(discountNote) || discountNote
   // Chip cam = màu "khuyến mãi", tách hẳn khỏi màu đồng của "Độ khó" ngay cạnh
   // (trước cùng màu nên chìm), hồng của giá và xanh của "miễn phí".
-  return `<span class="inline-flex items-center gap-0.5 px-1.5 py-0.5 rounded-full text-[9px] sm:text-[11px] font-extrabold whitespace-nowrap bg-orange-100 text-orange-700 ring-1 ring-orange-300 dark:bg-orange-500/15 dark:text-orange-300 dark:ring-orange-400/40" title="Giá ưu đãi cho học sinh, sinh viên (xác minh thẻ khi thanh toán)">${iconGraduationCap('w-3 h-3 sm:w-3.5 sm:h-3.5 flex-shrink-0')}HSSV ${hssvLabel}</span>`
+  return `<span class="inline-flex items-center gap-0.5 px-1.5 py-0.5 rounded-full text-[11px] sm:text-xs font-extrabold whitespace-nowrap bg-orange-100 text-orange-700 ring-1 ring-orange-300 dark:bg-orange-500/15 dark:text-orange-300 dark:ring-orange-400/40" title="Giá ưu đãi cho học sinh, sinh viên (xác minh thẻ khi thanh toán)">${iconGraduationCap('w-3 h-3 sm:w-3.5 sm:h-3.5 flex-shrink-0')}HSSV ${hssvLabel}</span>`
 }
 
 /** Tam giác play bo góc (mềm hơn tam giác nhọn cũ), lệch phải 1px cho cân thị giác. */
@@ -46,7 +46,7 @@ const PLAY_ICON =
 
 /** Nhãn nhỏ dưới nút play ("Xem demo"...). Cách nút đủ xa để không đè vòng khảm. */
 export const PLAY_LABEL_CLASS =
-  'text-[8px] sm:text-[10px] font-bold mt-3 sm:mt-3.5 text-white/95 tracking-wide bg-black/60 px-2 py-0.5 rounded-full backdrop-blur-xs leading-none whitespace-nowrap'
+  'text-[11px] sm:text-xs font-bold mt-3 sm:mt-3.5 text-white/95 bg-black/60 px-2 py-1 rounded-full backdrop-blur-xs leading-none whitespace-nowrap'
 
 /**
  * Nút play giữa khung ảnh thẻ bài hát — hình lỗ thoát âm đàn acoustic (xem
@@ -83,37 +83,44 @@ function escapeJsString(str) {
  * chỗ khác nhau vì code bị lặp.
  */
 export const SONG_THUMB_CLASS =
-  'relative overflow-hidden rounded-xl sm:rounded-2xl h-[150px] sm:h-auto sm:aspect-[16/10] w-full p-2 sm:p-3.5 flex flex-col justify-between text-white shadow-inner group-hover:scale-[1.02] transition-transform duration-500 ease-out'
+  'relative overflow-hidden rounded-xl thumb-well h-[150px] sm:h-auto sm:aspect-[16/10] w-full p-2 sm:p-3.5 flex flex-col justify-between text-white group-hover:scale-[1.02] transition-transform duration-500 ease-out'
 
-/** Badge thể loại ở góc trái khung ảnh (cắt bớt nếu tên thể loại quá dài). */
+/**
+ * Badge thể loại ở góc trái khung ảnh — chỉ hiện từ sm trở lên. Thẻ 2 cột trên điện
+ * thoại chỉ có ~125px cho hàng này: với cỡ chữ tối thiểu 11px thì thể loại + giá + tim
+ * không vừa, mà gần như mọi bài đều "Nhạc Việt" (Kho tab đã có bộ lọc thể loại).
+ */
 export function renderCategoryBadge(song, fallback = 'Fingerstyle') {
-  // Không dùng font mono + giãn chữ trên mobile: 2 thứ đó làm chữ rộng hơn và bị cắt
-  // ("Nhạc Vi…") khi thẻ 2 cột chỉ rộng ~150px.
-  return `<span class="bg-black/50 backdrop-blur px-1 sm:px-2 py-0.5 rounded-full text-white/95 text-[8px] sm:text-[10px] tracking-normal sm:tracking-wider truncate min-w-0 max-w-[76px] sm:max-w-none">${song.category || fallback}</span>`
+  return `<span class="hidden sm:inline-block bg-black/50 backdrop-blur px-2 py-0.5 rounded-full text-white/95 text-xs tracking-wider truncate min-w-0">${song.category || fallback}</span>`
 }
 
 /**
- * Hàng dưới cùng khung ảnh: thời lượng bên trái, tuning bên phải.
- * Thời lượng không bao giờ bị co (flex-shrink-0), tuning cắt bằng dấu "..."
- * khi thẻ quá hẹp thay vì bị khung ảnh cắt cụt không báo hiệu gì.
+ * Hàng dưới cùng khung ảnh: thời lượng. Trước còn "Tuning: Standard" ở bên phải, nhưng
+ * mọi bài trong kho đều tuning Standard nên nhãn đó không cho khách biết thêm gì — chỉ
+ * hiện tuning khi nó KHÁC Standard.
  */
 export function renderThumbMetaRow(song, fallbackDuration = 'Full Video') {
+  const tuning = (song.tuning || '').trim()
+  const tuningHtml =
+    tuning && !/^standard$/i.test(tuning)
+      ? `<span class="text-white/85 text-[11px] sm:text-xs truncate min-w-0">${tuning}</span>`
+      : ''
   return `
-    <div class="flex justify-between items-end gap-1 text-xs text-white/95 font-semibold">
-      <span class="font-mono tabular-nums text-[9px] sm:text-[11px] flex-shrink-0">${song.duration || fallbackDuration}</span>
-      <span class="text-white/80 text-[8px] sm:text-[11px] truncate min-w-0">Tuning: ${song.tuning || 'Standard'}</span>
+    <div class="flex justify-between items-end gap-1 text-white/95 font-semibold">
+      <span class="font-mono tabular-nums text-[11px] sm:text-xs flex-shrink-0">${song.duration || fallbackDuration}</span>
+      ${tuningHtml}
     </div>
   `
 }
 
 function renderPinnedBadge() {
-  return `<span class="inline-flex items-center gap-1 px-1.5 sm:px-2 py-0.5 rounded-full text-[8px] sm:text-[10px] font-black bg-amber-400 text-black shadow-sm uppercase tracking-wide"><svg class="w-2 h-2 sm:w-2.5 sm:h-2.5" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2l2.94 6.34L21.5 9.27l-4.75 4.51L17.88 21 12 17.77 6.12 21l1.13-7.22L2.5 9.27l6.56-.93z"/></svg>Nổi bật</span>`
+  return `<span class="inline-flex items-center gap-1 px-1.5 sm:px-2 py-0.5 rounded-full text-[11px] sm:text-xs font-black bg-amber-400 text-black uppercase tracking-wide" title="Nổi bật"><svg class="w-3 h-3" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 2l2.94 6.34L21.5 9.27l-4.75 4.51L17.88 21 12 17.77 6.12 21l1.13-7.22L2.5 9.27l6.56-.93z"/></svg><span class="sr-only sm:not-sr-only">Nổi bật</span></span>`
 }
 
 /** Lớp phủ hiện ra giữa chừng khi vuốt thẻ sang phải để yêu thích. */
 function renderSwipeOverlay() {
   return `
-    <div class="swipe-fav-overlay absolute inset-0 flex items-center justify-center rounded-2xl sm:rounded-3xl opacity-0 pointer-events-none z-30 bg-rose-500/90">
+    <div class="swipe-fav-overlay absolute inset-0 flex items-center justify-center rounded-2xl opacity-0 pointer-events-none z-30 bg-rose-500/90">
       <span class="text-white">${iconHeart('w-9 h-9 sm:w-10 sm:h-10')}</span>
     </div>
   `
@@ -137,7 +144,7 @@ function renderFavoriteButton(tab, isFavorite) {
       onclick="event.stopPropagation(); window.handleToggleFavorite(event, '${tab.id}')"
       data-fav-btn="${tab.id}"
       title="${isFavorite ? 'Bỏ yêu thích' : 'Yêu thích'}"
-      class="relative before:absolute before:-inset-2 flex-shrink-0 w-5 h-5 sm:w-6 sm:h-6 rounded-full flex items-center justify-center transition-all cursor-pointer shadow-sm ${isFavorite ? 'bg-rose-500 text-white' : 'bg-black/40 text-white/80 hover:text-white hover:bg-black/60'}"
+      class="relative before:absolute before:-inset-2.5 max-sm:ml-auto flex-shrink-0 w-5 h-5 sm:w-6 sm:h-6 rounded-full flex items-center justify-center transition-all cursor-pointer ${isFavorite ? 'bg-rose-500 text-white' : 'bg-black/40 text-white/80 hover:text-white hover:bg-black/60'}"
     >
       ${isFavorite ? filledHeart : outlineHeart}
     </button>
@@ -150,7 +157,7 @@ function renderPaidArtworkCenter(tab, { isPurchased, video, audio }) {
     return `
       <div class="my-auto text-center flex flex-col items-center justify-center py-0.5" onclick="event.stopPropagation(); window.navigateToPurchasesTab()">
         ${renderPlayDisc({ label: 'Mở tab đã mua' })}
-        <span class="${PLAY_LABEL_CLASS}">Xem trong tab đã mua</span>
+        <span class="${PLAY_LABEL_CLASS}">Mở tab đã mua</span>
       </div>
     `
   }
@@ -178,7 +185,7 @@ function renderPaidArtworkCenter(tab, { isPurchased, video, audio }) {
       <div class="w-6 h-6 sm:w-8 sm:h-8 rounded-full bg-black/30 flex items-center justify-center text-white shadow-sm">
         ${iconGuitar('w-3 h-3 sm:w-3.5 sm:h-3.5')}
       </div>
-      <span class="text-[8px] sm:text-[10px] font-bold mt-0.5 text-white/80 tracking-wide">Acoustic Tab</span>
+      <span class="text-[11px] sm:text-xs font-bold mt-0.5 text-white/80">Acoustic Tab</span>
     </div>
   `
 }
@@ -220,7 +227,7 @@ export function renderSongCard(tab, options = {}) {
 
   const levelRow = (accentClass, barClass, rightSlot = '') => `
     <div class="space-y-0.5 sm:space-y-1 pt-0.5">
-      <div class="flex flex-wrap items-center justify-between gap-x-1 gap-y-1 text-[10px] sm:text-xs font-bold text-text-muted">
+      <div class="flex flex-wrap items-center justify-between gap-x-1 gap-y-1 text-[11px] sm:text-xs font-bold text-text-muted">
         <span class="whitespace-nowrap">Độ khó: <strong class="${accentClass} font-mono tabular-nums">${tab.level || levelNum + '/10'}</strong></span>
         ${rightSlot}
       </div>
@@ -233,15 +240,15 @@ export function renderSongCard(tab, options = {}) {
   // ------------------------------------------------------------------ FREE
   if (isFree) {
     return `
-      <div onclick="window.openFreeTabModal('${tab.id}')" class="song-card glass-card card-interactive p-2.5 sm:p-4 rounded-2xl sm:rounded-3xl border border-glass-border flex flex-col justify-between space-y-2.5 sm:space-y-3.5 group cursor-pointer ${pinnedClass} ${extraClass}" data-id="${tab.id}">
+      <div onclick="window.openFreeTabModal('${tab.id}')" class="song-card glass-card card-interactive p-2.5 sm:p-4 rounded-2xl border border-glass-border flex flex-col justify-between space-y-2.5 sm:space-y-3.5 group cursor-pointer ${pinnedClass} ${extraClass}" data-id="${tab.id}">
         ${swipeOverlay}
         <div class="space-y-2 sm:space-y-3">
           <div class="${SONG_THUMB_CLASS} bg-gradient-to-br from-[#1E3A2F] via-[#2A4D3E] to-[#172A22]">
             <div class="flex justify-between items-start text-xs uppercase font-bold tracking-wider">
               ${renderCategoryBadge(tab, 'Fingerstyle')}
-              <div class="flex items-center gap-1 flex-wrap justify-end">
+              <div class="flex items-center gap-1 flex-wrap max-sm:w-full sm:justify-end">
                 ${pinnedBadge}
-                <span class="px-1.5 sm:px-2 py-0.5 rounded-full text-[8px] sm:text-[10px] font-black bg-emerald-600 text-white shadow-sm uppercase tracking-wide">FREE</span>
+                <span class="px-1.5 sm:px-2 py-0.5 rounded-full text-[11px] sm:text-xs font-black bg-emerald-700 text-white uppercase tracking-wide">FREE</span>
                 ${favButton}
               </div>
             </div>
@@ -263,8 +270,8 @@ export function renderSongCard(tab, options = {}) {
         </div>
 
         <div class="pt-1 sm:pt-2">
-          <div class="w-full py-1.5 sm:py-2.5 px-1.5 rounded-full bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-[10px] sm:text-xs transition-all shadow-md shadow-emerald-900/20 flex items-center justify-center gap-1 active:scale-95 text-center cursor-pointer">
-            <span class="truncate">Xem Video Tab (Free)</span>
+          <div class="w-full py-1.5 sm:py-2.5 px-1.5 rounded-full border border-emerald-700/40 bg-emerald-700/10 group-hover:bg-emerald-700 group-hover:border-emerald-700 text-emerald-800 dark:text-emerald-300 dark:border-emerald-400/40 group-hover:text-white dark:group-hover:text-white font-bold text-[11px] sm:text-xs transition-colors flex items-center justify-center gap-1 active:scale-95 text-center cursor-pointer">
+            <span class="truncate">Xem Video Tab</span>
           </div>
         </div>
       </div>
@@ -283,7 +290,7 @@ export function renderSongCard(tab, options = {}) {
 
   const badgeHtml = isPurchased
     ? `
-    <span class="px-2 sm:px-2.5 py-0.5 sm:py-1 rounded-full text-[8px] sm:text-[9.5px] font-black bg-emerald-600 text-white shadow-sm uppercase tracking-wide flex items-center gap-0.5">
+    <span class="px-1.5 sm:px-2 py-0.5 rounded-full text-[11px] sm:text-xs font-black bg-emerald-700 text-white uppercase tracking-wide flex items-center gap-0.5">
       <svg class="w-2.5 h-2.5 sm:w-3 sm:h-3" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/></svg>
       <span>ĐÃ MUA</span>
     </span>
@@ -291,13 +298,13 @@ export function renderSongCard(tab, options = {}) {
     : renderPriceBadge(priceFormatted)
 
   return `
-    <div onclick="${isPurchased ? 'window.navigateToPurchasesTab()' : `window.openCheckoutModal('${tab.id}')`}" class="song-card glass-card card-interactive p-2.5 sm:p-4 rounded-2xl sm:rounded-3xl border ${isPurchased ? 'border-amber-500/40 hover:border-amber-400' : 'border-glass-border'} flex flex-col justify-between space-y-2.5 sm:space-y-3.5 group cursor-pointer card-paid ${pinnedClass} ${extraClass}" data-id="${tab.id}">
+    <div onclick="${isPurchased ? 'window.navigateToPurchasesTab()' : `window.openCheckoutModal('${tab.id}')`}" class="song-card glass-card card-interactive p-2.5 sm:p-4 rounded-2xl border ${isPurchased ? 'border-amber-500/40 hover:border-amber-400' : 'border-glass-border'} flex flex-col justify-between space-y-2.5 sm:space-y-3.5 group cursor-pointer card-paid ${pinnedClass} ${extraClass}" data-id="${tab.id}">
       ${swipeOverlay}
       <div class="space-y-2 sm:space-y-3">
         <div class="${SONG_THUMB_CLASS} bg-gradient-to-br ${thumbnailBg}">
           <div class="flex justify-between items-start text-xs uppercase font-bold tracking-wider">
             ${renderCategoryBadge(tab, 'Nhạc Việt')}
-            <div class="flex items-start gap-1 flex-wrap justify-end">
+            <div class="flex items-center gap-1 flex-wrap max-sm:w-full sm:justify-end">
               ${pinnedBadge}
               ${badgeHtml}
               ${favButton}
@@ -320,10 +327,10 @@ export function renderSongCard(tab, options = {}) {
       <div class="pt-1 sm:pt-2">
         ${
           isPurchased
-            ? `<div class="w-full py-1.5 sm:py-2.5 px-1.5 rounded-full bg-amber-500/15 border border-amber-500/30 hover:bg-amber-500/25 text-amber-600 dark:text-amber-300 font-extrabold text-[10px] sm:text-xs transition-all shadow-xs flex items-center justify-center gap-1 active:scale-95 text-center cursor-pointer">
+            ? `<div class="w-full py-1.5 sm:py-2.5 px-1.5 rounded-full bg-amber-500/15 border border-amber-500/30 hover:bg-amber-500/25 text-amber-700 dark:text-amber-300 font-extrabold text-[11px] sm:text-xs transition-all flex items-center justify-center gap-1 active:scale-95 text-center cursor-pointer">
           <span class="truncate">Mở tab đã mua</span>
         </div>`
-            : `<div class="w-full py-1.5 sm:py-2.5 px-1.5 rounded-full bg-warm-gradient hover:opacity-90 text-white font-bold text-[10px] sm:text-xs transition-all shadow-md shadow-accent-primary/20 flex items-center justify-center gap-1 active:scale-95 text-center cursor-pointer">
+            : `<div class="w-full py-1.5 sm:py-2.5 px-1.5 rounded-full bg-warm-gradient hover:brightness-105 text-white font-bold text-[11px] sm:text-xs transition-all shadow-md shadow-accent-primary/20 flex items-center justify-center gap-1 active:scale-95 text-center cursor-pointer">
           <span class="truncate">Xem chi tiết</span>
         </div>`
         }
