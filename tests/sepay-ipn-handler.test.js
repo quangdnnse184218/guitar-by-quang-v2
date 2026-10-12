@@ -301,7 +301,7 @@ describe('sepay-ipn — tiền về mà không khớp phải được LƯU và B
   it('email báo tiền chưa khớp trỏ đúng địa chỉ web đang chạy', async () => {
     await deliver(bank({ content: 'DH999999' }))
     expect(emails[0].htmlContent).toContain(
-      'https://guitar-by-quang-v2.vercel.app/admin-dashboard.html#/tien-ve'
+      'https://guitartabsbyquang.vercel.app/admin-dashboard.html#/tien-ve'
     )
   })
 

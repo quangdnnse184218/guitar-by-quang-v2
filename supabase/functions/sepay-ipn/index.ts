@@ -268,7 +268,7 @@ async function notifyUnmatchedTransfer(t: TransferInfo, reason: string, orderCod
           ${orderCode ? `<tr><td><strong>Mã đơn trong nội dung:</strong></td><td>${escapeHtml(orderCode)}</td></tr>` : ""}
         </table>
         <p>Khách có thể đã chuyển khoản mà chưa nhận được tab. Vào trang quản trị mục <strong>Tiền về</strong> để gán khoản này cho đúng khách:</p>
-        <p><a href="https://guitar-by-quang-v2.vercel.app/admin-dashboard.html#/tien-ve">Mở trang Tiền về</a></p>
+        <p><a href="https://guitartabsbyquang.vercel.app/admin-dashboard.html#/tien-ve">Mở trang Tiền về</a></p>
       </div>`;
 
     const res = await fetch("https://api.brevo.com/v3/smtp/email", {
