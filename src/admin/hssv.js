@@ -165,7 +165,7 @@ function reviewCard(r) {
     : '<span class="text-text-muted font-normal">chưa cung cấp</span>'
   const zaloUrl = zaloHref(r.user_zalo)
   const orderText = r.order_code
-    ? `<span class="font-mono">${escapeHtml(r.order_code)}</span> · ${escapeHtml(r.song_title || '')} · <span class="font-mono">${formatVnd(r.order_amount)}</span> · ${r.order_status === 'paid' ? '<span class="text-emerald-700 dark:text-emerald-400">đã thanh toán</span>' : r.order_status === 'pending' ? 'chờ thanh toán' : 'hết hạn'}`
+    ? `<span class="font-code">${escapeHtml(r.order_code)}</span> · ${escapeHtml(r.song_title || '')} · <span class="font-mono">${formatVnd(r.order_amount)}</span> · ${r.order_status === 'paid' ? '<span class="text-emerald-700 dark:text-emerald-400">đã thanh toán</span>' : r.order_status === 'pending' ? 'chờ thanh toán' : 'hết hạn'}`
     : '<span class="text-text-muted font-normal">đơn đã bị xoá</span>'
   const others = Number(r.other_accounts_same_card) || 0
   const othersEmail = Number(r.other_accounts_same_email) || 0

@@ -72,7 +72,7 @@ function candidateRow(tx, c) {
     <div class="flex flex-col sm:flex-row sm:items-center gap-2.5 p-3 rounded-xl bg-black/[0.03] dark:bg-white/[0.04] border border-glass-border">
       <div class="flex-1 min-w-0">
         <div class="flex items-center gap-1.5 flex-wrap">
-          <span class="font-mono font-extrabold text-[11px] sm:text-xs text-text-primary">${escapeHtml(c.order_code)}</span>
+          <span class="font-code font-extrabold text-[11px] sm:text-xs text-text-primary">${escapeHtml(c.order_code)}</span>
           <span class="px-1.5 py-0.5 rounded-md text-[11px] sm:text-xs font-bold ${
             c.status === 'expired' ? 'bg-black/10 dark:bg-white/10 text-text-muted' : 'bg-amber-500/15 text-amber-600 dark:text-amber-400'
           }">${statusText}</span>
@@ -256,7 +256,7 @@ function renderRecent(list) {
           <div class="flex items-center gap-2 flex-wrap">
             <span class="font-mono font-bold text-xs text-text-primary">${formatVnd(t.amount)}</span>
             <span class="px-2 py-0.5 rounded-full text-[11px] sm:text-xs font-bold whitespace-nowrap ${pill.cls}">${pill.label}</span>
-            ${t.order_code ? `<span class="font-mono text-[11px] sm:text-xs text-text-muted">${escapeHtml(t.order_code)}</span>` : ''}
+            ${t.order_code ? `<span class="font-code text-[11px] sm:text-xs text-text-muted">${escapeHtml(t.order_code)}</span>` : ''}
           </div>
           <div class="text-[11px] sm:text-xs text-text-muted truncate mt-0.5">${escapeHtml(who || t.content || '—')}</div>
           ${note ? `<div class="text-[11px] sm:text-xs text-text-muted italic truncate">${escapeHtml(note)}${t.resolved_by_name ? ' — ' + escapeHtml(t.resolved_by_name) : ''}</div>` : ''}

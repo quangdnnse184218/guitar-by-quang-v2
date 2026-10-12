@@ -48,11 +48,11 @@ const amountInput = document.getElementById('grant-amount')
  * thanh toán". Khớp với PAID_REASONS trong hàm SQL admin_grant_access.
  */
 const REASONS = [
-  { value: 'bank_wrong_note', label: 'Khách chuyển khoản sai nội dung', hint: 'Đã nhận tiền', paid: true },
-  { value: 'offline_payment', label: 'Thanh toán ngoài SePay', hint: 'Tiền mặt, ví khác — đã nhận tiền', paid: true },
-  { value: 'gift', label: 'Tặng / khuyến mãi', hint: 'Không thu tiền', paid: false },
-  { value: 'compensation', label: 'Đền bù lỗi hệ thống', hint: 'Không thu tiền', paid: false },
-  { value: 'other', label: 'Lý do khác', hint: 'Không thu tiền — ghi rõ ở ghi chú', paid: false },
+  { value: 'bank_wrong_note', label: 'Chuyển khoản sai nội dung', hint: 'Đã nhận tiền · ghi doanh thu', paid: true },
+  { value: 'offline_payment', label: 'Thanh toán ngoài hệ thống', hint: 'Tiền mặt, ví điện tử · ghi doanh thu', paid: true },
+  { value: 'gift', label: 'Quà tặng, khuyến mãi', hint: 'Không ghi doanh thu', paid: false },
+  { value: 'compensation', label: 'Đền bù sự cố', hint: 'Không ghi doanh thu', paid: false },
+  { value: 'other', label: 'Lý do khác', hint: 'Không ghi doanh thu · nêu rõ ở ghi chú', paid: false },
 ]
 
 let selectedUser = null
@@ -108,7 +108,7 @@ function renderUserResults(list) {
     item.innerHTML = `
       <img src="${escapeHtml(avatarUrlFor(u))}" alt="" class="w-8 h-8 rounded-lg object-cover border border-glass-border flex-shrink-0" />
       <div class="flex-1 min-w-0">
-        <div class="text-xs font-bold text-text-primary truncate">${escapeHtml(u.full_name || 'Khách vãng lai')}</div>
+        <div class="text-xs font-bold text-text-primary truncate">${escapeHtml(u.full_name || 'Chưa đặt tên')}</div>
         <div class="text-[11px] sm:text-xs text-text-muted truncate">${escapeHtml(u.email || 'chưa có email')}</div>
       </div>
       <span class="text-[11px] sm:text-xs font-mono text-text-muted flex-shrink-0">${u.purchases_count || 0} tab</span>`
@@ -150,9 +150,9 @@ async function selectUser(user) {
   resultEl?.classList.add('hidden')
 
   if (userAvatar) userAvatar.src = avatarUrlFor(user)
-  if (userName) userName.textContent = user.full_name || 'Khách vãng lai'
+  if (userName) userName.textContent = user.full_name || 'Chưa đặt tên'
   if (userEmail) userEmail.textContent = user.email || 'Chưa có email'
-  if (userMeta) userMeta.textContent = `Đang sở hữu ${user.purchases_count || 0} tab`
+  if (userMeta) userMeta.textContent = `Đã sở hữu ${user.purchases_count || 0} tab`
   userCard?.classList.remove('hidden')
   userCard?.classList.add('flex')
   userResults?.classList.add('hidden')
@@ -167,7 +167,7 @@ async function selectUser(user) {
   // Tab đang chọn lỡ là tab khách đã có (vd. đơn chờ của khách đã sở hữu) → bỏ.
   if (selectedSongId && ownedSongIds.has(selectedSongId)) {
     selectedSongId = null
-    showToast('Khách này đã có tab đó rồi — hãy chọn tab khác', 'info')
+    showToast('Khách đã sở hữu bài này, hãy chọn bài khác', 'info')
   }
   render()
   refreshContext()
@@ -233,7 +233,7 @@ function renderSongs() {
           <span class="block text-xs font-bold text-text-primary truncate">${escapeHtml(s.title)}</span>
           <span class="block text-[11px] sm:text-xs text-text-muted truncate">${escapeHtml(s.singer || '')}</span>
         </span>
-        ${owned ? '<span class="px-2 py-0.5 rounded-full bg-emerald-500/15 text-emerald-700 dark:text-emerald-400 text-[11px] sm:text-xs font-bold whitespace-nowrap">Khách đã có</span>' : ''}
+        ${owned ? '<span class="px-2 py-0.5 rounded-full bg-emerald-500/15 text-emerald-700 dark:text-emerald-400 text-[11px] sm:text-xs font-bold whitespace-nowrap">Đã sở hữu</span>' : ''}
         ${pending ? '<span class="px-2 py-0.5 rounded-full bg-amber-500/15 text-amber-600 dark:text-amber-400 text-[11px] sm:text-xs font-bold whitespace-nowrap">Có đơn chờ</span>' : ''}
         <span class="font-mono text-[11px] sm:text-xs font-bold text-accent-primary flex-shrink-0">${s.price ? formatVnd(s.price) : 'Có phí'}</span>
       </button>`
@@ -328,20 +328,25 @@ function renderSummary() {
 
   summaryEl.innerHTML =
     summaryRow(
-      'Khách',
+      'Khách hàng',
       selectedUser
-        ? `${escapeHtml(selectedUser.full_name || 'Khách vãng lai')}<span class="block text-[11px] sm:text-xs font-normal text-text-muted">${escapeHtml(selectedUser.email || '')}</span>`
+        ? `${escapeHtml(selectedUser.full_name || 'Chưa đặt tên')}<span class="block text-[11px] sm:text-xs font-normal text-text-muted">${escapeHtml(selectedUser.email || '')}</span>`
         : 'Chưa chọn',
       !selectedUser
     ) +
     summaryRow(
-      'Tab',
+      'Bài tab',
       song
         ? `${escapeHtml(song.title)}<span class="block text-[11px] sm:text-xs font-mono font-normal text-accent-primary">${song.price ? formatVnd(song.price) : 'Có phí'}</span>`
         : 'Chưa chọn',
       !song
     ) +
     summaryRow('Lý do', reason ? escapeHtml(reason.label) : 'Chưa chọn', !reason)
+
+  const stepDone = { 1: Boolean(selectedUser), 2: Boolean(song), 3: Boolean(reason) }
+  document.querySelectorAll('[data-grant-step]').forEach((el) => {
+    el.dataset.done = String(stepDone[el.dataset.grantStep] === true)
+  })
 
   renderConsequences(song, reason)
   renderWarnings()
@@ -411,7 +416,7 @@ function renderConsequences(song, reason) {
   syncAmountField(needsAmount, song)
 
   box.innerHTML = `
-    <div class="text-[11px] sm:text-xs font-bold uppercase tracking-wider text-text-muted mb-2">Khi bấm cấp</div>
+    <div class="text-[11px] sm:text-xs font-bold uppercase tracking-wider text-text-muted mb-2">Sau khi cấp</div>
     <ul class="space-y-1.5 text-[11.5px] leading-relaxed text-text-primary">${lines.join('')}</ul>`
   box.classList.remove('hidden')
 }
@@ -430,7 +435,7 @@ function renderWarnings() {
   const boxes = []
   if (context?.already_owns) {
     boxes.push(
-      warningBox('danger', 'Khách này đã có quyền xem tab đang chọn. Hệ thống sẽ từ chối — hãy chọn tab khác.')
+      warningBox('danger', 'Khách đã sở hữu bài đang chọn nên không cấp lại được. Hãy chọn bài khác.')
     )
   }
   if ((context?.manual_grant_count || 0) >= 3) {
@@ -452,11 +457,11 @@ function renderSubmit(song, reason) {
   const blocked = !!context?.already_owns
   const ready = !!(selectedUser && song && reason) && !blocked
 
-  let label = 'Chọn khách để tiếp tục'
-  if (selectedUser && !song) label = 'Chọn tab để tiếp tục'
-  else if (selectedUser && song && !reason) label = 'Chọn lý do để tiếp tục'
-  else if (blocked) label = 'Khách đã có tab này'
-  else if (ready) label = `Cấp quyền cho ${selectedUser.full_name || 'khách'}`
+  let label = 'Chọn khách hàng'
+  if (selectedUser && !song) label = 'Chọn bài tab'
+  else if (selectedUser && song && !reason) label = 'Chọn lý do cấp'
+  else if (blocked) label = 'Khách đã sở hữu bài này'
+  else if (ready) label = 'Cấp quyền'
 
   submitBtn.disabled = !ready
   const labelEl = submitBtn.querySelector('[data-label]')
@@ -563,7 +568,7 @@ function showResult({ userId, userNameText, songTitle, driveGranted, closedStatu
         <svg class="w-5 h-5" aria-hidden="true" data-ph="check" viewBox="0 0 256 256" fill="currentColor"><path d="M232.49,80.49l-128,128a12,12,0,0,1-17,0l-56-56a12,12,0,1,1,17-17L96,183,215.51,63.51a12,12,0,0,1,17,17Z"/></svg>
       </div>
       <div class="min-w-0 text-xs leading-relaxed">
-        <div class="font-extrabold text-text-primary">Đã cấp quyền thành công</div>
+        <div class="font-bold text-text-primary">Đã cấp quyền</div>
         <div class="text-text-muted mt-0.5"><strong class="text-text-primary">${escapeHtml(songTitle)}</strong> cho <strong class="text-text-primary">${escapeHtml(userNameText)}</strong>.${closedText}</div>
         <div class="mt-1 font-semibold ${driveGranted ? 'text-emerald-700 dark:text-emerald-400' : 'text-amber-600 dark:text-amber-400'}">
           ${driveGranted ? 'Đã chia sẻ file Drive cho email của khách.' : 'Chưa chia sẻ được Drive tự động — bạn cần vào Drive chia sẻ tay.'}

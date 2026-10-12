@@ -107,7 +107,7 @@ function renderUsersTable() {
         <div class="flex items-center justify-between sm:justify-start gap-1.5 w-full">
           <span class="text-[11px] sm:text-xs font-bold text-text-muted sm:hidden">Mã UUID:</span>
           <div class="flex items-center gap-1.5">
-            <span class="font-mono text-[11px] sm:text-xs text-accent-primary bg-black/5 dark:bg-white/5 px-2 py-0.5 sm:py-1 rounded-lg border border-glass-border cursor-help" title="${escapeHtml(uuidStr)}">${escapeHtml(shortUuid)}</span>
+            <span class="font-code text-[11px] sm:text-xs text-accent-primary bg-black/5 dark:bg-white/5 px-2 py-0.5 sm:py-1 rounded-lg border border-glass-border cursor-help" title="${escapeHtml(uuidStr)}">${escapeHtml(shortUuid)}</span>
             <button type="button" data-copy-uuid="${escapeHtml(uuidStr)}" class="p-1 sm:p-1.5 rounded-lg bg-glass-bg border border-glass-border hover:bg-glass-bg-hover hover:border-accent-primary text-text-muted hover:text-accent-primary transition-all cursor-pointer" title="Copy UUID">${ICON_COPY}</button>
           </div>
         </div>

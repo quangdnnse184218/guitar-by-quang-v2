@@ -107,7 +107,7 @@ function renderOrdersPanel(orders) {
       <div class="p-3.5 flex items-center gap-3">
         <div class="flex-1 min-w-0">
           <div class="flex items-center gap-2 flex-wrap">
-            <span class="font-mono font-extrabold text-xs text-text-primary">${escapeHtml(o.order_code)}</span>
+            <span class="font-code font-extrabold text-xs text-text-primary">${escapeHtml(o.order_code)}</span>
             <span class="px-2 py-0.5 rounded-full text-[11px] sm:text-xs font-bold whitespace-nowrap ${st.cls}">${escapeHtml(st.label)}</span>
             ${o.is_hssv ? '<span class="px-2 py-0.5 rounded-full bg-sky-500/15 text-sky-600 dark:text-sky-400 text-[11px] sm:text-xs font-bold whitespace-nowrap">HSSV</span>' : ''}
           </div>

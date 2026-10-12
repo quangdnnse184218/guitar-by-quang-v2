@@ -175,7 +175,7 @@ function orderRow(o) {
       <div class="flex-1 min-w-0 space-y-1">
         <div class="flex items-center gap-2 flex-wrap">
           <button type="button" data-copy-code="${escapeHtml(o.order_code)}" title="Bấm để copy mã đơn"
-            class="font-mono font-extrabold text-xs text-text-primary hover:text-accent-primary transition-colors cursor-pointer inline-flex items-center gap-1">
+            class="font-code font-extrabold text-xs text-text-primary hover:text-accent-primary transition-colors cursor-pointer inline-flex items-center gap-1">
             ${escapeHtml(o.order_code)}
             <svg class="w-3 h-3 opacity-50" aria-hidden="true" data-ph="copy" viewBox="0 0 256 256" fill="currentColor"><path d="M216,28H88A12,12,0,0,0,76,40V76H40A12,12,0,0,0,28,88V216a12,12,0,0,0,12,12H168a12,12,0,0,0,12-12V180h36a12,12,0,0,0,12-12V40A12,12,0,0,0,216,28ZM156,204H52V100H156Zm48-48H180V88a12,12,0,0,0-12-12H100V52H204Z"/></svg>
           </button>

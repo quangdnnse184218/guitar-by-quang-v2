@@ -270,6 +270,19 @@ h2,
   letter-spacing: -0.01em;
 }
 
+/* Trang quản trị: số tiền, số đếm, ngày giờ dùng phông thường (chữ số thẳng cột) — phông kiểu
+   máy đánh chữ với số 0 gạch chéo trông "kỹ thuật" quá. Riêng MÃ (mã đơn, mã tài khoản, tên file)
+   giữ phông mã qua lớp .font-code. */
+.admin-page .font-mono {
+  font-family: 'Be Vietnam Pro', sans-serif !important;
+  font-variant-numeric: tabular-nums;
+}
+.font-code,
+.admin-page code {
+  font-family:
+    'JetBrains Mono', ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace !important;
+}
+
 /* Numeric Mono Font & Tabular Figures */
 .font-mono,
 .numeric-mono {

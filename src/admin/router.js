@@ -58,7 +58,7 @@ export const ROUTES = {
     section: 'section-grant',
     nav: 'cap-quyen',
     title: 'Cấp quyền thủ công',
-    subtitle: 'Mở tab cho khách khi thanh toán không tự khớp, hoặc để tặng tab',
+    subtitle: 'Mở tab cho một khách khi thanh toán không tự khớp, hoặc khi tặng tab',
   },
   'lich-su': {
     section: 'section-history',
