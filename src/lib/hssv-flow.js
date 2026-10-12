@@ -24,23 +24,28 @@ const ZALO_URL = 'https://zalo.me/0326768885'
 const RESEND_WAIT_SEC = 60
 
 const ERROR_TEXT = {
-  invalid_email: 'Email này không phải email trường (phải kết thúc bằng .edu.vn). Trường bạn không cấp email thì chọn mục bên cạnh để nhắn Zalo.',
-  email_used: 'Email trường này đã được dùng để giảm giá ở một tài khoản khác. Nếu đây là email của bạn, nhắn Zalo để được hỗ trợ.',
+  invalid_email:
+    'Email này không phải email trường (phải kết thúc bằng .edu.vn). Trường bạn không cấp email thì chọn mục bên cạnh để nhắn Zalo.',
+  email_used:
+    'Email trường này đã được dùng để giảm giá ở một tài khoản khác. Nếu đây là email của bạn, nhắn Zalo để được hỗ trợ.',
   wait: 'Mã vừa được gửi rồi, chờ một chút rồi gửi lại nhé.',
-  too_many: 'Bạn đã xin mã quá nhiều lần. Thử lại sau khoảng một giờ, hoặc nhắn Zalo để được duyệt tay.',
+  too_many:
+    'Bạn đã xin mã quá nhiều lần. Thử lại sau khoảng một giờ, hoặc nhắn Zalo để được duyệt tay.',
   send_failed: 'Chưa gửi được email. Kiểm tra lại địa chỉ rồi thử lại, hoặc nhắn Zalo.',
   mail_not_configured: 'Hệ thống gửi email đang trục trặc. Bạn nhắn Zalo để được duyệt tay nhé.',
   not_ready: 'Hệ thống xác minh đang trục trặc. Bạn nhắn Zalo để được duyệt tay nhé.',
   wrong_code: 'Mã chưa đúng.',
   code_expired: 'Mã đã hết hạn. Bấm "Gửi lại mã" để nhận mã mới.',
   too_many_attempts: 'Nhập sai quá 5 lần. Bấm "Gửi lại mã" để nhận mã mới.',
-  email_not_verified: 'Email trường chưa được xác nhận (hoặc đã quá 1 giờ). Xác nhận lại email rồi gửi ảnh thẻ.',
+  email_not_verified:
+    'Email trường chưa được xác nhận (hoặc đã quá 1 giờ). Xác nhận lại email rồi gửi ảnh thẻ.',
   consent_required: 'Bạn cần tick ô đồng ý trước.',
   already_paid: 'Đơn này đã được thanh toán.',
   order_not_found: 'Không tìm thấy đơn. Đóng hộp này rồi mở lại giúp mình.',
   network: 'Không kết nối được máy chủ. Kiểm tra mạng rồi thử lại.',
 }
-const errorText = (code, fallback) => ERROR_TEXT[code] || fallback || 'Có lỗi xảy ra, thử lại giúp mình nhé.'
+const errorText = (code, fallback) =>
+  ERROR_TEXT[code] || fallback || 'Có lỗi xảy ra, thử lại giúp mình nhé.'
 
 const TONE = {
   muted: 'text-text-muted',
@@ -61,28 +66,24 @@ const TAB =
 const TEMPLATE = `
   <label class="flex items-center gap-2.5 min-h-[40px] cursor-pointer select-none">
     <input type="checkbox" id="modal-hssv-checkbox" class="w-4 h-4 rounded accent-accent-primary cursor-pointer flex-shrink-0">
-    <span class="font-bold text-text-primary">Tôi là học sinh / sinh viên — nhận giá ưu đãi</span>
+    <span class="font-bold text-text-primary">Tôi là học sinh / sinh viên</span>
   </label>
 
   <div id="modal-hssv-upload-panel" class="hidden space-y-3 pt-1">
     <div role="tablist" aria-label="Cách nhận giá ưu đãi" class="flex gap-1 p-1 rounded-xl bg-text-primary/[0.06]">
-      <button type="button" role="tab" id="hssv-tab-sv" aria-controls="hssv-pane-sv" aria-selected="true" class="${TAB}">Sinh viên có email trường</button>
-      <button type="button" role="tab" id="hssv-tab-zalo" aria-controls="hssv-pane-zalo" aria-selected="false" class="${TAB}">Học sinh / không có email</button>
+      <button type="button" role="tab" id="hssv-tab-sv" aria-controls="hssv-pane-sv" aria-selected="true" class="${TAB}">Có email trường</button>
+      <button type="button" role="tab" id="hssv-tab-zalo" aria-controls="hssv-pane-zalo" aria-selected="false" class="${TAB}">Nhắn Zalo</button>
     </div>
 
     <!-- SINH VIÊN: email trường + ảnh thẻ -->
     <div id="hssv-pane-sv" role="tabpanel" aria-labelledby="hssv-tab-sv" class="space-y-3">
-      <label class="flex items-start gap-2.5 cursor-pointer select-none">
-        <input type="checkbox" id="modal-hssv-consent" class="w-4 h-4 mt-0.5 rounded accent-accent-primary cursor-pointer flex-shrink-0">
-        <span class="leading-relaxed">
-          <span class="font-bold text-text-primary">Tôi đồng ý cho Guitar By Quang dùng email trường và ảnh thẻ sinh viên của tôi, chỉ để xác minh điều kiện giảm giá.</span>
-          <span class="block text-text-muted mt-1">Ảnh lưu riêng tư, chỉ quản trị viên xem được, tự xoá sau tối đa 30 ngày.
-            <a href="/chinh-sach-bao-mat.html#hssv" target="_blank" rel="noopener" class="text-accent-primary underline font-bold">Chính sách bảo mật</a></span>
-        </span>
+      <label class="flex items-center gap-2.5 min-h-[40px] cursor-pointer select-none">
+        <input type="checkbox" id="modal-hssv-consent" class="w-4 h-4 rounded accent-accent-primary cursor-pointer flex-shrink-0">
+        <span class="text-text-primary">Tôi đồng ý với <a href="/chinh-sach-bao-mat.html#hssv" target="_blank" rel="noopener" class="text-accent-primary underline font-bold">Chính sách bảo mật</a></span>
       </label>
 
       <div class="space-y-1.5">
-        <label for="hssv-email" class="block font-bold text-text-primary">1. Email trường <span class="font-normal text-text-muted">(đuôi .edu.vn)</span></label>
+        <label for="hssv-email" class="block font-bold text-text-primary">Email trường (.edu.vn)</label>
         <div class="flex gap-2">
           <input type="email" id="hssv-email" inputmode="email" autocomplete="email" autocapitalize="none" spellcheck="false" maxlength="254" placeholder="ten.sv@truong.edu.vn" class="${INPUT} flex-1 min-w-0" />
           <button type="button" id="hssv-send-btn" disabled class="${BTN} flex-shrink-0">Gửi mã</button>
@@ -90,16 +91,16 @@ const TEMPLATE = `
       </div>
 
       <div id="hssv-code-row" class="hidden space-y-1.5">
-        <label for="hssv-code" class="block font-bold text-text-primary">2. Mã 6 số trong email</label>
+        <label for="hssv-code" class="block font-bold text-text-primary">Mã 6 số trong email</label>
         <div class="flex gap-2">
           <input type="text" id="hssv-code" inputmode="numeric" autocomplete="one-time-code" maxlength="6" placeholder="••••••" class="${INPUT} flex-1 min-w-0 font-mono tracking-[0.4em]" />
           <button type="button" id="hssv-check-btn" disabled class="${BTN} flex-shrink-0">Xác nhận</button>
         </div>
-        <p class="text-text-muted">Không thấy thư? Xem cả mục Spam / Thư rác.</p>
+        <p class="text-text-muted">Không thấy thư thì xem mục Spam.</p>
       </div>
 
       <div id="hssv-card-row" class="hidden space-y-1.5">
-        <label for="modal-hssv-file-input" class="block font-bold text-text-primary">3. Ảnh thẻ sinh viên <span class="font-normal text-text-muted">(còn hạn, rõ họ tên, trường, mã số)</span></label>
+        <label for="modal-hssv-file-input" class="block font-bold text-text-primary">Ảnh thẻ sinh viên còn hạn</label>
         <input type="file" accept="image/*" id="modal-hssv-file-input"
           class="block w-full text-xs text-text-muted file:mr-3 file:min-h-[40px] file:px-3 file:rounded-lg file:border-0 file:bg-accent-primary/15 file:text-accent-primary file:font-bold file:cursor-pointer cursor-pointer" />
         <button type="button" id="modal-hssv-verify-btn" disabled class="${BTN} w-full">Xác minh thẻ</button>
@@ -110,14 +111,14 @@ const TEMPLATE = `
 
     <!-- HỌC SINH / KHÔNG CÓ EMAIL TRƯỜNG: nhắn Zalo, admin duyệt tay -->
     <div id="hssv-pane-zalo" role="tabpanel" aria-labelledby="hssv-tab-zalo" class="hidden space-y-3">
-      <p class="text-text-muted leading-relaxed">Học sinh, hoặc sinh viên mà trường không cấp email <strong class="text-text-primary">.edu.vn</strong>: nhắn Zalo cho Quang <strong class="text-text-primary">ảnh thẻ</strong> kèm <strong class="text-text-primary">mã đơn</strong> bên dưới. Quang duyệt xong, mã QR ở đây tự đổi sang giá ưu đãi — cứ để cửa sổ này mở.</p>
+      <p class="text-text-muted leading-relaxed">Nhắn Zalo cho Quang <strong class="text-text-primary">ảnh thẻ</strong> kèm <strong class="text-text-primary">mã đơn</strong> này. Duyệt xong, mã QR ở đây tự đổi giá — cứ để cửa sổ này mở.</p>
       <div class="flex items-center justify-between gap-3 px-3 py-2 rounded-xl border border-glass-border bg-glass-bg">
-        <span class="text-text-muted">Mã đơn của bạn</span>
+        <span class="text-text-muted">Mã đơn</span>
         <strong id="hssv-zalo-code" class="font-mono tabular-nums text-sm text-text-primary">đang tạo…</strong>
       </div>
       <div class="flex flex-wrap gap-2">
         <button type="button" id="hssv-zalo-copy" class="${BTN_GHOST} flex-1">Sao chép tin nhắn</button>
-        <a id="hssv-zalo-open" href="${ZALO_URL}" target="_blank" rel="noopener noreferrer" class="${BTN} flex-1 inline-flex items-center justify-center">Mở Zalo 0326.768.885</a>
+        <a id="hssv-zalo-open" href="${ZALO_URL}" target="_blank" rel="noopener noreferrer" class="${BTN} flex-1 inline-flex items-center justify-center">Mở Zalo</a>
       </div>
       <p id="hssv-zalo-status" role="status" class="hidden font-bold leading-relaxed"></p>
     </div>
@@ -186,8 +187,20 @@ export function initHssvFlow({
   const sync = () => {
     const agreed = el.consent.checked
     const ready = Boolean(getOrder()?.id)
-    el.send.disabled = busy || done || !agreed || !ready || !looksLikeEmail() || cooldown > 0 || Boolean(verifiedEmail)
-    el.send.textContent = cooldown > 0 ? `Gửi lại (${cooldown}s)` : el.codeRow.classList.contains('hidden') ? 'Gửi mã' : 'Gửi lại mã'
+    el.send.disabled =
+      busy ||
+      done ||
+      !agreed ||
+      !ready ||
+      !looksLikeEmail() ||
+      cooldown > 0 ||
+      Boolean(verifiedEmail)
+    el.send.textContent =
+      cooldown > 0
+        ? `Gửi lại (${cooldown}s)`
+        : el.codeRow.classList.contains('hidden')
+          ? 'Gửi mã'
+          : 'Gửi lại mã'
     el.check.disabled = busy || done || !agreed || el.code.value.replace(/\D/g, '').length !== 6
     el.verify.disabled = busy || done || !agreed || !verifiedEmail || !el.file.files?.length
     el.email.disabled = done || Boolean(verifiedEmail)
@@ -235,7 +248,7 @@ export function initHssvFlow({
     const priceEl = document.getElementById('modal-tab-price')
     if (priceEl) priceEl.textContent = `${value.toLocaleString('vi-VN')} VNĐ`
     const tag = document.getElementById('modal-discount-tag')
-    if (tag) tag.textContent = lowered ? '✓ Đã áp giá HSSV' : ''
+    if (tag) tag.textContent = lowered ? 'Đã áp giá HSSV' : ''
 
     if (!byAdmin) return
     // Số tiền đổi do admin: duyệt tay (giảm) hoặc thu hồi (tăng lại giá thường).
@@ -244,7 +257,11 @@ export function initHssvFlow({
       el.toggle.checked = true
       el.panel.classList.remove('hidden')
       selectTab(true)
-      say(el.zaloStatus, 'ok', '✓ Quang đã duyệt. Mã QR đã đổi sang giá ưu đãi — bạn chuyển khoản theo mã mới nhé.')
+      say(
+        el.zaloStatus,
+        'ok',
+        '✓ Quang đã duyệt. Mã QR đã đổi sang giá ưu đãi — bạn chuyển khoản theo mã mới nhé.'
+      )
     } else {
       done = false
       say(el.zaloStatus, 'wait', 'Giá ưu đãi của đơn này đã được gỡ; mã QR trở lại giá thường.')
@@ -253,7 +270,9 @@ export function initHssvFlow({
   }
 
   // ---- sự kiện
-  el.toggle.addEventListener('change', () => el.panel.classList.toggle('hidden', !el.toggle.checked))
+  el.toggle.addEventListener('change', () =>
+    el.panel.classList.toggle('hidden', !el.toggle.checked)
+  )
   el.tabSv.addEventListener('click', () => selectTab(false))
   el.tabZalo.addEventListener('click', () => selectTab(true))
   el.consent.addEventListener('change', sync)
@@ -302,7 +321,10 @@ export function initHssvFlow({
       el.cardRow.classList.remove('hidden')
       say(el.status, 'ok', '✓ Đã xác nhận email trường. Giờ tải ảnh thẻ sinh viên lên.')
     } else {
-      const left = res?.error === 'wrong_code' && Number.isFinite(res.attemptsLeft) ? ` Còn ${res.attemptsLeft} lần thử.` : ''
+      const left =
+        res?.error === 'wrong_code' && Number.isFinite(res.attemptsLeft)
+          ? ` Còn ${res.attemptsLeft} lần thử.`
+          : ''
       say(el.status, 'bad', errorText(res?.error) + left)
       el.code.value = ''
     }
@@ -322,7 +344,10 @@ export function initHssvFlow({
 
     let result
     try {
-      result = await uploadAndVerifyHssvCard(userId, order.id, file, { email: verifiedEmail, consent: true })
+      result = await uploadAndVerifyHssvCard(userId, order.id, file, {
+        email: verifiedEmail,
+        consent: true,
+      })
     } catch (err) {
       console.error('Lỗi xác minh HSSV:', err)
       result = { approved: false, error: 'network' }
@@ -353,7 +378,9 @@ export function initHssvFlow({
       say(
         el.status,
         'bad',
-        result?.reason || ERROR_TEXT[result?.error] || 'Không xác minh được thẻ. Bạn thử ảnh khác, nhắn Zalo, hoặc thanh toán giá thường.'
+        result?.reason ||
+          ERROR_TEXT[result?.error] ||
+          'Không xác minh được thẻ. Bạn thử ảnh khác, nhắn Zalo, hoặc thanh toán giá thường.'
       )
     }
     sync()
@@ -367,7 +394,11 @@ export function initHssvFlow({
       await navigator.clipboard.writeText(text)
       say(el.zaloStatus, 'ok', 'Đã sao chép. Mở Zalo, dán tin nhắn và gửi kèm ảnh thẻ.')
     } catch {
-      say(el.zaloStatus, 'muted', `Không sao chép được. Bạn nhắn Zalo kèm mã đơn ${code} và ảnh thẻ nhé.`)
+      say(
+        el.zaloStatus,
+        'muted',
+        `Không sao chép được. Bạn nhắn Zalo kèm mã đơn ${code} và ảnh thẻ nhé.`
+      )
     }
   })
 

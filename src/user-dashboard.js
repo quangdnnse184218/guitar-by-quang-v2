@@ -20,15 +20,16 @@ import {
   normalizeVideoPath,
   normalizeAudioPath,
 } from './lib/songs-service.js'
-import { uploadToStorage, removeFromStorageByUrl, formatBytes, MAX_UPLOAD_BYTES } from './lib/storage-service.js'
+import {
+  uploadToStorage,
+  removeFromStorageByUrl,
+  formatBytes,
+  MAX_UPLOAD_BYTES,
+} from './lib/storage-service.js'
 import { initShareButtons } from './lib/share-song.js'
 import { formatCompactPrice, formatCompactDiscount } from './lib/song-format.js'
 import { renderSongCard, renderPlayDisc } from './lib/song-card.js'
-import {
-  createOrderAndBuildQr,
-  downloadQrImage,
-  watchOrderPayment,
-} from './lib/checkout-order.js'
+import { createOrderAndBuildQr, downloadQrImage, watchOrderPayment } from './lib/checkout-order.js'
 import { initHssvFlow } from './lib/hssv-flow.js'
 
 // If redirected here with a recovery token, immediately move to reset-password.html
@@ -84,7 +85,6 @@ const userEmailDisplay = document.getElementById('user-email-display')
 const statJoinDate = document.getElementById('stat-join-date')
 const statPurchasedCount = document.getElementById('stat-purchased-count')
 const statFavCount = document.getElementById('stat-fav-count')
-
 
 const dashboardTabBar = document.getElementById('dashboard-tab-bar')
 const navTabFavorites = document.getElementById('nav-tab-favorites')
@@ -389,7 +389,6 @@ async function checkAuthAndInit() {
 
     // Check URL Hash for initial tab
     setActiveTab(window.location.hash.replace('#', ''))
-
   } catch (err) {
     console.error('Initialization error:', err)
     showToast('Lỗi tải dữ liệu thành viên. Vui lòng thử lại!', 'error')
@@ -643,7 +642,11 @@ window.openCheckoutModal = function openCheckoutModal(tabId) {
 
   if (titleEl) titleEl.textContent = tab.title
   if (metaEl)
-    metaEl.textContent = `Tuning: ${tab.tuning || 'Standard'} • Bản Video Tab chạy nốt đồng bộ với âm thanh đàn mộc thật và nhịp gõ`
+    metaEl.textContent = `Độ khó ${tab.level || `${tab.level_num ?? tab.levelNum ?? 5}/10`} · Tuning ${tab.tuning || 'Standard'} · Capo ${tab.capo || 'không kẹp'}`
+  // Máy tính còn chỗ ở cột trái nên mở sẵn phần chi tiết; điện thoại để gập cho gọn.
+  document
+    .querySelector('#checkout-modal details')
+    ?.toggleAttribute('open', window.matchMedia('(min-width: 768px)').matches)
   if (priceEl) priceEl.textContent = tab.price_formatted || tab.price || '239.000 VNĐ'
 
   if (levelEl) levelEl.textContent = tab.level || `${tab.level_num ?? tab.levelNum ?? 5}/10`
@@ -1104,14 +1107,17 @@ function renderLibraryItem(song, { owned = false, removable = false } = {}) {
     .filter(Boolean)
     .map(escapeHtml)
     .join(' · ')
-  const capo = song.capo === 0 || song.capo === '0' || song.capo == null || song.capo === ''
-    ? 'Không capo'
-    : `Capo ${escapeHtml(String(song.capo))}`
+  const capo =
+    song.capo === 0 || song.capo === '0' || song.capo == null || song.capo === ''
+      ? 'Không capo'
+      : `Capo ${escapeHtml(String(song.capo))}`
   const facts = [
     song.level ? `Độ khó ${escapeHtml(String(song.level))}` : '',
     capo,
     // tempo có khi đã ghi sẵn "~120 BPM" — chỉ thêm đơn vị khi thiếu
-    song.tempo ? escapeHtml(/bpm/i.test(song.tempo) ? String(song.tempo) : `${song.tempo} BPM`) : '',
+    song.tempo
+      ? escapeHtml(/bpm/i.test(song.tempo) ? String(song.tempo) : `${song.tempo} BPM`)
+      : '',
   ]
     .filter(Boolean)
     .join(' · ')
@@ -1217,7 +1223,9 @@ function renderPurchases() {
     return
   }
 
-  purchasesGrid.innerHTML = filtered.map((song) => renderLibraryItem(song, { owned: true })).join('')
+  purchasesGrid.innerHTML = filtered
+    .map((song) => renderLibraryItem(song, { owned: true }))
+    .join('')
 
   attachSongCardEvents(purchasesGrid)
 }
@@ -1327,7 +1335,8 @@ if (profileAvatarFileInput && profileAvatarFileName) {
       return
     }
     profileAvatarFileName.textContent = `✓ ${file.name} (${formatBytes(file.size)})`
-    profileAvatarFileName.className = 'text-[11px] text-emerald-600 dark:text-emerald-400 truncate block'
+    profileAvatarFileName.className =
+      'text-[11px] text-emerald-600 dark:text-emerald-400 truncate block'
 
     // Xem trước ngay lập tức bằng ảnh chọn (chưa upload)
     const reader = new FileReader()

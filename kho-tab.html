@@ -229,241 +229,127 @@
   <div id="checkout-modal" role="dialog" aria-modal="true" aria-labelledby="modal-tab-title"
     class="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-4 bg-black/80 backdrop-blur-md opacity-0 pointer-events-none transition-all duration-300 hidden">
     <div
-      class="modal-surface modal-dialog relative w-full max-w-4xl rounded-3xl p-5 sm:p-7 max-h-[92vh] overflow-y-auto scale-95 transition-transform duration-300"
+      class="modal-surface modal-dialog relative w-full max-w-4xl rounded-3xl p-4 sm:p-7 max-h-[92vh] overflow-y-auto scale-95 transition-transform duration-300"
       tabindex="-1">
 
       <!-- Nút Đóng (X) Độc lập ở góc trên bên phải -->
       <button id="close-checkout-modal"
-        class="absolute top-4 right-4 sm:top-5 sm:right-5 w-9 h-9 rounded-full bg-glass-bg hover:bg-glass-bg-hover text-text-muted hover:text-text-primary border border-glass-border flex items-center justify-center transition-all z-20 cursor-pointer shadow-sm active:scale-95"
+        class="absolute top-3 right-3 sm:top-5 sm:right-5 w-10 h-10 rounded-full bg-glass-bg hover:bg-glass-bg-hover text-text-muted hover:text-text-primary border border-glass-border flex items-center justify-center transition-all z-20 cursor-pointer shadow-sm active:scale-95"
         aria-label="Đóng cửa sổ">
         <svg class="w-4 h-4" aria-hidden="true" data-ph="x" viewBox="0 0 256 256" fill="currentColor"><path d="M208.49,191.51a12,12,0,0,1-17,17L128,145,64.49,208.49a12,12,0,0,1-17-17L111,128,47.51,64.49a12,12,0,0,1,17-17L128,111l63.51-63.52a12,12,0,0,1,17,17L145,128Z"/></svg>
       </button>
 
-      <div class="grid grid-cols-1 md:grid-cols-12 gap-3.5 md:gap-6 items-start">
+      <div class="grid grid-cols-1 md:grid-cols-12 gap-3 md:gap-6 items-start">
 
-        <!-- CỘT TRÁI (md:col-span-6): Video Demo Player & Khung Chuyển Khoản QR -->
+        <!-- CỘT TRÁI (máy tính): nghe/xem thử + thông tin bài. Trên điện thoại các khối được xếp lại
+             bằng max-md:order-*: tên bài → giá → giá HSSV → chuyển khoản → xem thử → chi tiết. -->
         <div class="max-md:contents md:col-span-6 md:space-y-4">
 
-          <!-- Khung Video Demo Player -->
-          <div id="checkout-modal-video-container" class="max-md:order-8 space-y-1.5">
-            <div class="flex items-center justify-between text-xs font-bold text-text-muted">
-              <span class="flex items-center gap-1.5">
-                <svg class="w-4 h-4 text-accent-primary" aria-hidden="true" data-ph="play-circle" viewBox="0 0 256 256" fill="currentColor"><path d="M176,128a12,12,0,0,1-5.17,9.87l-52,36A12,12,0,0,1,100,164V92a12,12,0,0,1,18.83-9.87l52,36A12,12,0,0,1,176,128Zm60,0A108,108,0,1,1,128,20,108.12,108.12,0,0,1,236,128Zm-24,0a84,84,0,1,0-84,84A84.09,84.09,0,0,0,212,128Z"/></svg>
-                <span>Video demo thực tế:</span>
-              </span>
-            </div>
-            <div
-              class="relative overflow-hidden rounded-2xl aspect-video bg-black shadow-lg border border-glass-border group/video">
-              <!-- Badge góc trên video player -->
-              <div class="absolute top-3 left-3 z-10 pointer-events-none">
-                <span
-                  class="px-2.5 py-1 rounded-full text-[10px] font-extrabold uppercase tracking-wide bg-black/80 text-white/95 border border-white/20 backdrop-blur-md shadow-sm flex items-center gap-1.5">
-                  <span class="w-2 h-2 rounded-full bg-accent-primary animate-pulse"></span>
-                  <span>Video Demo • Xem trước</span>
-                </span>
-              </div>
-
-              <video id="checkout-modal-video" controls playsinline
-                class="w-full h-full aspect-video rounded-2xl object-cover">
+          <div id="checkout-modal-video-container" class="max-md:order-5 space-y-1.5">
+            <p class="text-xs font-bold text-text-muted">Video demo</p>
+            <div class="w-full rounded-2xl overflow-hidden bg-black aspect-video border border-glass-border">
+              <video id="checkout-modal-video" controls playsinline preload="metadata" class="w-full h-full object-cover">
                 <source id="checkout-modal-video-source" src="" type="video/mp4">
                 Trình duyệt của bạn không hỗ trợ phát video trực tiếp.
               </video>
             </div>
           </div>
 
-          <!-- Khung Audio Demo (Nếu có file âm thanh) -->
-          <div id="checkout-modal-audio-container" class="max-md:order-9 p-3.5 rounded-2xl modal-inner-card border border-glass-border space-y-2 hidden">
-            <div class="flex items-center justify-between text-xs font-bold text-text-primary">
-              <span class="flex items-center gap-1.5 text-accent-primary">
-                <svg class="w-3.5 h-3.5" aria-hidden="true" data-ph="headphones" viewBox="0 0 256 256" fill="currentColor"><path d="M204.73,51.85A108.07,108.07,0,0,0,20,128v56a28,28,0,0,0,28,28H64a28,28,0,0,0,28-28V144a28,28,0,0,0-28-28H44.84A84.05,84.05,0,0,1,128,44h.64a83.7,83.7,0,0,1,82.52,72H192a28,28,0,0,0-28,28v40a28,28,0,0,0,28,28h16a28,28,0,0,0,28-28V128A107.34,107.34,0,0,0,204.73,51.85ZM64,140a4,4,0,0,1,4,4v40a4,4,0,0,1-4,4H48a4,4,0,0,1-4-4V140Zm148,44a4,4,0,0,1-4,4H192a4,4,0,0,1-4-4V144a4,4,0,0,1,4-4h20Z"/></svg>
-                <span>Âm thanh demo:</span>
-              </span>
-              <span class="text-[10px] text-text-muted">Chất lượng cao</span>
-            </div>
-            <audio id="checkout-modal-audio" controls class="w-full h-8 rounded-lg outline-none"></audio>
+          <div id="checkout-modal-audio-container" class="max-md:order-5 hidden space-y-1.5">
+            <p class="text-xs font-bold text-text-muted">Âm thanh demo</p>
+            <audio id="checkout-modal-audio" controls class="w-full h-10 rounded-lg outline-none"></audio>
           </div>
 
-          <!-- Khối Quét Mã QR & Thông tin tài khoản -->
-          <div class="max-md:order-5 p-4 sm:p-5 rounded-2xl modal-inner-card space-y-3.5 shadow-sm border border-glass-border">
-            <div class="flex items-center justify-between border-b border-glass-border/60 pb-2.5">
-              <span
-                class="text-xs font-bold uppercase tracking-wider text-accent-primary flex items-center gap-1.5">
-                <svg class="w-3.5 h-3.5" aria-hidden="true" data-ph="credit-card" viewBox="0 0 256 256" fill="currentColor"><path d="M224,44H32A20,20,0,0,0,12,64V192a20,20,0,0,0,20,20H224a20,20,0,0,0,20-20V64A20,20,0,0,0,224,44Zm-4,24V88H36V68ZM36,188V112H220v76Zm172-24a12,12,0,0,1-12,12H164a12,12,0,0,1,0-24h32A12,12,0,0,1,208,164Zm-68,0a12,12,0,0,1-12,12H116a12,12,0,0,1,0-24h12A12,12,0,0,1,140,164Z"/></svg>
-                <span>Chuyển khoản nhận tab</span>
-              </span>
-              <span class="text-[11px] text-text-muted font-bold">TpBank QR 24/7</span>
+          <details class="max-md:order-6 group rounded-2xl modal-inner-card border border-glass-border overflow-hidden">
+            <summary class="list-none [&::-webkit-details-marker]:hidden cursor-pointer select-none flex items-center justify-between gap-2 min-h-[44px] px-4 text-xs sm:text-sm font-bold text-text-primary">
+              <span>Bạn nhận được gì &amp; thông số bài</span>
+              <svg class="w-4 h-4 text-text-muted transition-transform duration-200 group-open:rotate-180 flex-shrink-0" aria-hidden="true" data-ph="caret-down" viewBox="0 0 256 256" fill="currentColor"><path d="M216.49,104.49l-80,80a12,12,0,0,1-17,0l-80-80a12,12,0,0,1,17-17L128,159l71.51-71.52a12,12,0,0,1,17,17Z"/></svg>
+            </summary>
+            <div class="px-4 pb-3 text-xs sm:text-sm">
+              <ul class="space-y-1.5 py-2 border-t border-glass-border text-text-primary">
+                <li class="flex items-start gap-2"><svg class="w-4 h-4 mt-0.5 text-accent-primary flex-shrink-0" aria-hidden="true" data-ph="check" viewBox="0 0 256 256" fill="currentColor"><path d="M232.49,80.49l-128,128a12,12,0,0,1-17,0l-56-56a12,12,0,1,1,17-17L96,183,215.51,63.51a12,12,0,0,1,17,17Z"/></svg><span>Video tab chạy nốt đồng bộ với tiếng đàn</span></li>
+                <li class="flex items-start gap-2"><svg class="w-4 h-4 mt-0.5 text-accent-primary flex-shrink-0" aria-hidden="true" data-ph="check" viewBox="0 0 256 256" fill="currentColor"><path d="M232.49,80.49l-128,128a12,12,0,0,1-17,0l-56-56a12,12,0,1,1,17-17L96,183,215.51,63.51a12,12,0,0,1,17,17Z"/></svg><span>File PDF để in</span></li>
+                <li class="flex items-start gap-2"><svg class="w-4 h-4 mt-0.5 text-accent-primary flex-shrink-0" aria-hidden="true" data-ph="check" viewBox="0 0 256 256" fill="currentColor"><path d="M232.49,80.49l-128,128a12,12,0,0,1-17,0l-56-56a12,12,0,1,1,17-17L96,183,215.51,63.51a12,12,0,0,1,17,17Z"/></svg><span>Hỏi đoạn khó 1-1 qua Zalo</span></li>
+              </ul>
+              <dl class="divide-y divide-glass-border border-t border-glass-border">
+                <div class="flex items-center justify-between gap-3 py-2"><dt class="text-text-muted">Độ khó</dt><dd id="modal-tab-level" class="font-bold text-text-primary">4/10</dd></div>
+                <div class="flex items-center justify-between gap-3 py-2"><dt class="text-text-muted">Thời lượng</dt><dd id="modal-tab-duration" class="font-bold font-mono tabular-nums text-text-primary">03:30</dd></div>
+                <div class="flex items-center justify-between gap-3 py-2"><dt class="text-text-muted">Tuning</dt><dd id="modal-tab-tuning" class="font-bold text-text-primary">Standard</dd></div>
+                <div class="flex items-center justify-between gap-3 py-2"><dt class="text-text-muted">Capo</dt><dd id="modal-tab-capo" class="font-bold text-text-primary">Không kẹp</dd></div>
+                <div class="flex items-center justify-between gap-3 py-2"><dt class="text-text-muted">Tempo</dt><dd id="modal-tab-tempo" class="font-bold text-text-primary">~95 BPM</dd></div>
+              </dl>
+            </div>
+          </details>
+        </div>
+
+        <!-- CỘT PHẢI (máy tính): tên bài → giá → giá HSSV → chuyển khoản -->
+        <div class="max-md:contents md:col-span-6 md:space-y-3">
+
+          <div class="max-md:order-1 pr-11">
+            <h3 id="modal-tab-title" class="text-xl sm:text-2xl font-extrabold text-text-primary leading-tight">Tên bài hát</h3>
+            <p id="modal-tab-meta" class="text-xs text-text-muted font-medium mt-1 leading-relaxed"></p>
+          </div>
+
+          <div class="max-md:order-2 flex items-center justify-between gap-3 px-4 py-3 rounded-2xl modal-inner-card border border-glass-border">
+            <div class="min-w-0">
+              <span class="block text-xs font-semibold text-text-muted">Giá Video Tab</span>
+              <span id="modal-discount-tag" class="inline-block mt-0.5 text-[11px] sm:text-xs font-bold text-accent-primary">(HSSV: 179k)</span>
+            </div>
+            <span id="modal-tab-price" class="whitespace-nowrap text-2xl sm:text-3xl font-extrabold tabular-nums text-accent-primary">239.000 VNĐ</span>
+          </div>
+
+          <!-- Giá học sinh / sinh viên: nội dung do src/lib/hssv-flow.js dựng (dùng chung 3 trang) -->
+          <div id="modal-hssv-block" class="max-md:order-3 px-3 sm:px-4 py-2 rounded-2xl modal-inner-card border border-glass-border space-y-2.5 text-xs"></div>
+
+          <!-- Chuyển khoản: mã QR + thông tin để chép tay -->
+          <div class="max-md:order-4 p-4 rounded-2xl modal-inner-card border border-glass-border space-y-3">
+            <div class="flex items-center justify-between gap-2">
+              <span class="text-sm font-extrabold text-text-primary">Chuyển khoản</span>
+              <span class="text-[11px] sm:text-xs font-bold text-text-muted">TPBank</span>
             </div>
 
-            <div class="flex flex-row items-center gap-2.5 sm:gap-3.5 pt-0.5">
-              <!-- Khung Mã QR (Có Quiet-zone trắng, bo góc êm, nhãn Phóng to dạng overlay không che cố định)
-                   + nút "Tải ảnh" riêng ngay bên dưới thay vì icon nhỏ đè lên góc ảnh -->
-              <div class="flex flex-col items-center gap-1.5 flex-shrink-0">
-                <div id="qr-preview-trigger"
-                  class="relative group/qr w-24 h-24 sm:w-32 sm:h-32 bg-white p-1.5 sm:p-2 rounded-2xl border border-glass-border flex flex-col items-center justify-center shadow-sm cursor-zoom-in overflow-hidden"
-                  onclick="window.openImageModal('/assets/qr.jpg', 'Mã QR chuyển khoản TpBank (03970202801)', 'Quét mã QR bằng App Ngân hàng bất kỳ để nhận bản Video Tab và hỗ trợ 1-1 qua Zalo.')">
-                  <img id="modal-qr-img" src="/assets/qr.jpg" alt="Mã QR chuyển khoản TpBank"
-                    class="w-full h-full object-contain group-hover/qr:scale-105 transition-transform duration-200" />
-                  <div
-                    class="absolute inset-0 bg-black/65 opacity-0 group-hover/qr:opacity-100 transition-opacity flex flex-col items-center justify-center gap-1 text-white text-[10px] sm:text-[11px] font-bold rounded-2xl backdrop-blur-xs p-2 text-center pointer-events-none">
-                    <svg class="w-4 h-4 text-accent-primary" aria-hidden="true" data-ph="magnifying-glass-plus" viewBox="0 0 256 256" fill="currentColor"><path d="M156,112a12,12,0,0,1-12,12H124v20a12,12,0,0,1-24,0V124H80a12,12,0,0,1,0-24h20V80a12,12,0,0,1,24,0v20h20A12,12,0,0,1,156,112Zm76.49,120.49a12,12,0,0,1-17,0L168,185a92.12,92.12,0,1,1,17-17l47.54,47.53A12,12,0,0,1,232.49,232.49ZM112,180a68,68,0,1,0-68-68A68.08,68.08,0,0,0,112,180Z"/></svg>
-                    <span>Ấn để phóng to</span>
-                  </div>
+            <div class="flex items-start gap-3 sm:gap-4">
+              <div class="flex flex-col items-stretch gap-1.5 flex-shrink-0 w-[108px] sm:w-[136px]">
+                <div id="qr-preview-trigger" role="button" tabindex="0" aria-label="Phóng to mã QR"
+                  class="aspect-square rounded-xl bg-white p-1.5 border border-glass-border cursor-zoom-in overflow-hidden"
+                  onclick="window.openImageModal('/assets/qr.jpg', 'Mã QR chuyển khoản TPBank (03970202801)', 'Quét mã QR bằng app ngân hàng bất kỳ.')">
+                  <img id="modal-qr-img" src="/assets/qr.jpg" alt="Mã QR chuyển khoản TPBank" class="w-full h-full object-contain" />
                 </div>
                 <button type="button" id="qr-download-btn" onclick="window.downloadCheckoutQr()"
-                  class="w-24 sm:w-32 py-1.5 rounded-lg bg-accent-primary/10 hover:bg-accent-solid hover:text-white text-accent-primary text-[10px] sm:text-[11px] font-bold border border-accent-primary/30 transition-all active:scale-95 cursor-pointer flex items-center justify-center gap-1">
-                  <svg class="w-3 h-3" aria-hidden="true" data-ph="download-simple" viewBox="0 0 256 256" fill="currentColor"><path d="M228,144v64a12,12,0,0,1-12,12H40a12,12,0,0,1-12-12V144a12,12,0,0,1,24,0v52H204V144a12,12,0,0,1,24,0Zm-108.49,8.49a12,12,0,0,0,17,0l40-40a12,12,0,0,0-17-17L140,115V32a12,12,0,0,0-24,0v83L96.49,95.51a12,12,0,0,0-17,17Z"/></svg>
-                  <span>Tải ảnh</span>
+                  class="min-h-[40px] rounded-xl border border-glass-border bg-glass-bg hover:bg-glass-bg-hover text-xs font-bold text-text-primary inline-flex items-center justify-center gap-1.5 active:scale-95 transition-all cursor-pointer">
+                  <svg class="w-3.5 h-3.5 flex-shrink-0" aria-hidden="true" data-ph="download-simple" viewBox="0 0 256 256" fill="currentColor"><path d="M228,144v64a12,12,0,0,1-12,12H40a12,12,0,0,1-12-12V144a12,12,0,0,1,24,0v52H204V144a12,12,0,0,1,24,0Zm-108.49,8.49a12,12,0,0,0,17,0l40-40a12,12,0,0,0-17-17L140,115V32a12,12,0,0,0-24,0v83L96.49,95.51a12,12,0,0,0-17,17Z"/></svg>
+                  <span>Lưu mã QR</span>
                 </button>
               </div>
 
-              <!-- Khung Thông tin tài khoản (đặt cạnh QR ngay cả trên mobile để tận dụng
-                   khoảng trống 2 bên — nhãn rút gọn để đủ chỗ trên màn hẹp) -->
-              <div class="flex-1 w-full min-w-0 space-y-1.5 sm:space-y-2 text-xs">
-                <div class="bg-glass-bg/50 dark:bg-white/[0.04] p-2 sm:p-2.5 rounded-xl border border-glass-border/60">
-                  <span class="text-text-muted block text-[9px] sm:text-[10px] font-bold uppercase tracking-wider">Số
-                    TK:</span>
-                  <div class="flex items-center justify-between gap-1.5 mt-0.5">
-                    <span class="font-mono text-xs sm:text-base font-extrabold text-accent-primary tracking-wide"
-                      id="bank-acc-num">03970202801</span>
-                    <button id="copy-stk-btn"
-                      class="px-2.5 py-1.5 rounded-lg bg-accent-primary/10 hover:bg-accent-solid hover:text-white text-[10px] font-extrabold text-accent-primary border border-accent-primary/30 transition-all cursor-pointer shadow-xs active:scale-95 flex-shrink-0">Copy</button>
+              <dl class="flex-1 min-w-0 divide-y divide-glass-border">
+                <div class="pb-1.5">
+                  <div class="flex items-center justify-between gap-1 min-h-[40px]">
+                    <dt class="text-[11px] sm:text-xs font-semibold text-text-muted whitespace-nowrap">Số tài khoản</dt>
+                    <button type="button" id="copy-stk-btn" class="flex-shrink-0 min-h-[40px] px-3 -mr-2 rounded-lg text-xs font-bold text-accent-primary hover:bg-accent-primary/10 active:scale-95 transition-all cursor-pointer">Chép</button>
                   </div>
+                  <dd id="bank-acc-num" class="font-mono tabular-nums text-sm sm:text-base font-extrabold text-text-primary">03970202801</dd>
                 </div>
-                <div class="bg-glass-bg/50 dark:bg-white/[0.04] p-2 sm:p-2.5 rounded-xl border border-glass-border/60">
-                  <span class="text-text-muted block text-[9px] sm:text-[10px] font-bold uppercase tracking-wider">Chủ
-                    TK:</span>
-                  <span
-                    class="font-extrabold text-text-primary text-[11px] sm:text-[13px] block mt-0.5 tracking-wide break-words leading-tight">DOAN
-                    NGUYEN NHAT QUANG</span>
+                <div class="py-1.5">
+                  <dt class="text-[11px] sm:text-xs font-semibold text-text-muted">Chủ tài khoản</dt>
+                  <dd class="text-xs sm:text-sm font-bold text-text-primary leading-snug">DOAN NGUYEN NHAT QUANG</dd>
                 </div>
-                <div class="bg-glass-bg/50 dark:bg-white/[0.04] p-2 sm:p-2.5 rounded-xl border border-glass-border/60">
-                  <span class="text-text-muted block text-[9px] sm:text-[10px] font-bold uppercase tracking-wider">Nội
-                    dung CK:</span>
-                  <div class="flex items-center justify-between gap-1.5 mt-0.5">
-                    <span id="modal-transfer-syntax"
-                      class="font-mono font-extrabold text-accent-primary bg-accent-primary/15 px-1.5 sm:px-2 py-0.5 rounded text-[9px] sm:text-[11px] border border-accent-primary/20 break-all leading-tight">VIDEOTAB
-                      TAB</span>
-                    <button id="copy-syntax-btn"
-                      class="px-2.5 py-1.5 rounded-lg bg-accent-primary/10 hover:bg-accent-solid hover:text-white text-[10px] font-extrabold text-accent-primary border border-accent-primary/30 transition-all cursor-pointer shadow-xs active:scale-95 flex-shrink-0">Copy</button>
+                <div>
+                  <div class="flex items-center justify-between gap-1 min-h-[40px]">
+                    <dt class="text-[11px] sm:text-xs font-semibold text-text-muted">Nội dung</dt>
+                    <button type="button" id="copy-syntax-btn" class="flex-shrink-0 min-h-[40px] px-3 -mr-2 rounded-lg text-xs font-bold text-accent-primary hover:bg-accent-primary/10 active:scale-95 transition-all cursor-pointer">Chép</button>
                   </div>
+                  <dd id="modal-transfer-syntax" class="font-mono text-sm sm:text-base font-extrabold text-accent-primary truncate">VIDEOTAB TAB</dd>
                 </div>
-              </div>
+              </dl>
             </div>
+
+            <p class="flex items-start gap-2 text-xs text-text-muted leading-relaxed">
+              <svg class="w-3.5 h-3.5 mt-0.5 text-accent-primary flex-shrink-0" aria-hidden="true" data-ph="lightning" viewBox="0 0 256 256" fill="currentColor"><path d="M213.85,125.46l-112,120a8,8,0,0,1-13.69-7l14.66-73.33L45.19,143.49a8,8,0,0,1-3-13l112-120a8,8,0,0,1,13.69,7L153.18,90.9l57.63,21.61a8,8,0,0,1,3,12.95Z"/></svg>
+              <span>Chuyển đúng số tiền và nội dung, tab tự mở sau khoảng 1 phút.
+                <a href="https://zalo.me/0326768885" target="_blank" rel="noopener noreferrer" class="relative font-bold text-accent-primary hover:underline whitespace-nowrap before:absolute before:-inset-y-3 before:inset-x-0 before:content-['']">Chưa nhận được? Nhắn Zalo</a></span>
+            </p>
           </div>
-
-        </div>
-
-        <!-- CỘT PHẢI (md:col-span-6): Thứ tự ưu tiên Giá -> Tài liệu nhận -> Thông số -> Nút Zalo -->
-        <div class="max-md:contents md:col-span-6 md:space-y-3.5 flex flex-col justify-between h-full">
-
-          <div class="max-md:contents md:space-y-3.5">
-            <!-- 1. Header: Badge Trạng thái (Outline SVG) + Thời lượng + Tiêu đề -->
-            <div class="max-md:order-1 flex items-center justify-between flex-wrap gap-2 pr-12">
-              <span
-                class="badge-paid inline-flex items-center gap-1.5 px-3.5 py-1 rounded-full text-xs font-extrabold uppercase tracking-wider shadow-sm">
-                <svg class="w-3.5 h-3.5" aria-hidden="true" data-ph="seal-check" viewBox="0 0 256 256" fill="currentColor"><path d="M228.75,100.05c-3.52-3.67-7.15-7.46-8.34-10.33-1.06-2.56-1.14-7.83-1.21-12.47-.15-10-.34-22.44-9.18-31.27s-21.27-9-31.27-9.18c-4.64-.07-9.91-.15-12.47-1.21-2.87-1.19-6.66-4.82-10.33-8.34C148.87,20.46,140.05,12,128,12s-20.87,8.46-27.95,15.25c-3.67,3.52-7.46,7.15-10.33,8.34-2.56,1.06-7.83,1.14-12.47,1.21C67.25,37,54.81,37.14,46,46S37,67.25,36.8,77.25c-.07,4.64-.15,9.91-1.21,12.47-1.19,2.87-4.82,6.66-8.34,10.33C20.46,107.13,12,116,12,128S20.46,148.87,27.25,156c3.52,3.67,7.15,7.46,8.34,10.33,1.06,2.56,1.14,7.83,1.21,12.47.15,10,.34,22.44,9.18,31.27s21.27,9,31.27,9.18c4.64.07,9.91.15,12.47,1.21,2.87,1.19,6.66,4.82,10.33,8.34C107.13,235.54,116,244,128,244s20.87-8.46,27.95-15.25c3.67-3.52,7.46-7.15,10.33-8.34,2.56-1.06,7.83-1.14,12.47-1.21,10-.15,22.44-.34,31.27-9.18s9-21.27,9.18-31.27c.07-4.64.15-9.91,1.21-12.47,1.19-2.87,4.82-6.66,8.34-10.33C235.54,148.87,244,140.05,244,128S235.54,107.13,228.75,100.05Zm-17.32,39.29c-4.82,5-10.28,10.72-13.19,17.76-2.82,6.8-2.93,14.16-3,21.29-.08,5.36-.19,12.71-2.15,14.66s-9.3,2.07-14.66,2.15c-7.13.11-14.49.22-21.29,3-7,2.91-12.73,8.37-17.76,13.19C135.78,214.84,130.4,220,128,220s-7.78-5.16-11.34-8.57c-5-4.82-10.72-10.28-17.76-13.19-6.8-2.82-14.16-2.93-21.29-3-5.36-.08-12.71-.19-14.66-2.15s-2.07-9.3-2.15-14.66c-.11-7.13-.22-14.49-3-21.29-2.91-7-8.37-12.73-13.19-17.76C41.16,135.78,36,130.4,36,128s5.16-7.78,8.57-11.34c4.82-5,10.28-10.72,13.19-17.76,2.82-6.8,2.93-14.16,3-21.29C60.88,72.25,61,64.9,63,63s9.3-2.07,14.66-2.15c7.13-.11,14.49-.22,21.29-3,7-2.91,12.73-8.37,17.76-13.19C120.22,41.16,125.6,36,128,36s7.78,5.16,11.34,8.57c5,4.82,10.72,10.28,17.76,13.19,6.8,2.82,14.16,2.93,21.29,3,5.36.08,12.71.19,14.66,2.15s2.07,9.3,2.15,14.66c.11,7.13.22,14.49,3,21.29,2.91,7,8.37,12.73,13.19,17.76,3.41,3.56,8.57,8.94,8.57,11.34S214.84,135.78,211.43,139.34ZM176.49,95.51a12,12,0,0,1,0,17l-56,56a12,12,0,0,1-17,0l-24-24a12,12,0,1,1,17-17L112,143l47.51-47.52A12,12,0,0,1,176.49,95.51Z"/></svg>
-                <span>Bản trả phí chi tiết</span>
-              </span>
-              <span class="inline-flex items-center gap-1.5 text-xs font-bold text-text-muted">
-                <svg class="w-3.5 h-3.5 text-accent-primary" aria-hidden="true" data-ph="clock" viewBox="0 0 256 256" fill="currentColor"><path d="M128,20A108,108,0,1,0,236,128,108.12,108.12,0,0,0,128,20Zm0,192a84,84,0,1,1,84-84A84.09,84.09,0,0,1,128,212Zm68-84a12,12,0,0,1-12,12H128a12,12,0,0,1-12-12V72a12,12,0,0,1,24,0v44h44A12,12,0,0,1,196,128Z"/></svg>
-                <span id="modal-tab-duration">03:30</span>
-              </span>
-            </div>
-
-            <div class="max-md:order-2">
-              <h3 id="modal-tab-title" class="text-2xl sm:text-3xl font-extrabold text-text-primary leading-tight">
-                Tên bài hát
-              </h3>
-              <p id="modal-tab-meta" class="text-xs text-text-muted font-medium mt-1 leading-relaxed">
-                Bản Video Tab chạy nốt chuẩn xác đồng bộ theo âm thanh đàn mộc thật
-              </p>
-            </div>
-
-            <!-- 2. Giá bán & Ưu đãi -->
-            <div
-              class="max-md:order-3 p-4 rounded-2xl modal-inner-card flex flex-wrap items-center justify-between gap-x-3 gap-y-1 shadow-xs border border-glass-border">
-              <div>
-                <span class="text-xs font-bold text-text-muted block">Giá bản Video Tab:</span>
-                <span
-                  class="text-xs text-white bg-accent-solid px-2.5 py-0.5 rounded-full font-extrabold mt-1 inline-block shadow-xs"
-                  id="modal-discount-tag">(HSSV: 179k)</span>
-              </div>
-              <span id="modal-tab-price" class="whitespace-nowrap text-2xl sm:text-3xl font-extrabold text-accent-primary">239.000 VNĐ</span>
-            </div>
-
-            <!-- 2b. Giá học sinh / sinh viên: nội dung do src/lib/hssv-flow.js dựng (dùng chung 3 trang) -->
-            <div id="modal-hssv-block" class="max-md:order-4 p-3.5 rounded-2xl modal-inner-card border border-glass-border space-y-2.5 text-xs"></div>
-
-            <!-- 3/4. Tài liệu nhận được + Thông số chi tiết + Metronome — gom vào 1
-                 khối thu gọn để màn thanh toán không quá dài, bấm mới cần xem thêm -->
-            <details class="max-md:order-7 group rounded-2xl modal-inner-card border border-glass-border shadow-xs overflow-hidden">
-              <summary
-                class="list-none [&::-webkit-details-marker]:hidden cursor-pointer select-none flex items-center justify-between gap-2 p-4 text-[11px] font-extrabold text-accent-primary uppercase tracking-wider">
-                <span>Xem tài liệu nhận được & thông số chi tiết</span>
-                <svg class="w-4 h-4 flex-shrink-0 transition-transform duration-200 group-open:rotate-180" aria-hidden="true" data-ph="caret-down" viewBox="0 0 256 256" fill="currentColor"><path d="M216.49,104.49l-80,80a12,12,0,0,1-17,0l-80-80a12,12,0,0,1,17-17L128,159l71.51-71.52a12,12,0,0,1,17,17Z"/></svg>
-              </summary>
-
-              <div class="px-4 pb-4 space-y-3.5">
-                <!-- Trọn bộ tài liệu bạn sẽ nhận -->
-                <div class="space-y-2.5 text-xs pt-1 border-t border-glass-border/60">
-                  <span class="font-extrabold text-accent-primary block text-[11px] uppercase tracking-wider pt-3">Trọn
-                    bộ tài liệu bạn sẽ nhận:</span>
-                  <ul class="space-y-2 text-text-muted font-medium text-xs">
-                    <li class="flex items-start gap-2.5 text-text-primary"><span
-                        class="w-4 h-4 rounded-full bg-emerald-500/20 text-emerald-500 flex items-center justify-center font-bold text-[10px] flex-shrink-0 mt-0.5">✓</span>
-                      <span><strong>Full Video Tab</strong> chạy nốt chuẩn xác 60fps đồng bộ âm thanh & nhịp gõ</span></li>
-                    <li class="flex items-start gap-2.5 text-text-primary"><span
-                        class="w-4 h-4 rounded-full bg-emerald-500/20 text-emerald-500 flex items-center justify-center font-bold text-[10px] flex-shrink-0 mt-0.5">✓</span>
-                      <span><strong>File PDF</strong> in ấn sắc nét, đầy đủ nốt nhạc và số ngăn bấm</span></li>
-                    <li class="flex items-start gap-2.5 text-text-primary"><span
-                        class="w-4 h-4 rounded-full bg-emerald-500/20 text-emerald-500 flex items-center justify-center font-bold text-[10px] flex-shrink-0 mt-0.5">✓</span>
-                      <span><strong>Hỗ trợ giải thích kỹ thuật 1-1 qua Zalo</strong> khi có đoạn khó tập</span></li>
-                  </ul>
-                </div>
-
-                <!-- Bảng thông số chi tiết khi tập -->
-                <div class="space-y-2.5 text-xs text-text-primary">
-                  <div class="flex items-center justify-between border-b border-glass-border/60 pb-1.5">
-                    <span class="text-text-muted font-semibold">Độ khó bài tập:</span>
-                    <span id="modal-tab-level" class="font-extrabold text-accent-primary">4/10</span>
-                  </div>
-                  <div class="flex items-center justify-between border-b border-glass-border/60 pb-1.5">
-                    <span class="text-text-muted font-semibold">Tông / Tuning:</span>
-                    <span id="modal-tab-tuning" class="font-bold text-text-primary">Standard</span>
-                  </div>
-                  <div class="flex items-center justify-between border-b border-glass-border/60 pb-1.5">
-                    <span class="text-text-muted font-semibold">Vị trí kẹp Capo:</span>
-                    <span id="modal-tab-capo" class="font-bold text-success">Không kẹp</span>
-                  </div>
-                  <div class="flex items-center justify-between">
-                    <span class="text-text-muted font-semibold">Tempo bản gốc:</span>
-                    <span id="modal-tab-tempo" class="font-bold text-accent-primary">~95 BPM</span>
-                  </div>
-                </div>
-
-                <!-- Nút mở nhanh Metronome -->
-                <a href="/metronome.html"
-                  class="btn-metronome-link inline-flex items-center gap-1.5 text-xs font-bold px-4 py-2.5 rounded-xl transition-all w-full justify-center shadow-xs cursor-pointer active:scale-98">
-                  <svg class="w-3.5 h-3.5 flex-shrink-0" aria-hidden="true" data-ph="metronome" viewBox="0 0 256 256" fill="currentColor"><path d="M219.05,201.94l-27.4-86.12,25.23-27.75a12,12,0,0,0-17.76-16.14L183.24,89.39l-15.1-47.45A19.93,19.93,0,0,0,149.08,28H106.91A19.93,19.93,0,0,0,87.85,41.94l-50.91,160A20,20,0,0,0,56,228H200a20,20,0,0,0,19.06-26.06ZM179.25,156H155.12L173,136.34ZM109.83,52h36.33l18.42,57.91L122.69,156H76.74ZM61.47,204l7.63-24H186.89l7.63,24Z"/></svg><span>Mở Metronome luyện bài này →</span>
-                </a>
-              </div>
-            </details>
-          </div>
-
-          <!-- 5. Hướng dẫn Mua / Cấp quyền (tự động qua SePay webhook, xem sepay-ipn Edge Function) -->
-          <div class="max-md:order-6 space-y-2 pt-2">
-            <div class="p-3 rounded-xl bg-emerald-500/10 border border-emerald-500/20 text-[11px] text-text-primary leading-relaxed">
-              <span class="font-bold text-emerald-600 dark:text-emerald-400 block mb-1">⚡ Tự động mở khoá, không cần chờ:</span>
-              Chuyển khoản đúng số tiền, giữ nguyên nội dung đã điền sẵn trong mã QR ở trên — hệ thống tự nhận diện và mở khoá ngay khi ngân hàng báo có tiền vào (thường trong 1 phút). Sau đó vào <strong>Trang của tôi → Đã mua</strong> để xem Video Tab; quyền xem file Google Drive cũng được cấp tự động theo email tài khoản của bạn, không cần làm thêm gì.
-            </div>
-            <a href="https://zalo.me/0326768885" target="_blank" rel="noopener noreferrer"
-              class="w-full py-2.5 rounded-2xl bg-glass-bg hover:bg-glass-bg-hover border border-glass-border text-text-primary text-[11px] sm:text-xs font-bold transition-all active:scale-98 flex items-center justify-center gap-2 mt-2">
-              <span
-                class="w-5 h-5 rounded-full bg-[#0068FF] text-white font-extrabold flex items-center justify-center text-[10px] flex-shrink-0">Z</span>
-              <span>Chưa nhận được tab sau vài phút? Nhắn Zalo cho mình</span>
-            </a>
-          </div>
-
         </div>
 
       </div>

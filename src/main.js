@@ -27,11 +27,7 @@ import { toggleCompleted } from './lib/local-storage-service.js'
 import { supabase } from './lib/supabase.js'
 import { renderSongCard } from './lib/song-card.js'
 import { initShareButtons } from './lib/share-song.js'
-import {
-  createOrderAndBuildQr,
-  downloadQrImage,
-  watchOrderPayment,
-} from './lib/checkout-order.js'
+import { createOrderAndBuildQr, downloadQrImage, watchOrderPayment } from './lib/checkout-order.js'
 import { initHssvFlow } from './lib/hssv-flow.js'
 
 // 1. Initialize UI Globals
@@ -70,7 +66,10 @@ async function loadPurchasedIds() {
     purchasedSongIds = new Set()
     return
   }
-  const { data, error } = await supabase.from('purchases').select('song_id').eq('user_id', session.user.id)
+  const { data, error } = await supabase
+    .from('purchases')
+    .select('song_id')
+    .eq('user_id', session.user.id)
   if (error) {
     console.warn('[main] Không thể tải danh sách đã mua:', error.message)
     return
@@ -132,9 +131,7 @@ export function renderGears(gears) {
   const showMoreText = document.getElementById('gear-show-more-text')
   const showMoreIcon = document.getElementById('gear-show-more-icon')
 
-  container.innerHTML = gears
-    .map((gear, idx) => renderGearCard(gear, idx))
-    .join('')
+  container.innerHTML = gears.map((gear, idx) => renderGearCard(gear, idx)).join('')
 
   setupGearShowMore({
     container: container,
@@ -464,7 +461,11 @@ window.openCheckoutModal = async function openCheckoutModal(tabId) {
 
   if (titleEl) titleEl.textContent = tab.title
   if (metaEl)
-    metaEl.textContent = `Tuning: ${tab.tuning || 'Standard'} • Bản Video Tab chạy nốt đồng bộ với âm thanh đàn mộc thật và nhịp gõ`
+    metaEl.textContent = `Độ khó ${tab.level || `${tab.level_num ?? tab.levelNum ?? 5}/10`} · Tuning ${tab.tuning || 'Standard'} · Capo ${tab.capo || 'không kẹp'}`
+  // Máy tính còn chỗ ở cột trái nên mở sẵn phần chi tiết; điện thoại để gập cho gọn.
+  document
+    .querySelector('#checkout-modal details')
+    ?.toggleAttribute('open', window.matchMedia('(min-width: 768px)').matches)
   if (priceEl) priceEl.textContent = tab.price_formatted || tab.priceFormatted || '239.000 VNĐ'
 
   if (levelEl) levelEl.textContent = tab.level || `${tab.level_num ?? tab.levelNum ?? 5}/10`
@@ -761,7 +762,6 @@ function setupEventListeners() {
   document.addEventListener('keydown', (e) => {
     if (e.key === 'Escape') modals.forEach((id) => toggleModal(id, false))
   })
-
 }
 
 // Khối "Giá học sinh / sinh viên" của hộp thanh toán — dùng chung 3 trang, xem src/lib/hssv-flow.js.

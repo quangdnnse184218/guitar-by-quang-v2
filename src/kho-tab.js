@@ -18,11 +18,7 @@ import { supabase } from './lib/supabase.js'
 import { renderSongCard } from './lib/song-card.js'
 import { initShareButtons } from './lib/share-song.js'
 import { withReturnTo } from './lib/navigate.js'
-import {
-  createOrderAndBuildQr,
-  downloadQrImage,
-  watchOrderPayment,
-} from './lib/checkout-order.js'
+import { createOrderAndBuildQr, downloadQrImage, watchOrderPayment } from './lib/checkout-order.js'
 import { initHssvFlow } from './lib/hssv-flow.js'
 
 // Initialize UI
@@ -64,7 +60,10 @@ async function loadFavoriteIds() {
     favoriteSongIds = new Set()
     return
   }
-  const { data, error } = await supabase.from('favorites').select('song_id').eq('user_id', session.user.id)
+  const { data, error } = await supabase
+    .from('favorites')
+    .select('song_id')
+    .eq('user_id', session.user.id)
   if (error) {
     console.warn('[kho-tab] Không thể tải danh sách yêu thích:', error.message)
     return
@@ -88,7 +87,10 @@ async function loadPurchasedIds() {
     purchasedSongIds = new Set()
     return
   }
-  const { data, error } = await supabase.from('purchases').select('song_id').eq('user_id', session.user.id)
+  const { data, error } = await supabase
+    .from('purchases')
+    .select('song_id')
+    .eq('user_id', session.user.id)
   if (error) {
     console.warn('[kho-tab] Không thể tải danh sách đã mua:', error.message)
     return
@@ -158,7 +160,10 @@ function levelNumber(song) {
 }
 
 function activeFilterCount() {
-  return Object.keys(DEFAULT_FILTERS).filter((k) => filters[k] !== DEFAULT_FILTERS[k]).length + mineFilters.size
+  return (
+    Object.keys(DEFAULT_FILTERS).filter((k) => filters[k] !== DEFAULT_FILTERS[k]).length +
+    mineFilters.size
+  )
 }
 
 function applyFilters(songs) {
@@ -185,7 +190,8 @@ function applyFilters(songs) {
 
   if (sortMode === 'easy') list = [...list].sort((x, y) => levelNumber(x) - levelNumber(y))
   else if (sortMode === 'hard') list = [...list].sort((x, y) => levelNumber(y) - levelNumber(x))
-  else if (sortMode === 'az') list = [...list].sort((x, y) => (x.title || '').localeCompare(y.title || '', 'vi'))
+  else if (sortMode === 'az')
+    list = [...list].sort((x, y) => (x.title || '').localeCompare(y.title || '', 'vi'))
   return list
 }
 
@@ -739,7 +745,11 @@ window.openCheckoutModal = async function openCheckoutModal(tabId) {
 
   if (titleEl) titleEl.textContent = tab.title
   if (metaEl)
-    metaEl.textContent = `Tuning: ${tab.tuning || 'Standard'} • Bản Video Tab chạy nốt đồng bộ với âm thanh đàn mộc thật và nhịp gõ`
+    metaEl.textContent = `Độ khó ${tab.level || `${tab.level_num ?? tab.levelNum ?? 5}/10`} · Tuning ${tab.tuning || 'Standard'} · Capo ${tab.capo || 'không kẹp'}`
+  // Máy tính còn chỗ ở cột trái nên mở sẵn phần chi tiết; điện thoại để gập cho gọn.
+  document
+    .querySelector('#checkout-modal details')
+    ?.toggleAttribute('open', window.matchMedia('(min-width: 768px)').matches)
   if (priceEl) priceEl.textContent = tab.price_formatted || tab.priceFormatted || '239.000 VNĐ'
 
   if (levelEl) levelEl.textContent = tab.level || `${tab.level_num ?? tab.levelNum ?? 5}/10`
@@ -1023,7 +1033,6 @@ function initModalInteractions() {
         })
     })
   }
-
 }
 
 // Khối "Giá học sinh / sinh viên" của hộp thanh toán — dùng chung 3 trang, xem src/lib/hssv-flow.js.
