@@ -123,6 +123,61 @@ function getMasterBus(ctx) {
   return masterBus
 }
 
+// Vang phòng nhẹ: tiếng mẫu soundfont phát "khô" nghe như máy, thêm một chút
+// không gian thì giống tiếng đàn trong phòng hơn. Xung vang tự sinh (nhiễu tắt
+// dần, đã lọc bớt tiếng cao) nên không phải tải thêm file nào. Mức vang giữ
+// thấp có chủ ý: đây là game nhớ nốt, nốt trước không được ngân lấn sang nốt sau.
+const REVERB_SECONDS = 1.5
+const NOTE_REVERB_SEND = 0.14
+const CHIME_REVERB_SEND = 0.26
+let reverbSend = null
+
+function buildImpulse(ctx) {
+  const length = Math.floor(ctx.sampleRate * REVERB_SECONDS)
+  const impulse = ctx.createBuffer(2, length, ctx.sampleRate)
+  for (let channel = 0; channel < 2; channel++) {
+    const data = impulse.getChannelData(channel)
+    let smooth = 0
+    for (let i = 0; i < length; i++) {
+      const decay = Math.pow(1 - i / length, 2.8)
+      // Lọc thông thấp một cực: đuôi vang tối dần như phòng thật, không "xì xì".
+      smooth += 0.32 * (Math.random() * 2 - 1 - smooth)
+      data[i] = smooth * decay
+    }
+  }
+  return impulse
+}
+
+function getReverbSend(ctx) {
+  if (reverbSend) return reverbSend
+  try {
+    const send = ctx.createGain()
+    const convolver = ctx.createConvolver()
+    const wet = ctx.createGain()
+    convolver.buffer = buildImpulse(ctx)
+    wet.gain.value = 1.6
+    send.connect(convolver)
+    convolver.connect(wet)
+    wet.connect(getMasterBus(ctx))
+    reverbSend = send
+  } catch {
+    // Máy không dựng được bộ vang — vẫn chơi bình thường, chỉ là tiếng khô.
+    reverbSend = null
+  }
+  return reverbSend
+}
+
+/** Nối một nguồn vào đường ra chung, kèm một phần sang đường vang. */
+function routeOut(ctx, node, sendLevel = 0) {
+  node.connect(getMasterBus(ctx))
+  const send = sendLevel > 0 ? getReverbSend(ctx) : null
+  if (!send) return
+  const tap = ctx.createGain()
+  tap.gain.value = sendLevel
+  node.connect(tap)
+  tap.connect(send)
+}
+
 /**
  * Đổi âm lượng chung. Dùng setTargetAtTime thay vì gán thẳng để lúc kéo thanh
  * trong khi một nốt đang ngân thì mức lớn nhỏ chuyển mượt, không nghe "rắc".
@@ -240,37 +295,65 @@ function playNote(noteId) {
 
   const source = ctx.createBufferSource()
   const gain = ctx.createGain()
+  // Mẫu thu rất nhỏ nên phải khuếch đại mạnh, kéo theo cả tiếng xì nền — cắt
+  // nhẹ phần trên 7 kHz (tiếng dây thép gần như không còn gì ở đó).
+  const tone = ctx.createBiquadFilter()
+  tone.type = 'lowpass'
+  tone.frequency.value = 7000
+  tone.Q.value = 0.5
   source.buffer = buffer
-  source.connect(gain)
-  gain.connect(getMasterBus(ctx))
+  source.connect(tone)
+  tone.connect(gain)
+  routeOut(ctx, gain, NOTE_REVERB_SEND)
 
   // Mẫu gốc ngân tới hơn 3 giây, trong khi nốt kế tiếp phát sau chưa tới 1
   // giây — để nguyên thì các nốt chồng lên nhau nghe rất rối. Cho tắt dần
   // trong khoảng 1,6 giây để từng nốt nghe rõ ràng, tách bạch.
   const level = sampleGains.get(noteId) || 1
   const now = ctx.currentTime
-  gain.gain.setValueAtTime(level, now)
+  // Vào tiếng trong 4ms thay vì bật thẳng: tránh tiếng "tách" ở đầu nốt.
+  gain.gain.setValueAtTime(0.0001, now)
+  gain.gain.linearRampToValueAtTime(level, now + 0.004)
   gain.gain.setValueAtTime(level, now + NOTE_HOLD_SEC * 0.45)
   gain.gain.exponentialRampToValueAtTime(0.0001, now + NOTE_HOLD_SEC)
   source.start(now)
   source.stop(now + NOTE_HOLD_SEC + 0.05)
 }
 
+/**
+ * Một tiếng chuông ngắn. `type: 'triangle'` (mặc định) là chuông có bồi âm —
+ * âm cơ bản hình sin cộng hai bồi âm tắt nhanh, nghe như chuông thuỷ tinh thay
+ * vì tiếng "bíp" điện tử; `'sine'` là tiếng nền tròn, không bồi âm.
+ */
 function playBlip(frequency, startOffset, duration, type = 'triangle', peak = 0.2) {
   const ctx = getAudioContext()
   if (!ctx) return
   const at = ctx.currentTime + startOffset
-  const osc = ctx.createOscillator()
-  const gain = ctx.createGain()
-  osc.connect(gain)
-  gain.connect(getMasterBus(ctx))
-  osc.type = type
-  osc.frequency.setValueAtTime(frequency, at)
-  gain.gain.setValueAtTime(0, at)
-  gain.gain.linearRampToValueAtTime(peak, at + 0.01)
-  gain.gain.exponentialRampToValueAtTime(0.0001, at + duration)
-  osc.start(at)
-  osc.stop(at + duration + 0.02)
+  const out = ctx.createGain()
+  out.gain.value = 1
+  routeOut(ctx, out, CHIME_REVERB_SEND)
+
+  const partials =
+    type === 'sine'
+      ? [[1, 1, 1]]
+      : [
+          [1, 1, 1],
+          [2, 0.32, 0.55],
+          [3.01, 0.14, 0.3],
+        ]
+  partials.forEach(([ratio, level, life]) => {
+    const osc = ctx.createOscillator()
+    const gain = ctx.createGain()
+    osc.type = 'sine'
+    osc.frequency.setValueAtTime(frequency * ratio, at)
+    gain.gain.setValueAtTime(0, at)
+    gain.gain.linearRampToValueAtTime(peak * level, at + 0.006)
+    gain.gain.exponentialRampToValueAtTime(0.0001, at + duration * life)
+    osc.connect(gain)
+    gain.connect(out)
+    osc.start(at)
+    osc.stop(at + duration * life + 0.02)
+  })
 }
 
 // --------------------------------------------------------------------------
@@ -405,6 +488,12 @@ function playFatalBreak() {
 /** Khẽ tới mức gần như không để ý — chỉ để tạo cảm giác chạm vào vật thật. */
 function playPadTick() {
   playNoise({ duration: 0.022, peak: 0.05, filterType: 'highpass', freq: 5200 })
+}
+
+/** Chạm nút giao diện: một tiếng "tóc" gỗ rất khẽ, không cao độ. */
+function playUiTap() {
+  playNoise({ duration: 0.03, peak: 0.09, freq: 2300, q: 1.6 })
+  playNoise({ at: 0.004, duration: 0.05, peak: 0.05, filterType: 'lowpass', freq: 900 })
 }
 
 /** Tíc tắc đồng hồ. Không cao độ, vì người chơi đang giữ một cao độ trong đầu. */
@@ -1705,3 +1794,16 @@ renderVolumeUI()
 resetHearts(START_HEARTS)
 updateGlow()
 bootstrapAudio()
+
+// Mọi nút giao diện (không phải 7 phím đàn — phím đã có tiếng riêng) kêu một
+// tiếng chạm khẽ. Bắt ở pha capture để tiếng phát ngay trong tác vụ chạm, kể cả
+// khi nút đó sau đấy đổi màn hình.
+document.addEventListener(
+  'click',
+  (event) => {
+    const target = event.target instanceof Element ? event.target.closest('button, a.back-link') : null
+    if (!target || target.classList.contains('pad') || target.disabled) return
+    playUiTap()
+  },
+  true
+)

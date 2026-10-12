@@ -50,7 +50,16 @@
         --teach-ink: #ffffff;
         --shadow-soft: 0 10px 30px rgba(74, 52, 26, 0.12);
         --shadow-lift: 0 16px 40px rgba(74, 52, 26, 0.18);
-        --pad-rest: 0.86;
+        --pad-rest: 0.97;
+        /* Bảy màu của bảy nốt — dùng chung cho phím, vòng quỹ đạo và hình ở màn mở đầu. */
+        --n1: #f4b52e;
+        --n2: #f58a3a;
+        --n3: #ec5d4e;
+        --n4: #dc5593;
+        --n5: #8c72e6;
+        --n6: #27b5a1;
+        --n7: #8cc63f;
+        --btn-edge: #b9741a;
         /* Riêng cho Cơ Hội Cuối: tím ánh xanh, tách hẳn khỏi tông vàng ấm của
            phần còn lại để báo ngay "luật chơi đã đổi" — CỐ TÌNH dùng đúng một
            giá trị cho cả hai theme sáng/tối (không đổi theo :root.dark) để
@@ -80,7 +89,8 @@
         --teach-ink: #0f2520;
         --shadow-soft: 0 10px 30px rgba(0, 0, 0, 0.4);
         --shadow-lift: 0 16px 40px rgba(0, 0, 0, 0.5);
-        --pad-rest: 0.82;
+        --pad-rest: 0.92;
+        --btn-edge: #8f5710;
       }
 
       * { box-sizing: border-box; }
@@ -610,13 +620,13 @@
       .pad:focus-visible { outline: 3px solid var(--ink); outline-offset: 3px; }
 
       /* Bảy phím rải đều quanh vòng tròn, cao độ tăng dần theo chiều kim đồng hồ */
-      .pad-1 { left: 50%;   top: 11%;   --pad-color: #e2b34a; }
-      .pad-2 { left: 80.5%; top: 25.7%; --pad-color: #e08d4b; }
-      .pad-3 { left: 88%;   top: 58.7%; --pad-color: #d0674f; }
-      .pad-4 { left: 66.9%; top: 85.1%; --pad-color: #c26a86; }
-      .pad-5 { left: 33.1%; top: 85.1%; --pad-color: #8f7cc0; }
-      .pad-6 { left: 12%;   top: 58.7%; --pad-color: #5aa294; }
-      .pad-7 { left: 19.5%; top: 25.7%; --pad-color: #9fae5a; }
+      .pad-1 { left: 50%;   top: 11%;   --pad-color: var(--n1); }
+      .pad-2 { left: 80.5%; top: 25.7%; --pad-color: var(--n2); }
+      .pad-3 { left: 88%;   top: 58.7%; --pad-color: var(--n3); }
+      .pad-4 { left: 66.9%; top: 85.1%; --pad-color: var(--n4); }
+      .pad-5 { left: 33.1%; top: 85.1%; --pad-color: var(--n5); }
+      .pad-6 { left: 12%;   top: 58.7%; --pad-color: var(--n6); }
+      .pad-7 { left: 19.5%; top: 25.7%; --pad-color: var(--n7); }
 
       .status {
         text-align: center;
@@ -1154,6 +1164,232 @@
          trống. Màn mở đầu tách làm hai cột (giới thiệu | bảng chọn), màn chơi
          thành ba cột (bảng điểm | vòng phím | điều khiển) để hai bên có nội
          dung thật chứ không phải khoảng trống. */
+      /* =====================================================================
+         LỚP GIAO DIỆN 2026-10 — nền có sắc màu, phím nổi khối, tâm vòng kiểu
+         lỗ thoát âm, màn mở đầu gọn hơn. Đặt trước các @media bên dưới để các
+         luật co giãn theo màn hình vẫn có hiệu lực như cũ.
+         ===================================================================== */
+      body {
+        background:
+          radial-gradient(60% 42% at 8% 0%, color-mix(in srgb, var(--n1) 17%, transparent), transparent 70%),
+          radial-gradient(52% 38% at 100% 6%, color-mix(in srgb, var(--n6) 11%, transparent), transparent 70%),
+          radial-gradient(60% 40% at 50% 104%, color-mix(in srgb, var(--n5) 9%, transparent), transparent 70%),
+          var(--ground);
+        background-attachment: fixed;
+      }
+      .topbar { background: var(--panel); padding: 10px 16px; }
+      .topbar-brand {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        text-decoration: none;
+        font-size: 12px;
+        color: var(--ink-dim);
+      }
+      .topbar-brand img { width: 28px; height: 28px; border-radius: 50%; object-fit: cover; flex-shrink: 0; }
+      .topbar-brand span { overflow: hidden; text-overflow: ellipsis; }
+      .topbar-brand { min-width: 0; min-height: 40px; }
+      .back-link { min-height: 40px; white-space: nowrap; flex-shrink: 0; }
+      #theme-toggle-btn { width: 40px; height: 40px; }
+      #theme-toggle-btn svg { width: 18px; height: 18px; }
+
+      /* ---------- Màn mở đầu ---------- */
+      /* Hình đầu trang là chính vòng bảy phím thu nhỏ, đèn chạy lần lượt —
+         nhìn là biết game chơi thế nào trước khi đọc chữ. */
+      .hero-mark {
+        position: relative;
+        width: 132px;
+        height: 132px;
+        background: radial-gradient(circle at 50% 36%, var(--panel), var(--panel-hi));
+        box-shadow:
+          0 0 0 1px var(--line),
+          var(--shadow-lift);
+        border: none;
+      }
+      .hero-mark svg { width: 44px; height: 44px; }
+      .hero-dot {
+        position: absolute;
+        width: 15%;
+        aspect-ratio: 1;
+        border-radius: 50%;
+        transform: translate(-50%, -50%);
+        background: var(--dot);
+        box-shadow: 0 2px 0 color-mix(in srgb, var(--dot) 65%, #000);
+        animation: hero-chase 4.9s ease-in-out infinite;
+      }
+      .hero-dot:nth-of-type(1) { left: 50%;   top: 13%;   --dot: var(--n1); animation-delay: 0s; }
+      .hero-dot:nth-of-type(2) { left: 79%;   top: 27%;   --dot: var(--n2); animation-delay: 0.7s; }
+      .hero-dot:nth-of-type(3) { left: 86%;   top: 58.5%; --dot: var(--n3); animation-delay: 1.4s; }
+      .hero-dot:nth-of-type(4) { left: 66%;   top: 84%;   --dot: var(--n4); animation-delay: 2.1s; }
+      .hero-dot:nth-of-type(5) { left: 34%;   top: 84%;   --dot: var(--n5); animation-delay: 2.8s; }
+      .hero-dot:nth-of-type(6) { left: 14%;   top: 58.5%; --dot: var(--n6); animation-delay: 3.5s; }
+      .hero-dot:nth-of-type(7) { left: 21%;   top: 27%;   --dot: var(--n7); animation-delay: 4.2s; }
+      @keyframes hero-chase {
+        0%, 16%, 100% { transform: translate(-50%, -50%) scale(1); filter: none; box-shadow: 0 2px 0 color-mix(in srgb, var(--dot) 65%, #000); }
+        6% { transform: translate(-50%, -50%) scale(1.45); filter: brightness(1.15); box-shadow: 0 0 0 3px color-mix(in srgb, var(--dot) 35%, transparent), 0 0 16px var(--dot); }
+      }
+
+      h1 {
+        text-transform: none;
+        font-weight: 900;
+        font-size: clamp(27px, 7.6vw, 38px);
+        line-height: 1.1;
+        letter-spacing: -0.01em;
+      }
+      .subtitle { letter-spacing: 0.16em; margin-top: 10px; }
+
+      /* Ba bước là một trình tự thật nên giữ số; xếp thành danh sách một cột
+         để mỗi bước nằm trọn một dòng thay vì ba ô chữ nhỏ xuống hàng. */
+      .how {
+        grid-template-columns: 1fr;
+        gap: 0;
+        background: var(--panel);
+        border: 1px solid var(--line);
+        border-radius: 16px;
+        padding: 2px 14px;
+        box-shadow: var(--shadow-soft);
+      }
+      .how-step {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        text-align: left;
+        background: none;
+        border: 0;
+        border-radius: 0;
+        padding: 10px 0;
+      }
+      .how-step + .how-step { border-top: 1px solid var(--line); }
+      .how-num { width: 24px; height: 24px; margin: 0; flex-shrink: 0; font-size: 12px; }
+      .how-step:nth-child(1) .how-num { background: var(--n1); }
+      .how-step:nth-child(2) .how-num { background: var(--n6); color: #06231f; }
+      .how-step:nth-child(3) .how-num { background: var(--n3); color: #fff; }
+      .how-text { font-size: 13px; color: var(--ink); }
+
+      .mode-label { font-size: 13px; }
+      .mode-card { border-radius: 16px; padding: 12px 12px 13px; }
+      .mode-top { justify-content: flex-start; gap: 8px; margin-bottom: 10px; }
+      .mode-icon {
+        display: grid;
+        place-items: center;
+        width: 36px;
+        height: 36px;
+        border-radius: 11px;
+        flex-shrink: 0;
+        color: #fff;
+      }
+      .mode-icon svg { width: 20px; height: 20px; }
+      #mode-see .mode-icon { background: var(--n6); }
+      #mode-hear .mode-icon { background: var(--n4); }
+      .mode-badge { font-size: 11px; padding: 3px 9px; }
+      .mode-check { margin-left: auto; width: 20px; height: 20px; }
+      .mode-name { text-transform: none; font-size: 15px; letter-spacing: 0; }
+      .mode-card[aria-pressed='true'] {
+        box-shadow: 0 0 0 3px color-mix(in srgb, var(--gold-solid) 22%, transparent), var(--shadow-soft);
+      }
+      /* Hai nút bảng xếp hạng là việc phụ: chữ có biểu tượng, không tô nền,
+         để nút "Bắt đầu" là thứ nổi nhất màn. */
+      .mode-board-link {
+        min-height: 40px;
+        background: none;
+        border-color: transparent;
+        padding: 6px 8px;
+      }
+      .mode-board-link svg, .btn-board svg { width: 16px; height: 16px; flex-shrink: 0; }
+      .mode-board-link:hover { background: color-mix(in srgb, var(--gold-solid) 16%, transparent); color: var(--gold); border-color: transparent; }
+      .btn-board { display: flex; align-items: center; justify-content: center; gap: 7px; }
+
+      /* Nút chính có "chân" nổi khối như nút bấm thật, lún xuống khi nhấn. */
+      .btn-primary {
+        box-shadow: 0 4px 0 var(--btn-edge), 0 14px 24px color-mix(in srgb, var(--gold-solid) 30%, transparent);
+        transition: filter 0.15s, transform 0.08s, box-shadow 0.08s;
+      }
+      .btn-primary:active:not(:disabled) {
+        transform: translateY(3px);
+        box-shadow: 0 1px 0 var(--btn-edge), 0 6px 12px color-mix(in srgb, var(--gold-solid) 24%, transparent);
+      }
+      .btn-primary:disabled { box-shadow: none; }
+
+      /* ---------- Màn chơi ---------- */
+      /* Vòng quỹ đạo mang đủ bảy màu theo đúng vị trí bảy phím. */
+      .turntable::before {
+        border: none;
+        padding: 2px;
+        background: conic-gradient(from 0deg, var(--n1), var(--n2), var(--n3), var(--n4), var(--n5), var(--n6), var(--n7), var(--n1));
+        -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+        -webkit-mask-composite: xor;
+        mask: linear-gradient(#000 0 0) content-box exclude, linear-gradient(#000 0 0);
+        opacity: 0.42;
+      }
+
+      /* Tâm vòng vẽ như lỗ thoát âm của đàn: mấy vòng khảm đồng tâm. */
+      .hub {
+        width: 40%;
+        border: none;
+        background: radial-gradient(circle at 50% 34%, var(--panel), var(--panel-hi));
+        box-shadow:
+          0 0 0 5px var(--panel),
+          0 0 0 6px var(--line-strong),
+          0 0 0 11px var(--panel),
+          0 0 0 12.5px color-mix(in srgb, var(--gold-solid) 60%, var(--line)),
+          var(--shadow-lift);
+      }
+      /* Đang phát nốt thì tai nghe nhường chỗ cho mấy cột sóng nhảy. Các cột
+         nhảy theo nhịp cố định, không theo cao độ — không lộ nốt ở chế độ Chỉ nghe. */
+      .hub-eq { display: none; align-items: center; justify-content: center; gap: 7%; width: 40%; height: 26%; }
+      .hub-eq i { width: 12%; height: 30%; border-radius: 999px; background: currentColor; animation: eq 0.86s ease-in-out infinite; }
+      .hub-eq i:nth-child(2) { animation-delay: -0.52s; }
+      .hub-eq i:nth-child(3) { animation-delay: -0.2s; }
+      .hub-eq i:nth-child(4) { animation-delay: -0.66s; }
+      .hub-eq i:nth-child(5) { animation-delay: -0.36s; }
+      @keyframes eq {
+        0%, 100% { height: 26%; }
+        50% { height: 100%; }
+      }
+      .hub.playing .hub-icon { display: none; }
+      .hub.playing .hub-eq { display: flex; }
+
+      .pad {
+        width: 23%;
+        color: #24160a;
+        background: radial-gradient(
+          125% 125% at 30% 20%,
+          color-mix(in srgb, var(--pad-color) 58%, #fff) 0%,
+          var(--pad-color) 48%,
+          color-mix(in srgb, var(--pad-color) 82%, #000) 100%
+        );
+        box-shadow:
+          0 5px 0 color-mix(in srgb, var(--pad-color) 60%, #000),
+          0 13px 20px color-mix(in srgb, var(--pad-color) 36%, transparent),
+          inset 0 2px 0 rgba(255, 255, 255, 0.5);
+        transition: filter 0.1s ease, transform 0.1s ease, box-shadow 0.1s ease;
+      }
+      .pad:not(:disabled):active {
+        transform: translate(-50%, calc(-50% + 4px));
+        box-shadow:
+          0 1px 0 color-mix(in srgb, var(--pad-color) 60%, #000),
+          0 5px 10px color-mix(in srgb, var(--pad-color) 30%, transparent),
+          inset 0 2px 0 rgba(255, 255, 255, 0.5);
+      }
+      .pad-sub { font-size: clamp(10px, 2.6vw, 11px); opacity: 0.7; }
+      .pad.lit {
+        filter: brightness(1.2) saturate(1.15);
+        transform: translate(-50%, -50%) scale(1.14);
+        box-shadow:
+          0 0 0 4px var(--panel),
+          0 0 0 8px color-mix(in srgb, var(--pad-color) 75%, transparent),
+          0 0 40px 8px var(--pad-color);
+      }
+
+      .status { font-size: 15px; font-weight: 800; }
+      .progress-dot { width: 10px; height: 10px; }
+      .hud { border-radius: 18px; }
+      .nav-btn, .modal-close { min-width: 40px; min-height: 40px; }
+
+      @media (prefers-reduced-motion: reduce) {
+        .hero-dot, .hub-eq i { animation: none; }
+      }
+
       @media (min-width: 900px) {
         main { padding: 30px 28px 34px; }
 
@@ -1165,8 +1401,8 @@
           align-items: center;
         }
         .start-intro { text-align: left; }
-        .start-intro .hero-mark { width: 108px; height: 108px; margin: 0 0 20px; }
-        .start-intro .hero-mark svg { width: 55px; height: 55px; }
+        .start-intro .hero-mark { width: 128px; height: 128px; margin: 0 0 20px; }
+        .start-intro .hero-mark svg { width: 42px; height: 42px; }
         .start-intro h1 { text-align: left; font-size: clamp(30px, 2.8vw, 40px); }
         .start-intro .subtitle { text-align: left; }
         .start-intro .lede { text-align: left; margin: 14px 0 24px; max-width: 44ch; }
@@ -1334,7 +1570,12 @@
       }
 
       @media (max-width: 370px) {
-        .modes { grid-template-columns: 1fr; }
+        /* Máy hẹp: vẫn giữ hai thẻ cạnh nhau (xếp chồng sẽ đẩy nút Bắt đầu ra khỏi màn),
+           bỏ dòng mô tả — tên chế độ và nhãn Dễ/Khó đã đủ để chọn. */
+        .mode-desc { display: none; }
+        .mode-card { padding: 10px 10px 11px; }
+        .mode-icon { width: 32px; height: 32px; }
+        .mode-board-link { font-size: 11px; padding: 6px 2px; }
       }
 
       /* Máy cầm tay: bóp gọn mọi khoảng cách để cả trang lọt trong một màn
@@ -1351,16 +1592,16 @@
           width: min(100%, 400px, max(200px, calc(100dvh - 300px)));
         }
 
-        .hero-mark { width: 72px; height: 72px; margin-bottom: 9px; }
-        .hero-mark svg { width: 37px; height: 37px; }
+        .hero-mark { width: 100px; height: 100px; margin-bottom: 9px; }
+        .hero-mark svg { width: 32px; height: 32px; }
         h1 { font-size: clamp(21px, 6.2vw, 28px); }
         .subtitle { font-size: 11px; margin-top: 7px; }
         .lede { display: none; }
 
-        .how { gap: 6px; margin-bottom: 13px; margin-top: 14px; }
-        .how-step { padding: 9px 7px; border-radius: 10px; }
-        .how-num { width: 18px; height: 18px; font-size: 11px; margin-bottom: 4px; }
-        .how-text { font-size: 11px; }
+        .how { gap: 0; margin-bottom: 13px; margin-top: 14px; }
+        .how-step { padding: 8px 0; }
+        .how-num { width: 18px; height: 18px; font-size: 11px; margin-bottom: 0; }
+        .how-text { font-size: 12px; }
 
         .mode-label { margin-bottom: 7px; }
         .modes { gap: 8px; margin-bottom: 11px; }
@@ -1422,8 +1663,8 @@
         .how { display: none; }
         .subtitle { margin-top: 5px; }
         .modes { margin-bottom: 10px; }
-        .hero-mark { width: 58px; height: 58px; margin-bottom: 7px; }
-        .hero-mark svg { width: 30px; height: 30px; }
+        .hero-mark { width: 76px; height: 76px; margin-bottom: 7px; }
+        .hero-mark svg { width: 24px; height: 24px; }
       }
     </style>
   </head>
@@ -1436,7 +1677,7 @@
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M15 19l-7-7 7-7" /></svg>
           <span>Trang chủ</span>
         </a>
-        <span class="topbar-brand">Guitar By Quang</span>
+        <a class="topbar-brand" href="/index.html"><img src="/assets/avatar.jpg" alt="" width="28" height="28" /><span>Guitar By Quang</span></a>
       </div>
       <button type="button" id="theme-toggle-btn" aria-label="Chuyển đổi giao diện Sáng / Tối" title="Chuyển đổi giao diện Sáng / Tối">
         <svg class="sun-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -1457,6 +1698,7 @@
       <section class="screen" id="screen-start">
         <div class="start-intro">
         <div class="hero-mark" aria-hidden="true">
+          <i class="hero-dot"></i><i class="hero-dot"></i><i class="hero-dot"></i><i class="hero-dot"></i><i class="hero-dot"></i><i class="hero-dot"></i><i class="hero-dot"></i>
           <svg viewBox="0 0 64 64" fill="none">
             <path d="M13 40V32a19 19 0 0 1 38 0v8" stroke="currentColor" stroke-width="5" stroke-linecap="round" />
             <rect x="6" y="35" width="14" height="21" rx="7" fill="currentColor" />
@@ -1492,6 +1734,7 @@
           <div class="mode-slot">
             <button type="button" class="mode-card" id="mode-see" aria-pressed="true">
               <span class="mode-top">
+                <span class="mode-icon" aria-hidden="true"><svg class=" flex-shrink-0" aria-hidden="true" data-ph="eye" viewBox="0 0 256 256" fill="currentColor"><path d="M251,123.13c-.37-.81-9.13-20.26-28.48-39.61C196.63,57.67,164,44,128,44S59.37,57.67,33.51,83.52C14.16,102.87,5.4,122.32,5,123.13a12.08,12.08,0,0,0,0,9.75c.37.82,9.13,20.26,28.49,39.61C59.37,198.34,92,212,128,212s68.63-13.66,94.48-39.51c19.36-19.35,28.12-38.79,28.49-39.61A12.08,12.08,0,0,0,251,123.13Zm-46.06,33C183.47,177.27,157.59,188,128,188s-55.47-10.73-76.91-31.88A130.36,130.36,0,0,1,29.52,128,130.45,130.45,0,0,1,51.09,99.89C72.54,78.73,98.41,68,128,68s55.46,10.73,76.91,31.89A130.36,130.36,0,0,1,226.48,128,130.45,130.45,0,0,1,204.91,156.12ZM128,84a44,44,0,1,0,44,44A44.05,44.05,0,0,0,128,84Zm0,64a20,20,0,1,1,20-20A20,20,0,0,1,128,148Z"/></svg></span>
                 <span class="mode-badge easy">Dễ</span>
                 <span class="mode-check" aria-hidden="true">
                   <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5" /></svg>
@@ -1501,11 +1744,12 @@
               <span class="mode-desc">Phím sáng lên theo từng nốt. Dễ vào, hợp người mới.</span>
               <span class="mode-best" id="best-see">Kỷ lục: 0 vòng</span>
             </button>
-            <button type="button" class="mode-board-link" id="board-link-see">🏆 Xem bảng xếp hạng</button>
+            <button type="button" class="mode-board-link" id="board-link-see"><svg class=" flex-shrink-0" aria-hidden="true" data-ph="trophy" viewBox="0 0 256 256" fill="currentColor"><path d="M232,64H208V48a8,8,0,0,0-8-8H56a8,8,0,0,0-8,8V64H24A16,16,0,0,0,8,80V96a40,40,0,0,0,40,40h3.65A80.13,80.13,0,0,0,120,191.61V216H96a8,8,0,0,0,0,16h64a8,8,0,0,0,0-16H136V191.58c31.94-3.23,58.44-25.64,68.08-55.58H208a40,40,0,0,0,40-40V80A16,16,0,0,0,232,64ZM48,120A24,24,0,0,1,24,96V80H48v32q0,4,.39,8ZM232,96a24,24,0,0,1-24,24h-.5a81.81,81.81,0,0,0,.5-8.9V80h24Z"/></svg><span>Bảng xếp hạng</span></button>
           </div>
           <div class="mode-slot">
             <button type="button" class="mode-card" id="mode-hear" aria-pressed="false">
               <span class="mode-top">
+                <span class="mode-icon" aria-hidden="true"><svg class=" flex-shrink-0" aria-hidden="true" data-ph="ear" viewBox="0 0 256 256" fill="currentColor"><path d="M220,104a12,12,0,0,1-24,0,68,68,0,0,0-136,0c0,25,7.58,32.3,16.35,40.76S96,163.71,96,188a32,32,0,0,0,32,32c9,0,16.19-3.7,22.75-11.64a12,12,0,0,1,18.5,15.28C158.09,237.15,144.21,244,128,244a56.06,56.06,0,0,1-56-56c0-14.09-4.63-18.56-12.31-26C49.13,151.86,36,139.19,36,104a92,92,0,0,1,184,0Zm-40.13,53.61a12,12,0,0,0-16.4,4.38,4,4,0,0,1-7.47-2c0-7.61,3.65-12.86,9.6-20.8C172,130.65,180,120,180,104a52,52,0,0,0-104,0,12,12,0,0,0,24,0,28,28,0,0,1,56,0c0,7.61-3.65,12.86-9.6,20.8C140,133.35,132,144,132,160a28,28,0,0,0,52.25,14A12,12,0,0,0,179.87,157.61Z"/></svg></span>
                 <span class="mode-badge hard">Khó</span>
                 <span class="mode-check" aria-hidden="true">
                   <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5" /></svg>
@@ -1515,7 +1759,7 @@
               <span class="mode-desc">Phím không sáng — phải mò bằng tai. Kỷ lục tính riêng.</span>
               <span class="mode-best" id="best-hear">Kỷ lục: 0 vòng</span>
             </button>
-            <button type="button" class="mode-board-link" id="board-link-hear">🏆 Xem bảng xếp hạng</button>
+            <button type="button" class="mode-board-link" id="board-link-hear"><svg class=" flex-shrink-0" aria-hidden="true" data-ph="trophy" viewBox="0 0 256 256" fill="currentColor"><path d="M232,64H208V48a8,8,0,0,0-8-8H56a8,8,0,0,0-8,8V64H24A16,16,0,0,0,8,80V96a40,40,0,0,0,40,40h3.65A80.13,80.13,0,0,0,120,191.61V216H96a8,8,0,0,0,0,16h64a8,8,0,0,0,0-16H136V191.58c31.94-3.23,58.44-25.64,68.08-55.58H208a40,40,0,0,0,40-40V80A16,16,0,0,0,232,64ZM48,120A24,24,0,0,1,24,96V80H48v32q0,4,.39,8ZM232,96a24,24,0,0,1-24,24h-.5a81.81,81.81,0,0,0,.5-8.9V80h24Z"/></svg><span>Bảng xếp hạng</span></button>
           </div>
         </div>
 
@@ -1646,6 +1890,7 @@
                   <rect x="6" y="35" width="14" height="21" rx="7" fill="currentColor" />
                   <rect x="44" y="35" width="14" height="21" rx="7" fill="currentColor" />
                 </svg>
+                <span class="hub-eq" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i></span>
                 <span class="hub-label" id="hub-label"></span>
               </div>
 
@@ -1698,7 +1943,7 @@
 
           <div class="over-actions">
             <button type="button" class="btn-primary" id="again-btn">Chơi lại</button>
-            <button type="button" class="btn-board" id="board-link-over">🏆 Xem bảng xếp hạng</button>
+            <button type="button" class="btn-board" id="board-link-over"><svg class=" flex-shrink-0" aria-hidden="true" data-ph="trophy" viewBox="0 0 256 256" fill="currentColor"><path d="M232,64H208V48a8,8,0,0,0-8-8H56a8,8,0,0,0-8,8V64H24A16,16,0,0,0,8,80V96a40,40,0,0,0,40,40h3.65A80.13,80.13,0,0,0,120,191.61V216H96a8,8,0,0,0,0,16h64a8,8,0,0,0,0-16H136V191.58c31.94-3.23,58.44-25.64,68.08-55.58H208a40,40,0,0,0,40-40V80A16,16,0,0,0,232,64ZM48,120A24,24,0,0,1,24,96V80H48v32q0,4,.39,8ZM232,96a24,24,0,0,1-24,24h-.5a81.81,81.81,0,0,0,.5-8.9V80h24Z"/></svg><span>Bảng xếp hạng</span></button>
             <button type="button" class="btn-ghost" id="back-menu-btn">Đổi chế độ</button>
           </div>
         </div>
