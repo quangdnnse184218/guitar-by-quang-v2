@@ -1,4 +1,5 @@
 import { supabase } from './lib/supabase.js'
+import { isPasswordPwned, PWNED_PASSWORD_MESSAGE } from './lib/pwned-password.js'
 import { withReturnTo } from './lib/navigate.js'
 import { initKeyboardReveal } from './lib/keyboard-reveal.js'
 import { iconBolt, iconPerson, iconLogout, iconCrown } from './icons.js'
@@ -1213,6 +1214,10 @@ export function initPasswordResetForm({
 
       if (newPassword !== confirmPassword) {
         return showAlert('Xác nhận mật khẩu không khớp. Vui lòng kiểm tra lại.')
+      }
+
+      if (await isPasswordPwned(newPassword)) {
+        return showAlert(PWNED_PASSWORD_MESSAGE)
       }
 
       setLoading(true)

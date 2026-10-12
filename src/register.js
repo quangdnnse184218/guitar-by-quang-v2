@@ -3,6 +3,7 @@ import { initThemeToggle } from './theme-toggle.js'
 import { getPasswordWeaknessReason, initPasswordMatchHint } from './common.js'
 import { watchEmailConfirmation } from './lib/email-confirmation-watch.js'
 import { redirectTo, safeRedirectPath } from './lib/navigate.js'
+import { isPasswordPwned, PWNED_PASSWORD_MESSAGE } from './lib/pwned-password.js'
 
 // Supabase chỉ cho gửi lại email xác nhận sau mỗi 60 giây.
 const RESEND_COOLDOWN_SECONDS = 60
@@ -297,15 +298,20 @@ document.addEventListener('DOMContentLoaded', () => {
     setLoading(true)
 
     try {
-      // 5. Kiểm tra trùng Tên hiển thị (DisplayName) trong bảng profiles
-      try {
-        const { data: existingNameProfiles } = await supabase
-          .from('profiles')
-          .select('id')
-          .ilike('full_name', displayName)
-          .limit(1)
+      if (await isPasswordPwned(password)) {
+        setLoading(false)
+        passwordInput?.focus()
+        return showAlert(PWNED_PASSWORD_MESSAGE)
+      }
 
-        if (existingNameProfiles && existingNameProfiles.length > 0) {
+      // 5. Kiểm tra trùng Tên hiển thị. Khách chưa đăng nhập không đọc được bảng profiles (RLS),
+      // nên hỏi qua RPC chỉ trả về có/không. Chưa có RPC (chưa chạy SQL) thì bỏ qua bước này.
+      try {
+        const { data: nameTaken } = await supabase.rpc('is_display_name_taken', {
+          p_name: displayName,
+        })
+
+        if (nameTaken === true) {
           setLoading(false)
           nameInput?.focus()
           return showAlert(
@@ -316,24 +322,8 @@ document.addEventListener('DOMContentLoaded', () => {
         console.warn('Lưu ý kiểm tra tên trùng:', checkNameErr)
       }
 
-      // 6. Kiểm tra trùng Email trong bảng profiles
-      try {
-        const { data: existingEmailProfiles } = await supabase
-          .from('profiles')
-          .select('id')
-          .ilike('email', email)
-          .limit(1)
-
-        if (existingEmailProfiles && existingEmailProfiles.length > 0) {
-          setLoading(false)
-          emailInput?.focus()
-          return showAlert(
-            `Email "${email}" đã được đăng ký. Vui lòng chọn email khác hoặc bấm Đăng nhập.`
-          )
-        }
-      } catch (checkEmailErr) {
-        console.warn('Lưu ý kiểm tra email trùng:', checkEmailErr)
-      }
+      // 6. KHÔNG kiểm tra trùng email ở đây: báo "email đã đăng ký" là để lộ tài khoản nào tồn tại.
+      // Supabase tự xử lý email trùng mà không tiết lộ.
 
       // 7. Thực hiện đăng ký tài khoản qua Supabase Auth
       const { data, error } = await supabase.auth.signUp({

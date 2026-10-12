@@ -17,7 +17,8 @@ import { state } from './state.js'
 import { showToast } from './toast.js'
 import { confirmDialog } from './confirm.js'
 import { escapeHtml, formatDate, formatDateTime, avatarUrlFor, copyText } from './format.js'
-import { uploadToStorage, removeFromStorageByUrl } from '../lib/storage-service.js'
+import { uploadAvatar, removeFromStorageByUrl } from '../lib/storage-service.js'
+import { isPasswordPwned, PWNED_PASSWORD_MESSAGE } from '../lib/pwned-password.js'
 import { applyTheme } from '../theme-toggle.js'
 import { getPasswordWeaknessReason, initPasswordMatchHint } from '../common.js'
 
@@ -189,7 +190,7 @@ async function saveProfile(e) {
     let avatarUrl = oldAvatar
 
     if (pendingAvatarFile) {
-      avatarUrl = await uploadToStorage(pendingAvatarFile, `avatars/${p.id}`, 'avatar')
+      avatarUrl = await uploadAvatar(pendingAvatarFile, p.id)
     } else if (avatarMarkedForRemoval) {
       avatarUrl = ''
     }
@@ -249,6 +250,10 @@ async function changePassword(e) {
   }
   if (newPwd !== confirmPwd) {
     showPwdError('Xác nhận mật khẩu không khớp. Vui lòng nhập lại chính xác!')
+    return
+  }
+  if (await isPasswordPwned(newPwd)) {
+    showPwdError(PWNED_PASSWORD_MESSAGE)
     return
   }
 

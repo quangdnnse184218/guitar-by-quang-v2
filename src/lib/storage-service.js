@@ -42,7 +42,11 @@ export async function uploadToStorage(file, folder, namePrefix) {
 
   const { error } = await supabase.storage
     .from(BUCKET)
-    .upload(path, file, { cacheControl: '3600', upsert: false, contentType: file.type || undefined })
+    .upload(path, file, {
+      cacheControl: '3600',
+      upsert: false,
+      contentType: file.type || undefined,
+    })
 
   if (error) {
     throw new Error(`Tải file lên thất bại: ${error.message}`)
@@ -52,20 +56,58 @@ export async function uploadToStorage(file, folder, namePrefix) {
   return data.publicUrl
 }
 
+const AVATAR_BUCKET = 'avatars'
+export const MAX_AVATAR_BYTES = 10 * 1024 * 1024
+
+/**
+ * Ảnh đại diện của thành viên đi vào bucket riêng `avatars`: bucket đó tự giới hạn 10MB và chỉ nhận
+ * ảnh ngay ở máy chủ. Bucket `uploads` phải cho 50MB + video để admin tải bài hát, nên nếu để khách
+ * ghi vào đó thì ai cũng có thể chiếm dung lượng bằng file lớn.
+ * Bucket `avatars` chưa tồn tại (chưa chạy SQL 20261012_security_hardening_2.sql) thì dùng tạm
+ * đường cũ `uploads/avatars/<uid>/` để việc đổi ảnh không bị gián đoạn.
+ */
+export async function uploadAvatar(file, userId) {
+  if (!file) throw new Error('Không có file nào được chọn.')
+  if (file.size > MAX_AVATAR_BYTES) {
+    throw new Error(`Ảnh quá lớn (${formatBytes(file.size)}). Ảnh đại diện tối đa 10MB.`)
+  }
+  if (file.type && !file.type.startsWith('image/')) {
+    throw new Error('Ảnh đại diện phải là file ảnh (JPG, PNG, WebP hoặc GIF).')
+  }
+
+  const path = `${userId}/avatar-${Date.now()}.${sanitizeExt(file.name)}`
+  const { error } = await supabase.storage
+    .from(AVATAR_BUCKET)
+    .upload(path, file, {
+      cacheControl: '3600',
+      upsert: false,
+      contentType: file.type || undefined,
+    })
+
+  if (!error) return supabase.storage.from(AVATAR_BUCKET).getPublicUrl(path).data.publicUrl
+  if (/bucket not found/i.test(error.message || '')) {
+    return uploadToStorage(file, `avatars/${userId}`, 'avatar')
+  }
+  throw new Error(`Tải ảnh lên thất bại: ${error.message}`)
+}
+
 /**
  * Deletes a previously-uploaded file given its public URL, if (and only if)
- * that URL actually points at our `uploads` bucket — external/YouTube URLs
- * are silently ignored. Best-effort: failures are logged, never thrown,
- * since a missing/already-deleted object shouldn't block the caller's save.
+ * that URL actually points at one of our buckets (`uploads` or `avatars`) —
+ * external/YouTube URLs are silently ignored. Best-effort: failures are logged,
+ * never thrown, since a missing/already-deleted object shouldn't block the caller's save.
  */
 export async function removeFromStorageByUrl(url) {
   if (!url || typeof url !== 'string') return
-  const marker = `/storage/v1/object/public/${BUCKET}/`
+  const bucket = [BUCKET, AVATAR_BUCKET].find((b) =>
+    url.includes(`/storage/v1/object/public/${b}/`)
+  )
+  if (!bucket) return
+  const marker = `/storage/v1/object/public/${bucket}/`
   const idx = url.indexOf(marker)
-  if (idx === -1) return
 
   const path = decodeURIComponent(url.slice(idx + marker.length))
-  const { error } = await supabase.storage.from(BUCKET).remove([path])
+  const { error } = await supabase.storage.from(bucket).remove([path])
   if (error) {
     console.warn('[storage-service] Không thể xoá file cũ:', path, error.message)
   }

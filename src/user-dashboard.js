@@ -21,11 +21,12 @@ import {
   normalizeAudioPath,
 } from './lib/songs-service.js'
 import {
-  uploadToStorage,
+  uploadAvatar,
   removeFromStorageByUrl,
   formatBytes,
   MAX_UPLOAD_BYTES,
 } from './lib/storage-service.js'
+import { isPasswordPwned, PWNED_PASSWORD_MESSAGE } from './lib/pwned-password.js'
 import { initShareButtons } from './lib/share-song.js'
 import { formatCompactPrice, formatCompactDiscount } from './lib/song-format.js'
 import { renderSongCard, renderPlayDisc } from './lib/song-card.js'
@@ -1382,7 +1383,7 @@ if (profileForm) {
         }
         const oldAvatar = currentProfile?.avatar_url || ''
         showToast(`Đang tải ${selectedFile.name} lên...`, 'info')
-        avatarUrl = await uploadToStorage(selectedFile, `avatars/${currentUser.id}`, 'avatar')
+        avatarUrl = await uploadAvatar(selectedFile, currentUser.id)
         if (oldAvatar) await removeFromStorageByUrl(oldAvatar)
         profileAvatarFileInput.value = ''
         if (profileAvatarFileName) profileAvatarFileName.textContent = ''
@@ -1472,6 +1473,11 @@ if (changePasswordForm) {
 
     if (newPassword !== confirmPassword) {
       showPasswordAlert('Xác nhận mật khẩu mới không trùng khớp.')
+      return
+    }
+
+    if (await isPasswordPwned(newPassword)) {
+      showPasswordAlert(PWNED_PASSWORD_MESSAGE)
       return
     }
 
