@@ -15,6 +15,7 @@
   },
   "devDependencies": {
     "@eslint/js": "^10.0.1",
+    "@phosphor-icons/core": "^2.1.1",
     "autoprefixer": "^10.5.4",
     "dotenv": "^17.4.2",
     "eslint": "^10.10.0",

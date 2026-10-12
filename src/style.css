@@ -650,53 +650,66 @@ nav,
     0 14px 32px -18px rgb(50 32 14 / 0.5);
 }
 
-/* MÁY TÍNH (md+): header là khối nâu đậm cùng tông với chân trang, ở cả giao diện sáng lẫn tối —
-   hai đầu trang khép nội dung lại rõ ràng (nền kính trắng trên trang màu kem gần như không tách ra).
-   Ghi đè biến màu ngay trên #main-nav nên chữ, nút, menu tài khoản bên trong tự đổi sang bộ
-   màu sáng-trên-nền-tối. Điện thoại giữ header sáng cho hợp với thanh kính dưới đáy. */
+/* MÁY TÍNH (md+): header là khối nâu gỗ ĐẶC ở cả giao diện sáng lẫn tối — không trong suốt,
+   không làm mờ nền (người dùng yêu cầu 2026-10-12; bản trước nâu rất đậm + kính 92% bị chê
+   "đậm quá"). Ghi đè biến màu ngay trên #main-nav nên chữ, nút, menu tài khoản bên trong tự
+   đổi sang bộ màu sáng-trên-nền-tối. Điện thoại giữ header kính sáng cho hợp thanh dưới đáy. */
 @media (min-width: 768px) {
   #main-nav,
   [data-theme='light'] #main-nav {
-    --frost-tint: 32 24 18;
-    --frost-edge: rgb(255 255 255 / 0.1);
+    --nav-solid: 92 64 43;
+    --frost-tint: 74 52 36;
+    --frost-alpha-strong: 1;
+    --frost-fx: none;
+    --frost-edge: rgb(255 255 255 / 0.12);
     --frost-shine: inset 0 1px 0 rgb(255 255 255 / 0.08);
-    --text-primary: 246 239 228;
-    --text-muted: 204 190 170;
-    --text-faint: 164 150 130;
-    --accent-primary: 238 176 98;
-    --accent-primary-hover: 245 196 130;
-    --glass-bg: 54 43 34;
-    --glass-bg-hover: 70 56 44;
-    --glass-border: rgba(240 220 195 / 0.16);
-    --glass-border-rgb: 240 220 195;
-    --glass-border-alpha: 0.16;
-    --nav-alpha: 0.92;
-    border-bottom-color: rgb(255 255 255 / 0.08);
-    box-shadow: 0 10px 30px -18px rgb(20 12 6 / 0.7);
+    --text-primary: 250 243 232;
+    --text-muted: 222 206 184;
+    --text-faint: 186 168 144;
+    --accent-primary: 246 190 112;
+    --accent-primary-hover: 250 208 144;
+    --glass-bg: 112 80 56;
+    --glass-bg-hover: 128 93 66;
+    --glass-border: rgba(255 236 210 / 0.2);
+    --glass-border-rgb: 255 236 210;
+    --glass-border-alpha: 0.2;
+    background-color: rgb(var(--nav-solid));
+    -webkit-backdrop-filter: none;
+    backdrop-filter: none;
+    border-bottom-color: rgb(0 0 0 / 0.18);
+    box-shadow: 0 8px 22px -16px rgb(40 24 10 / 0.55);
   }
   #main-nav.nav-shrunk {
-    --nav-alpha: 0.78;
-    box-shadow: 0 16px 36px -18px rgb(20 12 6 / 0.85);
+    box-shadow: 0 14px 30px -16px rgb(40 24 10 / 0.7);
   }
-  /* Bản tối: nền trang đã tối nên header nổi lên một bậc để vẫn tách ra. */
+  /* Bản tối: trầm hơn một chút nhưng vẫn sáng hơn hẳn nền trang để tách ra. */
   :root:not([data-theme='light']) #main-nav {
-    --frost-tint: 44 35 28;
+    --nav-solid: 66 48 34;
+    --frost-tint: 56 41 30;
+    --glass-bg: 86 63 45;
+    --glass-bg-hover: 102 75 54;
   }
   #main-nav .nav-pill {
-    background: rgb(var(--accent-primary) / 0.16);
-    box-shadow: inset 0 0 0 1px rgb(var(--accent-primary) / 0.3);
+    background: rgb(255 255 255 / 0.12);
+    box-shadow: inset 0 0 0 1px rgb(255 255 255 / 0.16);
   }
-  /* Màu viết cứng trong menu tài khoản (nút Đăng xuất…) cần bản sáng hơn trên nền tối */
+  /* Nút Đăng nhập: nền hổ phách sáng chữ nâu — nền đồng đậm mặc định chìm vào header nâu */
+  #main-nav a.bg-warm-gradient {
+    background: linear-gradient(135deg, #f6c478 0%, #eaa24a 100%);
+    color: #3a2413;
+    box-shadow: 0 4px 12px -6px rgb(0 0 0 / 0.5);
+  }
+  /* Màu viết cứng trong menu tài khoản (nút Đăng xuất…) cần bản sáng hơn trên nền nâu */
   #main-nav .text-rose-700 {
-    color: #fda4af;
+    color: #fecdd3;
   }
   #main-nav .text-emerald-700,
   #main-nav .text-emerald-800 {
-    color: #6ee7b7;
+    color: #a7f3d0;
   }
   #main-nav .text-amber-700,
   #main-nav .text-amber-800 {
-    color: #fcd34d;
+    color: #fde68a;
   }
 }
 
@@ -1182,13 +1195,13 @@ nav,
   --text-faint: 160 146 126;
   --accent-primary: 236 172 92;
   --accent-primary-hover: 244 192 124;
-  --glass-bg: 44 35 28;
-  --glass-bg-hover: 56 45 36;
+  --glass-bg: 78 57 41;
+  --glass-bg-hover: 94 69 50;
   --glass-border: rgba(240 220 195 / 0.14);
   --glass-border-rgb: 240 220 195;
   --glass-border-alpha: 0.14;
-  background: linear-gradient(180deg, #241b15 0%, #17110d 100%);
-  border-top: 3px solid rgb(var(--accent-solid));
+  background: #3b2a1e;
+  border-top: 1px solid rgb(0 0 0 / 0.2);
   color: rgb(var(--text-muted));
   position: relative;
   overflow: hidden;
@@ -1198,7 +1211,7 @@ nav,
 
 /* Bản tối: nền trang đã tối nên chân trang chìm sâu thêm một bậc để vẫn tách ra. */
 :root:not([data-theme='light']) .footer-section {
-  background: linear-gradient(180deg, #100c0a 0%, #0a0806 100%);
+  background: #2a1e16;
 }
 
 /* ==============================================================================
@@ -2760,34 +2773,63 @@ body.modal-open {
 
 /* Thẻ mục Luyện tập (trang chủ: Máy gõ nhịp, Game cảm âm): gỗ tối + ánh đồng góc trái,
    viền đồng mảnh. Giữ nguyên ở cả 2 giao diện sáng/tối — là một "vật" có chất liệu riêng. */
+/* Hai thẻ là hai KHỐI MÀU ĐẶC (không theo nền thẻ trắng): máy gõ nhịp = hổ phách-đồng của
+   thương hiệu, game cảm âm = xanh ngọc của nút "dạy" trong game. Chữ trắng đạt ≥ 4,5:1 trên
+   điểm sáng nhất của mỗi nền. Giống nhau ở giao diện sáng và tối. */
 .practice-card {
+  --pc-a: #a85a12;
+  --pc-b: #7c3f0c;
+  --pc-glow: 255 214 150;
+  color: #fff;
   background:
-    radial-gradient(120% 140% at 0% 0%, rgb(var(--accent-primary) / 0.1), transparent 55%),
-    rgb(var(--glass-bg));
-  border: 1px solid rgb(var(--glass-border-rgb) / var(--glass-border-alpha));
+    radial-gradient(110% 150% at 0% 0%, rgb(var(--pc-glow) / 0.32), transparent 55%),
+    linear-gradient(135deg, var(--pc-a) 0%, var(--pc-b) 100%);
+  border: 1px solid rgb(255 255 255 / 0.16);
   border-radius: var(--r-panel);
-  box-shadow: var(--elev-card);
+  box-shadow:
+    inset 0 1px 0 rgb(255 255 255 / 0.18),
+    var(--elev-card);
   transition:
     transform 0.25s ease,
     box-shadow 0.25s ease,
-    border-color 0.25s ease;
+    filter 0.25s ease;
+}
+
+.practice-card--ear {
+  --pc-a: #1c7a67;
+  --pc-b: #0f4a40;
+  --pc-glow: 150 235 212;
 }
 
 .practice-card:hover {
   transform: translateY(-3px);
-  border-color: rgb(var(--accent-primary) / 0.45);
-  box-shadow: var(--elev-raised);
+  filter: brightness(1.06);
+  box-shadow:
+    inset 0 1px 0 rgb(255 255 255 / 0.22),
+    var(--elev-raised);
+}
+
+.practice-sub {
+  color: rgb(255 255 255 / 0.88);
 }
 
 .practice-disc {
-  background: rgb(var(--accent-primary) / 0.1);
-  box-shadow: inset 0 0 0 1px rgb(var(--accent-primary) / 0.28);
+  color: #fff;
+  background: rgb(255 255 255 / 0.16);
+  box-shadow: inset 0 0 0 1px rgb(255 255 255 / 0.28);
 }
 
-/* Nút mũi tên ở mép phải thẻ */
+.practice-dot {
+  width: 0.625rem;
+  height: 0.625rem;
+  border-radius: 9999px;
+  box-shadow: 0 0 0 1px rgb(255 255 255 / 0.35);
+}
+
+/* Nút mũi tên trắng ở mép phải, chữ lấy màu đậm của thẻ */
 .practice-go {
-  background: rgb(var(--accent-solid));
-  color: #fff;
+  background: #fff;
+  color: var(--pc-b);
   box-shadow: var(--elev-button);
   transition: transform 0.25s ease;
 }

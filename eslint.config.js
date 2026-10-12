@@ -35,6 +35,17 @@ export default [
       },
     },
   },
+  {
+    // Script chạy bằng Node kiểu CommonJS (vd scripts/ph-icon.cjs lấy mã SVG biểu tượng)
+    files: ['scripts/**/*.cjs'],
+    languageOptions: {
+      ecmaVersion: 2022,
+      sourceType: 'commonjs',
+      globals: {
+        ...globals.node,
+      },
+    },
+  },
   prettierConfig,
   {
     // Bỏ qua thư mục build, thư viện ngoài và mọi thư mục ẩn (cấu hình/công cụ
