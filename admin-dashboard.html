@@ -131,13 +131,13 @@
                   <img id="admin-header-avatar" src="" alt="" class="hidden w-7 h-7 rounded-full object-cover border border-glass-border" />
                   <span id="admin-header-avatar-fallback" class="w-7 h-7 rounded-full bg-warm-gradient text-white flex items-center justify-center shadow-xs"><svg class="w-3.5 h-3.5" aria-hidden="true" data-ph="crown" viewBox="0 0 256 256" fill="currentColor"><path d="M248,80a28,28,0,1,0-51.12,15.77l-26.79,33L146,73.4a28,28,0,1,0-36.06,0L85.91,128.74l-26.79-33a28,28,0,1,0-26.6,12L47,194.63A16,16,0,0,0,62.78,208H193.22A16,16,0,0,0,209,194.63l14.47-86.85A28,28,0,0,0,248,80ZM128,40a12,12,0,1,1-12,12A12,12,0,0,1,128,40ZM24,80A12,12,0,1,1,36,92,12,12,0,0,1,24,80ZM220,92a12,12,0,1,1,12-12A12,12,0,0,1,220,92Z"/></svg></span>
                 </span>
-                <span data-admin-email class="hidden xl:inline text-[11px] sm:text-xs font-mono font-semibold text-text-muted max-w-[180px] truncate">Đang tải phiên...</span>
+                <span data-admin-email class="hidden xl:inline text-[11px] sm:text-xs font-semibold text-text-muted max-w-[180px] truncate">Đang tải phiên...</span>
                 <svg id="admin-header-dropdown-arrow" class="w-3.5 h-3.5 text-text-muted transition-transform flex-shrink-0" aria-hidden="true" data-ph="caret-down" viewBox="0 0 256 256" fill="currentColor"><path d="M216.49,104.49l-80,80a12,12,0,0,1-17,0l-80-80a12,12,0,0,1,17-17L128,159l71.51-71.52a12,12,0,0,1,17,17Z"/></svg>
               </button>
               <div id="admin-header-dropdown-menu" class="absolute right-0 mt-2 w-56 rounded-2xl bg-glass-bg backdrop-blur-2xl border border-glass-border shadow-2xl opacity-0 invisible pointer-events-none transition-all duration-200 z-50 p-2">
                 <div class="px-3 py-2 border-b border-glass-border mb-1">
                   <p id="admin-dropdown-name" class="text-xs font-bold text-text-primary truncate">Quản trị viên</p>
-                  <p data-admin-email class="text-[11px] sm:text-xs text-text-muted font-mono truncate">Đang tải phiên...</p>
+                  <p data-admin-email class="text-[11px] sm:text-xs text-text-muted truncate">Đang tải phiên...</p>
                 </div>
                 <a href="#/cai-dat" data-route-link="cai-dat" class="px-3 py-2 text-xs font-semibold text-text-primary hover:bg-glass-bg-hover hover:text-accent-primary rounded-xl transition-colors flex items-center gap-2">
                   <span><svg class="w-3.5 h-3.5" aria-hidden="true" data-ph="user-circle" viewBox="0 0 256 256" fill="currentColor"><path d="M128,20A108,108,0,1,0,236,128,108.12,108.12,0,0,0,128,20ZM79.57,196.57a60,60,0,0,1,96.86,0,83.72,83.72,0,0,1-96.86,0ZM100,120a28,28,0,1,1,28,28A28,28,0,0,1,100,120ZM194,179.94a83.48,83.48,0,0,0-29-23.42,52,52,0,1,0-74,0,83.48,83.48,0,0,0-29,23.42,84,84,0,1,1,131.9,0Z"/></svg></span>
@@ -233,34 +233,34 @@
             </div>
 
             <!-- Quick Stats Cards -->
-            <div class="grid grid-cols-2 sm:grid-cols-4 gap-3 sm:gap-4">
-              <div class="glass-card border border-glass-border shadow-sm rounded-2xl p-4 flex items-center justify-between gap-2">
+            <div class="grid grid-cols-4 gap-2 sm:gap-4">
+              <div class="glass-card border border-glass-border shadow-sm rounded-2xl p-2.5 sm:p-4 flex items-center justify-between gap-2">
                 <div class="min-w-0">
-                  <span class="text-[11px] sm:text-xs font-bold text-text-muted uppercase tracking-wider block">Tổng bài hát</span>
-                  <span id="stat-total-songs" class="text-2xl font-extrabold text-accent-primary mt-0.5 block font-mono tabular-nums">0</span>
+                  <span class="text-[11px] sm:text-xs font-bold text-text-muted block truncate">Tất cả</span>
+                  <span id="stat-total-songs" class="text-xl sm:text-2xl font-extrabold text-accent-primary mt-0.5 block tabular-nums">0</span>
                 </div>
-                <div class="w-10 h-10 rounded-xl bg-accent-primary/15 text-accent-primary flex items-center justify-center text-xl flex-shrink-0">🎵</div>
+                <div class="w-10 h-10 rounded-xl bg-accent-primary/15 text-accent-primary hidden sm:flex items-center justify-center text-xl flex-shrink-0"><svg class="w-5 h-5 flex-shrink-0" aria-hidden="true" data-ph="music-notes" viewBox="0 0 256 256" fill="currentColor"><path d="M208,164a28,28,0,1,1-28-28A28,28,0,0,1,208,164ZM52,168a28,28,0,1,0,28,28A28,28,0,0,0,52,168Z" opacity="0.2"/><path d="M212.92,17.69a8,8,0,0,0-6.86-1.45l-128,32A8,8,0,0,0,72,56V166.08A36,36,0,1,0,88,196V110.25l112-28v51.83A36,36,0,1,0,216,164V24A8,8,0,0,0,212.92,17.69ZM52,216a20,20,0,1,1,20-20A20,20,0,0,1,52,216ZM88,93.75V62.25l112-28v31.5ZM180,184a20,20,0,1,1,20-20A20,20,0,0,1,180,184Z"/></svg></div>
               </div>
-              <div class="glass-card border border-glass-border shadow-sm rounded-2xl p-4 flex items-center justify-between gap-2">
+              <div class="glass-card border border-glass-border shadow-sm rounded-2xl p-2.5 sm:p-4 flex items-center justify-between gap-2">
                 <div class="min-w-0">
-                  <span class="text-[11px] sm:text-xs font-bold text-text-muted uppercase tracking-wider block">Tab miễn phí</span>
-                  <span id="stat-free-songs" class="text-2xl font-extrabold text-emerald-700 dark:text-emerald-400 mt-0.5 block font-mono tabular-nums">0</span>
+                  <span class="text-[11px] sm:text-xs font-bold text-text-muted block truncate">Miễn phí</span>
+                  <span id="stat-free-songs" class="text-xl sm:text-2xl font-extrabold text-emerald-700 dark:text-emerald-400 mt-0.5 block tabular-nums">0</span>
                 </div>
-                <div class="w-10 h-10 rounded-xl bg-emerald-500/15 text-emerald-700 dark:text-emerald-400 flex items-center justify-center text-xl flex-shrink-0">🎁</div>
+                <div class="w-10 h-10 rounded-xl bg-emerald-500/15 text-emerald-700 dark:text-emerald-400 hidden sm:flex items-center justify-center text-xl flex-shrink-0"><svg class="w-5 h-5 flex-shrink-0" aria-hidden="true" data-ph="gift" viewBox="0 0 256 256" fill="currentColor"><path d="M208,128v72a8,8,0,0,1-8,8H56a8,8,0,0,1-8-8V128Z" opacity="0.2"/><path d="M216,72H180.92c.39-.33.79-.65,1.17-1A29.53,29.53,0,0,0,192,49.57,32.62,32.62,0,0,0,158.44,16,29.53,29.53,0,0,0,137,25.91a54.94,54.94,0,0,0-9,14.48,54.94,54.94,0,0,0-9-14.48A29.53,29.53,0,0,0,97.56,16,32.62,32.62,0,0,0,64,49.57,29.53,29.53,0,0,0,73.91,71c.38.33.78.65,1.17,1H40A16,16,0,0,0,24,88v32a16,16,0,0,0,16,16v64a16,16,0,0,0,16,16H200a16,16,0,0,0,16-16V136a16,16,0,0,0,16-16V88A16,16,0,0,0,216,72ZM149,36.51a13.69,13.69,0,0,1,10-4.5h.49A16.62,16.62,0,0,1,176,49.08a13.69,13.69,0,0,1-4.5,10c-9.49,8.4-25.24,11.36-35,12.4C137.7,60.89,141,45.5,149,36.51Zm-64.09.36A16.63,16.63,0,0,1,96.59,32h.49a13.69,13.69,0,0,1,10,4.5c8.39,9.48,11.35,25.2,12.39,34.92-9.72-1-25.44-4-34.92-12.39a13.69,13.69,0,0,1-4.5-10A16.6,16.6,0,0,1,84.87,36.87ZM40,88h80v32H40Zm16,48h64v64H56Zm144,64H136V136h64Zm16-80H136V88h80v32Z"/></svg></div>
               </div>
-              <div class="glass-card border border-glass-border shadow-sm rounded-2xl p-4 flex items-center justify-between gap-2">
+              <div class="glass-card border border-glass-border shadow-sm rounded-2xl p-2.5 sm:p-4 flex items-center justify-between gap-2">
                 <div class="min-w-0">
-                  <span class="text-[11px] sm:text-xs font-bold text-text-muted uppercase tracking-wider block">Tab có phí</span>
-                  <span id="stat-paid-songs" class="text-2xl font-extrabold text-rose-700 dark:text-rose-300 mt-0.5 block font-mono tabular-nums">0</span>
+                  <span class="text-[11px] sm:text-xs font-bold text-text-muted block truncate">Có phí</span>
+                  <span id="stat-paid-songs" class="text-xl sm:text-2xl font-extrabold text-rose-700 dark:text-rose-300 mt-0.5 block tabular-nums">0</span>
                 </div>
-                <div class="w-10 h-10 rounded-xl bg-rose-500/15 text-rose-700 dark:text-rose-300 flex items-center justify-center text-xl flex-shrink-0">💎</div>
+                <div class="w-10 h-10 rounded-xl bg-rose-500/15 text-rose-700 dark:text-rose-300 hidden sm:flex items-center justify-center text-xl flex-shrink-0"><svg class="w-5 h-5 flex-shrink-0" aria-hidden="true" data-ph="sketch-logo" viewBox="0 0 256 256" fill="currentColor"><path d="M240,104,128,224,80,104l48-64h56Z" opacity="0.2"/><path d="M246,98.73l-56-64A8,8,0,0,0,184,32H72a8,8,0,0,0-6,2.73l-56,64a8,8,0,0,0,.17,10.73l112,120a8,8,0,0,0,11.7,0l112-120A8,8,0,0,0,246,98.73ZM222.37,96H180L144,48h36.37ZM74.58,112l30.13,75.33L34.41,112Zm89.6,0L128,202.46,91.82,112ZM96,96l32-42.67L160,96Zm85.42,16h40.17l-70.3,75.33ZM75.63,48H112L76,96H33.63Z"/></svg></div>
               </div>
-              <div class="glass-card border border-glass-border shadow-sm rounded-2xl p-4 flex items-center justify-between gap-2">
+              <div class="glass-card border border-glass-border shadow-sm rounded-2xl p-2.5 sm:p-4 flex items-center justify-between gap-2">
                 <div class="min-w-0">
-                  <span class="text-[11px] sm:text-xs font-bold text-text-muted uppercase tracking-wider block">Nổi Bật</span>
-                  <span id="stat-featured-songs" class="text-2xl font-extrabold text-amber-600 dark:text-amber-400 mt-0.5 block font-mono tabular-nums">0</span>
+                  <span class="text-[11px] sm:text-xs font-bold text-text-muted block truncate">Nổi bật</span>
+                  <span id="stat-featured-songs" class="text-xl sm:text-2xl font-extrabold text-amber-600 dark:text-amber-400 mt-0.5 block tabular-nums">0</span>
                 </div>
-                <div class="w-10 h-10 rounded-xl bg-amber-500/15 text-amber-600 dark:text-amber-400 flex items-center justify-center text-xl flex-shrink-0">⭐</div>
+                <div class="w-10 h-10 rounded-xl bg-amber-500/15 text-amber-600 dark:text-amber-400 hidden sm:flex items-center justify-center text-xl flex-shrink-0"><svg class="w-5 h-5 flex-shrink-0" aria-hidden="true" data-ph="star" viewBox="0 0 256 256" fill="currentColor"><path d="M229.06,108.79l-48.7,42,14.88,62.79a8.4,8.4,0,0,1-12.52,9.17L128,189.09,73.28,222.74a8.4,8.4,0,0,1-12.52-9.17l14.88-62.79-48.7-42A8.46,8.46,0,0,1,31.73,94L95.64,88.8l24.62-59.6a8.36,8.36,0,0,1,15.48,0l24.62,59.6L224.27,94A8.46,8.46,0,0,1,229.06,108.79Z" opacity="0.2"/><path d="M239.18,97.26A16.38,16.38,0,0,0,224.92,86l-59-4.76L143.14,26.15a16.36,16.36,0,0,0-30.27,0L90.11,81.23,31.08,86a16.46,16.46,0,0,0-9.37,28.86l45,38.83L53,211.75a16.38,16.38,0,0,0,24.5,17.82L128,198.49l50.53,31.08A16.4,16.4,0,0,0,203,211.75l-13.76-58.07,45-38.83A16.43,16.43,0,0,0,239.18,97.26Zm-15.34,5.47-48.7,42a8,8,0,0,0-2.56,7.91l14.88,62.8a.37.37,0,0,1-.17.48c-.18.14-.23.11-.38,0l-54.72-33.65a8,8,0,0,0-8.38,0L69.09,215.94c-.15.09-.19.12-.38,0a.37.37,0,0,1-.17-.48l14.88-62.8a8,8,0,0,0-2.56-7.91l-48.7-42c-.12-.1-.23-.19-.13-.5s.18-.27.33-.29l63.92-5.16A8,8,0,0,0,103,91.86l24.62-59.61c.08-.17.11-.25.35-.25s.27.08.35.25L153,91.86a8,8,0,0,0,6.75,4.92l63.92,5.16c.15,0,.24,0,.33.29S224,102.63,223.84,102.73Z"/></svg></div>
               </div>
             </div>
 
@@ -288,17 +288,17 @@
 
             <!-- Instruction Note for Moving/Reordering -->
             <div class="px-4 py-2.5 rounded-2xl bg-accent-primary/10 border border-accent-primary/20 text-xs text-text-primary flex items-start gap-2">
-              <span class="flex-shrink-0">💡</span>
-              <span><strong>Mẹo sắp xếp vị trí:</strong> Nhập số vị trí mong muốn (VD: 1, 2, 3...) rồi bấm <strong>Lưu</strong> hoặc dùng nút <strong>▲ / ▼</strong> để di chuyển bài hát. Vị trí các bài khác sẽ tự động trượt theo!</span>
+              <svg class="w-4 h-4 mt-0.5 text-accent-primary flex-shrink-0" aria-hidden="true" data-ph="lightbulb" viewBox="0 0 256 256" fill="currentColor"><path d="M180,232a12,12,0,0,1-12,12H88a12,12,0,0,1,0-24h80A12,12,0,0,1,180,232Zm40-128a91.51,91.51,0,0,1-35.17,72.35A12.26,12.26,0,0,0,180,186v2a20,20,0,0,1-20,20H96a20,20,0,0,1-20-20v-2a12,12,0,0,0-4.7-9.51A91.57,91.57,0,0,1,36,104.52C35.73,54.69,76,13.2,125.79,12A92,92,0,0,1,220,104Zm-24,0a68,68,0,0,0-69.65-68C89.56,36.88,59.8,67.55,60,104.38a67.71,67.71,0,0,0,26.1,53.19A35.87,35.87,0,0,1,100,184h56.1A36.13,36.13,0,0,1,170,157.49,67.68,67.68,0,0,0,196,104Zm-20.07-5.32a48.5,48.5,0,0,0-31.91-40,12,12,0,0,0-8,22.62,24.31,24.31,0,0,1,16.09,20,12,12,0,0,0,23.86-2.64Z"/></svg>
+              <span>Đổi vị trí: nhập số rồi bấm <strong>Lưu</strong>, hoặc dùng hai mũi tên. Các bài khác tự dời theo.</span>
             </div>
 
             <!-- Songs Data Table / Grid -->
             <div class="glass-card rounded-3xl border border-glass-border overflow-hidden shadow-sm">
               <div class="overflow-x-auto">
                 <table class="w-full text-left text-xs text-text-primary admin-responsive-table">
-                  <thead class="bg-black/5 dark:bg-white/5 text-[11px] sm:text-xs font-mono uppercase tracking-wider text-text-muted border-b border-glass-border">
+                  <thead class="bg-black/5 dark:bg-white/5 text-[11px] sm:text-xs font-bold uppercase tracking-wide text-text-muted border-b border-glass-border">
                     <tr>
-                      <th class="py-3.5 px-3 text-center w-36">Vị trí &amp; thứ tự</th>
+                      <th class="py-3.5 px-3 text-center w-36">Vị trí</th>
                       <th class="py-3.5 px-4">Bài hát</th>
                       <th class="py-3.5 px-3">Thể Loại</th>
                       <th class="py-3.5 px-3">Độ Khó</th>
@@ -328,15 +328,15 @@
             </div>
 
             <div class="px-4 py-2.5 rounded-2xl bg-accent-primary/10 border border-accent-primary/20 text-xs text-text-primary flex items-start gap-2">
-              <span class="flex-shrink-0">💡</span>
-              <span><strong>Mẹo sắp xếp vị trí:</strong> Nhập số thứ tự hoặc bấm nút <strong>▲ / ▼</strong> để di chuyển đồ nghề trên trang chủ và trang Công cụ.</span>
+              <svg class="w-4 h-4 mt-0.5 text-accent-primary flex-shrink-0" aria-hidden="true" data-ph="lightbulb" viewBox="0 0 256 256" fill="currentColor"><path d="M180,232a12,12,0,0,1-12,12H88a12,12,0,0,1,0-24h80A12,12,0,0,1,180,232Zm40-128a91.51,91.51,0,0,1-35.17,72.35A12.26,12.26,0,0,0,180,186v2a20,20,0,0,1-20,20H96a20,20,0,0,1-20-20v-2a12,12,0,0,0-4.7-9.51A91.57,91.57,0,0,1,36,104.52C35.73,54.69,76,13.2,125.79,12A92,92,0,0,1,220,104Zm-24,0a68,68,0,0,0-69.65-68C89.56,36.88,59.8,67.55,60,104.38a67.71,67.71,0,0,0,26.1,53.19A35.87,35.87,0,0,1,100,184h56.1A36.13,36.13,0,0,1,170,157.49,67.68,67.68,0,0,0,196,104Zm-20.07-5.32a48.5,48.5,0,0,0-31.91-40,12,12,0,0,0-8,22.62,24.31,24.31,0,0,1,16.09,20,12,12,0,0,0,23.86-2.64Z"/></svg>
+              <span>Đổi vị trí: nhập số rồi bấm <strong>Lưu</strong>, hoặc dùng hai mũi tên.</span>
             </div>
 
             <!-- Gears Data Table -->
             <div class="glass-card rounded-3xl border border-glass-border overflow-hidden shadow-sm">
               <div class="overflow-x-auto">
                 <table class="w-full text-left text-xs text-text-primary admin-responsive-table">
-                  <thead class="bg-black/5 dark:bg-white/5 text-[11px] sm:text-xs font-mono uppercase tracking-wider text-text-muted border-b border-glass-border">
+                  <thead class="bg-black/5 dark:bg-white/5 text-[11px] sm:text-xs font-bold uppercase tracking-wide text-text-muted border-b border-glass-border">
                     <tr>
                       <th class="py-3.5 px-3 text-center w-36">Vị Trí</th>
                       <th class="py-3.5 px-4">Ảnh &amp; tên</th>
@@ -392,7 +392,7 @@
                       <th class="p-3">Mã khách</th>
                       <th class="p-3 text-center">Vai trò</th>
                       <th class="p-3 text-center">Hoạt động</th>
-                      <th class="p-3">Ngày đăng ký</th>
+                      <th class="p-3 whitespace-nowrap">Đăng ký</th>
                       <th class="p-3 text-right">Thao tác</th>
                     </tr>
                   </thead>
@@ -422,12 +422,19 @@
               <p>Mở Supabase → SQL Editor, dán và chạy file <code class="font-mono bg-black/5 dark:bg-white/10 px-1.5 py-0.5 rounded">supabase/migrations/20260920_bank_transactions.sql</code>. Xong là mọi khoản tiền về được ghi lại và trang này hoạt động.</p>
             </div>
 
-            <div class="rounded-2xl border border-sky-500/25 bg-sky-500/[0.06] p-4 text-xs leading-relaxed text-text-primary">
+            <details class="group rounded-2xl border border-sky-500/25 bg-sky-500/[0.06] text-xs text-text-primary">
+              <summary class="list-none [&::-webkit-details-marker]:hidden cursor-pointer select-none flex items-center gap-2 min-h-[40px] px-4 font-bold">
+                <svg class="w-4 h-4 text-sky-700 dark:text-sky-300 flex-shrink-0" aria-hidden="true" data-ph="info" viewBox="0 0 256 256" fill="currentColor"><path d="M108,84a16,16,0,1,1,16,16A16,16,0,0,1,108,84Zm128,44A108,108,0,1,1,128,20,108.12,108.12,0,0,1,236,128Zm-24,0a84,84,0,1,0-84,84A84.09,84.09,0,0,0,212,128Zm-72,36.68V132a20,20,0,0,0-20-20,12,12,0,0,0-4,23.32V168a20,20,0,0,0,20,20,12,12,0,0,0,4-23.32Z"/></svg>
+                <span class="flex-1">Trang này hoạt động thế nào?</span>
+                <svg class="w-3.5 h-3.5 text-text-muted transition-transform duration-200 group-open:rotate-180 flex-shrink-0" aria-hidden="true" data-ph="caret-down" viewBox="0 0 256 256" fill="currentColor"><path d="M216.49,104.49l-80,80a12,12,0,0,1-17,0l-80-80a12,12,0,0,1,17-17L128,159l71.51-71.52a12,12,0,0,1,17,17Z"/></svg>
+              </summary>
+              <div class="px-4 pb-4 leading-relaxed">
               Chỉ những khoản tiền <strong>mang mã đơn DH…</strong> (khách quét QR trên web) mới được ghi lại. Tiền chuyển vào
               không có mã đơn (bạn bè, tiền cá nhân…) và tiền chi ra bị bỏ qua hoàn toàn: không lưu, không báo email.
               Khoản nào có mã nhưng <strong>không tự khớp được đơn</strong> (trả muộn, chuyển thiếu, trả thừa…) hiện ở đây và bạn nhận
               được email báo. Gán nó cho đúng khách là xong: khách nhận tab, Drive được chia sẻ và doanh thu được ghi.
-            </div>
+              </div>
+            </details>
 
             <section class="glass-card border border-glass-border rounded-2xl overflow-hidden">
               <div class="p-4 sm:p-5 border-b border-glass-border flex items-center justify-between gap-3">
@@ -462,10 +469,17 @@
               <p>Mở Supabase → SQL Editor, dán và chạy file <code class="font-mono bg-black/5 dark:bg-white/10 px-1.5 py-0.5 rounded">supabase/migrations/20260921_hssv_verifications.sql</code>.</p>
             </div>
 
-            <div class="rounded-2xl border border-sky-500/25 bg-sky-500/[0.06] p-4 text-xs leading-relaxed text-text-primary space-y-1.5">
+            <details class="group rounded-2xl border border-sky-500/25 bg-sky-500/[0.06] text-xs text-text-primary">
+              <summary class="list-none [&::-webkit-details-marker]:hidden cursor-pointer select-none flex items-center gap-2 min-h-[40px] px-4 font-bold">
+                <svg class="w-4 h-4 text-sky-700 dark:text-sky-300 flex-shrink-0" aria-hidden="true" data-ph="info" viewBox="0 0 256 256" fill="currentColor"><path d="M108,84a16,16,0,1,1,16,16A16,16,0,0,1,108,84Zm128,44A108,108,0,1,1,128,20,108.12,108.12,0,0,1,236,128Zm-24,0a84,84,0,1,0-84,84A84.09,84.09,0,0,0,212,128Zm-72,36.68V132a20,20,0,0,0-20-20,12,12,0,0,0-4,23.32V168a20,20,0,0,0,20,20,12,12,0,0,0,4-23.32Z"/></svg>
+                <span class="flex-1">Trang này hoạt động thế nào?</span>
+                <svg class="w-3.5 h-3.5 text-text-muted transition-transform duration-200 group-open:rotate-180 flex-shrink-0" aria-hidden="true" data-ph="caret-down" viewBox="0 0 256 256" fill="currentColor"><path d="M216.49,104.49l-80,80a12,12,0,0,1-17,0l-80-80a12,12,0,0,1,17-17L128,159l71.51-71.52a12,12,0,0,1,17,17Z"/></svg>
+              </summary>
+              <div class="px-4 pb-4 leading-relaxed space-y-1.5">
               <p><strong>Sinh viên</strong> phải xác nhận email trường (.edu.vn) bằng mã rồi mới gửi ảnh thẻ. AI đọc thẻ, so với email và <strong>tự duyệt khi thẻ rõ, còn hạn, email khớp mã hoặc tên trên thẻ, và cả thẻ lẫn email chưa dùng ở tài khoản khác</strong>. Trường hợp chưa chắc nằm ở đây chờ bạn.</p>
               <p>Bấm <strong>Đã xem</strong> thì ảnh tự xoá sau 3 ngày (không xem thì tối đa 30 ngày kể từ lúc khách tải lên); kết quả đọc thẻ vẫn được giữ để chặn một thẻ dùng cho nhiều tài khoản.</p>
-            </div>
+              </div>
+            </details>
 
             <!-- Học sinh / sinh viên không có email trường: khách nhắn Zalo kèm mã đơn, admin áp giá tay -->
             <form id="hssv-manual-form" class="glass-card border border-glass-border rounded-2xl p-4 sm:p-5 space-y-3">
@@ -510,11 +524,18 @@
           <!-- ============================================================ -->
           <div id="section-orders" class="space-y-5 hidden">
 
-            <div class="rounded-2xl border border-sky-500/25 bg-sky-500/[0.06] p-4 text-xs leading-relaxed text-text-primary">
+            <details class="group rounded-2xl border border-sky-500/25 bg-sky-500/[0.06] text-xs text-text-primary">
+              <summary class="list-none [&::-webkit-details-marker]:hidden cursor-pointer select-none flex items-center gap-2 min-h-[40px] px-4 font-bold">
+                <svg class="w-4 h-4 text-sky-700 dark:text-sky-300 flex-shrink-0" aria-hidden="true" data-ph="info" viewBox="0 0 256 256" fill="currentColor"><path d="M108,84a16,16,0,1,1,16,16A16,16,0,0,1,108,84Zm128,44A108,108,0,1,1,128,20,108.12,108.12,0,0,1,236,128Zm-24,0a84,84,0,1,0-84,84A84.09,84.09,0,0,0,212,128Zm-72,36.68V132a20,20,0,0,0-20-20,12,12,0,0,0-4,23.32V168a20,20,0,0,0,20,20,12,12,0,0,0,4-23.32Z"/></svg>
+                <span class="flex-1">Trang này hoạt động thế nào?</span>
+                <svg class="w-3.5 h-3.5 text-text-muted transition-transform duration-200 group-open:rotate-180 flex-shrink-0" aria-hidden="true" data-ph="caret-down" viewBox="0 0 256 256" fill="currentColor"><path d="M216.49,104.49l-80,80a12,12,0,0,1-17,0l-80-80a12,12,0,0,1,17-17L128,159l71.51-71.52a12,12,0,0,1,17,17Z"/></svg>
+              </summary>
+              <div class="px-4 pb-4 leading-relaxed">
               Đây là các đơn khách đã tạo nhưng <strong>chưa có tiền nào về</strong> — phần lớn là khách mở form thanh toán rồi bỏ giữa chừng, không cần làm gì.
               Đơn quá 3 ngày tự hết hạn. Khi khách báo <em>“đã chuyển khoản mà chưa nhận được tab”</em>, hãy vào mục <a href="#/tien-ve" data-route-link="tien-ve" class="font-bold text-accent-primary hover:underline">Tiền về</a>:
               khoản tiền của họ nằm ở đó và gán được chỉ bằng một cú bấm. Trang này chỉ để tra cứu đơn của một khách.
-            </div>
+              </div>
+            </details>
 
             <div id="orders-summary" class="grid grid-cols-3 gap-2.5 sm:gap-4"></div>
 
@@ -746,7 +767,7 @@
                 </div>
 
                 <div id="change-pwd-error" class="hidden p-3 rounded-xl bg-rose-500/10 border border-rose-500/30 text-rose-700 dark:text-rose-300 text-xs font-semibold flex items-center gap-2">
-                  <span>⚠️</span>
+                  <svg class="w-4 h-4 flex-shrink-0" aria-hidden="true" data-ph="warning" viewBox="0 0 256 256" fill="currentColor"><path d="M240.26,186.1,152.81,34.23h0a28.74,28.74,0,0,0-49.62,0L15.74,186.1a27.45,27.45,0,0,0,0,27.71A28.31,28.31,0,0,0,40.55,228h174.9a28.31,28.31,0,0,0,24.79-14.19A27.45,27.45,0,0,0,240.26,186.1Zm-20.8,15.7a4.46,4.46,0,0,1-4,2.2H40.55a4.46,4.46,0,0,1-4-2.2,3.56,3.56,0,0,1,0-3.73L124,46.2a4.77,4.77,0,0,1,8,0l87.44,151.87A3.56,3.56,0,0,1,219.46,201.8ZM116,136V104a12,12,0,0,1,24,0v32a12,12,0,0,1-24,0Zm28,40a16,16,0,1,1-16-16A16,16,0,0,1,144,176Z"/></svg>
                   <span id="change-pwd-error-text"></span>
                 </div>
 
@@ -812,7 +833,7 @@
         </main>
 
         <footer class="py-5 px-4 text-center text-xs text-text-muted border-t border-glass-border">
-          © 2026 Guitar By Quang • Bảng quản trị CMS Supabase
+          © 2026 Guitar By Quang · Trang quản trị
         </footer>
       </div>
     </div>
@@ -917,7 +938,7 @@
               <p class="text-[11px] sm:text-xs text-text-muted">Hỗ trợ dán link YouTube (được nhúng video tự động), TikTok hoặc Google Drive (có thể để trống).</p>
               <div class="flex items-center gap-2 pt-1">
                 <label for="song-free-target-file" class="flex-shrink-0 inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-emerald-500/10 text-emerald-700 dark:text-emerald-400 border border-emerald-500/30 text-[11px] sm:text-xs font-bold cursor-pointer hover:bg-emerald-500/20 transition-colors">
-                  <span>📁</span><span>Chọn file video từ máy...</span>
+                  <svg class="w-4 h-4 flex-shrink-0" aria-hidden="true" data-ph="folder-open" viewBox="0 0 256 256" fill="currentColor"><path d="M248.23,112.31A20,20,0,0,0,232,104H220V88a20,20,0,0,0-20-20H132L105.34,48a20.12,20.12,0,0,0-12-4H40A20,20,0,0,0,20,64V208a12,12,0,0,0,12,12H211.1a12,12,0,0,0,11.33-8l28.49-81.47.06-.17A20,20,0,0,0,248.23,112.31ZM92,68l28.8,21.6A12,12,0,0,0,128,92h68v12H69.77a20,20,0,0,0-18.94,13.58L44,137.15V68ZM202.59,196H48.89l23.72-68H226.37Z"/></svg><span>Chọn file video từ máy...</span>
                 </label>
                 <input type="file" id="song-free-target-file" accept="video/*" class="hidden" />
                 <span id="song-free-target-file-name" class="text-[11px] sm:text-xs text-text-muted truncate flex-1"></span>
@@ -930,7 +951,7 @@
               <p class="text-[11px] sm:text-xs text-text-muted">Nhập đường dẫn file MP3/Audio trên máy (VD: <code class="bg-black/5 dark:bg-white/10 px-1 py-0.5 rounded font-mono">/assets/tenbai.mp3</code>) hoặc link audio online. Tự động xử lý bỏ dấu ngoặc kép.</p>
               <div class="flex items-center gap-2 pt-1">
                 <label for="song-free-audio-file" class="flex-shrink-0 inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-emerald-500/10 text-emerald-700 dark:text-emerald-400 border border-emerald-500/30 text-[11px] sm:text-xs font-bold cursor-pointer hover:bg-emerald-500/20 transition-colors">
-                  <span>📁</span><span>Chọn file audio từ máy...</span>
+                  <svg class="w-4 h-4 flex-shrink-0" aria-hidden="true" data-ph="folder-open" viewBox="0 0 256 256" fill="currentColor"><path d="M248.23,112.31A20,20,0,0,0,232,104H220V88a20,20,0,0,0-20-20H132L105.34,48a20.12,20.12,0,0,0-12-4H40A20,20,0,0,0,20,64V208a12,12,0,0,0,12,12H211.1a12,12,0,0,0,11.33-8l28.49-81.47.06-.17A20,20,0,0,0,248.23,112.31ZM92,68l28.8,21.6A12,12,0,0,0,128,92h68v12H69.77a20,20,0,0,0-18.94,13.58L44,137.15V68ZM202.59,196H48.89l23.72-68H226.37Z"/></svg><span>Chọn file audio từ máy...</span>
                 </label>
                 <input type="file" id="song-free-audio-file" accept="audio/*" class="hidden" />
                 <span id="song-free-audio-file-name" class="text-[11px] sm:text-xs text-text-muted truncate flex-1"></span>
@@ -966,7 +987,7 @@
               <p class="text-[11px] sm:text-xs text-text-muted">Dán link YouTube hoặc video MP4 local <code class="bg-black/5 dark:bg-white/10 px-1 py-0.5 rounded font-mono">/assets/tenvideo.mp4</code> (có thể để trống, chấp nhận cả dấu ngoặc kép).</p>
               <div class="flex items-center gap-2 pt-1">
                 <label for="song-paid-demo-file" class="flex-shrink-0 inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-rose-500/10 text-rose-700 dark:text-rose-300 border border-rose-500/30 text-[11px] sm:text-xs font-bold cursor-pointer hover:bg-rose-500/20 transition-colors">
-                  <span>📁</span><span>Chọn file video từ máy...</span>
+                  <svg class="w-4 h-4 flex-shrink-0" aria-hidden="true" data-ph="folder-open" viewBox="0 0 256 256" fill="currentColor"><path d="M248.23,112.31A20,20,0,0,0,232,104H220V88a20,20,0,0,0-20-20H132L105.34,48a20.12,20.12,0,0,0-12-4H40A20,20,0,0,0,20,64V208a12,12,0,0,0,12,12H211.1a12,12,0,0,0,11.33-8l28.49-81.47.06-.17A20,20,0,0,0,248.23,112.31ZM92,68l28.8,21.6A12,12,0,0,0,128,92h68v12H69.77a20,20,0,0,0-18.94,13.58L44,137.15V68ZM202.59,196H48.89l23.72-68H226.37Z"/></svg><span>Chọn file video từ máy...</span>
                 </label>
                 <input type="file" id="song-paid-demo-file" accept="video/*" class="hidden" />
                 <span id="song-paid-demo-file-name" class="text-[11px] sm:text-xs text-text-muted truncate flex-1"></span>
@@ -979,7 +1000,7 @@
               <p class="text-[11px] sm:text-xs text-text-muted">Nhập đường dẫn file MP3/Audio trên máy (VD: <code class="bg-black/5 dark:bg-white/10 px-1 py-0.5 rounded font-mono">/assets/tenbai.mp3</code>) hoặc link audio online. Tự động xử lý bỏ dấu ngoặc kép.</p>
               <div class="flex items-center gap-2 pt-1">
                 <label for="song-paid-audio-file" class="flex-shrink-0 inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-rose-500/10 text-rose-700 dark:text-rose-300 border border-rose-500/30 text-[11px] sm:text-xs font-bold cursor-pointer hover:bg-rose-500/20 transition-colors">
-                  <span>📁</span><span>Chọn file audio từ máy...</span>
+                  <svg class="w-4 h-4 flex-shrink-0" aria-hidden="true" data-ph="folder-open" viewBox="0 0 256 256" fill="currentColor"><path d="M248.23,112.31A20,20,0,0,0,232,104H220V88a20,20,0,0,0-20-20H132L105.34,48a20.12,20.12,0,0,0-12-4H40A20,20,0,0,0,20,64V208a12,12,0,0,0,12,12H211.1a12,12,0,0,0,11.33-8l28.49-81.47.06-.17A20,20,0,0,0,248.23,112.31ZM92,68l28.8,21.6A12,12,0,0,0,128,92h68v12H69.77a20,20,0,0,0-18.94,13.58L44,137.15V68ZM202.59,196H48.89l23.72-68H226.37Z"/></svg><span>Chọn file audio từ máy...</span>
                 </label>
                 <input type="file" id="song-paid-audio-file" accept="audio/*" class="hidden" />
                 <span id="song-paid-audio-file-name" class="text-[11px] sm:text-xs text-text-muted truncate flex-1"></span>
@@ -1082,7 +1103,7 @@
               <p class="text-[11px] sm:text-xs text-text-muted">Nhập đường dẫn web như <code class="bg-black/5 dark:bg-white/10 px-1 py-0.5 rounded font-mono">/assets/capo2.jpg</code> hoặc link ảnh online.</p>
               <div class="flex items-center gap-2 pt-1">
                 <label for="gear-image-file" class="flex-shrink-0 inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-accent-primary/10 text-accent-primary border border-accent-primary/30 text-[11px] sm:text-xs font-bold cursor-pointer hover:bg-accent-primary/20 transition-colors">
-                  <span>📁</span><span>Chọn ảnh từ máy...</span>
+                  <svg class="w-4 h-4 flex-shrink-0" aria-hidden="true" data-ph="folder-open" viewBox="0 0 256 256" fill="currentColor"><path d="M248.23,112.31A20,20,0,0,0,232,104H220V88a20,20,0,0,0-20-20H132L105.34,48a20.12,20.12,0,0,0-12-4H40A20,20,0,0,0,20,64V208a12,12,0,0,0,12,12H211.1a12,12,0,0,0,11.33-8l28.49-81.47.06-.17A20,20,0,0,0,248.23,112.31ZM92,68l28.8,21.6A12,12,0,0,0,128,92h68v12H69.77a20,20,0,0,0-18.94,13.58L44,137.15V68ZM202.59,196H48.89l23.72-68H226.37Z"/></svg><span>Chọn ảnh từ máy...</span>
                 </label>
                 <input type="file" id="gear-image-file" accept="image/*" class="hidden" />
                 <span id="gear-image-file-name" class="text-[11px] sm:text-xs text-text-muted truncate flex-1"></span>
@@ -1108,7 +1129,7 @@
     <div id="confirm-modal" class="fixed inset-0 z-[70] flex items-center justify-center p-4 bg-black/75 backdrop-blur-sm opacity-0 pointer-events-none transition-opacity duration-300" role="dialog" aria-modal="true" aria-labelledby="confirm-title">
       <div class="modal-dialog relative w-full max-w-md glass-card rounded-3xl p-5 sm:p-6 shadow-2xl border border-glass-border scale-95 transition-transform duration-300 max-h-[90vh] overflow-y-auto">
         <div class="flex items-start gap-3.5">
-          <div id="confirm-icon" class="w-11 h-11 rounded-2xl flex items-center justify-center text-xl flex-shrink-0 bg-accent-primary/15 text-accent-primary">❓</div>
+          <div id="confirm-icon" class="w-11 h-11 rounded-2xl flex items-center justify-center text-xl flex-shrink-0 bg-accent-primary/15 text-accent-primary"><svg class="w-5 h-5 flex-shrink-0" aria-hidden="true" data-ph="question" viewBox="0 0 256 256" fill="currentColor"><path d="M144,180a16,16,0,1,1-16-16A16,16,0,0,1,144,180Zm92-52A108,108,0,1,1,128,20,108.12,108.12,0,0,1,236,128Zm-24,0a84,84,0,1,0-84,84A84.09,84.09,0,0,0,212,128ZM128,64c-24.26,0-44,17.94-44,40v4a12,12,0,0,0,24,0v-4c0-8.82,9-16,20-16s20,7.18,20,16-9,16-20,16a12,12,0,0,0-12,12v8a12,12,0,0,0,23.73,2.56C158.31,137.88,172,122.37,172,104,172,81.94,152.26,64,128,64Z"/></svg></div>
           <div class="min-w-0 flex-1 space-y-2">
             <h3 id="confirm-title" class="text-base font-extrabold text-text-primary">Xác nhận thao tác</h3>
             <p id="confirm-message" class="text-xs text-text-muted leading-relaxed"></p>
@@ -1128,7 +1149,7 @@
     <!-- TOAST -->
     <div id="toast-notification" class="fixed top-6 right-6 z-[9999] max-w-md px-5 py-4 rounded-2xl shadow-[0_20px_50px_rgba(0,0,0,0.5)] flex items-center gap-3.5 transform -translate-y-4 opacity-0 transition-all duration-300 pointer-events-none border-2" role="alert">
       <div id="toast-icon" class="w-8 h-8 rounded-full flex items-center justify-center flex-shrink-0 text-sm font-extrabold shadow-md">
-        ✓
+        <svg class="w-4 h-4 flex-shrink-0" aria-hidden="true" data-ph="check" viewBox="0 0 256 256" fill="currentColor"><path d="M232.49,80.49l-128,128a12,12,0,0,1-17,0l-56-56a12,12,0,1,1,17-17L96,183,215.51,63.51a12,12,0,0,1,17,17Z"/></svg>
       </div>
       <p id="toast-message" class="text-sm font-bold text-white leading-snug"></p>
     </div>

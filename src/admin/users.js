@@ -59,9 +59,9 @@ function roleBadge(u) {
     return `<span class="px-2 py-0.5 rounded-md bg-rose-500/15 text-rose-700 dark:text-rose-300 text-[11px] sm:text-xs font-extrabold uppercase tracking-wider border border-rose-500/30">ADMIN</span>`
   }
   if (u.purchases_count > 0) {
-    return `<span class="px-2 py-0.5 rounded-full bg-amber-500/20 text-amber-600 dark:text-amber-300 text-[11px] sm:text-xs font-bold border border-amber-500/30 shadow-glow">VIP Member</span>`
+    return `<span class="px-2 py-0.5 rounded-full bg-amber-500/20 text-amber-600 dark:text-amber-300 text-[11px] sm:text-xs font-bold whitespace-nowrap border border-amber-500/30">Đã mua</span>`
   }
-  return `<span class="px-2 py-0.5 rounded-full bg-black/5 dark:bg-white/5 border border-glass-border text-text-muted text-[11px] sm:text-xs font-medium">Free</span>`
+  return `<span class="px-2 py-0.5 rounded-full bg-black/5 dark:bg-white/5 border border-glass-border text-text-muted text-[11px] sm:text-xs font-medium whitespace-nowrap">Chưa mua</span>`
 }
 
 const ICON_COPY =
@@ -134,8 +134,8 @@ function renderUsersTable() {
       </td>
       <td data-label="Thao tác" class="p-3 text-right user-col-actions">
         <div class="flex items-center justify-end gap-1.5 w-full">
-          <button type="button" data-view-user="${escapeHtml(uuidStr)}" class="flex-1 sm:flex-initial py-1.5 px-3 rounded-lg sm:rounded-xl bg-glass-bg border border-glass-border hover:border-accent-primary hover:text-accent-primary text-text-primary text-xs font-bold transition-all text-center cursor-pointer active:scale-95" title="Xem hồ sơ chi tiết">Chi tiết</button>
-          <button type="button" data-grant-user="${escapeHtml(uuidStr)}" class="flex-1 sm:flex-initial py-1.5 px-3 rounded-lg sm:rounded-xl bg-warm-gradient hover:brightness-105 text-white text-xs font-bold transition-all shadow-xs text-center cursor-pointer active:scale-95" title="Cấp quyền tab cho user này">Cấp quyền</button>
+          <button type="button" data-view-user="${escapeHtml(uuidStr)}" class="flex-1 sm:flex-initial py-1.5 px-3 rounded-lg sm:rounded-xl bg-glass-bg border border-glass-border hover:border-accent-primary hover:text-accent-primary text-text-primary text-xs font-bold whitespace-nowrap transition-all text-center cursor-pointer active:scale-95" title="Xem hồ sơ chi tiết">Chi tiết</button>
+          <button type="button" data-grant-user="${escapeHtml(uuidStr)}" class="flex-1 sm:flex-initial py-1.5 px-3 rounded-lg sm:rounded-xl bg-warm-gradient hover:brightness-105 text-white text-xs font-bold whitespace-nowrap transition-all shadow-xs text-center cursor-pointer active:scale-95" title="Cấp quyền tab cho user này">Cấp quyền</button>
           ${
             isSelf
               ? `<button type="button" disabled class="p-2 rounded-lg sm:rounded-xl bg-black/5 dark:bg-white/5 text-text-muted opacity-30 cursor-not-allowed" title="Không thể xoá tài khoản của chính mình">${ICON_TRASH}</button>`

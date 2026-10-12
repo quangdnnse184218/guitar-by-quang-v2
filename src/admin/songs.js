@@ -10,6 +10,7 @@
 import { state } from './state.js'
 import { showToast } from './toast.js'
 import { toggleModal } from './modal.js'
+import { confirmDialog } from './confirm.js'
 import {
   fetchAllSongs,
   saveSong,
@@ -171,7 +172,7 @@ function renderSongsTable() {
         </td>
         <td data-label="Loại / Giá" class="py-3.5 px-3 song-col-price">${priceText}</td>
         <td data-label="Nổi Bật" class="py-3.5 px-3 song-col-featured">
-          ${isFeatured ? '<span class="badge-semantic-warning px-2 py-0.5 rounded-full font-bold text-xs">★ Ghim</span>' : '<span class="text-text-muted/40 text-xs hidden md:inline">—</span>'}
+          ${isFeatured ? '<span class="badge-semantic-warning inline-flex items-center gap-1 px-2 py-0.5 rounded-full font-bold text-xs"><svg class="w-3 h-3 flex-shrink-0" aria-hidden="true" data-ph="star" viewBox="0 0 256 256" fill="currentColor"><path d="M234.29,114.85l-45,38.83L203,211.75a16.4,16.4,0,0,1-24.5,17.82L128,198.49,77.47,229.57A16.4,16.4,0,0,1,53,211.75l13.76-58.07-45-38.83A16.46,16.46,0,0,1,31.08,86l59-4.76,22.76-55.08a16.36,16.36,0,0,1,30.27,0l22.75,55.08,59,4.76a16.46,16.46,0,0,1,9.37,28.86Z"/></svg>Ghim</span>' : '<span class="text-text-muted/40 text-xs hidden md:inline">—</span>'}
         </td>
         <td data-label="Thao Tác" class="py-3.5 px-4 text-right song-col-actions">
           <div class="flex items-center justify-end gap-1.5 sm:gap-2 w-full">
@@ -389,9 +390,14 @@ window.editSong = function (id) {
 }
 
 window.deleteSong = async function (id, title) {
-  if (!confirm(`Bạn có chắc chắn muốn xóa bài hát "${title}"? Thao tác này không thể hoàn tác.`)) {
-    return
-  }
+  const ok = await confirmDialog({
+    title: 'Xoá bài hát này?',
+    message: 'Bài sẽ biến mất khỏi Kho tab. Không hoàn tác được.',
+    detail: [['Bài hát', title]],
+    tone: 'danger',
+    confirmText: 'Xoá',
+  })
+  if (!ok) return
 
   try {
     const res = await removeSong(id)

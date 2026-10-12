@@ -19,17 +19,17 @@ const TONES = {
   danger: {
     iconBg: 'bg-rose-500/15 text-rose-700 dark:text-rose-300',
     confirmBtn: 'bg-rose-600 hover:bg-rose-500 text-white',
-    icon: '⚠️',
+    icon: '<svg class="w-5 h-5 flex-shrink-0" aria-hidden="true" data-ph="warning" viewBox="0 0 256 256" fill="currentColor"><path d="M240.26,186.1,152.81,34.23h0a28.74,28.74,0,0,0-49.62,0L15.74,186.1a27.45,27.45,0,0,0,0,27.71A28.31,28.31,0,0,0,40.55,228h174.9a28.31,28.31,0,0,0,24.79-14.19A27.45,27.45,0,0,0,240.26,186.1Zm-20.8,15.7a4.46,4.46,0,0,1-4,2.2H40.55a4.46,4.46,0,0,1-4-2.2,3.56,3.56,0,0,1,0-3.73L124,46.2a4.77,4.77,0,0,1,8,0l87.44,151.87A3.56,3.56,0,0,1,219.46,201.8ZM116,136V104a12,12,0,0,1,24,0v32a12,12,0,0,1-24,0Zm28,40a16,16,0,1,1-16-16A16,16,0,0,1,144,176Z"/></svg>',
   },
   warn: {
     iconBg: 'bg-amber-500/15 text-amber-600 dark:text-amber-400',
     confirmBtn: 'bg-amber-600 hover:bg-amber-500 text-white',
-    icon: '⚠️',
+    icon: '<svg class="w-5 h-5 flex-shrink-0" aria-hidden="true" data-ph="warning" viewBox="0 0 256 256" fill="currentColor"><path d="M240.26,186.1,152.81,34.23h0a28.74,28.74,0,0,0-49.62,0L15.74,186.1a27.45,27.45,0,0,0,0,27.71A28.31,28.31,0,0,0,40.55,228h174.9a28.31,28.31,0,0,0,24.79-14.19A27.45,27.45,0,0,0,240.26,186.1Zm-20.8,15.7a4.46,4.46,0,0,1-4,2.2H40.55a4.46,4.46,0,0,1-4-2.2,3.56,3.56,0,0,1,0-3.73L124,46.2a4.77,4.77,0,0,1,8,0l87.44,151.87A3.56,3.56,0,0,1,219.46,201.8ZM116,136V104a12,12,0,0,1,24,0v32a12,12,0,0,1-24,0Zm28,40a16,16,0,1,1-16-16A16,16,0,0,1,144,176Z"/></svg>',
   },
   neutral: {
     iconBg: 'bg-accent-primary/15 text-accent-primary',
     confirmBtn: 'bg-warm-gradient hover:brightness-105 text-white',
-    icon: '❓',
+    icon: '<svg class="w-5 h-5 flex-shrink-0" aria-hidden="true" data-ph="question" viewBox="0 0 256 256" fill="currentColor"><path d="M144,180a16,16,0,1,1-16-16A16,16,0,0,1,144,180Zm92-52A108,108,0,1,1,128,20,108.12,108.12,0,0,1,236,128Zm-24,0a84,84,0,1,0-84,84A84.09,84.09,0,0,0,212,128ZM128,64c-24.26,0-44,17.94-44,40v4a12,12,0,0,0,24,0v-4c0-8.82,9-16,20-16s20,7.18,20,16-9,16-20,16a12,12,0,0,0-12,12v8a12,12,0,0,0,23.73,2.56C158.31,137.88,172,122.37,172,104,172,81.94,152.26,64,128,64Z"/></svg>',
   },
 }
 
@@ -75,7 +75,7 @@ export function confirmDialog(opts = {}) {
   const cancelBtn = document.getElementById('confirm-cancel')
 
   iconEl.className = `w-11 h-11 rounded-2xl flex items-center justify-center text-xl flex-shrink-0 ${tone.iconBg}`
-  iconEl.textContent = tone.icon
+  iconEl.innerHTML = tone.icon
   titleEl.textContent = opts.title || 'Xác nhận thao tác'
   messageEl.innerHTML = opts.message || ''
   messageEl.classList.toggle('hidden', !opts.message)

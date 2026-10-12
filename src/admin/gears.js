@@ -7,6 +7,7 @@
 import { state } from './state.js'
 import { showToast } from './toast.js'
 import { toggleModal } from './modal.js'
+import { confirmDialog } from './confirm.js'
 import {
   fetchAllGears,
   saveGear,
@@ -108,7 +109,7 @@ function renderGearsTable() {
           <span class="px-2.5 py-1 rounded-lg bg-black/5 dark:bg-white/5 text-xs font-bold text-text-muted">${category}</span>
         </td>
         <td data-label="Mô Tả Ngắn" class="py-3.5 px-3 text-text-muted text-xs font-medium max-w-xs truncate gear-col-desc">${description}</td>
-        <td data-label="Giá Hiển Thị" class="py-3.5 px-3 font-mono tabular-nums font-bold text-text-primary text-xs gear-col-price">${price}</td>
+        <td data-label="Giá Hiển Thị" class="py-3.5 px-3 font-semibold text-text-primary text-xs leading-snug gear-col-price">${price}</td>
         <td data-label="Thao Tác" class="py-3.5 px-4 text-right gear-col-actions">
           <div class="flex items-center justify-end gap-1.5 sm:gap-2 w-full">
             <button onclick="window.editGear('${gear.id}')" class="flex-1 sm:flex-initial py-1.5 px-3 rounded-lg sm:rounded-xl bg-warm-gradient hover:brightness-105 text-white font-bold text-xs transition-all shadow-xs text-center cursor-pointer active:scale-95">
@@ -246,9 +247,14 @@ window.editGear = function (id) {
 }
 
 window.deleteGear = async function (id, name) {
-  if (!confirm(`Bạn có chắc chắn muốn xóa gear "${name}"?`)) {
-    return
-  }
+  const ok = await confirmDialog({
+    title: 'Xoá món đồ nghề này?',
+    message: 'Món đồ sẽ biến mất khỏi trang chủ và trang Công cụ. Không hoàn tác được.',
+    detail: [['Tên', name]],
+    tone: 'danger',
+    confirmText: 'Xoá',
+  })
+  if (!ok) return
 
   try {
     await removeGear(id)

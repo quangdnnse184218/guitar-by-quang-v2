@@ -206,8 +206,8 @@ function render() {
             isAdminAccount
               ? '<span class="px-2 py-0.5 rounded-md bg-rose-500/15 text-rose-700 dark:text-rose-300 text-[11px] sm:text-xs font-extrabold uppercase tracking-wider border border-rose-500/30">ADMIN</span>'
               : stats.purchases_count > 0
-                ? '<span class="px-2 py-0.5 rounded-full bg-amber-500/20 text-amber-600 dark:text-amber-300 text-[11px] sm:text-xs font-bold border border-amber-500/30">VIP Member</span>'
-                : '<span class="px-2 py-0.5 rounded-full bg-black/5 dark:bg-white/5 border border-glass-border text-text-muted text-[11px] sm:text-xs font-medium">Free</span>'
+                ? '<span class="px-2 py-0.5 rounded-full bg-amber-500/20 text-amber-600 dark:text-amber-300 text-[11px] sm:text-xs font-bold border border-amber-500/30">Đã mua</span>'
+                : '<span class="px-2 py-0.5 rounded-full bg-black/5 dark:bg-white/5 border border-glass-border text-text-muted text-[11px] sm:text-xs font-medium">Chưa mua</span>'
           }
         </div>
 
