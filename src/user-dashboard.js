@@ -1381,10 +1381,8 @@ if (profileForm) {
           )
           return
         }
-        const oldAvatar = currentProfile?.avatar_url || ''
         showToast(`Đang tải ${selectedFile.name} lên...`, 'info')
         avatarUrl = await uploadAvatar(selectedFile, currentUser.id)
-        if (oldAvatar) await removeFromStorageByUrl(oldAvatar)
         profileAvatarFileInput.value = ''
         if (profileAvatarFileName) profileAvatarFileName.textContent = ''
       } else {
@@ -1411,6 +1409,11 @@ if (profileForm) {
         .eq('id', currentUser.id)
 
       if (error) throw error
+
+      // Ảnh cũ chỉ xoá SAU KHI hồ sơ đã lưu xong, và ở cả hai lối đổi ảnh (tải file mới hoặc dán
+      // link khác) — trước đây dán link thì file cũ nằm lại mãi trong kho.
+      const previousAvatar = currentProfile.avatar_url || ''
+      if (previousAvatar && previousAvatar !== avatarUrl) await removeFromStorageByUrl(previousAvatar)
 
       currentProfile.full_name = fullName
       currentProfile.avatar_url = avatarUrl
