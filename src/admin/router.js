@@ -151,7 +151,7 @@ function render() {
   const subtitleEl = document.getElementById('page-subtitle')
   if (titleEl) titleEl.textContent = config.title
   if (subtitleEl) subtitleEl.textContent = config.subtitle
-  document.title = `${config.title} — Quản trị Guitar By Quang`
+  document.title = `${config.title} — Quản trị`
 
   // Đổi trang thì luôn về đầu trang, nếu không admin sẽ thấy trang mới bị
   // cuộn lơ lửng ở giữa theo vị trí cuộn của trang cũ.
