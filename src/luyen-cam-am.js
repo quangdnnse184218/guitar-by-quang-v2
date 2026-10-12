@@ -579,6 +579,7 @@ const boardLinkOver = document.getElementById('board-link-over')
 const nicknameModal = document.getElementById('nickname-modal')
 const nicknameForm = document.getElementById('nickname-form')
 const nicknameInput = document.getElementById('nickname-input')
+const nicknameCloseBtn = document.getElementById('nickname-close-btn')
 const nicknameError = document.getElementById('nickname-error')
 const nicknameSubmitBtn = document.getElementById('nickname-submit-btn')
 
@@ -825,6 +826,7 @@ function ensurePlayerName() {
       savePlayerName(name)
       nicknameModal.hidden = true
       nicknameForm.removeEventListener('submit', onSubmit)
+      nicknameCloseBtn.removeEventListener('click', onClose)
       nicknameSubmitBtn.disabled = false
       nicknameSubmitBtn.textContent = 'Vào chơi'
       // Người chơi cũ đã có kỷ lục lưu sẵn trong localStorage TRƯỚC KHI tính
@@ -836,6 +838,14 @@ function ensurePlayerName() {
       resolve(name)
     }
     nicknameForm.addEventListener('submit', onSubmit)
+
+    // Đóng hộp mà không đặt tên = chưa vào chơi; lần bấm Bắt đầu sau sẽ hỏi lại.
+    const onClose = () => {
+      nicknameModal.hidden = true
+      nicknameForm.removeEventListener('submit', onSubmit)
+      resolve(null)
+    }
+    nicknameCloseBtn.addEventListener('click', onClose, { once: true })
   })
 }
 
@@ -1651,7 +1661,8 @@ startBtn.addEventListener('click', async () => {
     // Hỏi biệt danh trước khi vào chơi lần đầu — âm thanh đã mở khoá và giải
     // mã xong rồi nên đợi thêm một lượt bấm nữa (nộp form tên) không ảnh
     // hưởng gì tới việc phát tiếng.
-    await ensurePlayerName()
+    const playerName = await ensurePlayerName()
+    if (!playerName) return
     runWarmup()
   } catch {
     startBtn.textContent = 'Không phát được âm thanh'

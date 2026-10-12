@@ -2086,6 +2086,13 @@ input[type='range'].metro-slider::-webkit-slider-thumb:hover {
    ============================================================================== */
 /* Menu tài khoản: ẩn mặc định, trượt nhẹ xuống khi .open (JS quyết định mở bằng
    rê chuột hay bấm — xem initAuthHeader trong common.js). */
+/* Menu tài khoản nằm TRONG header, mà header điện thoại đã có backdrop-filter: trình duyệt
+   không làm mờ được nội dung trang phía sau một lớp kính lồng trong lớp kính khác, nên nền 88%
+   để lộ chữ bên dưới rất khó đọc. Cho menu nền gần đục, bỏ hiệu ứng mờ. */
+.user-menu > .frost-strong {
+  --frost-alpha-strong: 0.985;
+  --frost-fx: none;
+}
 .user-menu {
   opacity: 0;
   visibility: hidden;

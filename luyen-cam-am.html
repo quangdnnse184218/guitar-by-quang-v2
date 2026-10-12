@@ -1957,8 +1957,12 @@
          chỉ cần một tên hiển thị). -->
     <div class="modal-backdrop" id="nickname-modal" hidden>
       <div class="modal-card">
-        <h2 class="modal-title">Bạn tên gì?</h2>
-        <p class="modal-note">Đặt tên để hiện trên bảng xếp hạng — chỉ hỏi đúng một lần, không cần đăng nhập.</p>
+        <div class="modal-head">
+          <h2 class="modal-title">Bạn tên gì?</h2>
+          <button type="button" class="modal-close" id="nickname-close-btn" aria-label="Đóng">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6 6 18M6 6l12 12" /></svg>
+          </button>
+        </div>
         <form id="nickname-form">
           <input type="text" class="modal-input" id="nickname-input" maxlength="24" placeholder="Tên của bạn" autocomplete="off" required />
           <p class="modal-error" id="nickname-error" hidden></p>
