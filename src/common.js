@@ -74,35 +74,61 @@ export function initNavbarShrink() {
   let ticking = false
   let lastY = window.scrollY
   let hidden = false
+  // Chỉ tính focus BẰNG BÀN PHÍM (:focus-visible). Trước đây dùng document.activeElement nên chỉ cần
+  // bấm chuột vào nút sáng/tối, nút tìm hay menu là focus nằm lại trong header → header không bao giờ ẩn nữa.
+  const keyboardFocusInside = () => {
+    try {
+      return !!navbar.querySelector(':focus-visible')
+    } catch {
+      return false
+    }
+  }
   const isLocked = () =>
-    navbar.contains(document.activeElement) ||
+    keyboardFocusInside() ||
     !!navbar.querySelector('#user-header-dropdown-wrap.open') ||
     document.body.classList.contains('modal-open')
 
+  const update = () => {
+    ticking = false
+    const y = Math.max(0, window.scrollY)
+    navbar.classList.toggle('nav-shrunk', y > 60)
+    const max = document.documentElement.scrollHeight - window.innerHeight
+    navbar.style.setProperty('--scroll-progress', max > 0 ? Math.min(1, y / max).toFixed(4) : '0')
+
+    // Cuộn xuống thì ẩn header (nhường chỗ cho nội dung), cuộn lên là hiện lại ngay
+    const next = nextHeaderHidden({ y, lastY, hidden, locked: isLocked() })
+    if (next !== hidden) {
+      hidden = next
+      navbar.classList.toggle('nav-hidden', hidden)
+    }
+    if (Math.abs(y - lastY) > 8) lastY = y
+  }
+
+  // Gom nhiều sự kiện cuộn vào một lần cập nhật mỗi khung hình. requestAnimationFrame KHÔNG chạy
+  // khi trình duyệt tạm ngừng vẽ (tab nền, cửa sổ bị che, khung xem trước ẩn) — nếu chỉ dựa vào nó
+  // thì cờ `ticking` kẹt ở true và header không bao giờ ẩn/hiện nữa. Hẹn thêm một timer dự phòng:
+  // cái nào tới trước thì chạy, cái còn lại bị huỷ.
+  let rafId = 0
+  let timerId = 0
+  const run = () => {
+    if (rafId) window.cancelAnimationFrame(rafId)
+    if (timerId) clearTimeout(timerId)
+    rafId = 0
+    timerId = 0
+    update()
+  }
   const onScroll = () => {
     if (ticking) return
     ticking = true
-    window.requestAnimationFrame(() => {
-      const y = Math.max(0, window.scrollY)
-      navbar.classList.toggle('nav-shrunk', y > 60)
-      const max = document.documentElement.scrollHeight - window.innerHeight
-      navbar.style.setProperty('--scroll-progress', max > 0 ? Math.min(1, y / max).toFixed(4) : '0')
-
-      // Cuộn xuống thì ẩn header (nhường chỗ cho nội dung), cuộn lên là hiện lại ngay
-      const next = nextHeaderHidden({ y, lastY, hidden, locked: isLocked() })
-      if (next !== hidden) {
-        hidden = next
-        navbar.classList.toggle('nav-hidden', hidden)
-      }
-      if (Math.abs(y - lastY) > 8) lastY = y
-      ticking = false
-    })
+    rafId = window.requestAnimationFrame(run)
+    timerId = setTimeout(run, 120)
   }
 
   window.addEventListener('scroll', onScroll, { passive: true })
   window.addEventListener('resize', onScroll, { passive: true })
   // Bàn phím đi vào header (Tab) khi header đang ẩn → hiện lại để thấy mình đang ở đâu
   navbar.addEventListener('focusin', () => {
+    if (!keyboardFocusInside()) return
     hidden = false
     navbar.classList.remove('nav-hidden')
   })
