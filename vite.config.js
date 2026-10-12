@@ -20,6 +20,7 @@ export default defineConfig({
         adminResetPassword: resolve(import.meta.dirname, 'admin-reset-password.html'),
         notFound: resolve(import.meta.dirname, '404.html'),
         privacyPolicy: resolve(import.meta.dirname, 'chinh-sach-bao-mat.html'),
+        terms: resolve(import.meta.dirname, 'dieu-khoan.html'),
       },
     },
   },

@@ -426,9 +426,30 @@ async function loadData() {
   const [songs] = await Promise.all([fetchAllSongs(), loadFavoriteIds(), loadPurchasedIds()])
   allSongs = songs
   populateFilterOptions()
+  applyUrlFilters()
   updateGrid()
   openSongFromUrlParam()
+  focusSearchFromHash()
 }
+
+/** Link từ chân trang: /kho-tab.html?gia=mien-phi (hoặc tra-phi) mở sẵn bộ lọc giá. Giá trị lạ thì bỏ qua. */
+const PRICE_PARAM = { 'mien-phi': 'free', 'tra-phi': 'paid' }
+function applyUrlFilters() {
+  const price = PRICE_PARAM[new URLSearchParams(window.location.search).get('gia')]
+  if (!price) return
+  filters.price = price
+  syncChips()
+}
+
+/** Nút kính lúp ở header trỏ /kho-tab.html#tim: đưa con trỏ vào ô tìm bài. */
+function focusSearchFromHash() {
+  if (window.location.hash !== '#tim') return
+  const input = document.getElementById('search-input')
+  if (!input) return
+  input.scrollIntoView({ block: 'center' })
+  input.focus({ preventScroll: true })
+}
+window.addEventListener('hashchange', focusSearchFromHash)
 
 /**
  * Mở đúng bài khi vào bằng link chia sẻ dạng /kho-tab.html?tab=<id>.

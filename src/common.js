@@ -289,8 +289,8 @@ export async function initAuthHeader() {
       <div class="relative" id="user-header-dropdown-wrap">
         <button id="user-header-dropdown-btn" type="button" aria-expanded="false" aria-haspopup="menu" aria-controls="user-header-dropdown-menu" aria-label="Tài khoản của ${safeFullName}" class="flex items-center gap-2 min-h-[40px] pl-1.5 pr-2.5 sm:pr-3 rounded-full bg-glass-bg border border-glass-border hover:border-accent-primary/50 transition-colors cursor-pointer">
           ${avatarHtml}
-          <span class="text-sm font-bold text-text-primary hidden sm:inline-block truncate max-w-[110px]">${safeFullName}</span>
-          <span class="hidden md:inline-flex">${roleBadgeHtml}</span>
+          <span class="text-sm font-bold text-text-primary hidden lg:inline-block truncate max-w-[110px]">${safeFullName}</span>
+          <span class="hidden xl:inline-flex">${roleBadgeHtml}</span>
           <svg id="user-header-dropdown-arrow" class="w-3.5 h-3.5 text-text-muted transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
         </button>
         <div id="user-header-dropdown-menu" role="menu" aria-label="Tài khoản" class="user-menu absolute right-0 top-full pt-2 w-[18rem] max-w-[calc(100vw-1.5rem)] z-50">
@@ -331,7 +331,9 @@ export async function initAuthHeader() {
 
     if (desktopContainer) {
       const themeToggle = desktopContainer.querySelector('#theme-toggle-btn')
+      const searchLink = desktopContainer.querySelector('#header-search-link')
       desktopContainer.innerHTML = ''
+      if (searchLink) desktopContainer.appendChild(searchLink)
 
       const userDiv = document.createElement('div')
       userDiv.innerHTML = userDropdownHtml
@@ -599,6 +601,22 @@ export function initMobileHeaderScroll() {
  * Synchronizes and highlights the active navigation tab underline across all pages, hash links and sections.
  */
 /** Khoá của trang đang mở — dùng chung cho menu máy tính và thanh dưới đáy. */
+/**
+ * Nút kính lúp ở header (#header-search-link → /kho-tab.html#tim). Ở trang khác thì cứ để
+ * link chạy; đang ở Kho tab thì không tải lại trang mà đưa con trỏ thẳng vào ô tìm.
+ */
+function initHeaderSearch() {
+  document.addEventListener('click', (e) => {
+    const link = e.target.closest?.('#header-search-link')
+    const input = document.getElementById('search-input')
+    if (!link || !input) return
+    e.preventDefault()
+    input.scrollIntoView({ block: 'center', behavior: 'smooth' })
+    input.focus({ preventScroll: true })
+  })
+}
+initHeaderSearch()
+
 function currentPageKey() {
   const p = window.location.pathname
   if (p.includes('kho-tab')) return 'kho-tab'

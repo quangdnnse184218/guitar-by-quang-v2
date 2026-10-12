@@ -2614,14 +2614,11 @@ body.modal-open {
    viền đồng mảnh. Giữ nguyên ở cả 2 giao diện sáng/tối — là một "vật" có chất liệu riêng. */
 .practice-card {
   background:
-    radial-gradient(120% 150% at 0% 0%, rgb(226 179 74 / 0.24), transparent 55%),
-    radial-gradient(90% 120% at 100% 100%, rgb(176 69 92 / 0.22), transparent 60%),
-    linear-gradient(135deg, #2c1e15 0%, #1c140e 60%, #24151a 100%);
-  border: 1px solid rgb(226 179 74 / 0.28);
+    radial-gradient(120% 140% at 0% 0%, rgb(var(--accent-primary) / 0.1), transparent 55%),
+    rgb(var(--glass-bg));
+  border: 1px solid rgb(var(--glass-border-rgb) / var(--glass-border-alpha));
   border-radius: var(--r-panel);
-  box-shadow:
-    inset 0 1px 0 rgb(255 240 210 / 0.08),
-    var(--elev-card);
+  box-shadow: var(--elev-card);
   transition:
     transform 0.25s ease,
     box-shadow 0.25s ease,
@@ -2630,24 +2627,19 @@ body.modal-open {
 
 .practice-card:hover {
   transform: translateY(-3px);
-  border-color: rgb(226 179 74 / 0.5);
-  box-shadow:
-    inset 0 1px 0 rgb(255 240 210 / 0.1),
-    var(--elev-raised);
+  border-color: rgb(var(--accent-primary) / 0.45);
+  box-shadow: var(--elev-raised);
 }
 
 .practice-disc {
-  background: radial-gradient(circle at 35% 30%, #3a291d, #140e0a 70%);
-  box-shadow:
-    0 0 0 2px rgb(226 179 74 / 0.55),
-    0 0 0 6px rgb(226 179 74 / 0.12),
-    0 8px 18px rgb(0 0 0 / 0.45);
+  background: rgb(var(--accent-primary) / 0.1);
+  box-shadow: inset 0 0 0 1px rgb(var(--accent-primary) / 0.28);
 }
 
-/* Nút mũi tên đồng ở mép phải thẻ */
+/* Nút mũi tên ở mép phải thẻ */
 .practice-go {
-  background: linear-gradient(180deg, #ecc25e, #c9922e);
-  color: #2a1a0c;
+  background: rgb(var(--accent-solid));
+  color: #fff;
   box-shadow: var(--elev-button);
   transition: transform 0.25s ease;
 }
