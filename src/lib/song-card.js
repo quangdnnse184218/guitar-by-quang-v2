@@ -86,15 +86,6 @@ export const SONG_THUMB_CLASS =
   'relative overflow-hidden rounded-xl thumb-well h-[150px] sm:h-auto sm:aspect-[16/10] w-full p-2 sm:p-3.5 flex flex-col justify-between text-white group-hover:scale-[1.02] transition-transform duration-500 ease-out'
 
 /**
- * Badge thể loại ở góc trái khung ảnh — chỉ hiện từ sm trở lên. Thẻ 2 cột trên điện
- * thoại chỉ có ~125px cho hàng này: với cỡ chữ tối thiểu 11px thì thể loại + giá + tim
- * không vừa, mà gần như mọi bài đều "Nhạc Việt" (Kho tab đã có bộ lọc thể loại).
- */
-export function renderCategoryBadge(song, fallback = 'Fingerstyle') {
-  return `<span class="hidden sm:inline-block bg-black/50 backdrop-blur px-2 py-0.5 rounded-full text-white/95 text-xs tracking-wider truncate min-w-0">${song.category || fallback}</span>`
-}
-
-/**
  * Hàng dưới cùng khung ảnh: thời lượng. Trước còn "Tuning: Standard" ở bên phải, nhưng
  * mọi bài trong kho đều tuning Standard nên nhãn đó không cho khách biết thêm gì — chỉ
  * hiện tuning khi nó KHÁC Standard.
@@ -144,7 +135,7 @@ function renderFavoriteButton(tab, isFavorite) {
       onclick="event.stopPropagation(); window.handleToggleFavorite(event, '${tab.id}')"
       data-fav-btn="${tab.id}"
       title="${isFavorite ? 'Bỏ yêu thích' : 'Yêu thích'}"
-      class="relative before:absolute before:-inset-2.5 max-sm:ml-auto flex-shrink-0 w-5 h-5 sm:w-6 sm:h-6 rounded-full flex items-center justify-center transition-all cursor-pointer ${isFavorite ? 'bg-rose-500 text-white' : 'bg-black/40 text-white/80 hover:text-white hover:bg-black/60'}"
+      class="relative before:absolute before:-inset-2.5 ml-auto flex-shrink-0 w-5 h-5 sm:w-6 sm:h-6 rounded-full flex items-center justify-center transition-all cursor-pointer ${isFavorite ? 'bg-rose-500 text-white' : 'bg-black/40 text-white/80 hover:text-white hover:bg-black/60'}"
     >
       ${isFavorite ? filledHeart : outlineHeart}
     </button>
@@ -245,8 +236,7 @@ export function renderSongCard(tab, options = {}) {
         <div class="space-y-2 sm:space-y-3">
           <div class="${SONG_THUMB_CLASS} bg-gradient-to-br from-[#1E3A2F] via-[#2A4D3E] to-[#172A22]">
             <div class="flex justify-between items-start text-xs uppercase font-bold tracking-wider">
-              ${renderCategoryBadge(tab, 'Fingerstyle')}
-              <div class="flex items-center gap-1 flex-wrap max-sm:w-full sm:justify-end">
+              <div class="flex items-center gap-1 flex-wrap w-full">
                 ${pinnedBadge}
                 <span class="px-1.5 sm:px-2 py-0.5 rounded-full text-[11px] sm:text-xs font-extrabold bg-emerald-700 text-white uppercase tracking-wide">FREE</span>
                 ${favButton}
@@ -303,8 +293,7 @@ export function renderSongCard(tab, options = {}) {
       <div class="space-y-2 sm:space-y-3">
         <div class="${SONG_THUMB_CLASS} bg-gradient-to-br ${thumbnailBg}">
           <div class="flex justify-between items-start text-xs uppercase font-bold tracking-wider">
-            ${isPurchased ? '<span></span>' : renderCategoryBadge(tab, 'Nhạc Việt')}
-            <div class="flex items-center gap-1 flex-wrap max-sm:w-full sm:justify-end">
+            <div class="flex items-center gap-1 flex-wrap w-full">
               ${pinnedBadge}
               ${badgeHtml}
               ${favButton}

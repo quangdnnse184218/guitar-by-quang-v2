@@ -1171,34 +1171,20 @@ nav,
   border-top: 1px solid var(--glass-border);
 }
 
-/* Chân trang là một khối nâu đậm ở cả giao diện sáng lẫn tối: khép trang lại rõ ràng, tách hẳn
-   khỏi nội dung. Ghi đè các biến màu NGAY TRÊN phần tử nên mọi lớp token bên trong
-   (text-text-primary, text-text-muted, border-glass-border, bg-glass-bg, text-accent-primary…)
-   tự đổi sang bộ màu sáng-trên-nền-tối mà không phải sửa HTML của 5 trang. */
-.footer-section,
-[data-theme='light'] .footer-section {
-  --text-primary: 246 239 228;
-  --text-muted: 200 186 166;
-  --text-faint: 160 146 126;
-  --accent-primary: 236 172 92;
-  --accent-primary-hover: 244 192 124;
-  --glass-bg: 78 57 41;
-  --glass-bg-hover: 94 69 50;
-  --glass-border: rgba(240 220 195 / 0.14);
-  --glass-border-rgb: 240 220 195;
-  --glass-border-alpha: 0.14;
-  background: #3b2a1e;
-  border-top: 1px solid rgb(0 0 0 / 0.2);
+/* Chân trang: nền sáng cùng họ màu với trang, đậm hơn nền mục "nổi" một bậc và có viền trên —
+   tách khỏi nội dung bằng sắc độ + đường kẻ chứ không bằng một khối màu tối. (Đã thử khối nâu
+   đậm 2026-10-12; người dùng chê thiếu chuyên nghiệp, và header nền tối cũng bị từ chối.) */
+.footer-section {
+  background: #120e0c;
+  border-top: 1px solid rgb(var(--glass-border-rgb) / calc(var(--glass-border-alpha) * 1.6));
   color: rgb(var(--text-muted));
   position: relative;
-  overflow: hidden;
   z-index: 10;
   margin: 0;
 }
 
-/* Bản tối: nền trang đã tối nên chân trang chìm sâu thêm một bậc để vẫn tách ra. */
-:root:not([data-theme='light']) .footer-section {
-  background: #2a1e16;
+[data-theme='light'] .footer-section {
+  background: #ede7da;
 }
 
 /* ==============================================================================
