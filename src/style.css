@@ -618,10 +618,19 @@ nav,
   background-color: rgb(var(--frost-tint) / var(--nav-alpha));
   box-shadow: 0 1px 0 rgb(0 0 0 / 0.03);
   transition:
+    transform 0.32s cubic-bezier(0.2, 0.8, 0.2, 1),
     padding 0.35s cubic-bezier(0.2, 0.8, 0.2, 1),
     background-color 0.35s ease,
     box-shadow 0.35s ease,
     border-color 0.35s ease;
+}
+
+/* Cuộn XUỐNG: header trượt lên khỏi màn hình; cuộn LÊN: trượt xuống lại
+   (initNavbarShrink trong common.js bật/tắt .nav-hidden). Trượt thêm 4px để giấu luôn bóng. */
+#main-nav.nav-hidden {
+  transform: translateY(calc(-100% - 4px));
+  box-shadow: none !important;
+  pointer-events: none;
 }
 
 /* Thanh tiến độ đọc: vạch màu nhấn ở mép dưới header dài dần theo độ cuộn trang

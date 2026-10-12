@@ -50,6 +50,21 @@ function escapeHtml(str) {
 /**
  * Initializes the sticky glass navbar shrink effect on scroll.
  */
+/**
+ * Quyết định ẩn/hiện header theo hướng cuộn (hàm thuần để test được).
+ * - Gần đầu trang (y ≤ 120) luôn hiện.
+ * - Cuộn XUỐNG quá 8px thì ẩn, cuộn LÊN quá 8px thì hiện; nhích nhẹ hơn thế thì giữ nguyên
+ *   (tránh nhấp nháy khi ngón tay rung hoặc trình duyệt co giãn thanh địa chỉ).
+ * - `locked` (đang mở menu tài khoản, đang gõ trong header, đang mở hộp thoại): luôn hiện.
+ */
+export function nextHeaderHidden({ y, lastY, hidden, locked = false }) {
+  if (locked || y <= 120) return false
+  const delta = y - lastY
+  if (delta > 8) return true
+  if (delta < -8) return false
+  return hidden
+}
+
 export function initNavbarShrink() {
   const navbar = document.getElementById('main-nav')
   if (!navbar) return
@@ -57,20 +72,40 @@ export function initNavbarShrink() {
   // Chỉ đổi lớp + biến CSS; màu nền, bóng, độ cao đều do style.css quyết định
   // (trước đây gán thẳng backgroundColor ở đây nên đè mất nền kính của header).
   let ticking = false
+  let lastY = window.scrollY
+  let hidden = false
+  const isLocked = () =>
+    navbar.contains(document.activeElement) ||
+    !!navbar.querySelector('#user-header-dropdown-wrap.open') ||
+    document.body.classList.contains('modal-open')
+
   const onScroll = () => {
     if (ticking) return
     ticking = true
     window.requestAnimationFrame(() => {
-      const y = window.scrollY
+      const y = Math.max(0, window.scrollY)
       navbar.classList.toggle('nav-shrunk', y > 60)
       const max = document.documentElement.scrollHeight - window.innerHeight
       navbar.style.setProperty('--scroll-progress', max > 0 ? Math.min(1, y / max).toFixed(4) : '0')
+
+      // Cuộn xuống thì ẩn header (nhường chỗ cho nội dung), cuộn lên là hiện lại ngay
+      const next = nextHeaderHidden({ y, lastY, hidden, locked: isLocked() })
+      if (next !== hidden) {
+        hidden = next
+        navbar.classList.toggle('nav-hidden', hidden)
+      }
+      if (Math.abs(y - lastY) > 8) lastY = y
       ticking = false
     })
   }
 
   window.addEventListener('scroll', onScroll, { passive: true })
   window.addEventListener('resize', onScroll, { passive: true })
+  // Bàn phím đi vào header (Tab) khi header đang ẩn → hiện lại để thấy mình đang ở đâu
+  navbar.addEventListener('focusin', () => {
+    hidden = false
+    navbar.classList.remove('nav-hidden')
+  })
   onScroll()
 }
 
