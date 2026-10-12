@@ -1055,8 +1055,8 @@ nav,
 
 /* ==============================================================================
    AMBIENT SITE BACKGROUND (dùng chung: trang chủ, trang khách, Trang Của Tôi)
-   — hoạ tiết mang chất "âm nhạc & guitar": khối màu trôi chậm kiểu aurora +
-   guitar mini + nốt nhạc rải rác, cả 2 loại đều trôi nổi (float) nhẹ nhàng.
+   — vài khối màu mờ trôi chậm kiểu aurora; cũng là thứ lớp kính của header làm mờ.
+   (Hình guitar mini + nốt nhạc trôi nổi đã bỏ 2026-10-12 cho trang gọn hơn.)
    Không đổi hẳn --bg-base để giữ đồng bộ hệ thống theme sáng/tối.
    ============================================================================== */
 .site-ambient-bg {
@@ -1150,68 +1150,6 @@ nav,
   }
   to {
     transform: translate(45px, -55px) scale(1.05);
-  }
-}
-
-/* Guitar mini + nốt nhạc rải rác — cả 2 đều trôi nổi (bồng bềnh) nhẹ nhàng
-   theo trục dọc, mỗi cái tự set góc xoay riêng qua biến --rot và thời gian/
-   độ trễ animation riêng (khai báo inline) để chuyển động không đồng bộ,
-   trông tự nhiên hơn là nhấp nháy cùng lúc. */
-.site-ambient-guitar,
-.site-ambient-note {
-  position: absolute;
-  --rot: 0deg;
-  color: rgb(var(--accent-primary));
-  transform: rotate(var(--rot));
-}
-
-.site-ambient-guitar {
-  width: 34px;
-  height: auto;
-  opacity: 0.14;
-}
-
-.site-ambient-note {
-  font-family: Georgia, 'Times New Roman', serif;
-  opacity: 0.18;
-  line-height: 1;
-}
-
-[data-theme='light'] .site-ambient-guitar {
-  opacity: 0.16;
-}
-[data-theme='light'] .site-ambient-note {
-  opacity: 0.22;
-}
-
-@media (prefers-reduced-motion: no-preference) {
-  .site-ambient-guitar,
-  .site-ambient-note {
-    animation-name: site-ambient-float;
-    animation-timing-function: ease-in-out;
-    animation-iteration-count: infinite;
-    /* animation-duration/delay riêng cho mỗi phần tử, set inline */
-  }
-}
-
-/* Biên độ trước (14px, chỉ đổi trục dọc) quá nhỏ nên gần như không nhận ra
-   là đang chuyển động — tăng lên rõ rệt và thêm lắc ngang nhẹ + tự xoay
-   thêm vài độ quanh góc gốc (--rot) để mắt dễ bắt được chuyển động hơn. */
-@keyframes site-ambient-float {
-  0% {
-    transform: rotate(var(--rot)) translate(0, 0);
-  }
-  25% {
-    transform: rotate(calc(var(--rot) + 6deg)) translate(6px, -20px);
-  }
-  50% {
-    transform: rotate(var(--rot)) translate(-4px, -30px);
-  }
-  75% {
-    transform: rotate(calc(var(--rot) - 6deg)) translate(-8px, -14px);
-  }
-  100% {
-    transform: rotate(var(--rot)) translate(0, 0);
   }
 }
 
