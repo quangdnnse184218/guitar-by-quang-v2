@@ -331,7 +331,7 @@ export function enterSettingsPage() {
     const s = state.adminSession || {}
     sessionInfoEl.innerHTML = `
       <div class="flex items-center justify-between gap-3"><dt class="text-text-muted">Đăng nhập gần nhất</dt><dd class="font-bold text-text-primary text-right">${escapeHtml(formatDateTime(s.last_sign_in_at))}</dd></div>
-      <div class="flex items-center justify-between gap-3"><dt class="text-text-muted">Xác thực email</dt><dd class="font-bold text-right ${s.email_confirmed_at ? 'text-emerald-600 dark:text-emerald-400' : 'text-amber-600 dark:text-amber-400'}">${s.email_confirmed_at ? 'Đã xác thực' : 'Chưa xác thực'}</dd></div>`
+      <div class="flex items-center justify-between gap-3"><dt class="text-text-muted">Xác thực email</dt><dd class="font-bold text-right ${s.email_confirmed_at ? 'text-emerald-700 dark:text-emerald-400' : 'text-amber-600 dark:text-amber-400'}">${s.email_confirmed_at ? 'Đã xác thực' : 'Chưa xác thực'}</dd></div>`
   }
 }
 

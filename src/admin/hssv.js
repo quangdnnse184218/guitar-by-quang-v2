@@ -28,7 +28,7 @@ const SIGNED_URL_SECONDS = 300
 const STATUS_PILL = {
   approved: {
     label: 'AI đã duyệt',
-    cls: 'bg-emerald-500/15 text-emerald-600 dark:text-emerald-400',
+    cls: 'bg-emerald-500/15 text-emerald-700 dark:text-emerald-400',
   },
   pending: { label: 'Chờ admin duyệt', cls: 'bg-amber-500/15 text-amber-600 dark:text-amber-400' },
   rejected: { label: 'AI từ chối', cls: 'bg-black/10 dark:bg-white/10 text-text-muted' },
@@ -92,14 +92,14 @@ function flagPills(flags) {
         FLAGS[f].level === 'warn'
           ? 'bg-rose-500/15 text-rose-700 dark:text-rose-300'
           : 'bg-amber-500/15 text-amber-600 dark:text-amber-400'
-      return `<span class="px-2 py-0.5 rounded-full text-[10px] font-bold ${cls}">${escapeHtml(FLAGS[f].label)}</span>`
+      return `<span class="px-2 py-0.5 rounded-full text-[11px] sm:text-xs font-bold ${cls}">${escapeHtml(FLAGS[f].label)}</span>`
     })
     .join('')
 }
 
 function infoLine(label, value) {
   return `
-    <div class="flex gap-2 text-[11px] min-w-0">
+    <div class="flex gap-2 text-[11px] sm:text-xs min-w-0">
       <span class="text-text-muted flex-shrink-0 w-20">${escapeHtml(label)}</span>
       <span class="font-semibold text-text-primary break-words min-w-0">${value}</span>
     </div>`
@@ -110,21 +110,21 @@ function imageBlock(r) {
     return `
       <div class="space-y-1.5" data-image-wrap="${escapeHtml(r.id)}">
         <button type="button" data-show-image="${escapeHtml(r.id)}"
-          class="w-full sm:w-44 h-28 rounded-xl border border-dashed border-glass-border bg-black/[0.03] dark:bg-white/[0.04] hover:border-accent-primary text-[11px] font-bold text-text-muted hover:text-accent-primary transition-colors cursor-pointer">
+          class="w-full sm:w-44 h-28 rounded-xl border border-dashed border-glass-border bg-black/[0.03] dark:bg-white/[0.04] hover:border-accent-primary text-[11px] sm:text-xs font-bold text-text-muted hover:text-accent-primary transition-colors cursor-pointer">
           Xem ảnh thẻ
         </button>
-        <div class="text-[10px] text-text-muted">Ảnh tự xoá: ${escapeHtml(formatDateTime(r.purge_at))}</div>
+        <div class="text-[11px] sm:text-xs text-text-muted">Ảnh tự xoá: ${escapeHtml(formatDateTime(r.purge_at))}</div>
       </div>`
   }
   return `
-    <div class="w-full sm:w-44 h-28 rounded-xl border border-glass-border bg-black/[0.03] dark:bg-white/[0.04] flex items-center justify-center text-center px-3 text-[10px] text-text-muted leading-snug">
+    <div class="w-full sm:w-44 h-28 rounded-xl border border-glass-border bg-black/[0.03] dark:bg-white/[0.04] flex items-center justify-center text-center px-3 text-[11px] sm:text-xs text-text-muted leading-snug">
       Ảnh đã được xoá${r.image_purged_at ? ' ' + escapeHtml(formatDateTime(r.image_purged_at)) : ''}.<br>Kết quả đọc thẻ vẫn được giữ.
     </div>`
 }
 
 function actionButtons(r) {
   const btn = (attr, text, cls) =>
-    `<button type="button" ${attr}="${escapeHtml(r.id)}" class="px-3.5 py-2 rounded-xl text-[11px] font-bold transition-colors cursor-pointer active:scale-95 ${cls}">${text}</button>`
+    `<button type="button" ${attr}="${escapeHtml(r.id)}" class="px-3.5 py-2 rounded-xl text-[11px] sm:text-xs font-bold transition-colors cursor-pointer active:scale-95 ${cls}">${text}</button>`
 
   const out = []
   if (r.status === 'pending') {
@@ -160,19 +160,19 @@ function reviewCard(r) {
     : '<span class="text-text-muted font-normal">chưa cung cấp</span>'
   const zaloUrl = zaloHref(r.user_zalo)
   const orderText = r.order_code
-    ? `<span class="font-mono">${escapeHtml(r.order_code)}</span> · ${escapeHtml(r.song_title || '')} · <span class="font-mono">${formatVnd(r.order_amount)}</span> · ${r.order_status === 'paid' ? '<span class="text-emerald-600 dark:text-emerald-400">đã thanh toán</span>' : r.order_status === 'pending' ? 'chờ thanh toán' : 'hết hạn'}`
+    ? `<span class="font-mono">${escapeHtml(r.order_code)}</span> · ${escapeHtml(r.song_title || '')} · <span class="font-mono">${formatVnd(r.order_amount)}</span> · ${r.order_status === 'paid' ? '<span class="text-emerald-700 dark:text-emerald-400">đã thanh toán</span>' : r.order_status === 'pending' ? 'chờ thanh toán' : 'hết hạn'}`
     : '<span class="text-text-muted font-normal">đơn đã bị xoá</span>'
   const others = Number(r.other_accounts_same_card) || 0
 
   return `
     <div class="p-4 sm:p-5 space-y-3.5" data-hssv-card="${escapeHtml(r.id)}">
       <div class="flex items-center gap-2 flex-wrap">
-        <span class="px-2.5 py-1 rounded-full text-[11px] font-extrabold ${pill.cls}">${pill.label}</span>
-        ${r.reviewed_at ? `<span class="px-2 py-0.5 rounded-full bg-sky-500/15 text-sky-600 dark:text-sky-400 text-[10px] font-bold">Đã xem ${escapeHtml(formatDateTime(r.reviewed_at))}</span>` : ''}
-        <span class="text-[10px] text-text-muted font-mono ml-auto">${escapeHtml(formatDateTime(r.created_at))}</span>
+        <span class="px-2.5 py-1 rounded-full text-[11px] sm:text-xs font-extrabold ${pill.cls}">${pill.label}</span>
+        ${r.reviewed_at ? `<span class="px-2 py-0.5 rounded-full bg-sky-500/15 text-sky-600 dark:text-sky-400 text-[11px] sm:text-xs font-bold">Đã xem ${escapeHtml(formatDateTime(r.reviewed_at))}</span>` : ''}
+        <span class="text-[11px] sm:text-xs text-text-muted font-mono ml-auto">${escapeHtml(formatDateTime(r.created_at))}</span>
       </div>
 
-      ${(r.flags || []).some((f) => FLAGS[f]) || others > 0 ? `<div class="flex flex-wrap gap-1.5">${flagPills(r.flags)}${others > 0 ? `<span class="px-2 py-0.5 rounded-full text-[10px] font-bold bg-rose-500/15 text-rose-700 dark:text-rose-300">${others} tài khoản khác cùng mã</span>` : ''}</div>` : ''}
+      ${(r.flags || []).some((f) => FLAGS[f]) || others > 0 ? `<div class="flex flex-wrap gap-1.5">${flagPills(r.flags)}${others > 0 ? `<span class="px-2 py-0.5 rounded-full text-[11px] sm:text-xs font-bold bg-rose-500/15 text-rose-700 dark:text-rose-300">${others} tài khoản khác cùng mã</span>` : ''}</div>` : ''}
 
       <div class="flex flex-col sm:flex-row gap-4">
         ${imageBlock(r)}
@@ -181,12 +181,12 @@ function reviewCard(r) {
           ${infoLine('Zalo', `${zalo}${r.user_zalo ? ` <button type="button" data-copy="${escapeHtml(r.user_zalo)}" class="text-accent-primary hover:underline font-bold ml-1 cursor-pointer">Copy</button>` : ''}${zaloUrl ? ` <a href="${escapeHtml(zaloUrl)}" target="_blank" rel="noopener noreferrer" class="text-accent-primary hover:underline font-bold ml-1">Mở Zalo</a>` : ''}`)}
           ${infoLine('Đơn', orderText)}
           <div class="pt-1.5 mt-1.5 border-t border-glass-border space-y-1.5">
-            <div class="text-[10px] font-bold uppercase tracking-wider text-text-muted">AI đọc được trên thẻ</div>
+            <div class="text-[11px] sm:text-xs font-bold uppercase tracking-wider text-text-muted">AI đọc được trên thẻ</div>
             ${infoLine('Họ tên', r.extracted_name ? escapeHtml(r.extracted_name) : '<span class="text-text-muted font-normal">không đọc được</span>')}
             ${infoLine('Trường', r.extracted_school ? escapeHtml(r.extracted_school) : '<span class="text-text-muted font-normal">không đọc được</span>')}
             ${infoLine('Mã HS/SV', r.extracted_id ? `<span class="font-mono">${escapeHtml(r.extracted_id)}</span>` : '<span class="text-text-muted font-normal">không đọc được</span>')}
             ${infoLine('Hạn thẻ', r.extracted_expiry ? escapeHtml(r.extracted_expiry) : '<span class="text-text-muted font-normal">không đọc được</span>')}
-            ${r.ai_reason ? `<div class="text-[11px] text-text-muted italic leading-snug">“${escapeHtml(r.ai_reason)}”</div>` : ''}
+            ${r.ai_reason ? `<div class="text-[11px] sm:text-xs text-text-muted italic leading-snug">“${escapeHtml(r.ai_reason)}”</div>` : ''}
           </div>
         </div>
       </div>
@@ -206,7 +206,7 @@ function render() {
     const isTodo = (filterEl?.value || 'todo') === 'todo'
     listEl.innerHTML = `
       <div class="p-10 text-center space-y-1">
-        <div class="text-sm font-bold ${isTodo ? 'text-emerald-600 dark:text-emerald-400' : 'text-text-primary'}">${isTodo ? 'Không có lượt nào cần bạn duyệt' : 'Chưa có lượt xác minh nào'}</div>
+        <div class="text-sm font-bold ${isTodo ? 'text-emerald-700 dark:text-emerald-400' : 'text-text-primary'}">${isTodo ? 'Không có lượt nào cần bạn duyệt' : 'Chưa có lượt xác minh nào'}</div>
         <div class="text-xs text-text-muted">${isTodo ? 'Khi AI chưa chắc về một thẻ, lượt đó sẽ hiện ở đây.' : 'Các lượt khách nộp thẻ HSSV sẽ hiện ở đây.'}</div>
       </div>`
     return
@@ -238,7 +238,7 @@ async function showImage(id) {
     <a href="${escapeHtml(data.signedUrl)}" target="_blank" rel="noopener noreferrer" title="Mở ảnh lớn ở tab mới">
       <img src="${escapeHtml(data.signedUrl)}" alt="Ảnh thẻ HSSV" class="w-full sm:w-64 max-h-56 object-contain rounded-xl border border-glass-border bg-black/5" />
     </a>
-    <div class="text-[10px] text-text-muted">Link ảnh hết hạn sau 5 phút · Ảnh tự xoá: ${escapeHtml(formatDateTime(r.purge_at))}</div>`
+    <div class="text-[11px] sm:text-xs text-text-muted">Link ảnh hết hạn sau 5 phút · Ảnh tự xoá: ${escapeHtml(formatDateTime(r.purge_at))}</div>`
 }
 
 async function review(id, action) {

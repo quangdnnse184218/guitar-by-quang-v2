@@ -109,9 +109,9 @@ function renderUserResults(list) {
       <img src="${escapeHtml(avatarUrlFor(u))}" alt="" class="w-8 h-8 rounded-lg object-cover border border-glass-border flex-shrink-0" />
       <div class="flex-1 min-w-0">
         <div class="text-xs font-bold text-text-primary truncate">${escapeHtml(u.full_name || 'Khách vãng lai')}</div>
-        <div class="text-[10px] text-text-muted truncate">${escapeHtml(u.email || 'chưa có email')}</div>
+        <div class="text-[11px] sm:text-xs text-text-muted truncate">${escapeHtml(u.email || 'chưa có email')}</div>
       </div>
-      <span class="text-[10px] font-mono text-text-muted flex-shrink-0">${u.purchases_count || 0} tab</span>`
+      <span class="text-[11px] sm:text-xs font-mono text-text-muted flex-shrink-0">${u.purchases_count || 0} tab</span>`
     item.addEventListener('click', () => selectUser(u))
     userResults.appendChild(item)
   })
@@ -231,11 +231,11 @@ function renderSongs() {
         }">${on ? '<span class="w-2 h-2 rounded-full bg-accent-primary"></span>' : ''}</span>
         <span class="flex-1 min-w-0">
           <span class="block text-xs font-bold text-text-primary truncate">${escapeHtml(s.title)}</span>
-          <span class="block text-[11px] text-text-muted truncate">${escapeHtml(s.singer || '')}</span>
+          <span class="block text-[11px] sm:text-xs text-text-muted truncate">${escapeHtml(s.singer || '')}</span>
         </span>
-        ${owned ? '<span class="px-2 py-0.5 rounded-full bg-emerald-500/15 text-emerald-600 dark:text-emerald-400 text-[10px] font-bold whitespace-nowrap">Khách đã có</span>' : ''}
-        ${pending ? '<span class="px-2 py-0.5 rounded-full bg-amber-500/15 text-amber-600 dark:text-amber-400 text-[10px] font-bold whitespace-nowrap">Có đơn chờ</span>' : ''}
-        <span class="font-mono text-[11px] font-bold text-accent-primary flex-shrink-0">${s.price ? formatVnd(s.price) : 'Có phí'}</span>
+        ${owned ? '<span class="px-2 py-0.5 rounded-full bg-emerald-500/15 text-emerald-700 dark:text-emerald-400 text-[11px] sm:text-xs font-bold whitespace-nowrap">Khách đã có</span>' : ''}
+        ${pending ? '<span class="px-2 py-0.5 rounded-full bg-amber-500/15 text-amber-600 dark:text-amber-400 text-[11px] sm:text-xs font-bold whitespace-nowrap">Có đơn chờ</span>' : ''}
+        <span class="font-mono text-[11px] sm:text-xs font-bold text-accent-primary flex-shrink-0">${s.price ? formatVnd(s.price) : 'Có phí'}</span>
       </button>`
     })
     .join('')
@@ -265,8 +265,8 @@ function renderReasons() {
             : 'border-glass-border bg-black/[0.02] dark:bg-white/[0.03] hover:border-accent-primary/50'
         }">
         <span class="block text-xs font-bold text-text-primary">${escapeHtml(r.label)}</span>
-        <span class="inline-flex items-center gap-1 mt-1 text-[10px] font-bold ${
-          r.paid ? 'text-emerald-600 dark:text-emerald-400' : 'text-text-muted'
+        <span class="inline-flex items-center gap-1 mt-1 text-[11px] sm:text-xs font-bold ${
+          r.paid ? 'text-emerald-700 dark:text-emerald-400' : 'text-text-muted'
         }">
           <span class="w-1.5 h-1.5 rounded-full ${r.paid ? 'bg-emerald-500' : 'bg-text-muted opacity-60'}"></span>
           ${escapeHtml(r.hint)}
@@ -330,14 +330,14 @@ function renderSummary() {
     summaryRow(
       'Khách',
       selectedUser
-        ? `${escapeHtml(selectedUser.full_name || 'Khách vãng lai')}<span class="block text-[10px] font-normal text-text-muted">${escapeHtml(selectedUser.email || '')}</span>`
+        ? `${escapeHtml(selectedUser.full_name || 'Khách vãng lai')}<span class="block text-[11px] sm:text-xs font-normal text-text-muted">${escapeHtml(selectedUser.email || '')}</span>`
         : 'Chưa chọn',
       !selectedUser
     ) +
     summaryRow(
       'Tab',
       song
-        ? `${escapeHtml(song.title)}<span class="block text-[10px] font-mono font-normal text-accent-primary">${song.price ? formatVnd(song.price) : 'Có phí'}</span>`
+        ? `${escapeHtml(song.title)}<span class="block text-[11px] sm:text-xs font-mono font-normal text-accent-primary">${song.price ? formatVnd(song.price) : 'Có phí'}</span>`
         : 'Chưa chọn',
       !song
     ) +
@@ -411,7 +411,7 @@ function renderConsequences(song, reason) {
   syncAmountField(needsAmount, song)
 
   box.innerHTML = `
-    <div class="text-[10px] font-bold uppercase tracking-wider text-text-muted mb-2">Khi bấm cấp</div>
+    <div class="text-[11px] sm:text-xs font-bold uppercase tracking-wider text-text-muted mb-2">Khi bấm cấp</div>
     <ul class="space-y-1.5 text-[11.5px] leading-relaxed text-text-primary">${lines.join('')}</ul>`
   box.classList.remove('hidden')
 }
@@ -421,7 +421,7 @@ function warningBox(type, text) {
     danger: 'bg-rose-500/10 border-rose-500/30 text-rose-700 dark:text-rose-300',
     warn: 'bg-amber-500/10 border-amber-500/30 text-amber-600 dark:text-amber-400',
   }
-  return `<div class="px-3 py-2.5 rounded-xl border text-[11px] font-semibold leading-relaxed ${styles[type]}">${text}</div>`
+  return `<div class="px-3 py-2.5 rounded-xl border text-[11px] sm:text-xs font-semibold leading-relaxed ${styles[type]}">${text}</div>`
 }
 
 function renderWarnings() {
@@ -503,7 +503,7 @@ function renderTxBanner() {
         <div class="text-text-muted mt-0.5 break-words">Nội dung: ${linkedTransaction.content ? escapeHtml(linkedTransaction.content) : '(trống)'}</div>
         <div class="text-text-muted mt-0.5">Cấp xong, khoản này được đánh dấu là đã gán và biến khỏi danh sách Tiền về.</div>
       </div>
-      <button type="button" data-unlink-tx class="text-[11px] font-bold text-text-muted hover:text-text-primary cursor-pointer flex-shrink-0">Bỏ liên kết</button>
+      <button type="button" data-unlink-tx class="text-[11px] sm:text-xs font-bold text-text-muted hover:text-text-primary cursor-pointer flex-shrink-0">Bỏ liên kết</button>
     </div>`
   txBanner.classList.remove('hidden')
   txBanner.querySelector('[data-unlink-tx]')?.addEventListener('click', () => {
@@ -559,16 +559,16 @@ function showResult({ userId, userNameText, songTitle, driveGranted, closedStatu
 
   resultEl.innerHTML = `
     <div class="flex items-start gap-3">
-      <div class="w-9 h-9 rounded-xl bg-emerald-500/15 text-emerald-600 dark:text-emerald-400 flex items-center justify-center flex-shrink-0">
+      <div class="w-9 h-9 rounded-xl bg-emerald-500/15 text-emerald-700 dark:text-emerald-400 flex items-center justify-center flex-shrink-0">
         <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/></svg>
       </div>
       <div class="min-w-0 text-xs leading-relaxed">
         <div class="font-extrabold text-text-primary">Đã cấp quyền thành công</div>
         <div class="text-text-muted mt-0.5"><strong class="text-text-primary">${escapeHtml(songTitle)}</strong> cho <strong class="text-text-primary">${escapeHtml(userNameText)}</strong>.${closedText}</div>
-        <div class="mt-1 font-semibold ${driveGranted ? 'text-emerald-600 dark:text-emerald-400' : 'text-amber-600 dark:text-amber-400'}">
+        <div class="mt-1 font-semibold ${driveGranted ? 'text-emerald-700 dark:text-emerald-400' : 'text-amber-600 dark:text-amber-400'}">
           ${driveGranted ? 'Đã chia sẻ file Drive cho email của khách.' : 'Chưa chia sẻ được Drive tự động — bạn cần vào Drive chia sẻ tay.'}
         </div>
-        <button type="button" data-open-user="${escapeHtml(userId)}" class="mt-2 text-[11px] font-bold text-accent-primary hover:underline cursor-pointer">Xem hồ sơ khách →</button>
+        <button type="button" data-open-user="${escapeHtml(userId)}" class="mt-2 text-[11px] sm:text-xs font-bold text-accent-primary hover:underline cursor-pointer">Xem hồ sơ khách →</button>
       </div>
     </div>`
   resultEl.classList.remove('hidden')

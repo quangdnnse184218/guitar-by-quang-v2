@@ -104,7 +104,7 @@ export function confirmDialog(opts = {}) {
           class="mt-0.5 w-4 h-4 rounded accent-accent-primary flex-shrink-0" />
         <span class="min-w-0">
           <span class="block text-xs font-bold text-text-primary">${escapeHtml(opts.checkbox.label)}</span>
-          ${opts.checkbox.hint ? `<span class="block text-[11px] text-text-muted mt-0.5 leading-relaxed">${escapeHtml(opts.checkbox.hint)}</span>` : ''}
+          ${opts.checkbox.hint ? `<span class="block text-[11px] sm:text-xs text-text-muted mt-0.5 leading-relaxed">${escapeHtml(opts.checkbox.hint)}</span>` : ''}
         </span>
       </label>`
   }

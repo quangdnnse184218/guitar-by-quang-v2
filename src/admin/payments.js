@@ -39,7 +39,7 @@ const REASONS = {
 }
 
 const STATUS_PILL = {
-  matched: { label: 'Tự khớp', cls: 'bg-emerald-500/15 text-emerald-600 dark:text-emerald-400' },
+  matched: { label: 'Tự khớp', cls: 'bg-emerald-500/15 text-emerald-700 dark:text-emerald-400' },
   unmatched: { label: 'Chưa khớp', cls: 'bg-amber-500/15 text-amber-600 dark:text-amber-400' },
   assigned: { label: 'Đã gán', cls: 'bg-sky-500/15 text-sky-600 dark:text-sky-400' },
   dismissed: { label: 'Đã bỏ qua', cls: 'bg-black/10 dark:bg-white/10 text-text-muted' },
@@ -72,22 +72,22 @@ function candidateRow(tx, c) {
     <div class="flex flex-col sm:flex-row sm:items-center gap-2.5 p-3 rounded-xl bg-black/[0.03] dark:bg-white/[0.04] border border-glass-border">
       <div class="flex-1 min-w-0">
         <div class="flex items-center gap-1.5 flex-wrap">
-          <span class="font-mono font-extrabold text-[11px] text-text-primary">${escapeHtml(c.order_code)}</span>
-          <span class="px-1.5 py-0.5 rounded-md text-[9px] font-bold ${
+          <span class="font-mono font-extrabold text-[11px] sm:text-xs text-text-primary">${escapeHtml(c.order_code)}</span>
+          <span class="px-1.5 py-0.5 rounded-md text-[11px] sm:text-xs font-bold ${
             c.status === 'expired' ? 'bg-black/10 dark:bg-white/10 text-text-muted' : 'bg-amber-500/15 text-amber-600 dark:text-amber-400'
           }">${statusText}</span>
-          ${c.code_match ? '<span class="px-1.5 py-0.5 rounded-md bg-emerald-500/15 text-emerald-600 dark:text-emerald-400 text-[9px] font-bold">Đúng mã đơn</span>' : ''}
-          ${c.amount_match ? '<span class="px-1.5 py-0.5 rounded-md bg-emerald-500/15 text-emerald-600 dark:text-emerald-400 text-[9px] font-bold">Đúng số tiền</span>' : ''}
-          ${c.is_hssv ? '<span class="px-1.5 py-0.5 rounded-md bg-sky-500/15 text-sky-600 dark:text-sky-400 text-[9px] font-bold">HSSV</span>' : ''}
+          ${c.code_match ? '<span class="px-1.5 py-0.5 rounded-md bg-emerald-500/15 text-emerald-700 dark:text-emerald-400 text-[11px] sm:text-xs font-bold">Đúng mã đơn</span>' : ''}
+          ${c.amount_match ? '<span class="px-1.5 py-0.5 rounded-md bg-emerald-500/15 text-emerald-700 dark:text-emerald-400 text-[11px] sm:text-xs font-bold">Đúng số tiền</span>' : ''}
+          ${c.is_hssv ? '<span class="px-1.5 py-0.5 rounded-md bg-sky-500/15 text-sky-600 dark:text-sky-400 text-[11px] sm:text-xs font-bold">HSSV</span>' : ''}
         </div>
         <div class="text-xs font-bold text-text-primary truncate mt-0.5">
           ${escapeHtml(c.user_name)}
           <span class="text-text-muted font-normal">· ${escapeHtml(c.user_email || 'chưa có email')}</span>
         </div>
-        <div class="text-[11px] text-text-muted truncate">${escapeHtml(c.song_title)} · <span class="font-mono">${formatVnd(c.amount)}</span></div>
+        <div class="text-[11px] sm:text-xs text-text-muted truncate">${escapeHtml(c.song_title)} · <span class="font-mono">${formatVnd(c.amount)}</span></div>
       </div>
       <button type="button" data-assign-tx="${escapeHtml(tx.id)}" data-assign-order="${escapeHtml(c.order_id)}"
-        class="px-3.5 py-2 rounded-xl bg-warm-gradient hover:brightness-105 text-white text-[11px] font-bold transition-all cursor-pointer active:scale-95 whitespace-nowrap flex-shrink-0">
+        class="px-3.5 py-2 rounded-xl bg-warm-gradient hover:brightness-105 text-white text-[11px] sm:text-xs font-bold transition-all cursor-pointer active:scale-95 whitespace-nowrap flex-shrink-0">
         Gán cho khách này →
       </button>
     </div>`
@@ -104,37 +104,37 @@ function unmatchedCard(tx) {
       <div class="flex items-start justify-between gap-3 flex-wrap">
         <div class="min-w-0">
           <div class="text-2xl font-extrabold font-mono tabular-nums text-text-primary">${formatVnd(tx.amount)}</div>
-          <div class="text-[11px] text-text-muted mt-0.5">${escapeHtml(formatAge(minutes))}${tx.gateway ? ' · ' + escapeHtml(tx.gateway) : ''}</div>
+          <div class="text-[11px] sm:text-xs text-text-muted mt-0.5">${escapeHtml(formatAge(minutes))}${tx.gateway ? ' · ' + escapeHtml(tx.gateway) : ''}</div>
         </div>
         <div class="text-right">
-          <span class="inline-block px-2.5 py-1 rounded-full bg-amber-500/15 text-amber-600 dark:text-amber-400 text-[11px] font-extrabold">${escapeHtml(reason.label)}</span>
-          ${reason.hint ? `<div class="text-[10px] text-text-muted mt-1 max-w-[220px] ml-auto leading-snug">${escapeHtml(reason.hint)}</div>` : ''}
+          <span class="inline-block px-2.5 py-1 rounded-full bg-amber-500/15 text-amber-600 dark:text-amber-400 text-[11px] sm:text-xs font-extrabold">${escapeHtml(reason.label)}</span>
+          ${reason.hint ? `<div class="text-[11px] sm:text-xs text-text-muted mt-1 max-w-[220px] ml-auto leading-snug">${escapeHtml(reason.hint)}</div>` : ''}
         </div>
       </div>
 
       <div class="text-xs text-text-primary px-3 py-2.5 rounded-xl bg-black/5 dark:bg-white/5 border border-glass-border break-words">
-        <span class="text-[10px] font-bold uppercase tracking-wider text-text-muted block mb-0.5">Nội dung chuyển khoản</span>
+        <span class="text-[11px] sm:text-xs font-bold uppercase tracking-wider text-text-muted block mb-0.5">Nội dung chuyển khoản</span>
         ${tx.content ? escapeHtml(tx.content) : '<span class="text-text-muted italic">(trống)</span>'}
       </div>
 
       ${
         candidates.length > 0
           ? `<div class="space-y-2">
-               <div class="text-[10px] font-bold uppercase tracking-wider text-text-muted">Có thể là đơn của</div>
+               <div class="text-[11px] sm:text-xs font-bold uppercase tracking-wider text-text-muted">Có thể là đơn của</div>
                ${candidates.map((c) => candidateRow(tx, c)).join('')}
              </div>`
-          : `<div class="text-[11px] text-text-muted leading-relaxed">
+          : `<div class="text-[11px] sm:text-xs text-text-muted leading-relaxed">
                Không có đơn nào trùng số tiền và mã đơn. Nếu biết khách nào đã chuyển, bạn vẫn có thể gán thủ công.
              </div>`
       }
 
       <div class="flex items-center gap-2 flex-wrap pt-1">
         <button type="button" data-manual-tx="${escapeHtml(tx.id)}"
-          class="px-3.5 py-2 rounded-xl bg-glass-bg border border-glass-border hover:border-accent-primary hover:text-accent-primary text-text-primary text-[11px] font-bold transition-colors cursor-pointer">
+          class="px-3.5 py-2 rounded-xl bg-glass-bg border border-glass-border hover:border-accent-primary hover:text-accent-primary text-text-primary text-[11px] sm:text-xs font-bold transition-colors cursor-pointer">
           ${candidates.length > 0 ? 'Cấp cho khách khác…' : 'Chọn khách để cấp tab…'}
         </button>
         <button type="button" data-dismiss-tx="${escapeHtml(tx.id)}"
-          class="px-3.5 py-2 rounded-xl text-text-muted hover:text-text-primary text-[11px] font-bold transition-colors cursor-pointer">
+          class="px-3.5 py-2 rounded-xl text-text-muted hover:text-text-primary text-[11px] sm:text-xs font-bold transition-colors cursor-pointer">
           Không cần cấp tab
         </button>
       </div>
@@ -149,7 +149,7 @@ function renderUnmatched() {
   if (unmatched.length === 0) {
     unmatchedEl.innerHTML = `
       <div class="p-10 text-center space-y-1">
-        <div class="text-sm font-bold text-emerald-600 dark:text-emerald-400">Mọi khoản tiền về đều đã khớp đơn</div>
+        <div class="text-sm font-bold text-emerald-700 dark:text-emerald-400">Mọi khoản tiền về đều đã khớp đơn</div>
         <div class="text-xs text-text-muted">Khi có tiền về mà không khớp được đơn nào, nó sẽ hiện ở đây và bạn nhận được email báo.</div>
       </div>`
     return
@@ -255,13 +255,13 @@ function renderRecent(list) {
         <div class="flex-1 min-w-0">
           <div class="flex items-center gap-2 flex-wrap">
             <span class="font-mono font-bold text-xs text-text-primary">${formatVnd(t.amount)}</span>
-            <span class="px-2 py-0.5 rounded-full text-[10px] font-bold whitespace-nowrap ${pill.cls}">${pill.label}</span>
-            ${t.order_code ? `<span class="font-mono text-[10px] text-text-muted">${escapeHtml(t.order_code)}</span>` : ''}
+            <span class="px-2 py-0.5 rounded-full text-[11px] sm:text-xs font-bold whitespace-nowrap ${pill.cls}">${pill.label}</span>
+            ${t.order_code ? `<span class="font-mono text-[11px] sm:text-xs text-text-muted">${escapeHtml(t.order_code)}</span>` : ''}
           </div>
-          <div class="text-[11px] text-text-muted truncate mt-0.5">${escapeHtml(who || t.content || '—')}</div>
-          ${note ? `<div class="text-[10px] text-text-muted italic truncate">${escapeHtml(note)}${t.resolved_by_name ? ' — ' + escapeHtml(t.resolved_by_name) : ''}</div>` : ''}
+          <div class="text-[11px] sm:text-xs text-text-muted truncate mt-0.5">${escapeHtml(who || t.content || '—')}</div>
+          ${note ? `<div class="text-[11px] sm:text-xs text-text-muted italic truncate">${escapeHtml(note)}${t.resolved_by_name ? ' — ' + escapeHtml(t.resolved_by_name) : ''}</div>` : ''}
         </div>
-        <span class="text-[10px] text-text-muted font-mono flex-shrink-0 text-right">${escapeHtml(formatDateTime(t.occurred_at || t.received_at))}</span>
+        <span class="text-[11px] sm:text-xs text-text-muted font-mono flex-shrink-0 text-right">${escapeHtml(formatDateTime(t.occurred_at || t.received_at))}</span>
       </div>`
     })
     .join('')

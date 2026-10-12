@@ -291,7 +291,7 @@ export function renderSongCard(tab, options = {}) {
   const badgeHtml = isPurchased
     ? `
     <span class="px-1.5 sm:px-2 py-0.5 rounded-full text-[11px] sm:text-xs font-extrabold bg-emerald-700 text-white uppercase tracking-wide flex items-center gap-0.5">
-      <svg class="w-2.5 h-2.5 sm:w-3 sm:h-3" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/></svg>
+      <svg class="hidden sm:block w-3 h-3" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/></svg>
       <span>ĐÃ MUA</span>
     </span>
   `
@@ -303,7 +303,7 @@ export function renderSongCard(tab, options = {}) {
       <div class="space-y-2 sm:space-y-3">
         <div class="${SONG_THUMB_CLASS} bg-gradient-to-br ${thumbnailBg}">
           <div class="flex justify-between items-start text-xs uppercase font-bold tracking-wider">
-            ${renderCategoryBadge(tab, 'Nhạc Việt')}
+            ${isPurchased ? '<span></span>' : renderCategoryBadge(tab, 'Nhạc Việt')}
             <div class="flex items-center gap-1 flex-wrap max-sm:w-full sm:justify-end">
               ${pinnedBadge}
               ${badgeHtml}
@@ -327,7 +327,7 @@ export function renderSongCard(tab, options = {}) {
       <div class="pt-1 sm:pt-2">
         ${
           isPurchased
-            ? `<div class="w-full py-1.5 sm:py-2.5 px-1.5 rounded-full bg-amber-500/15 border border-amber-500/30 hover:bg-amber-500/25 text-amber-700 dark:text-amber-300 font-extrabold text-[11px] sm:text-xs transition-all flex items-center justify-center gap-1 active:scale-95 text-center cursor-pointer">
+            ? `<div class="w-full py-1.5 sm:py-2.5 px-1.5 rounded-full bg-amber-500/15 border border-amber-500/30 hover:bg-amber-500/25 text-amber-800 dark:text-amber-300 font-extrabold text-[11px] sm:text-xs transition-all flex items-center justify-center gap-1 active:scale-95 text-center cursor-pointer">
           <span class="truncate">Mở tab đã mua</span>
         </div>`
             : `<div class="w-full py-1.5 sm:py-2.5 px-1.5 rounded-full bg-warm-gradient hover:brightness-105 text-white font-bold text-[11px] sm:text-xs transition-all flex items-center justify-center gap-1 active:scale-95 text-center cursor-pointer">

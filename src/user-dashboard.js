@@ -21,18 +21,9 @@ import {
   normalizeAudioPath,
 } from './lib/songs-service.js'
 import { uploadToStorage, removeFromStorageByUrl, formatBytes, MAX_UPLOAD_BYTES } from './lib/storage-service.js'
-import { iconHeadphones, iconGuitar } from './icons.js'
 import { initShareButtons } from './lib/share-song.js'
 import { formatCompactPrice, formatCompactDiscount } from './lib/song-format.js'
-import {
-  SONG_THUMB_CLASS,
-  renderThumbMetaRow,
-  renderCategoryBadge,
-  renderPriceBadge,
-  renderHssvNote,
-  renderPlayDisc,
-  PLAY_LABEL_CLASS,
-} from './lib/song-card.js'
+import { renderSongCard, renderPlayDisc } from './lib/song-card.js'
 import {
   createOrderAndBuildQr,
   downloadQrImage,
@@ -490,213 +481,23 @@ function renderOverviewFeatured() {
     return
   }
 
+  // Dùng thẻ chung của trang chủ / Kho tab (src/lib/song-card.js). Trước đây trang này tự dựng
+  // một bản thẻ riêng nên lệch dần: nhãn "ĐÃ SỞ HỮU" rớt 3 dòng, nút tim + dấu tích chen nhau.
   overviewFeaturedTabs.innerHTML = featured
     .map((song) => {
-      const isFav = favoriteSongIds.has(String(song.id))
-      const isBought = purchasedSongIds.has(String(song.id))
-      const isFree = Boolean(song.is_free)
-      const levelStr = String(song.level || '5/10')
-      const levelNum = parseFloat(levelStr.replace(/[^0-9.]/g, '')) || 5
-      const percent = Math.min(100, Math.max(10, (levelNum / 10) * 100))
-
-      // Top action group: Favorite Heart Button + Check/View status
-      const userActionGroup = `
-      <div class="flex items-center gap-1" onclick="event.stopPropagation();">
-        <button onclick="window.toggleFavoriteSong(event, '${song.id}')" class="btn-fav-song p-1 sm:p-1.5 rounded-full bg-black/40 hover:bg-black/60 text-white transition-all cursor-pointer shadow-xs ${isFav ? 'text-rose-500 bg-black/70' : ''}" title="${isFav ? 'Bỏ yêu thích' : 'Thêm vào yêu thích'}">
-          <svg class="w-3 h-3 sm:w-3.5 sm:h-3.5 ${isFav ? 'fill-rose-500 stroke-rose-500' : 'fill-none stroke-current'}" viewBox="0 0 24 24" stroke-width="2">
-            <path stroke-linecap="round" stroke-linejoin="round" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"/>
-          </svg>
-        </button>
-        ${
-          isBought
-            ? `
-          <span class="p-1 sm:p-1.5 rounded-full bg-emerald-600 text-white shadow-xs" title="Đã sở hữu bài hát này">
-            <svg class="w-3 h-3 sm:w-3.5 sm:h-3.5" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/></svg>
-          </span>
-        `
-            : ''
-        }
-      </div>
-    `
-
-      // 1. FREE TAB CARD
-      if (isFree) {
-        return `
-        <div onclick="window.openFreeTabModal('${song.id}')" class="song-card glass-card card-interactive p-2.5 sm:p-4 rounded-2xl border border-glass-border flex flex-col justify-between space-y-2.5 sm:space-y-3.5 group cursor-pointer w-full" data-id="${song.id}">
-          <div class="space-y-2 sm:space-y-3">
-            <!-- Thumbnail Visual (Emerald Green Gradient) -->
-            <div class="${SONG_THUMB_CLASS} bg-gradient-to-br from-[#1E3A2F] via-[#2A4D3E] to-[#172A22]">
-              <div class="flex justify-between items-start text-xs uppercase font-bold tracking-wider">
-                ${renderCategoryBadge(song, "Fingerstyle")}
-                <div class="flex items-center gap-1 justify-end">
-                  ${userActionGroup}
-                  <span class="px-1.5 sm:px-2 py-0.5 rounded-full text-[11px] sm:text-xs font-extrabold bg-emerald-700 text-white uppercase tracking-wide">FREE</span>
-                </div>
-              </div>
-
-              <!-- Center Play Demo Button -->
-              <div class="my-auto text-center flex flex-col items-center justify-center py-0.5">
-                ${renderPlayDisc({ label: 'Xem tab miễn phí', tag: 'div' })}
-                <span class="${PLAY_LABEL_CLASS}">Xem tab miễn phí</span>
-              </div>
-
-              ${renderThumbMetaRow(song, "04:15")}
-            </div>
-
-            <!-- Details -->
-            <div class="space-y-1">
-              <h3 class="text-sm sm:text-base font-bold text-text-primary group-hover:text-emerald-500 transition-colors leading-snug line-clamp-2">
-                ${song.title}
-              </h3>
-
-              <div class="space-y-0.5 sm:space-y-1 pt-0.5">
-                <div class="flex items-center justify-between text-[11px] sm:text-xs font-bold text-text-muted">
-                  <span>Độ khó: <strong class="text-emerald-500 font-mono tabular-nums">${song.level || levelNum + '/10'}</strong></span>
-                </div>
-                <div class="w-full bg-text-primary/10 rounded-full h-1 sm:h-1.5 overflow-hidden">
-                  <div class="bg-emerald-500 h-1 sm:h-1.5 rounded-full transition-all duration-500" style="width: ${percent}%"></div>
-                </div>
-              </div>
-
-            </div>
-          </div>
-
-          <div class="pt-1 sm:pt-2">
-            <div class="w-full py-1.5 sm:py-2.5 px-1.5 rounded-full bg-emerald-500/15 border border-emerald-500/30 text-emerald-600 dark:text-emerald-400 font-bold text-[11px] sm:text-xs transition-all shadow-xs flex items-center justify-center gap-1 active:scale-95 text-center cursor-pointer group-hover:bg-emerald-500/25">
-              <span class="truncate">Xem Video Tab (Free)</span>
-            </div>
-          </div>
-        </div>
-      `
-      }
-
-      // 2. PAID TAB CARD
       const rawPrice = song.price_formatted || song.priceFormatted || song.price || '239k'
-      const priceFormatted = formatCompactPrice(rawPrice)
-      const discountNote = formatCompactDiscount(song.discount_note || song.discountNote)
-      const videoDemoUrl = song.video_demo_url || song.video_demo || `/assets/${song.id}demo.mp4`
-
-      if (isBought) {
-        return `
-        <div onclick="window.navigateToPurchasesTab('${song.id}')" class="song-card glass-card card-interactive p-2.5 sm:p-4 flex flex-col justify-between space-y-2.5 sm:space-y-3.5 group cursor-pointer rounded-2xl border border-amber-500/40 hover:border-amber-400 hover:shadow-xl transition-all w-full" data-id="${song.id}">
-          <div class="space-y-2 sm:space-y-3">
-            <!-- Thumbnail Visual (Warm Brown/Orange Gradient) -->
-            <div class="${SONG_THUMB_CLASS} bg-gradient-to-br from-[#9a4b24] via-[#7d3b19] to-[#54240d]">
-              <div class="flex justify-between items-start text-xs uppercase font-bold tracking-wider">
-                ${renderCategoryBadge(song, "NHẠC VIỆT")}
-                <div class="flex items-center gap-1 justify-end">
-                  ${userActionGroup}
-                  <span class="px-1.5 sm:px-2 py-0.5 rounded-full text-[11px] sm:text-xs font-extrabold bg-emerald-700 text-white uppercase tracking-wide flex items-center gap-0.5">
-                    <span>✓</span>
-                    <span>ĐÃ SỞ HỮU</span>
-                  </span>
-                </div>
-              </div>
-
-              <!-- Center Play Demo Button -->
-              <div class="my-auto text-center flex flex-col items-center justify-center py-0.5" onclick="event.stopPropagation(); window.navigateToPurchasesTab('${song.id}')">
-                ${renderPlayDisc({ label: 'Mở tab đã mua' })}
-                <span class="${PLAY_LABEL_CLASS}">Xem trong tab đã mua</span>
-              </div>
-
-              ${renderThumbMetaRow(song, "03:40")}
-            </div>
-
-            <!-- Details -->
-            <div class="space-y-1">
-              <h3 class="text-sm sm:text-base font-bold text-text-primary group-hover:text-accent-primary transition-colors leading-snug line-clamp-2">
-                ${song.title}
-              </h3>
-
-              <div class="space-y-0.5 sm:space-y-1 pt-0.5">
-                <div class="flex items-center justify-between text-[11px] sm:text-xs font-bold text-text-muted">
-                  <span>Độ khó: <strong class="text-accent-primary font-mono tabular-nums">${song.level || levelNum + '/10'}</strong></span>
-                </div>
-                <div class="w-full bg-text-primary/10 rounded-full h-1 sm:h-1.5 overflow-hidden">
-                  <div class="bg-warm-gradient h-1 sm:h-1.5 rounded-full transition-all duration-500" style="width: ${percent}%"></div>
-                </div>
-              </div>
-
-            </div>
-          </div>
-
-          <div class="pt-1 sm:pt-2">
-            <div class="w-full py-1.5 sm:py-2.5 px-1.5 rounded-full bg-amber-500/15 border border-amber-500/30 hover:bg-amber-500/25 text-amber-600 dark:text-amber-300 font-extrabold text-[11px] sm:text-xs transition-all shadow-xs flex items-center justify-center gap-1 active:scale-95 text-center cursor-pointer">
-              <span class="truncate">Mở tab đã mua</span>
-            </div>
-          </div>
-        </div>
-      `
-      }
-
-      return `
-      <div onclick="window.openCheckoutModal('${song.id}')" class="song-card glass-card card-interactive p-2.5 sm:p-4 flex flex-col justify-between space-y-2.5 sm:space-y-3.5 group cursor-pointer rounded-2xl border border-glass-border hover:border-amber-400 hover:shadow-xl transition-all w-full" data-id="${song.id}">
-        <div class="space-y-2 sm:space-y-3">
-          <!-- Thumbnail Visual (Warm Brown/Orange Gradient) -->
-          <div class="${SONG_THUMB_CLASS} bg-gradient-to-br from-[#9a4b24] via-[#7d3b19] to-[#54240d]">
-            <div class="flex justify-between items-start text-xs uppercase font-bold tracking-wider">
-              ${renderCategoryBadge(song, "NHẠC VIỆT")}
-              <div class="flex items-start gap-1 justify-end">
-                ${userActionGroup}
-                ${renderPriceBadge(priceFormatted)}
-              </div>
-            </div>
-
-            <!-- Center Play Demo Button -->
-            ${
-              videoDemoUrl
-                ? `
-            <div class="my-auto text-center flex flex-col items-center justify-center py-0.5" onclick="event.stopPropagation(); window.openVideoDemoModal('${escapeHtml(song.title)}', '${videoDemoUrl}', false)">
-              ${renderPlayDisc({ label: 'Xem demo' })}
-              <span class="${PLAY_LABEL_CLASS}">Xem demo</span>
-            </div>
-            `
-                : song.audio_demo || song.demo_audio_url || song.audio_url
-                  ? `
-            <div class="my-auto text-center flex flex-col items-center justify-center py-0.5" onclick="event.stopPropagation(); window.openVideoDemoModal('${escapeHtml(song.title)}', '${escapeHtml(song.audio_demo || song.demo_audio_url || song.audio_url)}', true)">
-              ${renderPlayDisc({ label: 'Nghe audio demo', icon: iconHeadphones('w-3.5 h-3.5 sm:w-5 sm:h-5') })}
-              <span class="${PLAY_LABEL_CLASS}">Nghe audio demo</span>
-            </div>
-            `
-                  : `
-            <div class="my-auto text-center flex flex-col items-center justify-center opacity-80 py-0.5">
-              <div class="w-6 h-6 sm:w-8 sm:h-8 rounded-full bg-black/30 flex items-center justify-center text-white shadow-sm">
-                ${iconGuitar('w-3 h-3 sm:w-3.5 sm:h-3.5')}
-              </div>
-              <span class="text-[11px] sm:text-xs font-bold mt-0.5 text-white/80 tracking-wide">Acoustic Tab</span>
-            </div>
-            `
-            }
-
-            ${renderThumbMetaRow(song, "03:40")}
-          </div>
-
-          <!-- Details -->
-          <div class="space-y-1">
-            <h3 class="text-sm sm:text-base font-bold text-text-primary group-hover:text-accent-primary transition-colors leading-snug line-clamp-2">
-              ${song.title}
-            </h3>
-
-            <div class="space-y-0.5 sm:space-y-1 pt-0.5">
-              <div class="flex flex-wrap items-center justify-between gap-x-1 gap-y-1 text-[11px] sm:text-xs font-medium text-text-muted">
-                <span class="whitespace-nowrap">Độ khó: <strong class="text-accent-primary font-mono tabular-nums">${song.level || levelNum + '/10'}</strong></span>
-                ${renderHssvNote(discountNote)}
-              </div>
-              <div class="w-full bg-text-primary/10 rounded-full h-1 sm:h-1.5 overflow-hidden">
-                <div class="bg-warm-gradient h-1 sm:h-1.5 rounded-full transition-all duration-500" style="width: ${percent}%"></div>
-              </div>
-            </div>
-
-          </div>
-        </div>
-
-        <div class="pt-1 sm:pt-2">
-          <div class="w-full py-1.5 sm:py-2.5 px-1.5 rounded-full bg-warm-gradient hover:brightness-105 text-white font-bold text-[11px] sm:text-xs transition-all flex items-center justify-center gap-1 active:scale-95 text-center cursor-pointer">
-            <span class="truncate">Mua tab<span class="hidden sm:inline"> · <span class="uppercase tabular-nums">${priceFormatted}</span></span></span>
-          </div>
-        </div>
-      </div>
-    `
+      return renderSongCard(
+        {
+          ...song,
+          price_formatted: formatCompactPrice(rawPrice),
+          discount_note: formatCompactDiscount(song.discount_note || song.discountNote),
+        },
+        {
+          isFavorite: favoriteSongIds.has(String(song.id)),
+          isPurchased: purchasedSongIds.has(String(song.id)),
+          showFavoriteButton: true,
+        }
+      )
     })
     .join('')
 }
@@ -1166,6 +967,9 @@ window.downloadCheckoutQr = function downloadCheckoutQr() {
     showToast('Không tải được ảnh QR, thử lại nhé!', 'error')
   })
 }
+
+// Thẻ chung (song-card.js) gọi tên này; trang cá nhân vốn dùng toggleFavoriteSong.
+window.handleToggleFavorite = (event, songId) => window.toggleFavoriteSong(event, songId)
 
 window.toggleFavoriteSong = async function (event, songId) {
   if (event) event.stopPropagation()

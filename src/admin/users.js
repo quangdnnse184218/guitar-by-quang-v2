@@ -56,12 +56,12 @@ function sortedFilteredUsers() {
 
 function roleBadge(u) {
   if (u.role === 'admin') {
-    return `<span class="px-2 py-0.5 rounded-md bg-rose-500/15 text-rose-700 dark:text-rose-300 text-[10px] font-extrabold uppercase tracking-wider border border-rose-500/30">ADMIN</span>`
+    return `<span class="px-2 py-0.5 rounded-md bg-rose-500/15 text-rose-700 dark:text-rose-300 text-[11px] sm:text-xs font-extrabold uppercase tracking-wider border border-rose-500/30">ADMIN</span>`
   }
   if (u.purchases_count > 0) {
-    return `<span class="px-2 py-0.5 rounded-full bg-amber-500/20 text-amber-600 dark:text-amber-300 text-[10px] font-bold border border-amber-500/30 shadow-glow">VIP Member</span>`
+    return `<span class="px-2 py-0.5 rounded-full bg-amber-500/20 text-amber-600 dark:text-amber-300 text-[11px] sm:text-xs font-bold border border-amber-500/30 shadow-glow">VIP Member</span>`
   }
-  return `<span class="px-2 py-0.5 rounded-full bg-black/5 dark:bg-white/5 border border-glass-border text-text-muted text-[10px] font-medium">Free</span>`
+  return `<span class="px-2 py-0.5 rounded-full bg-black/5 dark:bg-white/5 border border-glass-border text-text-muted text-[11px] sm:text-xs font-medium">Free</span>`
 }
 
 const ICON_COPY =
@@ -96,7 +96,7 @@ function renderUsersTable() {
           <div class="flex-1 min-w-0 text-left">
             <div class="text-xs sm:text-sm font-bold text-text-primary flex items-center gap-1.5 flex-wrap">
               <span class="truncate max-w-[140px] sm:max-w-none">${escapeHtml(u.full_name || 'Khách Vãng Lai')}</span>
-              ${isSelf ? '<span class="text-[10px] text-accent-primary font-bold">(Bạn)</span>' : ''}
+              ${isSelf ? '<span class="text-[11px] sm:text-xs text-accent-primary font-bold">(Bạn)</span>' : ''}
               <div class="sm:hidden ml-auto">${roleBadge(u)}</div>
             </div>
             <div class="text-[11px] sm:text-xs text-text-muted font-medium truncate">${escapeHtml(u.email || 'Chưa cập nhật email')}</div>
@@ -105,7 +105,7 @@ function renderUsersTable() {
       </td>
       <td data-label="Mã User" class="p-3 user-col-uuid">
         <div class="flex items-center justify-between sm:justify-start gap-1.5 w-full">
-          <span class="text-[11px] font-bold text-text-muted sm:hidden">Mã UUID:</span>
+          <span class="text-[11px] sm:text-xs font-bold text-text-muted sm:hidden">Mã UUID:</span>
           <div class="flex items-center gap-1.5">
             <span class="font-mono text-[11px] sm:text-xs text-accent-primary bg-black/5 dark:bg-white/5 px-2 py-0.5 sm:py-1 rounded-lg border border-glass-border cursor-help" title="${escapeHtml(uuidStr)}">${escapeHtml(shortUuid)}</span>
             <button type="button" data-copy-uuid="${escapeHtml(uuidStr)}" class="p-1 sm:p-1.5 rounded-lg bg-glass-bg border border-glass-border hover:bg-glass-bg-hover hover:border-accent-primary text-text-muted hover:text-accent-primary transition-all cursor-pointer" title="Copy UUID">${ICON_COPY}</button>
@@ -115,7 +115,7 @@ function renderUsersTable() {
       <td data-label="Vai trò" class="p-3 text-center user-col-role">${roleBadge(u)}</td>
       <td data-label="Hoạt động" class="p-3 text-center user-col-stats">
         <div class="flex items-center justify-between sm:justify-center w-full">
-          <span class="text-[11px] font-bold text-text-muted sm:hidden">Hoạt động:</span>
+          <span class="text-[11px] sm:text-xs font-bold text-text-muted sm:hidden">Hoạt động:</span>
           <div class="flex items-center gap-2">
             <span class="inline-flex items-center gap-1 text-xs font-mono font-bold ${u.purchases_count > 0 ? 'text-amber-500 bg-amber-500/10 px-2 py-0.5 rounded-md border border-amber-500/20' : 'text-text-muted'}" title="Đã mua">
               <svg class="w-3 h-3" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M13 2L4.5 14h6L9 22l10-13h-6.5L13 2z"/></svg>${u.purchases_count || 0} bài
@@ -126,9 +126,9 @@ function renderUsersTable() {
           </div>
         </div>
       </td>
-      <td data-label="Ngày đăng ký" class="p-3 text-[11px] text-text-muted font-medium user-col-date">
+      <td data-label="Ngày đăng ký" class="p-3 text-[11px] sm:text-xs text-text-muted font-medium user-col-date">
         <div class="flex items-center justify-between sm:justify-start w-full">
-          <span class="text-[11px] font-bold text-text-muted sm:hidden">Đăng ký:</span>
+          <span class="text-[11px] sm:text-xs font-bold text-text-muted sm:hidden">Đăng ký:</span>
           <span>${u.created_at ? new Date(u.created_at).toLocaleDateString('vi-VN') : '—'}</span>
         </div>
       </td>

@@ -60,7 +60,7 @@ function renderGearsTable() {
         <td data-label="Vị Trí" class="py-3 px-3 text-center gear-col-order">
           <div class="inline-flex items-center gap-1 sm:gap-1.5 p-1 rounded-xl bg-black/5 dark:bg-white/5 border border-glass-border w-full sm:w-auto justify-between sm:justify-center">
             <div class="flex items-center gap-1">
-              <span class="text-[10px] font-mono font-extrabold text-accent-primary sm:hidden">#</span>
+              <span class="text-[11px] sm:text-xs font-mono font-extrabold text-accent-primary sm:hidden">#</span>
               <input
                 type="number"
                 min="1"
@@ -100,7 +100,7 @@ function renderGearsTable() {
             <img src="${image}" alt="${name}" class="w-full sm:w-10 aspect-video sm:aspect-square sm:h-10 rounded-xl object-cover bg-black/5 border border-glass-border flex-shrink-0" onerror="this.src='/assets/avatar.jpg'" />
             <div class="flex flex-col text-left">
               <span class="text-xs sm:text-sm font-extrabold line-clamp-2 leading-snug">${name}</span>
-              <span class="text-[10px] sm:text-xs text-accent-primary font-bold mt-0.5 sm:hidden font-mono">${price}</span>
+              <span class="text-[11px] sm:text-xs text-accent-primary font-bold mt-0.5 sm:hidden font-mono">${price}</span>
             </div>
           </div>
         </td>
@@ -205,10 +205,10 @@ if (gearImageFileInput && gearImageFileName) {
     }
     if (file.size > MAX_UPLOAD_BYTES) {
       gearImageFileName.textContent = `⚠️ ${file.name} (${formatBytes(file.size)}) vượt quá 50MB, sẽ không tải lên được.`
-      gearImageFileName.className = 'text-[11px] text-rose-500 truncate flex-1'
+      gearImageFileName.className = 'text-[11px] sm:text-xs text-rose-500 truncate flex-1'
     } else {
       gearImageFileName.textContent = `✓ ${file.name} (${formatBytes(file.size)})`
-      gearImageFileName.className = 'text-[11px] text-emerald-600 dark:text-emerald-400 truncate flex-1'
+      gearImageFileName.className = 'text-[11px] sm:text-xs text-emerald-700 dark:text-emerald-400 truncate flex-1'
     }
   })
 }

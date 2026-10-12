@@ -118,7 +118,7 @@ function renderAttention() {
   if (items.length === 0) {
     setHtml(
       'ov-attention',
-      `<div class="flex items-center gap-2.5 p-3.5 rounded-xl border border-emerald-500/25 bg-emerald-500/[0.06] text-xs font-semibold text-emerald-600 dark:text-emerald-400">
+      `<div class="flex items-center gap-2.5 p-3.5 rounded-xl border border-emerald-500/25 bg-emerald-500/[0.06] text-xs font-semibold text-emerald-700 dark:text-emerald-400">
         <svg class="w-4 h-4 flex-shrink-0" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/></svg>
         Không có việc nào cần xử lý lúc này.
       </div>`
@@ -135,8 +135,8 @@ function renderAttention() {
           <span class="w-2 h-2 rounded-full mt-1.5 flex-shrink-0 ${TONE[it.tone].dot}"></span>
           <div class="flex-1 min-w-0">
             <div class="text-xs font-extrabold text-text-primary">${escapeHtml(it.title)}</div>
-            <div class="text-[11px] text-text-muted leading-relaxed mt-0.5">${escapeHtml(it.detail)}</div>
-            <button type="button" data-attention="${i}" class="mt-1.5 text-[11px] font-bold text-accent-primary hover:underline cursor-pointer">${escapeHtml(it.action)} →</button>
+            <div class="text-[11px] sm:text-xs text-text-muted leading-relaxed mt-0.5">${escapeHtml(it.detail)}</div>
+            <button type="button" data-attention="${i}" class="mt-1.5 text-[11px] sm:text-xs font-bold text-accent-primary hover:underline cursor-pointer">${escapeHtml(it.action)} →</button>
           </div>
         </div>`
       )
@@ -156,8 +156,8 @@ function deltaChip(current, previous) {
   const pct = percentChange(current, previous)
   if (pct === null) return ''
   const up = pct >= 0
-  return `<span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-extrabold ${
-    up ? 'bg-emerald-500/15 text-emerald-600 dark:text-emerald-400' : 'bg-rose-500/15 text-rose-700 dark:text-rose-300'
+  return `<span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[11px] sm:text-xs font-extrabold ${
+    up ? 'bg-emerald-500/15 text-emerald-700 dark:text-emerald-400' : 'bg-rose-500/15 text-rose-700 dark:text-rose-300'
   }">${up ? '▲' : '▼'} ${Math.abs(pct)}%</span>`
 }
 
@@ -171,16 +171,16 @@ function renderKpis(s) {
     const prev = Number(s.revenue_prev_month_to_date) || 0
     compare =
       prev > 0
-        ? `${deltaChip(month, prev)} <span class="text-[11px] text-text-muted">so với cùng kỳ tháng trước (${formatVnd(prev)})</span>`
-        : `<span class="text-[11px] text-text-muted">Tháng trước chưa có doanh thu để so sánh</span>`
+        ? `${deltaChip(month, prev)} <span class="text-[11px] sm:text-xs text-text-muted">so với cùng kỳ tháng trước (${formatVnd(prev)})</span>`
+        : `<span class="text-[11px] sm:text-xs text-text-muted">Tháng trước chưa có doanh thu để so sánh</span>`
   }
 
   setHtml(
     'ov-kpi-month',
-    `<div class="text-[11px] font-bold text-text-muted uppercase tracking-wider">Doanh thu tháng này</div>
+    `<div class="text-[11px] sm:text-xs font-bold text-text-muted uppercase tracking-wider">Doanh thu tháng này</div>
      <div class="text-3xl sm:text-4xl font-extrabold text-text-primary mt-1 font-mono tabular-nums tracking-tight">${formatVnd(month)}</div>
      ${compare ? `<div class="flex items-center gap-2 flex-wrap mt-2">${compare}</div>` : ''}
-     <div class="mt-3 pt-3 border-t border-glass-border grid grid-cols-3 gap-3 text-[11px]">
+     <div class="mt-3 pt-3 border-t border-glass-border grid grid-cols-3 gap-3 text-[11px] sm:text-xs">
        <div><div class="text-text-muted">Đơn đã trả</div><div class="font-mono font-bold text-text-primary text-sm">${monthOrders}</div></div>
        <div><div class="text-text-muted">TB mỗi đơn</div><div class="font-mono font-bold text-text-primary text-sm">${aov > 0 ? formatVnd(aov) : '—'}</div></div>
        <div><div class="text-text-muted">Từ trước tới nay</div><div class="font-mono font-bold text-text-primary text-sm">${formatVndShort(s.revenue_total)}</div></div>
@@ -191,17 +191,17 @@ function renderKpis(s) {
   const yesterdayLine = has(s.revenue_yesterday) ? `Hôm qua ${formatVnd(s.revenue_yesterday)}` : ''
   setHtml(
     'ov-kpi-today',
-    `<div class="text-[11px] font-bold text-text-muted uppercase tracking-wider">Doanh thu hôm nay</div>
-     <div class="text-2xl font-extrabold mt-1 font-mono tabular-nums ${today > 0 ? 'text-emerald-600 dark:text-emerald-400' : 'text-text-primary'}">${formatVnd(today)}</div>
-     ${yesterdayLine ? `<div class="text-[11px] text-text-muted mt-1.5">${yesterdayLine}</div>` : ''}`
+    `<div class="text-[11px] sm:text-xs font-bold text-text-muted uppercase tracking-wider">Doanh thu hôm nay</div>
+     <div class="text-2xl font-extrabold mt-1 font-mono tabular-nums ${today > 0 ? 'text-emerald-700 dark:text-emerald-400' : 'text-text-primary'}">${formatVnd(today)}</div>
+     ${yesterdayLine ? `<div class="text-[11px] sm:text-xs text-text-muted mt-1.5">${yesterdayLine}</div>` : ''}`
   )
 
   const newWeek = Number(s.users_new_week) || 0
   setHtml(
     'ov-kpi-users',
-    `<div class="text-[11px] font-bold text-text-muted uppercase tracking-wider">Thành viên</div>
+    `<div class="text-[11px] sm:text-xs font-bold text-text-muted uppercase tracking-wider">Thành viên</div>
      <div class="text-2xl font-extrabold text-text-primary mt-1 font-mono tabular-nums">${Number(s.users_total) || 0}</div>
-     <div class="text-[11px] text-text-muted mt-1.5">+${newWeek} tuần này${has(s.users_new_month) ? ` · +${Number(s.users_new_month) || 0} trong 30 ngày` : ''}</div>`
+     <div class="text-[11px] sm:text-xs text-text-muted mt-1.5">+${newWeek} tuần này${has(s.users_new_month) ? ` · +${Number(s.users_new_month) || 0} trong 30 ngày` : ''}</div>`
   )
 }
 
@@ -225,7 +225,7 @@ function renderChart(s) {
     toggle.classList.toggle('hidden', !hasLongRange)
     toggle.querySelectorAll('[data-range]').forEach((btn) => {
       const on = Number(btn.dataset.range) === chartRange
-      btn.className = `px-3 py-1.5 rounded-lg text-[11px] font-bold transition-colors cursor-pointer ${
+      btn.className = `px-3 py-1.5 rounded-lg text-[11px] sm:text-xs font-bold transition-colors cursor-pointer ${
         on ? 'bg-accent-solid text-white' : 'text-text-muted hover:text-text-primary'
       }`
     })
@@ -267,7 +267,7 @@ function renderChart(s) {
       const orders = has(d.orders) ? ` · ${d.orders} đơn` : ''
       return `
         <div class="flex-1 min-w-0 h-full flex items-end group relative" title="${escapeHtml(d.label)}: ${formatVnd(v)}${orders}">
-          ${isToday && v > 0 ? `<span class="absolute left-1/2 -translate-x-1/2 text-[10px] font-mono font-bold text-text-primary whitespace-nowrap" style="bottom: calc(${pct}% + 4px)">${formatVndShort(v)}</span>` : ''}
+          ${isToday && v > 0 ? `<span class="absolute left-1/2 -translate-x-1/2 text-[11px] sm:text-xs font-mono font-bold text-text-primary whitespace-nowrap" style="bottom: calc(${pct}% + 4px)">${formatVndShort(v)}</span>` : ''}
           <div class="w-full rounded-t-md transition-opacity ${
             v > 0 ? (isToday ? 'bg-warm-gradient' : 'bg-accent-primary/55 group-hover:bg-accent-primary') : 'bg-black/10 dark:bg-white/10'
           }" style="height: ${v > 0 ? pct : 1.5}%"></div>
@@ -280,13 +280,13 @@ function renderChart(s) {
       // Đếm lùi từ hôm nay: nhãn cuối luôn có mặt và không bao giờ chồng nhãn
       // kề nó (đếm xuôi thì ngày cuối có thể rơi sát một nhãn cách 5 ngày).
       const show = (lastIndex - i) % labelEvery === 0
-      return `<span class="flex-1 min-w-0 text-center text-[9px] text-text-muted font-medium whitespace-nowrap overflow-visible">${show ? escapeHtml(d.label) : ''}</span>`
+      return `<span class="flex-1 min-w-0 text-center text-[11px] sm:text-xs text-text-muted font-medium whitespace-nowrap overflow-visible">${show ? escapeHtml(d.label) : ''}</span>`
     })
     .join('')
 
   chart.innerHTML = `
     <div class="flex gap-2">
-      <div class="h-40 w-9 flex flex-col justify-between text-right text-[9px] font-mono text-text-muted flex-shrink-0 -my-1.5">
+      <div class="h-40 w-9 flex flex-col justify-between text-right text-[11px] sm:text-xs font-mono text-text-muted flex-shrink-0 -my-1.5">
         <span>${max > 0 ? formatVndShort(scaleMax) : ''}</span>
         <span>${max > 0 ? formatVndShort(scaleMax / 2) : ''}</span>
         <span>0</span>
@@ -327,7 +327,7 @@ function renderTopSongs(songs) {
             <span class="text-xs font-bold text-text-primary truncate min-w-0">
               <span class="text-text-muted font-mono mr-1">${i + 1}</span>${escapeHtml(s.song_title)}
             </span>
-            <span class="flex-shrink-0 text-[11px] font-mono text-text-muted">
+            <span class="flex-shrink-0 text-[11px] sm:text-xs font-mono text-text-muted">
               <strong class="text-accent-primary">${count}</strong> lượt${has(s.revenue) && Number(s.revenue) > 0 ? ` · ${formatVndShort(s.revenue)}` : ''}
             </span>
           </div>
@@ -360,10 +360,10 @@ function renderActivity() {
             <span class="text-text-muted"> mở khoá </span>
             <span class="font-bold text-accent-primary">${escapeHtml(r.song_title || r.song_id)}</span>
           </div>
-          <span class="hidden sm:inline px-2 py-0.5 rounded-full text-[10px] font-bold flex-shrink-0 ${
-            r.is_manual ? 'bg-amber-500/15 text-amber-600 dark:text-amber-400' : 'bg-emerald-500/15 text-emerald-600 dark:text-emerald-400'
+          <span class="hidden sm:inline px-2 py-0.5 rounded-full text-[11px] sm:text-xs font-bold flex-shrink-0 ${
+            r.is_manual ? 'bg-amber-500/15 text-amber-600 dark:text-amber-400' : 'bg-emerald-500/15 text-emerald-700 dark:text-emerald-400'
           }">${r.is_manual ? 'Cấp tay' : 'Tự động'}</span>
-          <span class="text-[10px] text-text-muted flex-shrink-0 w-20 text-right">${formatAge(minutes)}</span>
+          <span class="text-[11px] sm:text-xs text-text-muted flex-shrink-0 w-20 text-right">${formatAge(minutes)}</span>
         </div>`
       })
       .join('')

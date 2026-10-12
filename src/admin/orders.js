@@ -110,9 +110,9 @@ function renderSummary() {
 
   const tile = (value, label, hint, tone) => `
     <div class="glass-card border border-glass-border rounded-2xl p-3.5 sm:p-4">
-      <div class="text-[10px] font-bold text-text-muted uppercase tracking-wider">${label}</div>
+      <div class="text-[11px] sm:text-xs font-bold text-text-muted uppercase tracking-wider">${label}</div>
       <div class="text-xl sm:text-2xl font-extrabold mt-0.5 font-mono tabular-nums ${tone}">${value}</div>
-      <div class="text-[10px] text-text-muted font-medium mt-0.5">${hint}</div>
+      <div class="text-[11px] sm:text-xs text-text-muted font-medium mt-0.5">${hint}</div>
     </div>`
 
   summaryEl.innerHTML =
@@ -136,7 +136,7 @@ function renderFilters() {
     .map(([key, label, count]) => {
       const on = activeFilter === key
       return `<button type="button" data-filter="${key}"
-        class="px-3 py-1.5 rounded-full text-[11px] font-bold whitespace-nowrap transition-colors cursor-pointer border ${
+        class="px-3 py-1.5 rounded-full text-[11px] sm:text-xs font-bold whitespace-nowrap transition-colors cursor-pointer border ${
           on
             ? 'bg-accent-solid text-white border-accent-primary'
             : 'bg-glass-bg text-text-muted border-glass-border hover:text-text-primary'
@@ -179,9 +179,9 @@ function orderRow(o) {
             ${escapeHtml(o.order_code)}
             <svg class="w-3 h-3 opacity-50" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"/></svg>
           </button>
-          <span class="px-2 py-0.5 rounded-full text-[10px] font-bold whitespace-nowrap ${group.pill}">${group.label}</span>
-          <span class="text-[10px] text-text-muted">${formatAge(o.age_minutes)}</span>
-          ${o.is_hssv ? '<span class="px-2 py-0.5 rounded-full bg-sky-500/15 text-sky-600 dark:text-sky-400 text-[10px] font-bold">HSSV</span>' : ''}
+          <span class="px-2 py-0.5 rounded-full text-[11px] sm:text-xs font-bold whitespace-nowrap ${group.pill}">${group.label}</span>
+          <span class="text-[11px] sm:text-xs text-text-muted">${formatAge(o.age_minutes)}</span>
+          ${o.is_hssv ? '<span class="px-2 py-0.5 rounded-full bg-sky-500/15 text-sky-600 dark:text-sky-400 text-[11px] sm:text-xs font-bold">HSSV</span>' : ''}
         </div>
         <div class="text-sm font-bold text-text-primary truncate">
           ${escapeHtml(o.user_name)}
@@ -194,11 +194,11 @@ function orderRow(o) {
       </div>
       <div class="flex items-center gap-2 flex-shrink-0">
         <button type="button" data-view-user="${escapeHtml(o.user_id)}"
-          class="px-3 py-2 rounded-xl bg-glass-bg border border-glass-border hover:border-accent-primary hover:text-accent-primary text-text-primary text-[11px] font-bold transition-colors cursor-pointer whitespace-nowrap">
+          class="px-3 py-2 rounded-xl bg-glass-bg border border-glass-border hover:border-accent-primary hover:text-accent-primary text-text-primary text-[11px] sm:text-xs font-bold transition-colors cursor-pointer whitespace-nowrap">
           Xem khách
         </button>
         <button type="button" data-grant-user="${escapeHtml(o.user_id)}" data-grant-song="${escapeHtml(o.song_id)}" data-grant-code="${escapeHtml(o.order_code)}"
-          class="px-4 py-2 rounded-xl bg-warm-gradient hover:brightness-105 text-white text-[11px] font-bold transition-all cursor-pointer active:scale-95 whitespace-nowrap">
+          class="px-4 py-2 rounded-xl bg-warm-gradient hover:brightness-105 text-white text-[11px] sm:text-xs font-bold transition-all cursor-pointer active:scale-95 whitespace-nowrap">
           Cấp quyền →
         </button>
       </div>

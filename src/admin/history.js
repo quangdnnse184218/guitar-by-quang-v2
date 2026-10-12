@@ -63,11 +63,11 @@ function renderRecentGrants() {
 
   list.forEach((r) => {
     const sourceBadge = r.is_manual
-      ? `<span class="px-2 py-0.5 rounded-full bg-amber-500/15 text-amber-600 dark:text-amber-400 text-[10px] font-bold">Cấp tay</span>`
-      : `<span class="px-2 py-0.5 rounded-full bg-emerald-500/15 text-emerald-600 dark:text-emerald-400 text-[10px] font-bold">Tự động</span>`
+      ? `<span class="px-2 py-0.5 rounded-full bg-amber-500/15 text-amber-600 dark:text-amber-400 text-[11px] sm:text-xs font-bold">Cấp tay</span>`
+      : `<span class="px-2 py-0.5 rounded-full bg-emerald-500/15 text-emerald-700 dark:text-emerald-400 text-[11px] sm:text-xs font-bold">Tự động</span>`
 
     const detail = r.is_manual
-      ? `<div class="text-[10px] text-text-muted mt-1 leading-relaxed">
+      ? `<div class="text-[11px] sm:text-xs text-text-muted mt-1 leading-relaxed">
            ${escapeHtml(REASON_LABELS[r.grant_reason] || r.grant_reason || 'Không rõ lý do')}
            ${r.granted_by_name ? ` · bởi ${escapeHtml(r.granted_by_name)}` : ''}
            ${r.grant_note ? `<br><span class="italic">“${escapeHtml(r.grant_note)}”</span>` : ''}
@@ -79,20 +79,20 @@ function renderRecentGrants() {
     tr.innerHTML = `
       <td data-label="Thành viên" class="p-3">
         <div class="font-bold text-text-primary">${escapeHtml(r.user_name || 'Học viên')}</div>
-        <div class="text-[10px] text-text-muted">${escapeHtml(r.user_email || r.user_id)}</div>
+        <div class="text-[11px] sm:text-xs text-text-muted">${escapeHtml(r.user_email || r.user_id)}</div>
       </td>
       <td data-label="Bài hát" class="p-3">
         <span class="font-bold text-accent-primary">${escapeHtml(r.song_title || r.song_id)}</span>
       </td>
       <td data-label="Nguồn" class="p-3">${sourceBadge}${detail}</td>
-      <td data-label="Thời gian" class="p-3 text-right text-[11px] text-text-muted font-mono">
+      <td data-label="Thời gian" class="p-3 text-right text-[11px] sm:text-xs text-text-muted font-mono">
         ${r.purchased_at ? new Date(r.purchased_at).toLocaleString('vi-VN', SHORT_DATE) : '—'}
       </td>
       <td data-label="Thao tác" class="p-3 text-right">
         <button type="button" data-revoke-user="${escapeHtml(r.user_id)}" data-revoke-song="${escapeHtml(r.song_id)}"
           data-revoke-name="${escapeHtml(r.user_name || '')}" data-revoke-email="${escapeHtml(r.user_email || '')}"
           data-revoke-title="${escapeHtml(r.song_title || r.song_id)}"
-          class="revoke-btn px-2.5 py-1.5 rounded-lg bg-rose-500/10 border border-rose-500/20 hover:bg-rose-500/20 text-rose-600 text-[10px] font-bold cursor-pointer transition-colors">
+          class="revoke-btn px-2.5 py-1.5 rounded-lg bg-rose-500/10 border border-rose-500/20 hover:bg-rose-500/20 text-rose-600 text-[11px] sm:text-xs font-bold cursor-pointer transition-colors">
           Thu hồi
         </button>
       </td>`
@@ -143,21 +143,21 @@ export async function loadRecentRevocations() {
         <div class="p-3.5">
           <div class="flex items-center gap-2 flex-wrap">
             <span class="text-xs font-bold text-text-primary">${escapeHtml(r.user_name)}</span>
-            <span class="text-[11px] text-text-muted">${escapeHtml(r.user_email || '')}</span>
+            <span class="text-[11px] sm:text-xs text-text-muted">${escapeHtml(r.user_email || '')}</span>
             ${
               r.drive_removed === true
-                ? '<span class="px-2 py-0.5 rounded-full bg-emerald-500/15 text-emerald-600 dark:text-emerald-400 text-[10px] font-bold whitespace-nowrap">Đã gỡ Drive</span>'
+                ? '<span class="px-2 py-0.5 rounded-full bg-emerald-500/15 text-emerald-700 dark:text-emerald-400 text-[11px] sm:text-xs font-bold whitespace-nowrap">Đã gỡ Drive</span>'
                 : r.drive_removed === false
-                  ? '<span class="px-2 py-0.5 rounded-full bg-rose-500/15 text-rose-700 dark:text-rose-300 text-[10px] font-bold whitespace-nowrap">Chưa gỡ Drive</span>'
+                  ? '<span class="px-2 py-0.5 rounded-full bg-rose-500/15 text-rose-700 dark:text-rose-300 text-[11px] sm:text-xs font-bold whitespace-nowrap">Chưa gỡ Drive</span>'
                   : ''
             }
           </div>
-          <div class="text-[11px] text-text-muted mt-0.5">
+          <div class="text-[11px] sm:text-xs text-text-muted mt-0.5">
             <span class="font-bold text-accent-primary">${escapeHtml(r.song_title)}</span>
             · ${escapeHtml(new Date(r.revoked_at).toLocaleString('vi-VN', SHORT_DATE))}
             ${r.revoked_by_name ? ` · bởi ${escapeHtml(r.revoked_by_name)}` : ''}
           </div>
-          ${r.reason ? `<div class="text-[11px] text-text-primary mt-1 italic">“${escapeHtml(r.reason)}”</div>` : ''}
+          ${r.reason ? `<div class="text-[11px] sm:text-xs text-text-primary mt-1 italic">“${escapeHtml(r.reason)}”</div>` : ''}
         </div>`
       )
       .join('')

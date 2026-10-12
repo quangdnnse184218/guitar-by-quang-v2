@@ -121,7 +121,7 @@ function renderSongsTable() {
         <td data-label="Vị Trí & Thứ Tự" class="py-3 px-3 text-center song-col-order">
           <div class="inline-flex items-center gap-1 sm:gap-1.5 p-1 rounded-xl bg-black/5 dark:bg-white/5 border border-glass-border w-full sm:w-auto justify-between sm:justify-center">
             <div class="flex items-center gap-1">
-              <span class="text-[10px] font-mono font-extrabold text-accent-primary sm:hidden">#</span>
+              <span class="text-[11px] sm:text-xs font-mono font-extrabold text-accent-primary sm:hidden">#</span>
               <input
                 type="number"
                 min="1"
@@ -159,7 +159,7 @@ function renderSongsTable() {
         <td data-label="Bài Hát" class="py-3.5 px-4 font-bold text-text-primary song-col-title">
           <div class="flex flex-col text-left">
             <span class="text-xs sm:text-sm font-extrabold line-clamp-2 leading-snug">${song.title}</span>
-            <span class="text-[10px] sm:text-xs text-text-muted font-medium mt-0.5">${song.singer || 'Guitar By Quang'}</span>
+            <span class="text-[11px] sm:text-xs text-text-muted font-medium mt-0.5">${song.singer || 'Guitar By Quang'}</span>
           </div>
         </td>
         <td data-label="Thể Loại" class="py-3.5 px-3 song-col-category">
@@ -267,7 +267,7 @@ window.setSongModalType = function (type) {
   if (type === 'free') {
     if (freeBtn) {
       freeBtn.className =
-        'py-2.5 px-3 rounded-xl font-bold text-xs sm:text-sm flex items-center justify-center gap-2 transition-all cursor-pointer bg-emerald-600 text-white shadow-xs'
+        'py-2.5 px-3 rounded-xl font-bold text-xs sm:text-sm flex items-center justify-center gap-2 transition-all cursor-pointer bg-emerald-700 text-white shadow-xs'
     }
     if (paidBtn) {
       paidBtn.className =
@@ -428,10 +428,10 @@ UPLOAD_FIELDS.forEach(({ fileId, nameId }) => {
     }
     if (file.size > MAX_UPLOAD_BYTES) {
       nameSpan.textContent = `⚠️ ${file.name} (${formatBytes(file.size)}) vượt quá 50MB, sẽ không tải lên được.`
-      nameSpan.className = 'text-[11px] text-rose-500 truncate flex-1'
+      nameSpan.className = 'text-[11px] sm:text-xs text-rose-500 truncate flex-1'
     } else {
       nameSpan.textContent = `✓ ${file.name} (${formatBytes(file.size)})`
-      nameSpan.className = 'text-[11px] text-emerald-600 dark:text-emerald-400 truncate flex-1'
+      nameSpan.className = 'text-[11px] sm:text-xs text-emerald-700 dark:text-emerald-400 truncate flex-1'
     }
   })
 })
