@@ -54,26 +54,76 @@ export function initNavbarShrink() {
   const navbar = document.getElementById('main-nav')
   if (!navbar) return
 
+  // Chỉ đổi lớp + biến CSS; màu nền, bóng, độ cao đều do style.css quyết định
+  // (trước đây gán thẳng backgroundColor ở đây nên đè mất nền kính của header).
   let ticking = false
   const onScroll = () => {
-    if (!ticking) {
-      window.requestAnimationFrame(() => {
-        if (window.scrollY > 60) {
-          navbar.classList.add('nav-shrunk', 'shadow-lg', 'border-b', 'border-glass-border')
-          navbar.style.backgroundColor = 'var(--header-bg)'
-        } else {
-          navbar.classList.remove('nav-shrunk', 'shadow-lg')
-          navbar.classList.add('border-b', 'border-glass-border')
-          navbar.style.backgroundColor = ''
-        }
-        ticking = false
-      })
-      ticking = true
-    }
+    if (ticking) return
+    ticking = true
+    window.requestAnimationFrame(() => {
+      const y = window.scrollY
+      navbar.classList.toggle('nav-shrunk', y > 60)
+      const max = document.documentElement.scrollHeight - window.innerHeight
+      navbar.style.setProperty('--scroll-progress', max > 0 ? Math.min(1, y / max).toFixed(4) : '0')
+      ticking = false
+    })
   }
 
   window.addEventListener('scroll', onScroll, { passive: true })
+  window.addEventListener('resize', onScroll, { passive: true })
   onScroll()
+}
+
+/**
+ * "Viên kính" trong menu máy tính: nằm dưới mục của trang đang mở, trượt theo mục đang
+ * rê chuột / đang được chọn bằng bàn phím, rời đi thì trượt về. Kiểu dáng: .nav-pill.
+ */
+export function initNavPill() {
+  const nav = document.getElementById('desktop-nav')
+  if (!nav || nav.querySelector('.nav-pill')) return
+  const pill = document.createElement('span')
+  pill.className = 'nav-pill no-anim'
+  pill.setAttribute('aria-hidden', 'true')
+  nav.prepend(pill)
+  nav.classList.add('has-pill')
+
+  const visible = (el) => el && el.offsetWidth > 0
+  const home = () => {
+    const active = nav.querySelector('.nav-link.active')
+    return visible(active) ? active : null
+  }
+  const moveTo = (link) => {
+    if (!visible(link)) {
+      pill.classList.remove('is-on')
+      return
+    }
+    pill.style.setProperty('--pill-x', link.offsetLeft + 'px')
+    pill.style.setProperty('--pill-w', link.offsetWidth + 'px')
+    pill.classList.add('is-on')
+  }
+  const reset = () => moveTo(home())
+
+  nav.addEventListener('pointerover', (e) => {
+    const link = e.target.closest?.('.nav-link')
+    if (link) moveTo(link)
+  })
+  nav.addEventListener('pointerleave', reset)
+  nav.addEventListener('focusin', (e) => {
+    const link = e.target.closest?.('.nav-link')
+    if (link) moveTo(link)
+  })
+  nav.addEventListener('focusout', reset)
+
+  // Chiều rộng mục đổi khi phông tải xong, khi đổi cỡ màn, khi "Của tôi" hiện ra sau đăng nhập
+  const settle = () => {
+    pill.classList.add('no-anim')
+    reset()
+    requestAnimationFrame(() => requestAnimationFrame(() => pill.classList.remove('no-anim')))
+  }
+  if (typeof ResizeObserver === 'function') new ResizeObserver(settle).observe(nav)
+  else window.addEventListener('resize', settle)
+  document.fonts?.ready?.then(settle)
+  settle()
 }
 
 /**
@@ -651,6 +701,7 @@ export function initNavActiveSpy() {
     if (on) link.setAttribute('aria-current', 'page')
     else link.removeAttribute('aria-current')
   })
+  initNavPill()
   document.querySelectorAll('#mobile-menu-drawer nav a').forEach((link) => {
     const on = key !== '' && getLinkKey(link.getAttribute('href')) === key
     link.classList.toggle('text-accent-primary', on)

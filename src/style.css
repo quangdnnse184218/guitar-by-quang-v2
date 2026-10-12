@@ -610,40 +610,100 @@ nav,
    HEADER & NAVIGATION
    ============================================================================== */
 #main-nav {
-  border-bottom: 1px solid var(--glass-border);
+  /* Nền lấy màu kính (trắng ở bản sáng, nâu nổi ở bản tối) chứ không lấy màu nền trang. */
+  --nav-alpha: 0.9;
+  border-bottom: 1px solid rgb(var(--glass-border-rgb) / calc(var(--glass-border-alpha) * 1.7));
   -webkit-backdrop-filter: var(--frost-fx);
   backdrop-filter: var(--frost-fx);
-  background-color: rgb(var(--bg-base) / calc(var(--frost-alpha) + 0.1));
-  box-shadow: 0 1px 0 rgb(0 0 0 / 0.02), 0 8px 24px -18px rgb(0 0 0 / 0.35);
+  background-color: rgb(var(--frost-tint) / var(--nav-alpha));
+  box-shadow: 0 1px 0 rgb(0 0 0 / 0.03);
+  transition:
+    padding 0.35s cubic-bezier(0.2, 0.8, 0.2, 1),
+    background-color 0.35s ease,
+    box-shadow 0.35s ease,
+    border-color 0.35s ease;
 }
 
+/* Thanh tiến độ đọc: vạch màu nhấn ở mép dưới header dài dần theo độ cuộn trang
+   (--scroll-progress 0→1 do initNavbarShrink đặt). Ở đầu trang dài 0 nên không thấy. */
 #main-nav::after {
   content: '';
   position: absolute;
-  bottom: 0;
   left: 0;
   right: 0;
-  height: 1px;
-  background: linear-gradient(90deg, transparent, var(--glass-border), transparent);
+  bottom: -1px;
+  height: 2px;
+  background: linear-gradient(90deg, rgb(var(--accent-solid)), rgb(var(--accent-primary)));
+  transform: scaleX(var(--scroll-progress, 0));
+  transform-origin: left center;
+  pointer-events: none;
 }
 
-/* Trạng thái header thu nhỏ khi cuộn (initNavbarShrink trong common.js).
-   Dùng !important vì mỗi trang có class padding gốc (py-*) khác nhau, nên
-   không thể chỉ toggle qua lại giữa 2 class Tailwind py-* như trước (dễ bị
-   class padding gốc của trang đè mất, khiến hiệu ứng không chạy). */
+/* Đã cuộn (initNavbarShrink thêm .nav-shrunk): header thấp lại, kính trong hơn để nội dung
+   mờ trượt phía sau, và đổ bóng để tách khỏi trang. !important vì mỗi trang có py-* riêng. */
 #main-nav.nav-shrunk {
-  padding-top: 0.5rem !important;
-  padding-bottom: 0.5rem !important;
+  --nav-alpha: 0.72;
+  padding-top: 0.4rem !important;
+  padding-bottom: 0.4rem !important;
+  box-shadow:
+    0 1px 0 rgb(0 0 0 / 0.04),
+    0 14px 32px -18px rgb(50 32 14 / 0.5);
+}
+
+/* Logo: ảnh thu nhỏ nhẹ khi header thấp lại */
+#main-nav a:first-of-type > div:first-child {
+  transition:
+    transform 0.35s cubic-bezier(0.2, 0.8, 0.2, 1),
+    box-shadow 0.25s ease;
+}
+#main-nav.nav-shrunk a:first-of-type > div:first-child {
+  transform: scale(0.9);
+}
+#main-nav a:first-of-type:hover > div:first-child {
+  box-shadow: 0 0 0 4px rgb(var(--accent-primary) / 0.18);
+}
+
+/* ---- Menu máy tính: một "viên kính" (.nav-pill, do initNavPill trong common.js dựng)
+   nằm dưới mục của trang đang mở, trượt theo mục đang rê chuột rồi trượt về. */
+#desktop-nav {
+  position: relative;
+}
+
+.nav-pill {
+  position: absolute;
+  top: 50%;
+  left: 0;
+  height: 34px;
+  width: var(--pill-w, 0px);
+  border-radius: 9999px;
+  background: rgb(var(--accent-primary) / 0.1);
+  box-shadow: inset 0 0 0 1px rgb(var(--accent-primary) / 0.18);
+  transform: translate(var(--pill-x, 0px), -50%);
+  opacity: 0;
+  pointer-events: none;
+  transition:
+    transform 0.38s cubic-bezier(0.3, 1.3, 0.5, 1),
+    width 0.38s cubic-bezier(0.3, 1.3, 0.5, 1),
+    opacity 0.2s ease;
+}
+.nav-pill.is-on {
+  opacity: 1;
+}
+/* lần đặt vị trí đầu tiên không chạy hiệu ứng (tránh viên kính bay từ góc trái vào) */
+.nav-pill.no-anim {
+  transition: none;
 }
 
 .nav-link {
   position: relative;
+  z-index: 1;
   display: inline-flex;
   align-items: center;
-  padding: 6px 4px;
+  padding: 6px 10px;
+  border-radius: 9999px;
   font-size: 0.95rem;
-  font-weight: 500;
-  color: rgb(var(--text-muted));
+  font-weight: 600;
+  color: rgb(var(--text-primary) / 0.72);
   transition: color 0.2s ease;
 }
 
@@ -652,37 +712,62 @@ nav,
   display: none;
 }
 
-.nav-link:hover,
-.nav-link.active {
+.nav-link:hover {
   color: rgb(var(--text-primary));
 }
 
-/* Active Link Underline Indicator */
-.nav-link::after {
-  content: '';
-  position: absolute;
-  bottom: -2px;
-  left: 0;
-  width: 100%;
-  height: 2px;
-  background: rgb(var(--accent-primary));
-  border-radius: 2px;
-  transform: scaleX(0);
-  transform-origin: center;
-  transition: transform 0.25s cubic-bezier(0.16, 1, 0.3, 1);
-}
-
-/* Rê chuột: gạch mờ; trang đang mở: gạch đậm + chữ đậm — để hai trạng thái không lẫn nhau. */
-.nav-link:hover::after {
-  transform: scaleX(1);
-  opacity: 0.35;
-}
 .nav-link.active {
   font-weight: 700;
+  color: rgb(var(--accent-primary));
 }
-.nav-link.active::after {
-  transform: scaleX(1);
-  opacity: 1;
+
+.nav-link:focus-visible {
+  outline: 2px solid rgb(var(--accent-primary));
+  outline-offset: 2px;
+}
+
+/* Chưa có JS / không dựng được viên kính: mục đang mở vẫn có nền riêng */
+#desktop-nav:not(.has-pill) .nav-link.active {
+  background: rgb(var(--accent-primary) / 0.1);
+}
+
+/* ---- Các nút bên phải header */
+#header-search-link svg,
+#theme-toggle-btn svg {
+  transition: transform 0.35s cubic-bezier(0.3, 1.3, 0.5, 1);
+}
+#header-search-link:hover svg {
+  transform: scale(1.12) rotate(-8deg);
+}
+#theme-toggle-btn:hover svg {
+  transform: rotate(22deg);
+}
+#theme-toggle-btn:active svg {
+  transform: rotate(90deg) scale(0.8);
+}
+#main-nav a.bg-warm-gradient {
+  transition:
+    transform 0.2s ease,
+    box-shadow 0.2s ease,
+    filter 0.2s ease;
+}
+#main-nav a.bg-warm-gradient:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 8px 18px -8px rgb(var(--accent-solid) / 0.7);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  #main-nav,
+  .nav-pill,
+  #main-nav a:first-of-type > div:first-child,
+  #header-search-link svg,
+  #theme-toggle-btn svg,
+  #main-nav a.bg-warm-gradient {
+    transition: none;
+  }
+  #main-nav::after {
+    display: none;
+  }
 }
 
 /* ==========================================================================
@@ -1036,9 +1121,24 @@ nav,
   border-top: 1px solid var(--glass-border);
 }
 
-.footer-section {
-  background: var(--footer-bg-grad, #0c0f17);
-  border-top: 1px solid var(--glass-border);
+/* Chân trang là một khối nâu đậm ở cả giao diện sáng lẫn tối: khép trang lại rõ ràng, tách hẳn
+   khỏi nội dung. Ghi đè các biến màu NGAY TRÊN phần tử nên mọi lớp token bên trong
+   (text-text-primary, text-text-muted, border-glass-border, bg-glass-bg, text-accent-primary…)
+   tự đổi sang bộ màu sáng-trên-nền-tối mà không phải sửa HTML của 5 trang. */
+.footer-section,
+[data-theme='light'] .footer-section {
+  --text-primary: 246 239 228;
+  --text-muted: 200 186 166;
+  --text-faint: 160 146 126;
+  --accent-primary: 236 172 92;
+  --accent-primary-hover: 244 192 124;
+  --glass-bg: 44 35 28;
+  --glass-bg-hover: 56 45 36;
+  --glass-border: rgba(240 220 195 / 0.14);
+  --glass-border-rgb: 240 220 195;
+  --glass-border-alpha: 0.14;
+  background: linear-gradient(180deg, #241b15 0%, #17110d 100%);
+  border-top: 3px solid rgb(var(--accent-solid));
   color: rgb(var(--text-muted));
   position: relative;
   overflow: hidden;
@@ -1046,11 +1146,9 @@ nav,
   margin: 0;
 }
 
-[data-theme='light'] .footer-section {
-  background: var(--footer-bg-grad, #decab6);
-  border-top: 1px solid rgba(160, 120, 80, 0.35);
-  box-shadow: inset 0 1px 0 0 rgba(255, 255, 255, 0.35);
-  color: #4a3d31;
+/* Bản tối: nền trang đã tối nên chân trang chìm sâu thêm một bậc để vẫn tách ra. */
+:root:not([data-theme='light']) .footer-section {
+  background: linear-gradient(180deg, #100c0a 0%, #0a0806 100%);
 }
 
 /* ==============================================================================
