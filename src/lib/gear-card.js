@@ -64,7 +64,7 @@ export function renderGearCard(gear, idx) {
         <div class="min-w-0 flex-1 flex flex-col gap-1">
           <span class="text-[11px] sm:text-xs font-bold uppercase tracking-wider text-accent-primary truncate">${escapeHtml(gear.category || 'Phụ kiện')}</span>
           <h4 class="-mt-0.5 text-sm sm:text-base font-bold text-text-primary leading-snug truncate" title="${escapeHtml(title)}">${escapeHtml(title)}</h4>
-          <p class="text-xs text-text-muted leading-relaxed line-clamp-2">${escapeHtml(description)}</p>
+          <p class="text-[13px] sm:text-sm text-text-muted leading-relaxed line-clamp-2">${escapeHtml(description)}</p>
           ${noteHtml}
           <div class="mt-auto pt-1">${actionHtml}</div>
         </div>

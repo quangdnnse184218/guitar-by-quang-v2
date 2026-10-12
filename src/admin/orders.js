@@ -111,7 +111,7 @@ function renderSummary() {
   const tile = (value, label, hint, tone) => `
     <div class="glass-card border border-glass-border rounded-2xl p-3.5 sm:p-4">
       <div class="text-[10px] font-bold text-text-muted uppercase tracking-wider">${label}</div>
-      <div class="text-xl sm:text-2xl font-black mt-0.5 font-mono tabular-nums ${tone}">${value}</div>
+      <div class="text-xl sm:text-2xl font-extrabold mt-0.5 font-mono tabular-nums ${tone}">${value}</div>
       <div class="text-[10px] text-text-muted font-medium mt-0.5">${hint}</div>
     </div>`
 
@@ -175,7 +175,7 @@ function orderRow(o) {
       <div class="flex-1 min-w-0 space-y-1">
         <div class="flex items-center gap-2 flex-wrap">
           <button type="button" data-copy-code="${escapeHtml(o.order_code)}" title="Bấm để copy mã đơn"
-            class="font-mono font-black text-xs text-text-primary hover:text-accent-primary transition-colors cursor-pointer inline-flex items-center gap-1">
+            class="font-mono font-extrabold text-xs text-text-primary hover:text-accent-primary transition-colors cursor-pointer inline-flex items-center gap-1">
             ${escapeHtml(o.order_code)}
             <svg class="w-3 h-3 opacity-50" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"/></svg>
           </button>

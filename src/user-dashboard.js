@@ -530,7 +530,7 @@ function renderOverviewFeatured() {
                 ${renderCategoryBadge(song, "Fingerstyle")}
                 <div class="flex items-center gap-1 justify-end">
                   ${userActionGroup}
-                  <span class="px-1.5 sm:px-2 py-0.5 rounded-full text-[11px] sm:text-xs font-black bg-emerald-700 text-white uppercase tracking-wide">FREE</span>
+                  <span class="px-1.5 sm:px-2 py-0.5 rounded-full text-[11px] sm:text-xs font-extrabold bg-emerald-700 text-white uppercase tracking-wide">FREE</span>
                 </div>
               </div>
 
@@ -545,7 +545,7 @@ function renderOverviewFeatured() {
 
             <!-- Details -->
             <div class="space-y-1">
-              <h3 class="text-xs sm:text-base font-bold text-text-primary group-hover:text-emerald-500 transition-colors leading-tight line-clamp-3">
+              <h3 class="text-sm sm:text-base font-bold text-text-primary group-hover:text-emerald-500 transition-colors leading-snug line-clamp-2">
                 ${song.title}
               </h3>
 
@@ -586,7 +586,7 @@ function renderOverviewFeatured() {
                 ${renderCategoryBadge(song, "NHẠC VIỆT")}
                 <div class="flex items-center gap-1 justify-end">
                   ${userActionGroup}
-                  <span class="px-1.5 sm:px-2 py-0.5 rounded-full text-[11px] sm:text-xs font-black bg-emerald-700 text-white uppercase tracking-wide flex items-center gap-0.5">
+                  <span class="px-1.5 sm:px-2 py-0.5 rounded-full text-[11px] sm:text-xs font-extrabold bg-emerald-700 text-white uppercase tracking-wide flex items-center gap-0.5">
                     <span>✓</span>
                     <span>ĐÃ SỞ HỮU</span>
                   </span>
@@ -604,7 +604,7 @@ function renderOverviewFeatured() {
 
             <!-- Details -->
             <div class="space-y-1">
-              <h3 class="text-xs sm:text-base font-bold text-text-primary group-hover:text-accent-primary transition-colors leading-tight line-clamp-3">
+              <h3 class="text-sm sm:text-base font-bold text-text-primary group-hover:text-accent-primary transition-colors leading-snug line-clamp-2">
                 ${song.title}
               </h3>
 
@@ -673,12 +673,12 @@ function renderOverviewFeatured() {
 
           <!-- Details -->
           <div class="space-y-1">
-            <h3 class="text-xs sm:text-base font-bold text-text-primary group-hover:text-accent-primary transition-colors leading-tight line-clamp-3">
+            <h3 class="text-sm sm:text-base font-bold text-text-primary group-hover:text-accent-primary transition-colors leading-snug line-clamp-2">
               ${song.title}
             </h3>
 
             <div class="space-y-0.5 sm:space-y-1 pt-0.5">
-              <div class="flex flex-wrap items-center justify-between gap-x-1 gap-y-1 text-[11px] sm:text-xs font-bold text-text-muted">
+              <div class="flex flex-wrap items-center justify-between gap-x-1 gap-y-1 text-[11px] sm:text-xs font-medium text-text-muted">
                 <span class="whitespace-nowrap">Độ khó: <strong class="text-accent-primary font-mono tabular-nums">${song.level || levelNum + '/10'}</strong></span>
                 ${renderHssvNote(discountNote)}
               </div>

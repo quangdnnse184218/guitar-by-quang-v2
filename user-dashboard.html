@@ -204,13 +204,13 @@
         <!-- Đầu trang cá nhân: một dòng gọn (ảnh, lời chào, email). Hồ sơ & mật khẩu mở từ menu tài khoản.
              Không còn 3 ô số liệu to — số bài đã mua/yêu thích nằm ngay trên nút thư viện. -->
         <header class="flex items-center gap-4 sm:gap-5">
-          <div id="user-avatar-container" class="w-14 h-14 sm:w-[72px] sm:h-[72px] flex-shrink-0 rounded-full bg-warm-gradient text-white flex items-center justify-center text-xl sm:text-2xl font-black shadow-md ring-2 ring-amber-400/70 ring-offset-2 ring-offset-[rgb(var(--bg-base))] overflow-hidden">
+          <div id="user-avatar-container" class="w-14 h-14 sm:w-[72px] sm:h-[72px] flex-shrink-0 rounded-full bg-warm-gradient text-white flex items-center justify-center text-xl sm:text-2xl font-extrabold shadow-md ring-2 ring-amber-400/70 ring-offset-2 ring-offset-[rgb(var(--bg-base))] overflow-hidden">
             <span id="user-avatar-initial">U</span>
             <img id="user-avatar-img" src="" alt="Ảnh đại diện" class="w-full h-full object-cover hidden" />
           </div>
 
           <div class="min-w-0 flex-1">
-            <h1 class="text-2xl sm:text-4xl font-black text-text-primary tracking-tight leading-tight break-words">
+            <h1 class="text-2xl sm:text-4xl font-extrabold text-text-primary tracking-tight leading-tight break-words">
               <span id="greeting-prefix">Xin chào</span>, <span id="user-display-name" class="text-accent-primary">...</span>
             </h1>
             <p class="mt-1 text-xs sm:text-sm text-text-muted font-medium truncate">
@@ -397,7 +397,7 @@
                 <div class="space-y-1.5">
                   <label class="text-xs font-bold text-text-primary block">Ảnh đại diện</label>
                   <div class="flex items-center gap-3">
-                    <div id="profile-avatar-preview" class="w-14 h-14 rounded-full bg-warm-gradient text-white flex items-center justify-center text-lg font-black shadow-md ring-2 ring-amber-400/60 ring-offset-2 ring-offset-[rgb(var(--glass-bg))] overflow-hidden flex-shrink-0">
+                    <div id="profile-avatar-preview" class="w-14 h-14 rounded-full bg-warm-gradient text-white flex items-center justify-center text-lg font-extrabold shadow-md ring-2 ring-amber-400/60 ring-offset-2 ring-offset-[rgb(var(--glass-bg))] overflow-hidden flex-shrink-0">
                       <span id="profile-avatar-preview-initial">U</span>
                       <img id="profile-avatar-preview-img" src="" alt="Xem trước avatar" class="w-full h-full object-cover hidden" />
                     </div>
@@ -632,7 +632,7 @@
                     <span class="text-text-muted block text-[9px] sm:text-[10px] font-bold uppercase tracking-wider">Số
                       TK:</span>
                     <div class="flex items-center justify-between gap-1.5 mt-0.5">
-                      <span class="font-mono text-xs sm:text-base font-black text-accent-primary tracking-wide"
+                      <span class="font-mono text-xs sm:text-base font-extrabold text-accent-primary tracking-wide"
                         id="bank-acc-num">03970202801</span>
                       <button id="copy-stk-btn"
                         class="px-2.5 py-1.5 rounded-lg bg-accent-primary/10 hover:bg-accent-solid hover:text-white text-[10px] font-extrabold text-accent-primary border border-accent-primary/30 transition-all cursor-pointer shadow-xs active:scale-95 flex-shrink-0">Copy</button>
@@ -650,7 +650,7 @@
                       dung CK:</span>
                     <div class="flex items-center justify-between gap-1.5 mt-0.5">
                       <span id="modal-transfer-syntax"
-                        class="font-mono font-black text-accent-primary bg-accent-primary/15 px-1.5 sm:px-2 py-0.5 rounded text-[9px] sm:text-[11px] border border-accent-primary/20 break-all leading-tight">VIDEOTAB
+                        class="font-mono font-extrabold text-accent-primary bg-accent-primary/15 px-1.5 sm:px-2 py-0.5 rounded text-[9px] sm:text-[11px] border border-accent-primary/20 break-all leading-tight">VIDEOTAB
                         TAB</span>
                       <button id="copy-syntax-btn"
                         class="px-2.5 py-1.5 rounded-lg bg-accent-primary/10 hover:bg-accent-solid hover:text-white text-[10px] font-extrabold text-accent-primary border border-accent-primary/30 transition-all cursor-pointer shadow-xs active:scale-95 flex-shrink-0">Copy</button>
@@ -669,7 +669,7 @@
               <!-- 1. Header: Badge Trạng thái + Thời lượng + Tiêu đề -->
               <div class="max-md:order-1 flex items-center justify-between flex-wrap gap-2 pr-12">
                 <span
-                  class="badge-paid inline-flex items-center gap-1.5 px-3.5 py-1 rounded-full text-xs font-black uppercase tracking-wider shadow-sm">
+                  class="badge-paid inline-flex items-center gap-1.5 px-3.5 py-1 rounded-full text-xs font-extrabold uppercase tracking-wider shadow-sm">
                   <svg class="w-3.5 h-3.5 fill-none stroke-current" stroke-width="2.5" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round"
                       d="M9 12l2 2 4-4M7.835 4.697a3.42 3.42 0 001.946-.806 3.42 3.42 0 014.438 0 3.42 3.42 0 001.946.806 3.42 3.42 0 013.138 3.138 3.42 3.42 0 00.806 1.946 3.42 3.42 0 010 4.438 3.42 3.42 0 00-.806 1.946 3.42 3.42 0 01-3.138 3.138 3.42 3.42 0 00-1.946.806 3.42 3.42 0 01-4.438 0 3.42 3.42 0 00-1.946-.806 3.42 3.42 0 01-3.138-3.138 3.42 3.42 0 00-.806-1.946 3.42 3.42 0 010-4.438 3.42 3.42 0 00.806-1.946 3.42 3.42 0 013.138-3.138z" />
@@ -704,7 +704,7 @@
                     class="text-xs text-white bg-accent-solid px-2.5 py-0.5 rounded-full font-extrabold mt-1 inline-block shadow-xs"
                     id="modal-discount-tag">(HSSV: 179k)</span>
                 </div>
-                <span id="modal-tab-price" class="whitespace-nowrap text-2xl sm:text-3xl font-black text-accent-primary">239.000 VNĐ</span>
+                <span id="modal-tab-price" class="whitespace-nowrap text-2xl sm:text-3xl font-extrabold text-accent-primary">239.000 VNĐ</span>
               </div>
 
               <!-- 2b. HSSV: tick + upload ảnh thẻ để AI tự kiểm tra và đổi sang giá ưu đãi -->
@@ -794,7 +794,7 @@
               <a href="https://zalo.me/0326768885" target="_blank" rel="noopener noreferrer"
                 class="w-full py-2.5 rounded-2xl bg-glass-bg hover:bg-glass-bg-hover border border-glass-border text-text-primary text-[11px] sm:text-xs font-bold transition-all active:scale-98 flex items-center justify-center gap-2 mt-2">
                 <span
-                  class="w-5 h-5 rounded-full bg-[#0068FF] text-white font-black flex items-center justify-center text-[10px] flex-shrink-0">Z</span>
+                  class="w-5 h-5 rounded-full bg-[#0068FF] text-white font-extrabold flex items-center justify-center text-[10px] flex-shrink-0">Z</span>
                 <span>Chưa nhận được tab sau vài phút? Nhắn Zalo cho mình</span>
               </a>
             </div>
@@ -856,7 +856,7 @@
               <!-- Header: Badge Trạng thái + Thời lượng -->
               <div class="flex items-center justify-between flex-wrap gap-2 pr-12">
                 <span
-                  class="badge-free inline-flex items-center gap-1.5 px-3.5 py-1 rounded-full text-xs font-black uppercase tracking-wider shadow-sm">
+                  class="badge-free inline-flex items-center gap-1.5 px-3.5 py-1 rounded-full text-xs font-extrabold uppercase tracking-wider shadow-sm">
                   <svg class="w-3.5 h-3.5 fill-none stroke-current" stroke-width="2.5" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round"
                       d="M12 8v13m0-13V6a2 2 0 112 2h-2zm0 0V5.5A2.5 2.5 0 109.5 8H12zm-7 4h14M5 12a2 2 0 01-2-2V7a2 2 0 012-2h14a2 2 0 012 2v3a2 2 0 01-2 2M5 12v7a2 2 0 002 2h10a2 2 0 002-2v-7" />
@@ -936,7 +936,7 @@
                 <div class="grid grid-cols-2 gap-2">
                   <button id="share-zalo-btn" type="button"
                     class="py-2.5 px-3 rounded-xl bg-[#0068FF] hover:bg-[#0052cc] text-white text-xs font-bold transition-all flex items-center justify-center gap-1.5 cursor-pointer shadow-sm active:scale-95">
-                    <span class="w-4 h-4 rounded-full bg-white text-[#0068FF] font-black flex items-center justify-center text-[9px]">Z</span>
+                    <span class="w-4 h-4 rounded-full bg-white text-[#0068FF] font-extrabold flex items-center justify-center text-[9px]">Z</span>
                     <span>Zalo</span>
                   </button>
                   <button id="share-messenger-btn" type="button"

@@ -29,7 +29,7 @@ export function renderPriceBadge(priceFormatted) {
   // Cùng khuôn (padding, cỡ chữ, font) với badge "FREE" — chỉ khác màu. Trên
   // mobile hàng này chỉ rộng ~120px: badge dùng font mono cũ rộng hơn FREE
   // đúng 2px là đủ đẩy nút tim xuống dòng.
-  return `<span class="px-1.5 sm:px-2 py-0.5 rounded-full text-[11px] sm:text-xs font-black text-stone-900 bg-white uppercase tracking-wide tabular-nums whitespace-nowrap" title="Giá ${priceFormatted}">${priceFormatted}</span>`
+  return `<span class="px-1.5 sm:px-2 py-0.5 rounded-full text-[11px] sm:text-xs font-extrabold text-stone-900 bg-white uppercase tracking-wide tabular-nums whitespace-nowrap" title="Giá ${priceFormatted}">${priceFormatted}</span>`
 }
 
 export function renderHssvNote(discountNote) {
@@ -114,7 +114,7 @@ export function renderThumbMetaRow(song, fallbackDuration = 'Full Video') {
 }
 
 function renderPinnedBadge() {
-  return `<span class="inline-flex items-center gap-1 px-1.5 sm:px-2 py-0.5 rounded-full text-[11px] sm:text-xs font-black bg-amber-400 text-black uppercase tracking-wide" title="Nổi bật"><svg class="w-3 h-3" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 2l2.94 6.34L21.5 9.27l-4.75 4.51L17.88 21 12 17.77 6.12 21l1.13-7.22L2.5 9.27l6.56-.93z"/></svg><span class="sr-only sm:not-sr-only">Nổi bật</span></span>`
+  return `<span class="inline-flex items-center gap-1 px-1.5 sm:px-2 py-0.5 rounded-full text-[11px] sm:text-xs font-extrabold bg-amber-400 text-black uppercase tracking-wide" title="Nổi bật"><svg class="w-3 h-3" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 2l2.94 6.34L21.5 9.27l-4.75 4.51L17.88 21 12 17.77 6.12 21l1.13-7.22L2.5 9.27l6.56-.93z"/></svg><span class="sr-only sm:not-sr-only">Nổi bật</span></span>`
 }
 
 /** Lớp phủ hiện ra giữa chừng khi vuốt thẻ sang phải để yêu thích. */
@@ -227,7 +227,7 @@ export function renderSongCard(tab, options = {}) {
 
   const levelRow = (accentClass, barClass, rightSlot = '') => `
     <div class="space-y-0.5 sm:space-y-1 pt-0.5">
-      <div class="flex flex-wrap items-center justify-between gap-x-1 gap-y-1 text-[11px] sm:text-xs font-bold text-text-muted">
+      <div class="flex flex-wrap items-center justify-between gap-x-1 gap-y-1 text-[11px] sm:text-xs font-medium text-text-muted">
         <span class="whitespace-nowrap">Độ khó: <strong class="${accentClass} font-mono tabular-nums">${tab.level || levelNum + '/10'}</strong></span>
         ${rightSlot}
       </div>
@@ -248,7 +248,7 @@ export function renderSongCard(tab, options = {}) {
               ${renderCategoryBadge(tab, 'Fingerstyle')}
               <div class="flex items-center gap-1 flex-wrap max-sm:w-full sm:justify-end">
                 ${pinnedBadge}
-                <span class="px-1.5 sm:px-2 py-0.5 rounded-full text-[11px] sm:text-xs font-black bg-emerald-700 text-white uppercase tracking-wide">FREE</span>
+                <span class="px-1.5 sm:px-2 py-0.5 rounded-full text-[11px] sm:text-xs font-extrabold bg-emerald-700 text-white uppercase tracking-wide">FREE</span>
                 ${favButton}
               </div>
             </div>
@@ -262,7 +262,7 @@ export function renderSongCard(tab, options = {}) {
           </div>
 
           <div class="space-y-1">
-            <h3 class="text-xs sm:text-base font-bold text-text-primary group-hover:text-emerald-600 dark:group-hover:text-emerald-400 transition-colors leading-tight line-clamp-3">
+            <h3 class="text-sm sm:text-base font-bold text-text-primary group-hover:text-emerald-600 dark:group-hover:text-emerald-400 transition-colors leading-snug line-clamp-2">
               ${tab.title}
             </h3>
             ${levelRow('text-emerald-700 dark:text-emerald-400', 'bg-emerald-600 dark:bg-emerald-400')}
@@ -290,7 +290,7 @@ export function renderSongCard(tab, options = {}) {
 
   const badgeHtml = isPurchased
     ? `
-    <span class="px-1.5 sm:px-2 py-0.5 rounded-full text-[11px] sm:text-xs font-black bg-emerald-700 text-white uppercase tracking-wide flex items-center gap-0.5">
+    <span class="px-1.5 sm:px-2 py-0.5 rounded-full text-[11px] sm:text-xs font-extrabold bg-emerald-700 text-white uppercase tracking-wide flex items-center gap-0.5">
       <svg class="w-2.5 h-2.5 sm:w-3 sm:h-3" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/></svg>
       <span>ĐÃ MUA</span>
     </span>
@@ -317,7 +317,7 @@ export function renderSongCard(tab, options = {}) {
         </div>
 
         <div class="space-y-1">
-          <h3 class="text-xs sm:text-base font-bold text-text-primary group-hover:text-accent-primary transition-colors leading-tight line-clamp-3">
+          <h3 class="text-sm sm:text-base font-bold text-text-primary group-hover:text-accent-primary transition-colors leading-snug line-clamp-2">
             ${tab.title}
           </h3>
           ${levelRow('text-accent-primary', 'bg-warm-gradient', isPurchased ? '' : renderHssvNote(discountNote))}

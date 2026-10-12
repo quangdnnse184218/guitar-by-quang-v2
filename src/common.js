@@ -294,7 +294,7 @@ export async function initAuthHeader() {
           <svg id="user-header-dropdown-arrow" class="w-3.5 h-3.5 text-text-muted transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
         </button>
         <div id="user-header-dropdown-menu" role="menu" aria-label="Tài khoản" class="user-menu absolute right-0 top-full pt-2 w-[18rem] max-w-[calc(100vw-1.5rem)] z-50">
-          <div class="rounded-2xl bg-glass-bg border border-glass-border shadow-2xl p-2">
+          <div class="frost-strong rounded-2xl p-2">
             <a href="${personalDashboardUrl}" role="menuitem" class="flex items-center gap-3 p-2.5 rounded-xl hover:bg-glass-bg-hover focus-visible:bg-glass-bg-hover outline-none transition-colors group/me">
               ${bigAvatarHtml}
               <span class="min-w-0 flex-1">

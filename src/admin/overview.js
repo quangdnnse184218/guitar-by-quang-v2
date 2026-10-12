@@ -178,7 +178,7 @@ function renderKpis(s) {
   setHtml(
     'ov-kpi-month',
     `<div class="text-[11px] font-bold text-text-muted uppercase tracking-wider">Doanh thu tháng này</div>
-     <div class="text-3xl sm:text-4xl font-black text-text-primary mt-1 font-mono tabular-nums tracking-tight">${formatVnd(month)}</div>
+     <div class="text-3xl sm:text-4xl font-extrabold text-text-primary mt-1 font-mono tabular-nums tracking-tight">${formatVnd(month)}</div>
      ${compare ? `<div class="flex items-center gap-2 flex-wrap mt-2">${compare}</div>` : ''}
      <div class="mt-3 pt-3 border-t border-glass-border grid grid-cols-3 gap-3 text-[11px]">
        <div><div class="text-text-muted">Đơn đã trả</div><div class="font-mono font-bold text-text-primary text-sm">${monthOrders}</div></div>
@@ -192,7 +192,7 @@ function renderKpis(s) {
   setHtml(
     'ov-kpi-today',
     `<div class="text-[11px] font-bold text-text-muted uppercase tracking-wider">Doanh thu hôm nay</div>
-     <div class="text-2xl font-black mt-1 font-mono tabular-nums ${today > 0 ? 'text-emerald-600 dark:text-emerald-400' : 'text-text-primary'}">${formatVnd(today)}</div>
+     <div class="text-2xl font-extrabold mt-1 font-mono tabular-nums ${today > 0 ? 'text-emerald-600 dark:text-emerald-400' : 'text-text-primary'}">${formatVnd(today)}</div>
      ${yesterdayLine ? `<div class="text-[11px] text-text-muted mt-1.5">${yesterdayLine}</div>` : ''}`
   )
 
@@ -200,7 +200,7 @@ function renderKpis(s) {
   setHtml(
     'ov-kpi-users',
     `<div class="text-[11px] font-bold text-text-muted uppercase tracking-wider">Thành viên</div>
-     <div class="text-2xl font-black text-text-primary mt-1 font-mono tabular-nums">${Number(s.users_total) || 0}</div>
+     <div class="text-2xl font-extrabold text-text-primary mt-1 font-mono tabular-nums">${Number(s.users_total) || 0}</div>
      <div class="text-[11px] text-text-muted mt-1.5">+${newWeek} tuần này${has(s.users_new_month) ? ` · +${Number(s.users_new_month) || 0} trong 30 ngày` : ''}</div>`
   )
 }

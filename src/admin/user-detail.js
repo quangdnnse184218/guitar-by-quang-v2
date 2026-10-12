@@ -46,7 +46,7 @@ function statTile(label, value, extra = '', accent = 'text-text-primary') {
   return `
     <div class="glass-card border border-glass-border rounded-2xl p-3.5">
       <div class="text-[10px] font-bold text-text-muted uppercase tracking-wider">${escapeHtml(label)}</div>
-      <div class="text-lg sm:text-xl font-black ${accent} mt-0.5 font-mono tabular-nums">${escapeHtml(value)}</div>
+      <div class="text-lg sm:text-xl font-extrabold ${accent} mt-0.5 font-mono tabular-nums">${escapeHtml(value)}</div>
       ${extra ? `<div class="text-[10px] text-text-muted mt-0.5 font-medium">${escapeHtml(extra)}</div>` : ''}
     </div>`
 }
@@ -107,7 +107,7 @@ function renderOrdersPanel(orders) {
       <div class="p-3.5 flex items-center gap-3">
         <div class="flex-1 min-w-0">
           <div class="flex items-center gap-2 flex-wrap">
-            <span class="font-mono font-black text-xs text-text-primary">${escapeHtml(o.order_code)}</span>
+            <span class="font-mono font-extrabold text-xs text-text-primary">${escapeHtml(o.order_code)}</span>
             <span class="px-2 py-0.5 rounded-full text-[10px] font-bold whitespace-nowrap ${st.cls}">${escapeHtml(st.label)}</span>
             ${o.is_hssv ? '<span class="px-2 py-0.5 rounded-full bg-sky-500/15 text-sky-600 dark:text-sky-400 text-[10px] font-bold whitespace-nowrap">HSSV</span>' : ''}
           </div>
@@ -201,10 +201,10 @@ function render() {
         class="w-16 h-16 sm:w-20 sm:h-20 rounded-2xl object-cover border border-glass-border bg-glass-bg flex-shrink-0" />
       <div class="flex-1 min-w-0 space-y-2">
         <div class="flex items-center gap-2 flex-wrap">
-          <h2 class="text-base sm:text-lg font-black text-text-primary">${escapeHtml(profile.full_name)}</h2>
+          <h2 class="text-base sm:text-lg font-extrabold text-text-primary">${escapeHtml(profile.full_name)}</h2>
           ${
             isAdminAccount
-              ? '<span class="px-2 py-0.5 rounded-md bg-rose-500/15 text-rose-700 dark:text-rose-300 text-[10px] font-black uppercase tracking-wider border border-rose-500/30">ADMIN</span>'
+              ? '<span class="px-2 py-0.5 rounded-md bg-rose-500/15 text-rose-700 dark:text-rose-300 text-[10px] font-extrabold uppercase tracking-wider border border-rose-500/30">ADMIN</span>'
               : stats.purchases_count > 0
                 ? '<span class="px-2 py-0.5 rounded-full bg-amber-500/20 text-amber-600 dark:text-amber-300 text-[10px] font-bold border border-amber-500/30">VIP Member</span>'
                 : '<span class="px-2 py-0.5 rounded-full bg-black/5 dark:bg-white/5 border border-glass-border text-text-muted text-[10px] font-medium">Free</span>'

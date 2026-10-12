@@ -72,7 +72,7 @@ function candidateRow(tx, c) {
     <div class="flex flex-col sm:flex-row sm:items-center gap-2.5 p-3 rounded-xl bg-black/[0.03] dark:bg-white/[0.04] border border-glass-border">
       <div class="flex-1 min-w-0">
         <div class="flex items-center gap-1.5 flex-wrap">
-          <span class="font-mono font-black text-[11px] text-text-primary">${escapeHtml(c.order_code)}</span>
+          <span class="font-mono font-extrabold text-[11px] text-text-primary">${escapeHtml(c.order_code)}</span>
           <span class="px-1.5 py-0.5 rounded-md text-[9px] font-bold ${
             c.status === 'expired' ? 'bg-black/10 dark:bg-white/10 text-text-muted' : 'bg-amber-500/15 text-amber-600 dark:text-amber-400'
           }">${statusText}</span>
@@ -103,7 +103,7 @@ function unmatchedCard(tx) {
     <div class="p-4 sm:p-5 space-y-3.5" data-tx-card="${escapeHtml(tx.id)}">
       <div class="flex items-start justify-between gap-3 flex-wrap">
         <div class="min-w-0">
-          <div class="text-2xl font-black font-mono tabular-nums text-text-primary">${formatVnd(tx.amount)}</div>
+          <div class="text-2xl font-extrabold font-mono tabular-nums text-text-primary">${formatVnd(tx.amount)}</div>
           <div class="text-[11px] text-text-muted mt-0.5">${escapeHtml(formatAge(minutes))}${tx.gateway ? ' · ' + escapeHtml(tx.gateway) : ''}</div>
         </div>
         <div class="text-right">

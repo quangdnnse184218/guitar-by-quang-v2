@@ -1,4 +1,4 @@
-@import url('https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,400;1,600&family=JetBrains+Mono:wght@400;500;600;700;800&family=Fraunces:ital,opsz,wght@0,9..144,500;0,9..144,600;0,9..144,700;1,9..144,500&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:ital,wght@0,400;0,500;0,600;0,700;0,800;1,400&family=JetBrains+Mono:wght@400;500;700&family=Fraunces:ital,opsz,wght@0,9..144,500;0,9..144,600;0,9..144,700;1,9..144,500&display=swap');
 /* Fraunces: chữ tiêu đề riêng cho h1/h2/.text-h1 — có kèm dấu tiếng Việt (đã
    kiểm tra glyph qua Google Fonts). Be Vietnam Pro (thiết kế riêng cho tiếng
    Việt) dùng cho toàn bộ phần còn lại. Đã bỏ Inter (2026-09-26): trước đây
@@ -402,6 +402,61 @@ nav,
   --well: inset 0 1px 3px rgb(0 0 0 / 0.12);
 }
 
+/* ==============================================================================
+   HỆ "KÍNH" — một bộ biến cho mọi lớp nổi. Kính chỉ có nghĩa khi có thứ trượt
+   bên dưới, nên chỉ áp cho: header, thanh điều hướng dưới đáy, menu tài khoản,
+   hộp thoại, bảng lọc trên điện thoại. Thẻ nội dung (.glass-card) giữ nền đặc:
+   không có gì phía sau để nhìn xuyên, và 25 thẻ cùng làm mờ nền sẽ giật trên
+   điện thoại yếu.
+   ============================================================================== */
+:root {
+  --frost-tint: 30 24 20;
+  --frost-alpha: 0.62;
+  --frost-alpha-strong: 0.86;
+  --frost-fx: blur(22px) saturate(1.7);
+  --frost-edge: rgb(255 255 255 / 0.12);
+  --frost-shine: inset 0 1px 0 rgb(255 255 255 / 0.12);
+  --scrim: rgb(8 6 4 / 0.5);
+}
+
+[data-theme='light'] {
+  --frost-tint: 255 255 255;
+  --frost-alpha: 0.6;
+  --frost-alpha-strong: 0.88;
+  --frost-edge: rgb(255 255 255 / 0.8);
+  --frost-shine: inset 0 1px 0 rgb(255 255 255 / 0.95), inset 0 -1px 0 rgb(120 90 50 / 0.06);
+  --scrim: rgb(60 44 28 / 0.32);
+}
+
+.frost,
+.frost-strong {
+  background-color: rgb(var(--frost-tint) / var(--frost-alpha)) !important;
+  -webkit-backdrop-filter: var(--frost-fx);
+  backdrop-filter: var(--frost-fx);
+  border: 1px solid var(--frost-edge) !important;
+  box-shadow: var(--frost-shine), var(--elev-raised) !important;
+}
+
+.frost-strong {
+  background-color: rgb(var(--frost-tint) / var(--frost-alpha-strong)) !important;
+}
+
+/* Không có backdrop-filter, hoặc người dùng bật "giảm độ trong suốt": nền gần đục. */
+@supports not ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) {
+  :root {
+    --frost-alpha: 0.97;
+    --frost-alpha-strong: 0.98;
+  }
+}
+@media (prefers-reduced-transparency: reduce) {
+  :root,
+  [data-theme='light'] {
+    --frost-alpha: 0.97;
+    --frost-alpha-strong: 0.98;
+    --frost-fx: none;
+  }
+}
+
 .glass-card {
   position: relative;
   background-color: rgb(var(--glass-bg));
@@ -556,9 +611,9 @@ nav,
    ============================================================================== */
 #main-nav {
   border-bottom: 1px solid var(--glass-border);
-  backdrop-filter: blur(var(--glass-blur));
-  -webkit-backdrop-filter: blur(var(--glass-blur));
-  background-color: var(--header-bg, rgb(var(--bg-base)));
+  -webkit-backdrop-filter: var(--frost-fx);
+  backdrop-filter: var(--frost-fx);
+  background-color: rgb(var(--bg-base) / calc(var(--frost-alpha) + 0.1));
   box-shadow: 0 1px 0 rgb(0 0 0 / 0.02), 0 8px 24px -18px rgb(0 0 0 / 0.35);
 }
 
@@ -654,12 +709,12 @@ nav,
     grid-template-columns: repeat(5, 1fr);
     padding: var(--gap);
     border-radius: 26px;
-    background: rgb(var(--glass-bg) / 0.55);
-    -webkit-backdrop-filter: blur(22px) saturate(1.8);
-    backdrop-filter: blur(22px) saturate(1.8);
-    border: 1px solid rgb(255 255 255 / 0.12);
+    background: rgb(var(--frost-tint) / calc(var(--frost-alpha) - 0.08));
+    -webkit-backdrop-filter: var(--frost-fx);
+    backdrop-filter: var(--frost-fx);
+    border: 1px solid var(--frost-edge);
     box-shadow:
-      inset 0 1px 0 rgb(255 255 255 / 0.14),
+      var(--frost-shine),
       0 14px 34px -10px rgb(0 0 0 / 0.55);
     transition:
       transform 0.35s cubic-bezier(0.2, 0.8, 0.2, 1),
@@ -667,21 +722,12 @@ nav,
   }
 
   [data-theme='light'] .bottom-nav {
-    background: rgb(255 255 255 / 0.5);
-    border-color: rgb(255 255 255 / 0.75);
     box-shadow:
-      inset 0 1px 0 rgb(255 255 255 / 0.95),
-      inset 0 -1px 0 rgb(120 90 50 / 0.06),
+      var(--frost-shine),
       0 14px 34px -12px rgb(70 45 20 / 0.32);
   }
 
   /* Trình duyệt không có backdrop-filter: nền gần đục để chữ vẫn đọc được. */
-  @supports not ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) {
-    .bottom-nav {
-      background: rgb(var(--glass-bg) / 0.97);
-    }
-  }
-
   .bottom-nav.is-hidden {
     transform: translateY(calc(100% + 24px));
     opacity: 0;
@@ -1257,6 +1303,20 @@ nav,
   }
 }
 
+/* Ô nhập trên điện thoại phải từ 16px: nhỏ hơn thì iPhone tự phóng to cả trang khi chạm vào ô. */
+@media (max-width: 767.98px) {
+  input:not([type='checkbox']):not([type='radio']):not([type='range']),
+  select,
+  textarea {
+    font-size: 16px !important;
+  }
+}
+
+.faq-item > p {
+  max-width: 68ch;
+  line-height: 1.65;
+}
+
 /* FAQ Details & Summary */
 .faq-item {
   transition: all 0.3s ease;
@@ -1355,11 +1415,22 @@ nav,
 /* ==============================================================================
    MODAL DEDICATED THEME CLASSES
    ============================================================================== */
+/* Lớp phủ sau hộp thoại: mờ + nhạt để vẫn thấy trang phía sau (trước đen 80%). */
+[role='dialog'][aria-modal='true'].fixed {
+  background-color: var(--scrim) !important;
+  -webkit-backdrop-filter: blur(14px) saturate(1.3);
+  backdrop-filter: blur(14px) saturate(1.3);
+}
+
 .modal-surface {
-  background-color: var(--modal-surface-bg) !important;
-  border: 1px solid var(--modal-surface-border) !important;
+  background-color: rgb(var(--frost-tint) / var(--frost-alpha-strong)) !important;
+  -webkit-backdrop-filter: var(--frost-fx);
+  backdrop-filter: var(--frost-fx);
+  border: 1px solid var(--frost-edge) !important;
   color: rgb(var(--text-primary)) !important;
-  box-shadow: 0 25px 60px -15px rgba(0, 0, 0, 0.5) !important;
+  box-shadow:
+    var(--frost-shine),
+    0 30px 70px -20px rgb(0 0 0 / 0.5) !important;
 }
 
 .modal-inner-card {
@@ -1620,7 +1691,7 @@ input[type='range'].metro-slider::-webkit-slider-thumb:hover {
   align-items: center !important;
   justify-content: center !important;
   font-size: 16px !important;
-  font-weight: 900 !important;
+  font-weight: 800 !important;
   flex-shrink: 0 !important;
   box-shadow: inset 0 1px 2px rgba(255, 255, 255, 0.3) !important;
 }
@@ -2230,7 +2301,7 @@ body.modal-open {
   background: #e11d48;
   color: #ffffff;
   font-size: 10px;
-  font-weight: 900;
+  font-weight: 800;
   line-height: 18px;
   text-align: center;
   flex-shrink: 0;
@@ -2358,7 +2429,7 @@ body.modal-open {
   background: #e11d48;
   color: #ffffff;
   font-size: 9px;
-  font-weight: 900;
+  font-weight: 800;
   line-height: 16px;
   text-align: center;
 }
@@ -2508,7 +2579,13 @@ body.modal-open {
     border-radius: 1.5rem 1.5rem 0 0;
     border-bottom: 0;
     padding-bottom: calc(1.25rem + env(safe-area-inset-bottom));
-    box-shadow: 0 -18px 40px -12px rgb(0 0 0 / 0.35);
+    background: rgb(var(--frost-tint) / var(--frost-alpha-strong));
+    -webkit-backdrop-filter: var(--frost-fx);
+    backdrop-filter: var(--frost-fx);
+    border-color: var(--frost-edge);
+    box-shadow:
+      var(--frost-shine),
+      0 -18px 40px -12px rgb(0 0 0 / 0.35);
     transform: translateY(100%);
     visibility: hidden;
     transition:
@@ -2546,7 +2623,7 @@ body.modal-open {
   border: 1px solid rgb(var(--glass-border-rgb) / var(--glass-border-alpha));
   background: rgb(var(--bg-base) / 0.6);
   font-size: 0.75rem;
-  font-weight: 700;
+  font-weight: 600;
   color: rgb(var(--text-muted));
   cursor: pointer;
   transition:
@@ -2763,7 +2840,7 @@ body.kb-open {
     height: 1.75rem;
   }
   .contact-chip > span:last-child > span:last-child {
-    font-size: 10.5px;
+    font-size: 11px;
     letter-spacing: -0.01em;
   }
 }
