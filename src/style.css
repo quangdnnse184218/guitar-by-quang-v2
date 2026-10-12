@@ -32,46 +32,49 @@
      `--glass-border` không theo định dạng này: nó là rgba() mờ sẵn (10%) dùng
      trơn ở hơn 400 chỗ; Tailwind khai nó bằng hàm NHÂN độ mờ (xem
      --glass-border-rgb/--glass-border-alpha bên dưới và tailwind.config.js). */
-  --bg-base: 27 20 15;
+  --bg-base: 22 18 15;
   /* Trước đây mỗi section một sắc riêng (6 tông khác nhau) khiến trang chủ
      nhìn loang lổ, có "đường kẻ ngăn cách" giữa các khối. Giờ chỉ luân phiên
      2 tông: nền gốc và một tông "nổi" hơn một chút — section nào đã có khung
      spotlight/card riêng (Bài Hát Nổi Bật) thì để nền gốc, section trơn mới
      cần tông nổi để tách bạch với section trơn liền kề. */
-  --sec-raised-bg: #241c14;
+  --sec-raised-bg: #1d1814;
   --sec-hero-bg: rgb(var(--bg-base));
   --sec-about-bg: rgb(var(--bg-base));
   --sec-featured-bg: rgb(var(--bg-base));
   --sec-tools-bg: var(--sec-raised-bg);
   --sec-faq-bg: var(--sec-raised-bg);
   --sec-contact-bg: rgb(var(--bg-base));
-  --header-bg: rgba(27, 20, 15, 0.9);
-  --footer-bg-grad: linear-gradient(to bottom, #221a13, #120d09);
+  --header-bg: rgba(22, 18, 15, 0.88);
+  --footer-bg-grad: linear-gradient(to bottom, #1a1512, #100d0b);
 
   /* Brand Floating Blobs */
-  --blob-amber: #d4af37;
+  --blob-amber: #e9a452;
   --blob-violet: #a8455a;
-  --blob-rose: #8a6a2a;
+  --blob-rose: #b0621a;
 
   /* Card Surfaces — Dark Mode Elevation */
-  --glass-bg: 36 27 20;
-  --glass-border: rgba(230, 210, 180, 0.1);
+  --glass-bg: 32 26 22;
+  --glass-border: rgba(235, 215, 190, 0.1);
   /* Tách riêng màu + độ mờ gốc của --glass-border để Tailwind nhân độ mờ của
      modifier (border-glass-border/60 = 60% của 0.1) — xem tailwind.config.js. */
-  --glass-border-rgb: 230 210 180;
+  --glass-border-rgb: 235 215 190;
   --glass-border-alpha: 0.1;
-  --glass-bg-hover: 44 33 24;
+  --glass-bg-hover: 42 34 28;
   --glass-blur: 20px;
 
   /* High-Contrast Neutral Text */
-  --text-primary: 243 237 226;
-  --text-muted: 184 168 143;
-  --text-faint: 138 120 96;
+  --text-primary: 244 238 228;
+  --text-muted: 188 174 154;
+  --text-faint: 146 131 112;
 
   /* Primary Brand Color: Antique Brass */
-  --accent-primary: 212 175 55;
-  --accent-primary-hover: 228 193 88;
-  --accent-secondary: 212 175 55;
+  --accent-primary: 233 164 82;
+  --accent-primary-hover: 242 186 116;
+  --accent-secondary: 233 164 82;
+  /* Nền nút đặc: chữ trắng đạt 4,5:1 ở cả hai giao diện (màu nhấn bản tối quá sáng để đặt chữ trắng). */
+  --accent-solid: 176 98 24;
+  --accent-solid-deep: 150 80 16;
   --terracotta: #a8455a;
   --terracotta-light: rgba(168, 69, 90, 0.18);
 
@@ -101,10 +104,10 @@
   --neutral-border: rgba(255, 255, 255, 0.12);
 
   /* Modal Tokens — Dark Mode */
-  --modal-surface-bg: #131722;
-  --modal-surface-border: rgba(255, 255, 255, 0.12);
-  --modal-card-bg: #1a2030;
-  --modal-card-border: rgba(255, 255, 255, 0.08);
+  --modal-surface-bg: #1d1814;
+  --modal-surface-border: rgba(235, 215, 190, 0.14);
+  --modal-card-bg: #272019;
+  --modal-card-border: rgba(235, 215, 190, 0.09);
   --badge-free-bg: rgba(52, 211, 153, 0.16);
   --badge-free-text: #34d399;
   --badge-free-border: rgba(52, 211, 153, 0.35);
@@ -113,16 +116,16 @@
   --badge-paid-border: rgba(248, 113, 113, 0.35);
 
   /* Metronome Dedicated Tokens — Dark Mode */
-  --metro-badge-bg: rgba(16, 185, 129, 0.12);
-  --metro-badge-text: #34d399;
-  --metro-badge-border: rgba(52, 211, 153, 0.3);
+  --metro-badge-bg: rgb(var(--accent-primary) / 0.12);
+  --metro-badge-text: rgb(var(--accent-primary));
+  --metro-badge-border: rgb(var(--accent-primary) / 0.3);
   --metro-dot-idle: rgba(255, 255, 255, 0.2);
-  --metro-dot-active: #10b981;
-  --metro-pulse-idle-dot: rgba(52, 211, 153, 0.5);
+  --metro-dot-active: rgb(var(--accent-primary));
+  --metro-pulse-idle-dot: rgb(var(--accent-primary) / 0.5);
   --metro-kbd-bg: rgba(255, 255, 255, 0.08);
   --metro-kbd-border: rgba(255, 255, 255, 0.15);
-  --metro-kbd-text: #34d399;
-  --metro-bpm-sub: #34d399;
+  --metro-kbd-text: rgb(var(--accent-primary));
+  --metro-bpm-sub: rgb(var(--accent-primary));
 }
 
 /* ==============================================================================
@@ -132,38 +135,40 @@
   color-scheme: light;
   /* Nền vải lanh xưởng mộc (linen), không phải kem #F4F1EA hay gặp — cùng bộ
      đôi đồng thau/rượu vang như bản tối để hai theme là một bảng màu duy nhất. */
-  --bg-base: 231 226 211;
-  --sec-raised-bg: #ded7c4;
+  --bg-base: 248 245 239;
+  --sec-raised-bg: #f0ebe1;
   --sec-hero-bg: rgb(var(--bg-base));
   --sec-about-bg: rgb(var(--bg-base));
   --sec-featured-bg: rgb(var(--bg-base));
   --sec-tools-bg: var(--sec-raised-bg);
   --sec-faq-bg: var(--sec-raised-bg);
   --sec-contact-bg: rgb(var(--bg-base));
-  --header-bg: rgba(231, 226, 211, 0.92);
-  --footer-bg: #c9bb9e;
-  --footer-bg-grad: linear-gradient(180deg, #d2c4a6 0%, #c2b393 100%);
+  --header-bg: rgba(248, 245, 239, 0.9);
+  --footer-bg: #ece5d8;
+  --footer-bg-grad: linear-gradient(180deg, #f0ebe1 0%, #e8e0d2 100%);
 
-  --blob-amber: #b8912e;
+  --blob-amber: #c98a3a;
   --blob-violet: #7a2e3a;
-  --blob-rose: #9c7a2e;
+  --blob-rose: #b0621a;
 
   /* Card Surfaces — Light Mode Elevation */
-  --glass-bg: 251 249 243;
-  --glass-border: rgba(120, 95, 60, 0.22);
-  --glass-border-rgb: 120 95 60;
-  --glass-border-alpha: 0.22;
-  --glass-bg-hover: 245 240 228;
+  --glass-bg: 255 255 255;
+  --glass-border: rgba(96, 72, 44, 0.15);
+  --glass-border-rgb: 96 72 44;
+  --glass-border-alpha: 0.15;
+  --glass-bg-hover: 250 246 239;
 
   /* Legible Walnut & Charcoal Text */
-  --text-primary: 36 28 20;
-  --text-muted: 92 78 58;
-  --text-faint: 138 122 94;
+  --text-primary: 31 24 18;
+  --text-muted: 94 80 64;
+  --text-faint: 118 102 84;
 
   /* Primary Brand Color: Antique Brass */
-  --accent-primary: 138 106 42;
-  --accent-primary-hover: 110 84 32;
-  --accent-secondary: 138 106 42;
+  --accent-primary: 158 88 18;
+  --accent-primary-hover: 130 70 12;
+  --accent-secondary: 158 88 18;
+  --accent-solid: 158 88 18;
+  --accent-solid-deep: 128 68 12;
   --terracotta: #6e2a38;
   --terracotta-light: rgba(110, 42, 56, 0.1);
 
@@ -185,14 +190,14 @@
   --warning-border: #fde68a;
   --warning-solid: #d97706;
 
-  --neutral-subtle: #f3ede3;
-  --neutral-border: #e2d7cb;
+  --neutral-subtle: #f4efe6;
+  --neutral-border: #e4dccf;
 
   /* Modal Tokens — Light Mode */
   --modal-surface-bg: #ffffff;
-  --modal-surface-border: #e2d7cc;
-  --modal-card-bg: #f8f4ec;
-  --modal-card-border: #e8dfd3;
+  --modal-surface-border: #e4dccf;
+  --modal-card-bg: #f8f5ef;
+  --modal-card-border: #e9e2d6;
   --badge-free-bg: #def7ec;
   --badge-free-text: #03543f;
   --badge-free-border: #84e1bc;
@@ -201,16 +206,16 @@
   --badge-paid-border: #f8b4b4;
 
   /* Metronome Dedicated Tokens — Light Mode (High Contrast Forest/Emerald) */
-  --metro-badge-bg: #ecfdf5;
-  --metro-badge-text: #065f46;
-  --metro-badge-border: #a7f3d0;
-  --metro-dot-idle: #c4b9ad;
-  --metro-dot-active: #059669;
-  --metro-pulse-idle-dot: #059669;
-  --metro-kbd-bg: #ede5da;
-  --metro-kbd-border: #d1c4b4;
-  --metro-kbd-text: #065f46;
-  --metro-bpm-sub: #065f46;
+  --metro-badge-bg: rgb(var(--accent-primary) / 0.08);
+  --metro-badge-text: rgb(var(--accent-primary));
+  --metro-badge-border: rgb(var(--accent-primary) / 0.28);
+  --metro-dot-idle: #d8cfc0;
+  --metro-dot-active: rgb(var(--accent-primary));
+  --metro-pulse-idle-dot: rgb(var(--accent-primary));
+  --metro-kbd-bg: #f4efe6;
+  --metro-kbd-border: #e4dccf;
+  --metro-kbd-text: rgb(var(--accent-primary));
+  --metro-bpm-sub: rgb(var(--accent-primary));
 }
 
 /* ==============================================================================
@@ -296,13 +301,13 @@ select {
 
 [data-theme='light'] select {
   background-color: #ffffff !important;
-  color: #231c16 !important;
-  border-color: rgba(180, 150, 120, 0.4) !important;
+  color: #1f1812 !important;
+  border-color: rgba(96, 72, 44, 0.24) !important;
 }
 
 select option {
-  background-color: #151a27 !important;
-  color: #f8fafc !important;
+  background-color: #201a16 !important;
+  color: #f4eee4 !important;
   padding: 8px 12px;
 }
 
@@ -312,13 +317,13 @@ select option {
 }
 
 select optgroup {
-  background-color: #111520 !important;
-  color: #94a3b8 !important;
+  background-color: #1a1512 !important;
+  color: #bcae9a !important;
 }
 
 [data-theme='light'] select optgroup {
-  background-color: #f7f2ea !important;
-  color: #5c4d40 !important;
+  background-color: #f8f5ef !important;
+  color: #5e5040 !important;
 }
 
 /* Consistent Type Scale */
@@ -489,7 +494,7 @@ nav,
   background-color: rgb(var(--glass-bg-hover));
   transform: translateY(-4px);
   box-shadow: var(--elev-raised);
-  border-color: rgba(212, 175, 55, 0.4);
+  border-color: rgb(var(--accent-primary) / 0.4);
 }
 
 [data-theme='light'] .song-card:hover,
@@ -498,7 +503,7 @@ nav,
 [data-theme='light'] .song-card.touch-active,
 [data-theme='light'] .gear-card.touch-active,
 [data-theme='light'] .card-interactive.touch-active {
-  border-color: rgba(138, 106, 42, 0.4);
+  border-color: rgb(var(--accent-primary) / 0.4);
 }
 
 /* Swipe-to-favorite overlay (kho-tab.js): heart flash shown while dragging a
@@ -520,7 +525,7 @@ nav,
    HERO REFINEMENTS
    ============================================================================== */
 .hero-highlight-text {
-  background: linear-gradient(135deg, rgb(var(--accent-primary)) 0%, var(--terracotta) 100%);
+  background: linear-gradient(135deg, rgb(var(--accent-solid)) 0%, rgb(var(--accent-solid-deep)) 100%);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   display: inline-block;
@@ -537,13 +542,13 @@ nav,
   letter-spacing: 0.08em;
   text-transform: uppercase;
   color: rgb(var(--accent-primary));
-  background: rgba(212, 175, 55, 0.16);
-  border: 1px solid rgba(212, 175, 55, 0.4);
+  background: rgb(var(--accent-primary) / 0.16);
+  border: 1px solid rgb(var(--accent-primary) / 0.4);
 }
 
 [data-theme='light'] .hero-version-badge {
-  background: rgba(138, 106, 42, 0.12);
-  border-color: rgba(138, 106, 42, 0.35);
+  background: rgb(var(--accent-primary) / 0.12);
+  border-color: rgb(var(--accent-primary) / 0.35);
 }
 
 /* ==============================================================================
@@ -554,7 +559,7 @@ nav,
   backdrop-filter: blur(var(--glass-blur));
   -webkit-backdrop-filter: blur(var(--glass-blur));
   background-color: var(--header-bg, rgb(var(--bg-base)));
-  box-shadow: 0 4px 30px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 1px 0 rgb(0 0 0 / 0.02), 0 8px 24px -18px rgb(0 0 0 / 0.35);
 }
 
 #main-nav::after {
@@ -865,11 +870,11 @@ nav,
   outline: none;
   border-color: rgb(var(--accent-primary));
   background: rgb(var(--glass-bg-hover));
-  box-shadow: 0 0 20px rgba(212, 175, 55, 0.22);
+  box-shadow: 0 0 20px rgb(var(--accent-primary) / 0.22);
 }
 
 [data-theme='light'] .glass-input:focus {
-  box-shadow: 0 0 20px rgba(138, 106, 42, 0.16);
+  box-shadow: 0 0 20px rgb(var(--accent-primary) / 0.16);
 }
 
 .glass-input::placeholder {
@@ -895,21 +900,21 @@ nav,
 .filter-pill:hover {
   color: rgb(var(--text-primary));
   background: rgb(var(--glass-bg-hover));
-  border-color: rgba(212, 175, 55, 0.35);
+  border-color: rgb(var(--accent-primary) / 0.35);
 }
 
 .filter-pill.active {
   color: #1b140f;
   background: rgb(var(--accent-primary));
   border-color: rgb(var(--accent-primary));
-  box-shadow: 0 4px 18px rgba(212, 175, 55, 0.4);
+  box-shadow: 0 4px 18px rgb(var(--accent-primary) / 0.4);
 }
 
 [data-theme='light'] .filter-pill.active {
   color: #ffffff;
   background: rgb(var(--accent-primary));
   border-color: rgb(var(--accent-primary));
-  box-shadow: 0 4px 18px rgba(138, 106, 42, 0.28);
+  box-shadow: 0 4px 18px rgb(var(--accent-primary) / 0.28);
 }
 
 .faq-filter-pill {
@@ -934,7 +939,7 @@ nav,
 .faq-filter-pill:hover {
   color: rgb(var(--text-primary));
   background: rgb(var(--glass-bg-hover));
-  border-color: rgba(212, 175, 55, 0.35);
+  border-color: rgb(var(--accent-primary) / 0.35);
 }
 
 .faq-filter-pill.active {
@@ -1036,7 +1041,7 @@ nav,
   height: 500px;
   top: -180px;
   left: -140px;
-  background: radial-gradient(circle, rgba(212, 175, 55, 0.42), transparent 70%);
+  background: radial-gradient(circle, rgb(var(--accent-primary) / 0.42), transparent 70%);
 }
 
 .site-ambient-blob-2 {
@@ -1052,7 +1057,7 @@ nav,
   height: 400px;
   bottom: -160px;
   left: 18%;
-  background: radial-gradient(circle, rgba(138, 106, 42, 0.32), transparent 70%);
+  background: radial-gradient(circle, rgb(var(--accent-primary) / 0.32), transparent 70%);
 }
 
 [data-theme='light'] .site-ambient-blob-1 {
@@ -1165,7 +1170,7 @@ nav,
 }
 
 .bg-warm-gradient {
-  background: linear-gradient(135deg, rgb(var(--accent-primary)) 0%, var(--terracotta) 100%);
+  background: linear-gradient(135deg, rgb(var(--accent-solid)) 0%, rgb(var(--accent-solid-deep)) 100%);
 }
 
 /* ==============================================================================
@@ -1186,7 +1191,7 @@ nav,
   box-shadow:
     0 0 0 1.5px #d4af37,
     0 0 0 3.5px rgba(13, 9, 6, 0.7),
-    0 0 0 4.5px rgba(212, 175, 55, 0.55),
+    0 0 0 4.5px rgb(var(--accent-primary) / 0.55),
     inset 0 2px 6px rgba(0, 0, 0, 0.6),
     0 8px 18px -6px rgba(0, 0, 0, 0.7);
   cursor: pointer;
@@ -1389,9 +1394,9 @@ nav,
    TAB ORIGIN BADGES ("Tab của Quang" / "Tab sưu tầm")
    ============================================================================== */
 .badge-origin-quang {
-  background-color: rgba(212, 175, 55, 0.2);
+  background-color: rgb(var(--accent-primary) / 0.2);
   color: #e4c158;
-  border: 1px solid rgba(212, 175, 55, 0.45);
+  border: 1px solid rgb(var(--accent-primary) / 0.45);
 }
 
 [data-theme='light'] .badge-origin-quang {
@@ -1428,9 +1433,9 @@ nav,
 }
 
 .badge-semantic-primary {
-  background-color: var(--terracotta-light) !important;
+  background-color: rgb(var(--accent-primary) / 0.1) !important;
   color: rgb(var(--accent-primary)) !important;
-  border: 1px solid rgba(138, 106, 42, 0.35) !important;
+  border: 1px solid rgb(var(--accent-primary) / 0.35) !important;
 }
 
 /* ==============================================================================
@@ -1453,15 +1458,10 @@ nav,
   box-shadow: 0 0 4px var(--metro-pulse-idle-dot);
 }
 
-[data-theme='light'] .metro-pulse-dot {
-  background-color: #047857;
-  box-shadow: 0 0 6px rgba(4, 120, 87, 0.4);
-}
-
 .metro-flash-active {
-  background-color: var(--success-solid) !important;
+  background-color: rgb(var(--accent-solid)) !important;
   box-shadow:
-    0 0 25px var(--success-solid),
+    0 0 25px rgb(var(--accent-solid)),
     inset 0 0 10px rgba(255, 255, 255, 0.4) !important;
   transform: scale(1.15);
 }
@@ -1523,7 +1523,7 @@ input[type='range'].metro-slider {
    bằng box-shadow rõ ràng quanh thanh trượt khi điều hướng bằng bàn phím,
    không thì người dùng Tab đến sẽ không biết đang chọn control nào. */
 input[type='range'].metro-slider:focus-visible {
-  box-shadow: 0 0 0 3px var(--success-solid);
+  box-shadow: 0 0 0 3px rgb(var(--accent-solid));
 }
 
 input[type='range'].metro-slider::-webkit-slider-thumb {
@@ -1532,7 +1532,7 @@ input[type='range'].metro-slider::-webkit-slider-thumb {
   width: 24px;
   height: 24px;
   border-radius: 9999px;
-  background: var(--success-solid);
+  background: rgb(var(--accent-solid));
   border: 3px solid #ffffff;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.25);
   cursor: pointer;
@@ -1541,11 +1541,6 @@ input[type='range'].metro-slider::-webkit-slider-thumb {
     box-shadow 0.15s ease;
 }
 
-[data-theme='light'] input[type='range'].metro-slider::-webkit-slider-thumb {
-  background: #047857;
-  border: 3px solid #ffffff;
-  box-shadow: 0 2px 8px rgba(4, 120, 87, 0.35);
-}
 input[type='range'].metro-slider::-webkit-slider-thumb:hover {
   transform: scale(1.15);
 }
@@ -1684,7 +1679,7 @@ input[type='range'].metro-slider::-webkit-slider-thumb:hover {
     padding: 10px !important;
     margin-bottom: 0 !important;
     border-radius: 18px !important;
-    background: var(--glass-bg, #151a27) !important;
+    background: rgb(var(--glass-bg)) !important;
     border: 1px solid var(--glass-border, rgba(255, 255, 255, 0.09)) !important;
     box-shadow: 0 4px 14px rgba(0, 0, 0, 0.08) !important;
     position: relative !important;
@@ -1796,7 +1791,7 @@ input[type='range'].metro-slider::-webkit-slider-thumb:hover {
     padding: 10px !important;
     margin-bottom: 0 !important;
     border-radius: 18px !important;
-    background: var(--glass-bg, #151a27) !important;
+    background: rgb(var(--glass-bg)) !important;
     border: 1px solid var(--glass-border, rgba(255, 255, 255, 0.09)) !important;
     box-shadow: 0 4px 14px rgba(0, 0, 0, 0.08) !important;
     position: relative !important;
@@ -1884,7 +1879,7 @@ input[type='range'].metro-slider::-webkit-slider-thumb:hover {
     padding: 12px !important;
     margin-bottom: 0 !important;
     border-radius: 18px !important;
-    background: var(--glass-bg, #151a27) !important;
+    background: rgb(var(--glass-bg)) !important;
     border: 1px solid var(--glass-border, rgba(255, 255, 255, 0.09)) !important;
     box-shadow: 0 4px 14px rgba(0, 0, 0, 0.08) !important;
     box-sizing: border-box !important;
@@ -2019,7 +2014,7 @@ select {
   cursor: pointer !important;
   pointer-events: auto !important;
   -webkit-tap-highlight-color: transparent !important;
-  color: var(--text-muted, #94a3b8) !important;
+  color: rgb(var(--text-muted)) !important;
   transition:
     color 0.15s ease,
     transform 0.1s ease,
@@ -2027,19 +2022,19 @@ select {
 }
 
 [data-toggle-password]:hover {
-  color: var(--text-primary, #ffffff) !important;
+  color: rgb(var(--text-primary)) !important;
 }
 
 /* outline: none ở trên chặn viền focus mặc định — bù bằng box-shadow ring rõ
    ràng khi điều hướng bằng bàn phím, đổi màu icon thôi không đủ dễ nhận ra. */
 [data-toggle-password]:focus-visible {
-  color: var(--text-primary, #ffffff) !important;
-  box-shadow: 0 0 0 2px var(--accent-primary, #e2b144) !important;
+  color: rgb(var(--text-primary)) !important;
+  box-shadow: 0 0 0 2px rgb(var(--accent-primary)) !important;
 }
 
 [data-toggle-password]:active {
   transform: translateY(-50%) scale(0.92) !important;
-  color: var(--accent-primary, #e2b144) !important;
+  color: rgb(var(--accent-primary)) !important;
 }
 
 [data-toggle-password] svg {
@@ -2221,7 +2216,7 @@ body.modal-open {
 }
 
 .admin-nav-item.is-active {
-  background: linear-gradient(135deg, rgb(var(--accent-primary)) 0%, var(--terracotta) 100%);
+  background: linear-gradient(135deg, rgb(var(--accent-solid)) 0%, rgb(var(--accent-solid-deep)) 100%);
   color: #ffffff;
   box-shadow: 0 6px 16px -8px rgb(var(--accent-primary));
 }
@@ -2566,8 +2561,8 @@ body.modal-open {
 }
 
 .filter-chip[aria-pressed='true'] {
-  background: rgb(var(--accent-primary));
-  border-color: rgb(var(--accent-primary));
+  background: rgb(var(--accent-solid));
+  border-color: rgb(var(--accent-solid));
   color: #fff;
 }
 

@@ -110,7 +110,7 @@ function renderSongsTable() {
         : formatCompactPrice(song.price_formatted || song.priceFormatted || song.price)
       const priceText = isFree
         ? '<span class="px-2.5 py-1 rounded-full badge-semantic-success font-bold font-mono text-xs">FREE</span>'
-        : `<span class="font-mono tabular-nums font-bold text-rose-600 dark:text-rose-400 text-xs">${priceDisplay}</span>`
+        : `<span class="font-mono tabular-nums font-bold text-rose-700 dark:text-rose-300 text-xs">${priceDisplay}</span>`
       const currentOrder = song.order || idx + 1
       const isFirst = idx === 0
       const isLast = idx === filtered.length - 1
@@ -178,7 +178,7 @@ function renderSongsTable() {
             <button onclick="window.editSong('${song.id}')" class="flex-1 sm:flex-initial py-1.5 px-3 rounded-lg sm:rounded-xl bg-warm-gradient hover:brightness-105 text-white font-bold text-xs transition-all shadow-xs text-center cursor-pointer active:scale-95">
               Sửa
             </button>
-            <button onclick="window.deleteSong('${song.id}', '${song.title.replace(/'/g, "\\'")}')" class="flex-1 sm:flex-initial py-1.5 px-2.5 rounded-lg sm:rounded-xl bg-rose-500/10 hover:bg-rose-500/20 text-rose-600 dark:text-rose-400 font-bold text-xs border border-rose-500/30 transition-colors text-center cursor-pointer active:scale-95">
+            <button onclick="window.deleteSong('${song.id}', '${song.title.replace(/'/g, "\\'")}')" class="flex-1 sm:flex-initial py-1.5 px-2.5 rounded-lg sm:rounded-xl bg-rose-500/10 hover:bg-rose-500/20 text-rose-700 dark:text-rose-300 font-bold text-xs border border-rose-500/30 transition-colors text-center cursor-pointer active:scale-95">
               Xóa
             </button>
           </div>

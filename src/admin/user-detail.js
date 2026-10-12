@@ -39,7 +39,7 @@ const ORDER_STATUS = {
   paid: { label: 'Đã thanh toán', cls: 'bg-emerald-500/15 text-emerald-600 dark:text-emerald-400' },
   pending: { label: 'Đang chờ', cls: 'bg-amber-500/15 text-amber-600 dark:text-amber-400' },
   expired: { label: 'Hết hạn', cls: 'bg-black/10 dark:bg-white/10 text-text-muted' },
-  cancelled: { label: 'Đã huỷ', cls: 'bg-rose-500/15 text-rose-600 dark:text-rose-400' },
+  cancelled: { label: 'Đã huỷ', cls: 'bg-rose-500/15 text-rose-700 dark:text-rose-300' },
 }
 
 function statTile(label, value, extra = '', accent = 'text-text-primary') {
@@ -150,7 +150,7 @@ function renderRevocationsPanel(revocations) {
             r.drive_removed === true
               ? '<span class="px-2 py-0.5 rounded-full bg-emerald-500/15 text-emerald-600 dark:text-emerald-400 text-[10px] font-bold whitespace-nowrap">Đã gỡ Drive</span>'
               : r.drive_removed === false
-                ? '<span class="px-2 py-0.5 rounded-full bg-rose-500/15 text-rose-600 dark:text-rose-400 text-[10px] font-bold whitespace-nowrap">Chưa gỡ Drive</span>'
+                ? '<span class="px-2 py-0.5 rounded-full bg-rose-500/15 text-rose-700 dark:text-rose-300 text-[10px] font-bold whitespace-nowrap">Chưa gỡ Drive</span>'
                 : ''
           }
         </div>
@@ -204,7 +204,7 @@ function render() {
           <h2 class="text-base sm:text-lg font-black text-text-primary">${escapeHtml(profile.full_name)}</h2>
           ${
             isAdminAccount
-              ? '<span class="px-2 py-0.5 rounded-md bg-rose-500/15 text-rose-600 dark:text-rose-400 text-[10px] font-black uppercase tracking-wider border border-rose-500/30">ADMIN</span>'
+              ? '<span class="px-2 py-0.5 rounded-md bg-rose-500/15 text-rose-700 dark:text-rose-300 text-[10px] font-black uppercase tracking-wider border border-rose-500/30">ADMIN</span>'
               : stats.purchases_count > 0
                 ? '<span class="px-2 py-0.5 rounded-full bg-amber-500/20 text-amber-600 dark:text-amber-300 text-[10px] font-bold border border-amber-500/30">VIP Member</span>'
                 : '<span class="px-2 py-0.5 rounded-full bg-black/5 dark:bg-white/5 border border-glass-border text-text-muted text-[10px] font-medium">Free</span>'
@@ -280,7 +280,7 @@ function render() {
       ${statTile('Đơn đã trả', stats.orders_paid, `Tổng ${stats.orders_total} đơn`)}
       ${statTile('Đơn đang chờ', stats.orders_pending, '', stats.orders_pending > 0 ? 'text-amber-600 dark:text-amber-400' : 'text-text-primary')}
       ${statTile('Admin cấp tay', stats.manual_grants, '', stats.manual_grants > 0 ? 'text-amber-600 dark:text-amber-400' : 'text-text-primary')}
-      ${statTile('Đã thu hồi', stats.revocations_count, '', stats.revocations_count > 0 ? 'text-rose-600 dark:text-rose-400' : 'text-text-primary')}
+      ${statTile('Đã thu hồi', stats.revocations_count, '', stats.revocations_count > 0 ? 'text-rose-700 dark:text-rose-300' : 'text-text-primary')}
     </div>
 
     <!-- Danh sách chi tiết -->

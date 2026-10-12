@@ -320,7 +320,7 @@ export async function initAuthHeader() {
               ${menuItem('/index.html#faq', ICON_HELP, 'Câu hỏi thường gặp')}
             </div>
             <div class="border-t border-glass-border mt-1 pt-1">
-              <button id="auth-logout-btn" type="button" role="menuitem" class="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-semibold text-rose-600 dark:text-rose-400 hover:bg-rose-500/10 focus-visible:bg-rose-500/10 outline-none transition-colors cursor-pointer">
+              <button id="auth-logout-btn" type="button" role="menuitem" class="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-semibold text-rose-700 dark:text-rose-300 hover:bg-rose-500/10 focus-visible:bg-rose-500/10 outline-none transition-colors cursor-pointer">
                 <span class="w-4 h-4 flex-shrink-0">${iconLogout('w-4 h-4')}</span><span>Đăng xuất</span>
               </button>
             </div>
@@ -785,7 +785,7 @@ export function initForgotPasswordModal({
       }
     } else {
       alertBox.className =
-        'p-3.5 rounded-2xl bg-rose-500/15 border border-rose-500/30 text-rose-600 dark:text-rose-400 text-xs font-semibold leading-relaxed flex items-center gap-2.5'
+        'p-3.5 rounded-2xl bg-rose-500/15 border border-rose-500/30 text-rose-700 dark:text-rose-300 text-xs font-semibold leading-relaxed flex items-center gap-2.5'
       if (alertIcon) {
         alertIcon.innerHTML =
           '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>'
@@ -975,7 +975,7 @@ export function initPasswordResetForm({
       }
     } else {
       alertBox.className =
-        'p-3.5 rounded-2xl bg-rose-500/15 border border-rose-500/30 text-rose-600 dark:text-rose-400 text-xs font-semibold leading-relaxed flex items-center gap-2.5'
+        'p-3.5 rounded-2xl bg-rose-500/15 border border-rose-500/30 text-rose-700 dark:text-rose-300 text-xs font-semibold leading-relaxed flex items-center gap-2.5'
       if (alertIcon) {
         alertIcon.innerHTML =
           '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>'

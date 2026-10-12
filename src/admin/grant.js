@@ -418,7 +418,7 @@ function renderConsequences(song, reason) {
 
 function warningBox(type, text) {
   const styles = {
-    danger: 'bg-rose-500/10 border-rose-500/30 text-rose-600 dark:text-rose-400',
+    danger: 'bg-rose-500/10 border-rose-500/30 text-rose-700 dark:text-rose-300',
     warn: 'bg-amber-500/10 border-amber-500/30 text-amber-600 dark:text-amber-400',
   }
   return `<div class="px-3 py-2.5 rounded-xl border text-[11px] font-semibold leading-relaxed ${styles[type]}">${text}</div>`

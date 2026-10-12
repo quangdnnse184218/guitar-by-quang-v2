@@ -157,7 +157,7 @@ function deltaChip(current, previous) {
   if (pct === null) return ''
   const up = pct >= 0
   return `<span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-extrabold ${
-    up ? 'bg-emerald-500/15 text-emerald-600 dark:text-emerald-400' : 'bg-rose-500/15 text-rose-600 dark:text-rose-400'
+    up ? 'bg-emerald-500/15 text-emerald-600 dark:text-emerald-400' : 'bg-rose-500/15 text-rose-700 dark:text-rose-300'
   }">${up ? '▲' : '▼'} ${Math.abs(pct)}%</span>`
 }
 
@@ -226,7 +226,7 @@ function renderChart(s) {
     toggle.querySelectorAll('[data-range]').forEach((btn) => {
       const on = Number(btn.dataset.range) === chartRange
       btn.className = `px-3 py-1.5 rounded-lg text-[11px] font-bold transition-colors cursor-pointer ${
-        on ? 'bg-accent-primary text-white' : 'text-text-muted hover:text-text-primary'
+        on ? 'bg-accent-solid text-white' : 'text-text-muted hover:text-text-primary'
       }`
     })
   }

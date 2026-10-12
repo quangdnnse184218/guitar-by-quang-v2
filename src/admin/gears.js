@@ -114,7 +114,7 @@ function renderGearsTable() {
             <button onclick="window.editGear('${gear.id}')" class="flex-1 sm:flex-initial py-1.5 px-3 rounded-lg sm:rounded-xl bg-warm-gradient hover:brightness-105 text-white font-bold text-xs transition-all shadow-xs text-center cursor-pointer active:scale-95">
               Sửa
             </button>
-            <button onclick="window.deleteGear('${gear.id}', '${name.replace(/'/g, "\\'")}')" class="flex-1 sm:flex-initial py-1.5 px-2.5 rounded-lg sm:rounded-xl bg-rose-500/10 hover:bg-rose-500/20 text-rose-600 dark:text-rose-400 font-bold text-xs border border-rose-500/30 transition-colors text-center cursor-pointer active:scale-95">
+            <button onclick="window.deleteGear('${gear.id}', '${name.replace(/'/g, "\\'")}')" class="flex-1 sm:flex-initial py-1.5 px-2.5 rounded-lg sm:rounded-xl bg-rose-500/10 hover:bg-rose-500/20 text-rose-700 dark:text-rose-300 font-bold text-xs border border-rose-500/30 transition-colors text-center cursor-pointer active:scale-95">
               Xóa
             </button>
           </div>

@@ -553,7 +553,7 @@ function renderOverviewFeatured() {
                 <div class="flex items-center justify-between text-[11px] sm:text-xs font-bold text-text-muted">
                   <span>Độ khó: <strong class="text-emerald-500 font-mono tabular-nums">${song.level || levelNum + '/10'}</strong></span>
                 </div>
-                <div class="w-full bg-glass-bg rounded-full h-1 sm:h-1.5 overflow-hidden border border-glass-border">
+                <div class="w-full bg-text-primary/10 rounded-full h-1 sm:h-1.5 overflow-hidden">
                   <div class="bg-emerald-500 h-1 sm:h-1.5 rounded-full transition-all duration-500" style="width: ${percent}%"></div>
                 </div>
               </div>
@@ -612,7 +612,7 @@ function renderOverviewFeatured() {
                 <div class="flex items-center justify-between text-[11px] sm:text-xs font-bold text-text-muted">
                   <span>Độ khó: <strong class="text-accent-primary font-mono tabular-nums">${song.level || levelNum + '/10'}</strong></span>
                 </div>
-                <div class="w-full bg-glass-bg rounded-full h-1 sm:h-1.5 overflow-hidden border border-glass-border">
+                <div class="w-full bg-text-primary/10 rounded-full h-1 sm:h-1.5 overflow-hidden">
                   <div class="bg-warm-gradient h-1 sm:h-1.5 rounded-full transition-all duration-500" style="width: ${percent}%"></div>
                 </div>
               </div>
@@ -682,7 +682,7 @@ function renderOverviewFeatured() {
                 <span class="whitespace-nowrap">Độ khó: <strong class="text-accent-primary font-mono tabular-nums">${song.level || levelNum + '/10'}</strong></span>
                 ${renderHssvNote(discountNote)}
               </div>
-              <div class="w-full bg-glass-bg rounded-full h-1 sm:h-1.5 overflow-hidden border border-glass-border">
+              <div class="w-full bg-text-primary/10 rounded-full h-1 sm:h-1.5 overflow-hidden">
                 <div class="bg-warm-gradient h-1 sm:h-1.5 rounded-full transition-all duration-500" style="width: ${percent}%"></div>
               </div>
             </div>
@@ -691,8 +691,8 @@ function renderOverviewFeatured() {
         </div>
 
         <div class="pt-1 sm:pt-2">
-          <div class="w-full py-1.5 sm:py-2.5 px-1.5 rounded-full bg-warm-gradient hover:brightness-105 text-white font-bold text-[11px] sm:text-xs transition-all shadow-md flex items-center justify-center gap-1 active:scale-95 text-center cursor-pointer">
-            <span class="truncate">Xem chi tiết</span>
+          <div class="w-full py-1.5 sm:py-2.5 px-1.5 rounded-full bg-warm-gradient hover:brightness-105 text-white font-bold text-[11px] sm:text-xs transition-all flex items-center justify-center gap-1 active:scale-95 text-center cursor-pointer">
+            <span class="truncate">Mua tab<span class="hidden sm:inline"> · <span class="uppercase tabular-nums">${priceFormatted}</span></span></span>
           </div>
         </div>
       </div>
@@ -1310,7 +1310,7 @@ document.getElementById('copy-syntax-btn')?.addEventListener('click', async () =
           if (hssvFileInput) hssvFileInput.disabled = true
         } else {
           if (hssvStatus) {
-            hssvStatus.className = 'font-bold text-[11px] leading-relaxed text-rose-600 dark:text-rose-400'
+            hssvStatus.className = 'font-bold text-[11px] leading-relaxed text-rose-700 dark:text-rose-300'
             hssvStatus.textContent =
               result?.reason || 'Không xác minh được thẻ HSSV, bạn có thể thử ảnh khác hoặc thanh toán giá thường.'
           }
@@ -1320,7 +1320,7 @@ document.getElementById('copy-syntax-btn')?.addEventListener('click', async () =
       } catch (err) {
         console.error('Lỗi xác minh HSSV:', err)
         if (hssvStatus) {
-          hssvStatus.className = 'font-bold text-[11px] leading-relaxed text-rose-600 dark:text-rose-400'
+          hssvStatus.className = 'font-bold text-[11px] leading-relaxed text-rose-700 dark:text-rose-300'
           hssvStatus.textContent = 'Có lỗi khi xác minh, thử lại giúp mình nhé.'
         }
         hssvVerifyBtn.disabled = false
@@ -1726,7 +1726,7 @@ function showPasswordAlert(msg, isSuccess = false) {
       'p-3.5 rounded-2xl bg-emerald-500/15 border border-emerald-500/30 text-emerald-600 dark:text-emerald-400 text-xs font-semibold leading-relaxed flex items-center gap-2.5'
   } else {
     passwordAlert.className =
-      'p-3.5 rounded-2xl bg-rose-500/15 border border-rose-500/30 text-rose-600 dark:text-rose-400 text-xs font-semibold leading-relaxed flex items-center gap-2.5'
+      'p-3.5 rounded-2xl bg-rose-500/15 border border-rose-500/30 text-rose-700 dark:text-rose-300 text-xs font-semibold leading-relaxed flex items-center gap-2.5'
   }
 }
 

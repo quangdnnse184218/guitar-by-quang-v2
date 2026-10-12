@@ -17,7 +17,7 @@
 
 const TONES = {
   danger: {
-    iconBg: 'bg-rose-500/15 text-rose-600 dark:text-rose-400',
+    iconBg: 'bg-rose-500/15 text-rose-700 dark:text-rose-300',
     confirmBtn: 'bg-rose-600 hover:bg-rose-500 text-white',
     icon: '⚠️',
   },

@@ -56,7 +56,7 @@ function sortedFilteredUsers() {
 
 function roleBadge(u) {
   if (u.role === 'admin') {
-    return `<span class="px-2 py-0.5 rounded-md bg-rose-500/15 text-rose-600 dark:text-rose-400 text-[10px] font-black uppercase tracking-wider border border-rose-500/30">ADMIN</span>`
+    return `<span class="px-2 py-0.5 rounded-md bg-rose-500/15 text-rose-700 dark:text-rose-300 text-[10px] font-black uppercase tracking-wider border border-rose-500/30">ADMIN</span>`
   }
   if (u.purchases_count > 0) {
     return `<span class="px-2 py-0.5 rounded-full bg-amber-500/20 text-amber-600 dark:text-amber-300 text-[10px] font-bold border border-amber-500/30 shadow-glow">VIP Member</span>`

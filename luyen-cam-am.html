@@ -32,20 +32,20 @@
          <html> có class "dark" (xem src/theme-toggle.js).
          ===================================================================== */
       :root {
-        --ground: #fbf5ea;
-        --ground-glow: #f6e3c6;
+        --ground: #f8f5ef;
+        --ground-glow: #f1e6d3;
         --panel: #ffffff;
-        --panel-hi: #fbf2e3;
-        --line: #e8dcc7;
-        --line-strong: #d8c8ab;
-        --ink: #2a1d12;
-        --ink-dim: #6d5a44;
-        --ink-faint: #9d8a72;
-        --gold: #c07d12;
+        --panel-hi: #f8f5ef;
+        --line: #e9e2d6;
+        --line-strong: #d9cfbf;
+        --ink: #1f1812;
+        --ink-dim: #5e5040;
+        --ink-faint: #766654;
+        --gold: #9e5812;
         --gold-solid: #eaa62c;
         --gold-solid-ink: #2a1d12;
-        --good: #2f8f6d;
-        --bad: #cf4630;
+        --good: #1f7a5a;
+        --bad: #b83a26;
         --teach: #3f8577;
         --teach-ink: #ffffff;
         --shadow-soft: 0 10px 30px rgba(74, 52, 26, 0.12);
@@ -62,16 +62,16 @@
       }
 
       :root.dark {
-        --ground: #1e1713;
-        --ground-glow: #302319;
-        --panel: #2a211c;
-        --panel-hi: #34281f;
-        --line: #443529;
-        --line-strong: #55432f;
-        --ink: #f7ebd7;
-        --ink-dim: #bfab8e;
-        --ink-faint: #8d7a62;
-        --gold: #f0b03c;
+        --ground: #16120f;
+        --ground-glow: #241c16;
+        --panel: #201a16;
+        --panel-hi: #2a221c;
+        --line: #3a2f26;
+        --line-strong: #4d3f33;
+        --ink: #f4eee4;
+        --ink-dim: #bcae9a;
+        --ink-faint: #a3927c;
+        --gold: #e9a452;
         --gold-solid: #eaa62c;
         --gold-solid-ink: #1e1713;
         --good: #4fc2a0;
@@ -219,7 +219,7 @@
       }
       .subtitle {
         text-align: center;
-        font-size: 11.5px;
+        font-size: 12px;
         font-weight: 800;
         letter-spacing: 0.2em;
         text-transform: uppercase;
@@ -258,10 +258,10 @@
         color: var(--gold-solid-ink);
         font-family: 'Montserrat', sans-serif;
         font-weight: 900;
-        font-size: 11px;
+        font-size: 12px;
         margin-bottom: 6px;
       }
-      .how-text { display: block; font-size: 11.5px; line-height: 1.45; color: var(--ink-dim); font-weight: 500; }
+      .how-text { display: block; font-size: 12px; line-height: 1.45; color: var(--ink-dim); font-weight: 500; }
 
       .mode-label {
         font-size: 12px;
@@ -335,8 +335,8 @@
         margin-bottom: 5px;
         color: var(--ink);
       }
-      .mode-desc { display: block; font-size: 11.5px; line-height: 1.5; color: var(--ink-faint); }
-      .mode-best { display: block; margin-top: 8px; font-size: 11px; font-weight: 700; color: var(--gold); }
+      .mode-desc { display: block; font-size: 12px; line-height: 1.5; color: var(--ink-faint); }
+      .mode-best { display: block; margin-top: 8px; font-size: 12px; font-weight: 700; color: var(--gold); }
       /* Trước đây chỉ là chữ nhạt gần như vô hình — đổi hẳn thành thẻ có nền,
          viền, để mắt bắt được ngay là có thể bấm vào xem, không lướt qua mất. */
       .mode-board-link {
@@ -345,7 +345,7 @@
         justify-content: center;
         gap: 6px;
         font-family: inherit;
-        font-size: 11.5px;
+        font-size: 12px;
         font-weight: 800;
         color: var(--gold);
         background: color-mix(in srgb, var(--gold-solid) 12%, var(--panel));
@@ -443,7 +443,7 @@
       .hud-cell:last-child { text-align: right; }
       .hud-key {
         display: block;
-        font-size: 10.5px;
+        font-size: 12px;
         font-weight: 800;
         letter-spacing: 0.11em;
         text-transform: uppercase;
@@ -460,7 +460,7 @@
       }
       .hud-val.gold { color: var(--gold); }
       .hud-mode {
-        font-size: 10.5px;
+        font-size: 12px;
         font-weight: 800;
         color: var(--gold);
         border: 1.5px solid var(--gold-solid);
@@ -489,7 +489,7 @@
       .warmup-chip {
         font-family: 'Montserrat', sans-serif;
         font-weight: 900;
-        font-size: 10.5px;
+        font-size: 12px;
         letter-spacing: 0.12em;
         text-transform: uppercase;
         color: var(--teach-ink);
@@ -755,7 +755,7 @@
       .new-best {
         display: inline-block;
         margin-bottom: 14px;
-        font-size: 11px;
+        font-size: 12px;
         font-weight: 800;
         letter-spacing: 0.1em;
         text-transform: uppercase;
@@ -765,7 +765,7 @@
         padding: 5px 13px;
       }
 
-      .footnote { text-align: center; font-size: 11px; color: var(--ink-faint); padding: 0 18px 20px; }
+      .footnote { text-align: center; font-size: 12px; color: var(--ink-faint); padding: 0 18px 20px; }
 
       /* ===================== Âm lượng =====================
          Trên điện thoại là một hàng ngang gọn, cao bằng đúng nút quay lại
@@ -789,7 +789,7 @@
       .volume-val {
         flex-shrink: 0;
         width: 30px;
-        font-size: 10px;
+        font-size: 12px;
         font-weight: 800;
         color: var(--ink-faint);
         text-align: right;
@@ -1029,7 +1029,7 @@
       .lc-chip {
         font-family: 'Montserrat', sans-serif;
         font-weight: 900;
-        font-size: 10.5px;
+        font-size: 12px;
         letter-spacing: 0.12em;
         text-transform: uppercase;
         color: #fff;
@@ -1092,7 +1092,7 @@
       .lc-choice-q { margin: 0; text-align: center; font-size: 14px; color: var(--ink-dim); }
       .lc-choice-q b { color: var(--lc-accent); font-weight: 800; }
       .lc-choice-btns { display: grid; grid-template-columns: 1fr 1fr; gap: 9px; }
-      .lc-choice-warn { margin: 0; text-align: center; font-size: 11.5px; color: var(--ink-faint); }
+      .lc-choice-warn { margin: 0; text-align: center; font-size: 12px; color: var(--ink-faint); }
 
       /* Nốt đúng hiện ra sau khi bấm sai — chỉ dùng ở chế độ Nhìn & nghe */
       .pad.reveal { animation: pad-reveal 0.85s ease 2; }
@@ -1280,14 +1280,14 @@
         .key-hint {
           display: block;
           margin: 14px 0 0;
-          font-size: 11px;
+          font-size: 12px;
           line-height: 1.6;
           color: var(--ink-faint);
           text-align: center;
         }
         .key-hint kbd {
           font-family: 'Montserrat', sans-serif;
-          font-size: 10px;
+          font-size: 12px;
           font-weight: 800;
           color: var(--ink-dim);
           background: var(--panel);
@@ -1354,20 +1354,20 @@
         .hero-mark { width: 72px; height: 72px; margin-bottom: 9px; }
         .hero-mark svg { width: 37px; height: 37px; }
         h1 { font-size: clamp(21px, 6.2vw, 28px); }
-        .subtitle { font-size: 10.5px; margin-top: 7px; }
+        .subtitle { font-size: 11px; margin-top: 7px; }
         .lede { display: none; }
 
         .how { gap: 6px; margin-bottom: 13px; margin-top: 14px; }
         .how-step { padding: 9px 7px; border-radius: 10px; }
-        .how-num { width: 18px; height: 18px; font-size: 10px; margin-bottom: 4px; }
-        .how-text { font-size: 10.5px; }
+        .how-num { width: 18px; height: 18px; font-size: 11px; margin-bottom: 4px; }
+        .how-text { font-size: 11px; }
 
         .mode-label { margin-bottom: 7px; }
         .modes { gap: 8px; margin-bottom: 11px; }
         .mode-card { padding: 10px 11px; border-radius: 12px; }
         .mode-name { font-size: 12.5px; margin-bottom: 3px; }
-        .mode-desc { font-size: 10.5px; }
-        .mode-best { margin-top: 5px; font-size: 10px; }
+        .mode-desc { font-size: 11px; }
+        .mode-best { margin-top: 5px; font-size: 11px; }
 
         .btn-primary { padding: 13px; font-size: 14px; }
 
@@ -1405,7 +1405,7 @@
         .over-stats { margin-bottom: 16px; gap: 26px; }
         .over-stat-val { font-size: 32px; }
 
-        .footnote { padding: 0 16px 11px; font-size: 10px; }
+        .footnote { padding: 0 16px 11px; font-size: 11px; }
 
         /* Lúc nghe làm quen có thêm dải nhãn và nút bấm, nên vòng phím phải
            nhỏ hơn nữa. Giai đoạn này chỉ nghe chứ không cần bấm chính xác. */

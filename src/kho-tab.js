@@ -1,3 +1,4 @@
+import { openLoginGate } from './lib/login-gate.js'
 import {
   initNavbarShrink,
   initMobileMenu,
@@ -683,11 +684,7 @@ window.openCheckoutModal = async function openCheckoutModal(tabId) {
       data: { session },
     } = await supabase.auth.getSession()
     if (!session || !session.user) {
-      const loginBtn = document.getElementById('auth-required-login-btn')
-      if (loginBtn) {
-        loginBtn.href = `/login.html?redirect=${encodeURIComponent(`/kho-tab.html?tab=${encodeURIComponent(tabId)}`)}`
-      }
-      toggleModal('auth-required-modal', true)
+      openLoginGate(tab, toggleModal)
       return
     }
     currentUserId = session.user.id
@@ -1048,7 +1045,7 @@ function initHssvVerification() {
     muted: 'text-text-muted',
     ok: 'text-emerald-600 dark:text-emerald-400',
     wait: 'text-amber-600 dark:text-amber-400',
-    bad: 'text-rose-600 dark:text-rose-400',
+    bad: 'text-rose-700 dark:text-rose-300',
   }
   const showStatus = (tone, text) => {
     if (!hssvStatus) return

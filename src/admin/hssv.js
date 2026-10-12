@@ -32,7 +32,7 @@ const STATUS_PILL = {
   },
   pending: { label: 'Chờ admin duyệt', cls: 'bg-amber-500/15 text-amber-600 dark:text-amber-400' },
   rejected: { label: 'AI từ chối', cls: 'bg-black/10 dark:bg-white/10 text-text-muted' },
-  revoked: { label: 'Đã thu hồi', cls: 'bg-rose-500/15 text-rose-600 dark:text-rose-400' },
+  revoked: { label: 'Đã thu hồi', cls: 'bg-rose-500/15 text-rose-700 dark:text-rose-300' },
 }
 
 // warn = đáng để ý nhất; info = ít nghiêm trọng hơn.
@@ -90,7 +90,7 @@ function flagPills(flags) {
     .map((f) => {
       const cls =
         FLAGS[f].level === 'warn'
-          ? 'bg-rose-500/15 text-rose-600 dark:text-rose-400'
+          ? 'bg-rose-500/15 text-rose-700 dark:text-rose-300'
           : 'bg-amber-500/15 text-amber-600 dark:text-amber-400'
       return `<span class="px-2 py-0.5 rounded-full text-[10px] font-bold ${cls}">${escapeHtml(FLAGS[f].label)}</span>`
     })
@@ -146,7 +146,7 @@ function actionButtons(r) {
       btn(
         'data-hssv-revoke',
         'Thu hồi giảm giá',
-        'text-rose-600 dark:text-rose-400 hover:bg-rose-500/10'
+        'text-rose-700 dark:text-rose-300 hover:bg-rose-500/10'
       )
     )
   }
@@ -172,7 +172,7 @@ function reviewCard(r) {
         <span class="text-[10px] text-text-muted font-mono ml-auto">${escapeHtml(formatDateTime(r.created_at))}</span>
       </div>
 
-      ${(r.flags || []).some((f) => FLAGS[f]) || others > 0 ? `<div class="flex flex-wrap gap-1.5">${flagPills(r.flags)}${others > 0 ? `<span class="px-2 py-0.5 rounded-full text-[10px] font-bold bg-rose-500/15 text-rose-600 dark:text-rose-400">${others} tài khoản khác cùng mã</span>` : ''}</div>` : ''}
+      ${(r.flags || []).some((f) => FLAGS[f]) || others > 0 ? `<div class="flex flex-wrap gap-1.5">${flagPills(r.flags)}${others > 0 ? `<span class="px-2 py-0.5 rounded-full text-[10px] font-bold bg-rose-500/15 text-rose-700 dark:text-rose-300">${others} tài khoản khác cùng mã</span>` : ''}</div>` : ''}
 
       <div class="flex flex-col sm:flex-row gap-4">
         ${imageBlock(r)}

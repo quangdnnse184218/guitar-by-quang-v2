@@ -171,82 +171,64 @@
           </div>
         </div>
 
-        <!-- Section 1: Software Tools Grid -->
-        <div class="space-y-6">
-          <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-            <!-- Card 1: METRONOME -->
-            <a href="/metronome.html" class="group relative p-6 rounded-3xl glass-card border border-glass-border hover:border-accent-primary shadow-sm hover:shadow-lg transition-all duration-300 flex flex-col justify-between gap-5 cursor-pointer">
-              <span class="absolute top-4 right-4 px-2.5 py-0.5 rounded-full bg-emerald-500/15 text-emerald-600 dark:text-emerald-400 text-[10px] font-extrabold tracking-wide uppercase border border-emerald-500/30">Hoạt động</span>
-              
-              <div class="space-y-4">
-                <div class="w-12 h-12 rounded-2xl bg-accent-primary/15 text-accent-primary flex items-center justify-center text-2xl group-hover:scale-105 transition-transform">
-                  ⏱️
-                </div>
-                <div class="space-y-1.5">
-                  <h3 class="text-xl font-bold text-text-primary group-hover:text-accent-primary transition-colors">
-                    Máy gõ nhịp (Metronome)
-                  </h3>
-                  <p class="text-xs text-text-muted leading-relaxed font-medium">
-                    Nhịp chuẩn, không trôi. Có Tap Tempo, đèn nháy theo phách và phím tắt.</p>
-                </div>
-              </div>
-
-              <div class="inline-flex items-center gap-2 text-xs font-bold text-accent-primary group-hover:gap-3 transition-all">
-                <span>Mở máy gõ nhịp</span>
-                <span>→</span>
-              </div>
+        <!-- Công cụ dùng được ngay: cùng khuôn thẻ .practice-card với mục Luyện tập ở trang chủ -->
+        <div class="space-y-4">
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-3 sm:gap-5">
+            <a href="/metronome.html" class="practice-card group flex items-center gap-4 sm:gap-5 rounded-3xl px-5 py-5 sm:px-6 sm:py-6">
+              <span aria-hidden="true" class="practice-disc flex-shrink-0 w-14 h-14 sm:w-16 sm:h-16 rounded-full grid place-items-center">
+                <svg class="w-7 h-7 sm:w-8 sm:h-8 text-[#e2b34a]" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M8 20h8l-2-14h-4z"/><path stroke-linecap="round" d="M12 17 15.5 7"/></svg>
+              </span>
+              <span class="min-w-0 flex-1">
+                <span class="block text-base sm:text-lg font-extrabold text-[#f6ead3] leading-tight">Máy gõ nhịp</span>
+                <span class="block text-xs sm:text-sm text-[#cdb99b] font-medium leading-snug mt-1">Tập chậm theo nhịp rồi tăng dần tốc độ.</span>
+                <!-- Bốn phách của một ô nhịp 4/4, phách 1 là phách mạnh -->
+                <span class="flex items-center gap-1.5 mt-3" aria-hidden="true">
+                  <span class="w-2.5 h-2.5 rounded-full bg-[#e2b34a]"></span>
+                  <span class="w-2.5 h-2.5 rounded-full bg-[#e2b34a]/30"></span>
+                  <span class="w-2.5 h-2.5 rounded-full bg-[#e2b34a]/30"></span>
+                  <span class="w-2.5 h-2.5 rounded-full bg-[#e2b34a]/30"></span>
+                </span>
+              </span>
+              <span aria-hidden="true" class="practice-go flex-shrink-0 w-10 h-10 rounded-full grid place-items-center">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="3" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7"/></svg>
+              </span>
             </a>
-
-            <!-- Card 2: TUNER -->
-            <div class="relative p-6 rounded-3xl glass-card border border-glass-border opacity-70 flex flex-col justify-between gap-5">
-              <span class="absolute top-4 right-4 px-2.5 py-0.5 rounded-full bg-glass-bg text-text-muted text-[10px] font-extrabold tracking-wide uppercase border border-glass-border">Sắp ra mắt</span>
-              
-              <div class="space-y-4">
-                <div class="w-12 h-12 rounded-2xl bg-black/5 dark:bg-white/5 text-text-muted flex items-center justify-center">
-                  <svg class="w-6 h-6" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="M9 18V5l12-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="16" r="3"/></svg>
-                </div>
-                <div class="space-y-1.5">
-                  <h3 class="text-xl font-bold text-text-primary">
-                    Lên dây đàn (Tuner)
-                  </h3>
-                  <p class="text-xs text-text-muted leading-relaxed font-medium">
-                    Lên dây bằng mic, có kim chỉ trực quan cho từng dây.</p>
-                </div>
-              </div>
-
-              <span class="text-xs font-bold text-text-muted">Đang phát triển...</span>
-            </div>
-
-            <!-- Card 3: CHORD WHEEL -->
-            <div class="relative p-6 rounded-3xl glass-card border border-glass-border opacity-70 flex flex-col justify-between gap-5">
-              <span class="absolute top-4 right-4 px-2.5 py-0.5 rounded-full bg-glass-bg text-text-muted text-[10px] font-extrabold tracking-wide uppercase border border-glass-border">Sắp ra mắt</span>
-              
-              <div class="space-y-4">
-                <div class="w-12 h-12 rounded-2xl bg-black/5 dark:bg-white/5 text-text-muted flex items-center justify-center text-2xl">
-                  ⭕
-                </div>
-                <div class="space-y-1.5">
-                  <h3 class="text-xl font-bold text-text-primary">
-                    Vòng hợp âm (Chord Wheel)
-                  </h3>
-                  <p class="text-xs text-text-muted leading-relaxed font-medium">
-                    Tra vòng hợp âm theo giọng, dịch giọng nhanh và gợi ý hoà âm.</p>
-                </div>
-              </div>
-
-              <span class="text-xs font-bold text-text-muted">Đang phát triển...</span>
-            </div>
+  
+            <a href="/luyen-cam-am.html" class="practice-card group flex items-center gap-4 sm:gap-5 rounded-3xl px-5 py-5 sm:px-6 sm:py-6">
+              <span aria-hidden="true" class="practice-disc flex-shrink-0 w-14 h-14 sm:w-16 sm:h-16 rounded-full grid place-items-center">
+                <svg class="w-7 h-7 sm:w-8 sm:h-8 text-[#e2b34a]" viewBox="0 0 64 64" fill="none">
+                  <path d="M13 40V32a19 19 0 0 1 38 0v8" stroke="currentColor" stroke-width="5" stroke-linecap="round" />
+                  <rect x="6" y="35" width="14" height="21" rx="7" fill="currentColor" />
+                  <rect x="44" y="35" width="14" height="21" rx="7" fill="currentColor" />
+                </svg>
+              </span>
+              <span class="min-w-0 flex-1">
+                <span class="block text-base sm:text-lg font-extrabold text-[#f6ead3] leading-tight">Game luyện cảm âm</span>
+                <span class="block text-xs sm:text-sm text-[#cdb99b] font-medium leading-snug mt-1">Nghe chuỗi nốt rồi lặp lại đúng thứ tự.</span>
+                <!-- Bảy chấm = đúng 7 màu phím nốt trong game -->
+                <span class="flex items-center gap-1.5 mt-3" aria-hidden="true">
+                  <span class="w-2.5 h-2.5 rounded-full" style="background:#e2b34a"></span>
+                  <span class="w-2.5 h-2.5 rounded-full" style="background:#e08d4b"></span>
+                  <span class="w-2.5 h-2.5 rounded-full" style="background:#d0674f"></span>
+                  <span class="w-2.5 h-2.5 rounded-full" style="background:#c26a86"></span>
+                  <span class="w-2.5 h-2.5 rounded-full" style="background:#8f7cc0"></span>
+                  <span class="w-2.5 h-2.5 rounded-full" style="background:#5aa294"></span>
+                  <span class="w-2.5 h-2.5 rounded-full" style="background:#9fae5a"></span>
+                </span>
+              </span>
+              <span aria-hidden="true" class="practice-go flex-shrink-0 w-10 h-10 rounded-full grid place-items-center">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="3" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7"/></svg>
+              </span>
+            </a>
           </div>
+          <p class="text-xs sm:text-sm text-text-muted font-medium">Sắp có: lên dây đàn bằng mic và bảng tra vòng hợp âm.</p>
         </div>
 
         <!-- Section 2: Gear & Đồ Nghề Khuyên Dùng -->
         <div class="space-y-6 pt-6 border-t border-glass-border">
           <div class="space-y-1">
-            <h2 class="text-lg font-bold uppercase tracking-wider text-text-primary flex items-center gap-2">
-              <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="M10.343 3.94c.09-.542.56-.94 1.11-.94h1.093c.55 0 1.02.398 1.11.94l.149.894c.07.424.384.764.78.93.398.164.855.142 1.205-.108l.737-.527a1.125 1.125 0 011.45.12l.773.774c.39.389.44 1.002.12 1.45l-.527.737c-.25.35-.272.806-.107 1.204.165.397.505.71.93.78l.893.15c.543.09.94.56.94 1.109v1.094c0 .55-.397 1.02-.94 1.11l-.893.149c-.425.07-.765.384-.93.78-.165.398-.143.854.107 1.204l.527.738c.32.447.269 1.06-.12 1.45l-.774.773a1.125 1.125 0 01-1.449.12l-.738-.527c-.35-.25-.806-.272-1.203-.107-.397.165-.71.505-.781.929l-.149.894c-.09.542-.56.94-1.11.94h-1.094c-.55 0-1.019-.398-1.11-.94l-.148-.894c-.071-.424-.384-.764-.781-.93-.398-.164-.854-.142-1.204.108l-.738.527c-.447.32-1.06.269-1.45-.12l-.773-.774a1.125 1.125 0 01-.12-1.45l.527-.737c.25-.35.273-.806.108-1.204-.165-.397-.505-.71-.93-.78l-.894-.15c-.542-.09-.94-.56-.94-1.109v-1.094c0-.55.398-1.02.94-1.11l.894-.149c.424-.07.765-.383.93-.78.165-.398.143-.854-.107-1.204l-.527-.738a1.125 1.125 0 01.12-1.45l.773-.773a1.125 1.125 0 011.45-.12l.737.527c.35.25.807.272 1.204.107.397-.165.71-.504.78-.929l.15-.894z"/><circle cx="12" cy="12" r="3"/></svg>
-              <span>Bộ đồ nghề</span>
-            </h2>
-            <p class="text-xs text-text-muted font-medium">
+            <h2 class="text-2xl sm:text-3xl font-extrabold text-text-primary tracking-tight">Bộ đồ nghề</h2>
+            <p class="text-sm text-text-muted font-medium">
               Đàn, dây, capo và phần mềm mình dùng để thu âm, quay video.</p>
           </div>
 

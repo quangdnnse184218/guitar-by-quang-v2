@@ -43,7 +43,7 @@ document.addEventListener('DOMContentLoaded', () => {
       }
     } else {
       alertBox.className =
-        'p-3.5 rounded-2xl bg-rose-500/15 border border-rose-500/30 text-rose-600 dark:text-rose-400 text-xs font-semibold leading-relaxed flex items-center gap-2.5'
+        'p-3.5 rounded-2xl bg-rose-500/15 border border-rose-500/30 text-rose-700 dark:text-rose-300 text-xs font-semibold leading-relaxed flex items-center gap-2.5'
       if (alertIcon) {
         alertIcon.innerHTML =
           '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>'

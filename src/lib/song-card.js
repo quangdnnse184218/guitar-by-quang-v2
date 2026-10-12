@@ -29,7 +29,7 @@ export function renderPriceBadge(priceFormatted) {
   // Cùng khuôn (padding, cỡ chữ, font) với badge "FREE" — chỉ khác màu. Trên
   // mobile hàng này chỉ rộng ~120px: badge dùng font mono cũ rộng hơn FREE
   // đúng 2px là đủ đẩy nút tim xuống dòng.
-  return `<span class="px-1.5 sm:px-2 py-0.5 rounded-full text-[11px] sm:text-xs font-black text-white bg-gradient-to-r from-rose-600 to-rose-500 uppercase tracking-wide tabular-nums whitespace-nowrap" title="Giá ${priceFormatted}">${priceFormatted}</span>`
+  return `<span class="px-1.5 sm:px-2 py-0.5 rounded-full text-[11px] sm:text-xs font-black text-stone-900 bg-white uppercase tracking-wide tabular-nums whitespace-nowrap" title="Giá ${priceFormatted}">${priceFormatted}</span>`
 }
 
 export function renderHssvNote(discountNote) {
@@ -231,7 +231,7 @@ export function renderSongCard(tab, options = {}) {
         <span class="whitespace-nowrap">Độ khó: <strong class="${accentClass} font-mono tabular-nums">${tab.level || levelNum + '/10'}</strong></span>
         ${rightSlot}
       </div>
-      <div class="w-full bg-glass-bg rounded-full h-1 sm:h-1.5 overflow-hidden border border-glass-border">
+      <div class="w-full bg-text-primary/10 rounded-full h-1 sm:h-1.5 overflow-hidden">
         <div class="${barClass} h-1 sm:h-1.5 rounded-full transition-all duration-500" style="width: ${percent}%"></div>
       </div>
     </div>
@@ -330,8 +330,8 @@ export function renderSongCard(tab, options = {}) {
             ? `<div class="w-full py-1.5 sm:py-2.5 px-1.5 rounded-full bg-amber-500/15 border border-amber-500/30 hover:bg-amber-500/25 text-amber-700 dark:text-amber-300 font-extrabold text-[11px] sm:text-xs transition-all flex items-center justify-center gap-1 active:scale-95 text-center cursor-pointer">
           <span class="truncate">Mở tab đã mua</span>
         </div>`
-            : `<div class="w-full py-1.5 sm:py-2.5 px-1.5 rounded-full bg-warm-gradient hover:brightness-105 text-white font-bold text-[11px] sm:text-xs transition-all shadow-md shadow-accent-primary/20 flex items-center justify-center gap-1 active:scale-95 text-center cursor-pointer">
-          <span class="truncate">Xem chi tiết</span>
+            : `<div class="w-full py-1.5 sm:py-2.5 px-1.5 rounded-full bg-warm-gradient hover:brightness-105 text-white font-bold text-[11px] sm:text-xs transition-all flex items-center justify-center gap-1 active:scale-95 text-center cursor-pointer">
+          <span class="truncate">Mua tab<span class="hidden sm:inline"> · <span class="uppercase tabular-nums">${priceFormatted}</span></span></span>
         </div>`
         }
       </div>

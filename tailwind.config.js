@@ -28,6 +28,8 @@ export default {
         'accent-primary': 'rgb(var(--accent-primary) / <alpha-value>)',
         'accent-primary-hover': 'rgb(var(--accent-primary-hover) / <alpha-value>)',
         'accent-secondary': 'rgb(var(--accent-secondary) / <alpha-value>)',
+        // Nền nút đặc đặt chữ trắng (accent-primary ở bản tối quá sáng cho chữ trắng).
+        'accent-solid': 'rgb(var(--accent-solid) / <alpha-value>)',
         success: 'rgb(var(--success) / <alpha-value>)',
         danger: 'rgb(var(--danger) / <alpha-value>)',
       },

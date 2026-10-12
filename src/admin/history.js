@@ -148,7 +148,7 @@ export async function loadRecentRevocations() {
               r.drive_removed === true
                 ? '<span class="px-2 py-0.5 rounded-full bg-emerald-500/15 text-emerald-600 dark:text-emerald-400 text-[10px] font-bold whitespace-nowrap">Đã gỡ Drive</span>'
                 : r.drive_removed === false
-                  ? '<span class="px-2 py-0.5 rounded-full bg-rose-500/15 text-rose-600 dark:text-rose-400 text-[10px] font-bold whitespace-nowrap">Chưa gỡ Drive</span>'
+                  ? '<span class="px-2 py-0.5 rounded-full bg-rose-500/15 text-rose-700 dark:text-rose-300 text-[10px] font-bold whitespace-nowrap">Chưa gỡ Drive</span>'
                   : ''
             }
           </div>

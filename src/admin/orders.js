@@ -138,7 +138,7 @@ function renderFilters() {
       return `<button type="button" data-filter="${key}"
         class="px-3 py-1.5 rounded-full text-[11px] font-bold whitespace-nowrap transition-colors cursor-pointer border ${
           on
-            ? 'bg-accent-primary text-white border-accent-primary'
+            ? 'bg-accent-solid text-white border-accent-primary'
             : 'bg-glass-bg text-text-muted border-glass-border hover:text-text-primary'
         }">${label} <span class="font-mono ${on ? 'text-white/80' : ''}">${count}</span></button>`
     })

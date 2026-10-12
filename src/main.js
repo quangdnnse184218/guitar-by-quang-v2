@@ -6,6 +6,7 @@
  * v2's Glassmorphism & Light/Dark Theme System.
  */
 
+import { openLoginGate } from './lib/login-gate.js'
 import {
   initNavbarShrink,
   initMobileMenu,
@@ -427,22 +428,14 @@ window.openCheckoutModal = async function openCheckoutModal(tabId) {
       data: { session },
     } = await supabase.auth.getSession()
     if (!session || !session.user) {
-      const loginBtn = document.getElementById('auth-required-login-btn')
-      if (loginBtn) {
-        loginBtn.href = `/login.html?redirect=${encodeURIComponent(`/kho-tab.html?tab=${encodeURIComponent(tabId)}`)}`
-      }
-      toggleModal('auth-required-modal', true)
+      openLoginGate(tab, toggleModal)
       return
     }
     currentUserId = session.user.id
     activeUserId = currentUserId
   } catch (e) {
     console.warn('Auth check error in openCheckoutModal:', e)
-    const loginBtn = document.getElementById('auth-required-login-btn')
-    if (loginBtn) {
-      loginBtn.href = `/login.html?redirect=${encodeURIComponent(`/kho-tab.html?tab=${encodeURIComponent(tabId)}`)}`
-    }
-    toggleModal('auth-required-modal', true)
+    openLoginGate(tab, toggleModal)
     return
   }
 
@@ -856,7 +849,7 @@ function initHssvVerification() {
           if (hssvFileInput) hssvFileInput.disabled = true
         } else {
           if (hssvStatus) {
-            hssvStatus.className = 'font-bold text-[11px] leading-relaxed text-rose-600 dark:text-rose-400'
+            hssvStatus.className = 'font-bold text-[11px] leading-relaxed text-rose-700 dark:text-rose-300'
             hssvStatus.textContent =
               result?.reason || 'Không xác minh được thẻ HSSV, bạn có thể thử ảnh khác hoặc thanh toán giá thường.'
           }
@@ -866,7 +859,7 @@ function initHssvVerification() {
       } catch (err) {
         console.error('Lỗi xác minh HSSV:', err)
         if (hssvStatus) {
-          hssvStatus.className = 'font-bold text-[11px] leading-relaxed text-rose-600 dark:text-rose-400'
+          hssvStatus.className = 'font-bold text-[11px] leading-relaxed text-rose-700 dark:text-rose-300'
           hssvStatus.textContent = 'Có lỗi khi xác minh, thử lại giúp mình nhé.'
         }
         hssvVerifyBtn.disabled = false
