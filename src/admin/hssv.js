@@ -6,7 +6,9 @@
  * (hạ giá ngay), còn nghi ngờ thì chuyển vào đây. Trang này để admin:
  *   • xem lại ảnh thẻ + thông tin AI đọc được + các cờ cảnh báo,
  *   • "Đã xem" → ảnh tự xoá sau 3 ngày (tối đa 30 ngày dù không xem),
- *   • "Duyệt giảm giá" cho lượt AI chưa chắc, hoặc "Thu hồi giảm giá" khi ảnh không ổn.
+ *   • "Duyệt giảm giá" cho lượt AI chưa chắc, hoặc "Thu hồi giảm giá" khi ảnh không ổn,
+ *   • áp giá HSSV theo MÃ ĐƠN cho khách nhắn Zalo (học sinh / sinh viên không có email trường)
+ *     — RPC admin_apply_hssv_price, có sau khi chạy 20261012_hssv_school_email.sql.
  *
  * Ảnh nằm trong bucket riêng tư `hssv-cards`; admin xem qua link ký có hạn 5 phút
  * (policy `hssv_cards_select_admin`). Các RPC chỉ có sau khi chạy file SQL
@@ -38,6 +40,9 @@ const STATUS_PILL = {
 // warn = đáng để ý nhất; info = ít nghiêm trọng hơn.
 const FLAGS = {
   duplicate_id: { label: 'Mã HS/SV đã dùng ở tài khoản khác', level: 'warn' },
+  duplicate_email: { label: 'Email trường đã dùng ở tài khoản khác', level: 'warn' },
+  email_mismatch: { label: 'Email trường không khớp mã / tên trên thẻ', level: 'warn' },
+  manual_zalo: { label: 'Admin duyệt tay qua Zalo', level: 'info' },
   name_mismatch: { label: 'Tên trên thẻ khác tên tài khoản', level: 'warn' },
   expired: { label: 'Thẻ hết hạn', level: 'warn' },
   unreadable: { label: 'Ảnh mờ / khó đọc', level: 'info' },
@@ -163,6 +168,10 @@ function reviewCard(r) {
     ? `<span class="font-mono">${escapeHtml(r.order_code)}</span> · ${escapeHtml(r.song_title || '')} · <span class="font-mono">${formatVnd(r.order_amount)}</span> · ${r.order_status === 'paid' ? '<span class="text-emerald-700 dark:text-emerald-400">đã thanh toán</span>' : r.order_status === 'pending' ? 'chờ thanh toán' : 'hết hạn'}`
     : '<span class="text-text-muted font-normal">đơn đã bị xoá</span>'
   const others = Number(r.other_accounts_same_card) || 0
+  const othersEmail = Number(r.other_accounts_same_email) || 0
+  const schoolEmail = r.school_email
+    ? `<span class="font-mono">${escapeHtml(r.school_email)}</span> <span class="text-emerald-700 dark:text-emerald-300 font-normal">· đã xác nhận bằng mã</span> <button type="button" data-copy="${escapeHtml(r.school_email)}" class="text-accent-primary hover:underline font-bold ml-1 cursor-pointer">Copy</button>${othersEmail > 0 ? ` <span class="text-rose-700 dark:text-rose-300 font-bold">· ${othersEmail} tài khoản khác cũng dùng email này</span>` : ''}`
+    : '<span class="text-text-muted font-normal">không có (lượt cũ hoặc duyệt tay)</span>'
 
   return `
     <div class="p-4 sm:p-5 space-y-3.5" data-hssv-card="${escapeHtml(r.id)}">
@@ -179,6 +188,7 @@ function reviewCard(r) {
         <div class="flex-1 min-w-0 space-y-1.5">
           ${infoLine('Tài khoản', `${escapeHtml(r.user_name)} <span class="text-text-muted font-normal">· ${escapeHtml(r.user_email || 'chưa có email')}</span> <a href="#/thanh-vien/${encodeURIComponent(r.user_id)}" class="text-accent-primary hover:underline font-bold">Hồ sơ →</a>`)}
           ${infoLine('Zalo', `${zalo}${r.user_zalo ? ` <button type="button" data-copy="${escapeHtml(r.user_zalo)}" class="text-accent-primary hover:underline font-bold ml-1 cursor-pointer">Copy</button>` : ''}${zaloUrl ? ` <a href="${escapeHtml(zaloUrl)}" target="_blank" rel="noopener noreferrer" class="text-accent-primary hover:underline font-bold ml-1">Mở Zalo</a>` : ''}`)}
+          ${infoLine('Email trường', schoolEmail)}
           ${infoLine('Đơn', orderText)}
           <div class="pt-1.5 mt-1.5 border-t border-glass-border space-y-1.5">
             <div class="text-[11px] sm:text-xs font-bold uppercase tracking-wider text-text-muted">AI đọc được trên thẻ</div>
@@ -331,7 +341,57 @@ export async function loadHssv() {
   loadHssvBadge()
 }
 
+/** Khách nhắn Zalo (học sinh / không có email trường): admin nhập mã đơn để đổi đơn sang giá HSSV. */
+async function applyManualPrice(form) {
+  const codeInput = form.querySelector('#hssv-manual-code')
+  const noteInput = form.querySelector('#hssv-manual-note')
+  const button = form.querySelector('button[type="submit"]')
+  const code = String(codeInput?.value || '').replace(/\s/g, '').toUpperCase()
+  if (!code) {
+    codeInput?.focus()
+    return
+  }
+
+  const answer = await confirmDialog({
+    title: 'Áp giá HSSV cho đơn này?',
+    message: 'Chỉ bấm sau khi bạn đã tự xem thẻ khách gửi qua Zalo. Đơn sẽ đổi sang giá HSSV của bài; khách chuyển khoản theo mã QR mới là tab tự mở.',
+    details: [['Mã đơn', code]],
+    confirmText: 'Áp giá HSSV',
+  })
+  if (!answer) return
+
+  if (button) button.disabled = true
+  try {
+    const { data, error } = await supabase.rpc('admin_apply_hssv_price', {
+      p_order_code: code,
+      p_note: String(noteInput?.value || '').trim() || null,
+    })
+    if (error) throw error
+    showToast(
+      `✓ Đơn ${data.order_code} (${data.song_title || 'bài hát'}): ${formatVnd(data.old_amount)} → ${formatVnd(data.new_amount)}`,
+      'success'
+    )
+    form.reset()
+    await loadHssv()
+  } catch (err) {
+    console.error(err)
+    showToast(
+      isMissingFunction(err)
+        ? '❌ Chưa chạy file SQL 20261012_hssv_school_email.sql'
+        : '❌ ' + (err.message || 'Không áp được giá HSSV'),
+      'error'
+    )
+  } finally {
+    if (button) button.disabled = false
+  }
+}
+
 export function initHssvSection() {
   refreshBtn?.addEventListener('click', loadHssv)
   filterEl?.addEventListener('change', render)
+  const manualForm = document.getElementById('hssv-manual-form')
+  manualForm?.addEventListener('submit', (e) => {
+    e.preventDefault()
+    applyManualPrice(manualForm)
+  })
 }

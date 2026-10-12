@@ -462,10 +462,27 @@
               <p>Mở Supabase → SQL Editor, dán và chạy file <code class="font-mono bg-black/5 dark:bg-white/10 px-1.5 py-0.5 rounded">supabase/migrations/20260921_hssv_verifications.sql</code>.</p>
             </div>
 
-            <div class="rounded-2xl border border-sky-500/25 bg-sky-500/[0.06] p-4 text-xs leading-relaxed text-text-primary">
-              AI đọc thẻ và <strong>tự duyệt khi thẻ rõ, còn hạn và mã chưa dùng ở tài khoản khác</strong>. Trường hợp chưa chắc, lượt đó nằm ở đây chờ bạn.
-              Bấm <strong>Đã xem</strong> thì ảnh tự xoá sau 3 ngày (không xem thì tối đa 30 ngày kể từ lúc khách tải lên); kết quả đọc thẻ vẫn được giữ để chặn một thẻ dùng cho nhiều tài khoản.
+            <div class="rounded-2xl border border-sky-500/25 bg-sky-500/[0.06] p-4 text-xs leading-relaxed text-text-primary space-y-1.5">
+              <p><strong>Sinh viên</strong> phải xác nhận email trường (.edu.vn) bằng mã rồi mới gửi ảnh thẻ. AI đọc thẻ, so với email và <strong>tự duyệt khi thẻ rõ, còn hạn, email khớp mã hoặc tên trên thẻ, và cả thẻ lẫn email chưa dùng ở tài khoản khác</strong>. Trường hợp chưa chắc nằm ở đây chờ bạn.</p>
+              <p>Bấm <strong>Đã xem</strong> thì ảnh tự xoá sau 3 ngày (không xem thì tối đa 30 ngày kể từ lúc khách tải lên); kết quả đọc thẻ vẫn được giữ để chặn một thẻ dùng cho nhiều tài khoản.</p>
             </div>
+
+            <!-- Học sinh / sinh viên không có email trường: khách nhắn Zalo kèm mã đơn, admin áp giá tay -->
+            <form id="hssv-manual-form" class="glass-card border border-glass-border rounded-2xl p-4 sm:p-5 space-y-3">
+              <div>
+                <h3 class="text-sm font-extrabold text-text-primary">Áp giá HSSV cho khách nhắn Zalo</h3>
+                <p class="mt-1 text-xs text-text-muted leading-relaxed">Dành cho học sinh và sinh viên không có email trường. Khách gửi ảnh thẻ kèm mã đơn qua Zalo; bạn xem thẻ rồi nhập mã đơn ở đây. Đơn phải còn chờ thanh toán. Mã QR bên khách tự đổi sang giá HSSV sau vài giây.</p>
+              </div>
+              <div class="flex flex-col sm:flex-row gap-2">
+                <label class="sr-only" for="hssv-manual-code">Mã đơn</label>
+                <input id="hssv-manual-code" type="text" required maxlength="20" autocomplete="off" autocapitalize="characters" placeholder="Mã đơn, vd DH123456"
+                  class="sm:w-52 px-3 py-2.5 rounded-xl bg-transparent border border-glass-border text-sm font-mono text-text-primary placeholder:text-text-faint focus:outline-none focus:border-accent-primary" />
+                <label class="sr-only" for="hssv-manual-note">Ghi chú</label>
+                <input id="hssv-manual-note" type="text" maxlength="200" autocomplete="off" placeholder="Ghi chú (không bắt buộc), vd: thẻ HS THPT Lê Quý Đôn"
+                  class="flex-1 min-w-0 px-3 py-2.5 rounded-xl bg-transparent border border-glass-border text-sm text-text-primary placeholder:text-text-faint focus:outline-none focus:border-accent-primary" />
+                <button type="submit" class="px-4 py-2.5 rounded-xl bg-accent-solid text-white text-xs font-bold whitespace-nowrap hover:brightness-110 transition-all disabled:opacity-50 cursor-pointer">Áp giá HSSV</button>
+              </div>
+            </form>
 
             <section class="glass-card border border-glass-border rounded-2xl overflow-hidden">
               <div class="p-4 sm:p-5 border-b border-glass-border flex items-center justify-between gap-3 flex-wrap">

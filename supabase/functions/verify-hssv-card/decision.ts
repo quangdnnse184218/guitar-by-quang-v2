@@ -1,6 +1,8 @@
 // Logic thuần của verify-hssv-card: đọc kết quả Gemini và quyết định
 // duyệt / chờ admin / từ chối. Tách riêng để test bằng vitest, không cần Deno.
 
+import type { EmailMatch } from './email.ts'
+
 export type HssvStatus = 'approved' | 'pending' | 'rejected'
 
 export interface CardReading {
@@ -78,8 +80,24 @@ export function decideHssv(input: {
   currentYear: number
   accountName?: string | null
   duplicateOnOtherAccount: boolean
+  // Email trường (đã xác nhận bằng mã) so với thẻ — xem emailMatchesCard() trong email.ts.
+  // undefined = lượt không có email (dữ liệu cũ / admin duyệt tay): bỏ qua bước so.
+  emailMatch?: EmailMatch | null
+  emailUsedByOtherAccount?: boolean
 }): Decision {
-  const { reading, currentYear, accountName, duplicateOnOtherAccount } = input
+  const { reading, currentYear, accountName, duplicateOnOtherAccount, emailMatch, emailUsedByOtherAccount } = input
+
+  // Email trường đã gắn với tài khoản KHÁC: từ chối trước cả khi xét thẻ (một email — một tài khoản).
+  if (emailUsedByOtherAccount) {
+    return {
+      status: 'rejected',
+      flags: ['duplicate_email'],
+      message:
+        'Email trường này đã được dùng để giảm giá ở một tài khoản khác nên không áp dụng lại được. Nếu đây là email của bạn, hãy nhắn admin qua Zalo để được hỗ trợ.',
+      studentId: normalizeStudentId(reading?.student_id),
+      expiryYear: null,
+    }
+  }
 
   if (!reading) {
     return {
@@ -137,6 +155,9 @@ export function decideHssv(input: {
   if (reading.legible === false) flags.push('unreadable')
   if (!studentId) flags.push('no_student_id')
   if (expiryYear === null) flags.push('no_expiry')
+  // Thẻ đọc được mà email không mang mã SV lẫn tên trên thẻ: có thể là thẻ mượn — để admin xem.
+  // Không tự từ chối: nhiều trường đặt email theo quy tắc riêng.
+  if (emailMatch === 'none') flags.push('email_mismatch')
 
   const softFlags: string[] = []
   if (namesMismatch(reading.full_name, accountName)) softFlags.push('name_mismatch')
@@ -146,7 +167,9 @@ export function decideHssv(input: {
       status: 'pending',
       flags: [...flags, ...softFlags],
       message:
-        'Ảnh thẻ chưa đủ để hệ thống tự duyệt. Yêu cầu của bạn đã chuyển cho admin xét duyệt.',
+        flags.length === 1 && flags[0] === 'email_mismatch'
+          ? 'Email trường chưa khớp với thông tin trên thẻ nên hệ thống chưa tự duyệt. Yêu cầu của bạn đã chuyển cho admin xét duyệt.'
+          : 'Ảnh thẻ chưa đủ để hệ thống tự duyệt. Yêu cầu của bạn đã chuyển cho admin xét duyệt.',
       studentId,
       expiryYear,
     }

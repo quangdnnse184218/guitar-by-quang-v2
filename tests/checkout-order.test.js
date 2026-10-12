@@ -212,14 +212,14 @@ describe('uploadAndVerifyHssvCard', () => {
     mockSupabase.functions.invoke.mockResolvedValue({ data: { approved: true }, error: null })
     const { uploadAndVerifyHssvCard } = await import('../src/lib/checkout-order.js')
 
-    await uploadAndVerifyHssvCard('user-1', 'order-9', { name: 'the.JPG', type: 'image/jpeg' })
+    await uploadAndVerifyHssvCard('user-1', 'order-9', { name: 'the.JPG', type: 'image/jpeg' }, { email: 'an@fpt.edu.vn', consent: true })
 
     expect(mockSupabase.storage.from).toHaveBeenCalledWith('hssv-cards')
     const [path] = upload.mock.calls[0]
     expect(path).toMatch(/^user-1\/order-9-\d+\.jpg$/)
     // Edge Function nhận đúng path vừa upload để kiểm tra lại quyền sở hữu
     expect(mockSupabase.functions.invoke).toHaveBeenCalledWith('verify-hssv-card', {
-      body: { orderId: 'order-9', imagePath: path, consent: true },
+      body: { orderId: 'order-9', imagePath: path, consent: true, email: 'an@fpt.edu.vn' },
     })
   })
 
@@ -232,9 +232,9 @@ describe('uploadAndVerifyHssvCard', () => {
     const file = { name: 'the.jpg', type: 'image/jpeg' }
 
     vi.setSystemTime(1_000)
-    await uploadAndVerifyHssvCard('user-1', 'order-9', file)
+    await uploadAndVerifyHssvCard('user-1', 'order-9', file, { email: 'an@fpt.edu.vn', consent: true })
     vi.setSystemTime(2_000)
-    await uploadAndVerifyHssvCard('user-1', 'order-9', file)
+    await uploadAndVerifyHssvCard('user-1', 'order-9', file, { email: 'an@fpt.edu.vn', consent: true })
     vi.useRealTimers()
 
     const [first, second] = upload.mock.calls
@@ -249,7 +249,7 @@ describe('uploadAndVerifyHssvCard', () => {
     mockSupabase.functions.invoke.mockResolvedValue({ data: { approved: true }, error: null })
     const { uploadAndVerifyHssvCard } = await import('../src/lib/checkout-order.js')
 
-    await uploadAndVerifyHssvCard('user-1', 'order-9', { name: 'the.j/../pg', type: 'image/jpeg' })
+    await uploadAndVerifyHssvCard('user-1', 'order-9', { name: 'the.j/../pg', type: 'image/jpeg' }, { email: 'an@fpt.edu.vn', consent: true })
 
     expect(upload.mock.calls[0][0]).toMatch(/^user-1\/order-9-\d+\.jpg$/)
   })
@@ -268,7 +268,7 @@ describe('uploadAndVerifyHssvCard', () => {
       'user-1',
       'order-9',
       { name: 'the.jpg', type: 'image/jpeg' },
-      { zalo: '  0901234567 ' }
+      { zalo: '  0901234567 ', email: 'an@fpt.edu.vn', consent: true }
     )
 
     expect(update).toHaveBeenCalledWith({ zalo: '0901234567' })
@@ -283,7 +283,7 @@ describe('uploadAndVerifyHssvCard', () => {
     mockSupabase.from.mockClear()
     const { uploadAndVerifyHssvCard } = await import('../src/lib/checkout-order.js')
 
-    await uploadAndVerifyHssvCard('user-1', 'order-9', { name: 'the.jpg', type: 'image/jpeg' }, { zalo: '   ' })
+    await uploadAndVerifyHssvCard('user-1', 'order-9', { name: 'the.jpg', type: 'image/jpeg' }, { zalo: '   ', email: 'an@fpt.edu.vn', consent: true })
 
     expect(mockSupabase.from).not.toHaveBeenCalled()
   })
@@ -294,12 +294,127 @@ describe('uploadAndVerifyHssvCard', () => {
     vi.spyOn(console, 'error').mockImplementation(() => {})
     const { uploadAndVerifyHssvCard } = await import('../src/lib/checkout-order.js')
 
-    const res = await uploadAndVerifyHssvCard('user-1', 'order-9', {
-      name: 'the.png',
-      type: 'image/png',
-    })
+    const res = await uploadAndVerifyHssvCard(
+      'user-1',
+      'order-9',
+      { name: 'the.png', type: 'image/png' },
+      { email: 'an@fpt.edu.vn', consent: true }
+    )
 
     expect(res.approved).toBe(false)
     expect(mockSupabase.functions.invoke).not.toHaveBeenCalled()
+  })
+
+  it('CHƯA tick đồng ý thì dừng ngay: không tải ảnh, không gọi máy chủ', async () => {
+    const upload = vi.fn().mockResolvedValue({ error: null })
+    mockSupabase.storage.from.mockReturnValue({ upload })
+    mockSupabase.functions.invoke.mockClear()
+    const { uploadAndVerifyHssvCard } = await import('../src/lib/checkout-order.js')
+    const file = { name: 'the.jpg', type: 'image/jpeg' }
+
+    for (const opts of [undefined, {}, { email: 'an@fpt.edu.vn' }, { email: 'an@fpt.edu.vn', consent: 'true' }]) {
+      const res = await uploadAndVerifyHssvCard('user-1', 'order-9', file, opts)
+      expect(res).toEqual({ approved: false, error: 'consent_required' })
+    }
+    expect(upload).not.toHaveBeenCalled()
+    expect(mockSupabase.functions.invoke).not.toHaveBeenCalled()
+  })
+
+  it('thiếu email trường thì dừng trước khi tải ảnh', async () => {
+    const upload = vi.fn().mockResolvedValue({ error: null })
+    mockSupabase.storage.from.mockReturnValue({ upload })
+    const { uploadAndVerifyHssvCard } = await import('../src/lib/checkout-order.js')
+
+    const res = await uploadAndVerifyHssvCard('user-1', 'order-9', { name: 'the.jpg', type: 'image/jpeg' }, { consent: true })
+
+    expect(res).toEqual({ approved: false, error: 'invalid_email' })
+    expect(upload).not.toHaveBeenCalled()
+  })
+
+  it('máy chủ trả lỗi 4xx thì lấy đúng mã lỗi trong thân phản hồi (vd email chưa xác nhận)', async () => {
+    const upload = vi.fn().mockResolvedValue({ error: null })
+    mockSupabase.storage.from.mockReturnValue({ upload })
+    mockSupabase.functions.invoke.mockResolvedValue({
+      data: null,
+      error: { message: 'Edge Function returned a non-2xx status code', context: { json: async () => ({ approved: false, error: 'email_not_verified' }) } },
+    })
+    vi.spyOn(console, 'error').mockImplementation(() => {})
+    const { uploadAndVerifyHssvCard } = await import('../src/lib/checkout-order.js')
+
+    const res = await uploadAndVerifyHssvCard('user-1', 'order-9', { name: 'the.jpg', type: 'image/jpeg' }, { email: 'an@fpt.edu.vn', consent: true })
+
+    expect(res).toEqual({ approved: false, error: 'email_not_verified' })
+  })
+})
+
+describe('mã xác nhận email trường', () => {
+  it('gửi mã: gọi đúng hàm với action send_code và email', async () => {
+    mockSupabase.functions.invoke.mockResolvedValue({ data: { ok: true, expiresInSec: 600 }, error: null })
+    const { sendHssvEmailCode } = await import('../src/lib/checkout-order.js')
+
+    const res = await sendHssvEmailCode('order-9', 'an@fpt.edu.vn', { consent: true })
+
+    expect(res).toEqual({ ok: true, expiresInSec: 600 })
+    expect(mockSupabase.functions.invoke).toHaveBeenCalledWith('verify-hssv-card', {
+      body: { action: 'send_code', orderId: 'order-9', email: 'an@fpt.edu.vn', consent: true },
+    })
+  })
+
+  it('chưa đồng ý thì không gửi mã, không kiểm mã', async () => {
+    mockSupabase.functions.invoke.mockClear()
+    const { sendHssvEmailCode, checkHssvEmailCode } = await import('../src/lib/checkout-order.js')
+
+    expect(await sendHssvEmailCode('order-9', 'an@fpt.edu.vn')).toEqual({ ok: false, error: 'consent_required' })
+    expect(await checkHssvEmailCode('order-9', 'an@fpt.edu.vn', '123456', {})).toEqual({ ok: false, error: 'consent_required' })
+    expect(mockSupabase.functions.invoke).not.toHaveBeenCalled()
+  })
+
+  it('kiểm mã: chuyển nguyên kết quả của máy chủ (sai mã kèm số lần còn lại)', async () => {
+    mockSupabase.functions.invoke.mockResolvedValue({ data: { ok: false, error: 'wrong_code', attemptsLeft: 3 }, error: null })
+    const { checkHssvEmailCode } = await import('../src/lib/checkout-order.js')
+
+    const res = await checkHssvEmailCode('order-9', 'an@fpt.edu.vn', '000000', { consent: true })
+
+    expect(res).toEqual({ ok: false, error: 'wrong_code', attemptsLeft: 3 })
+    expect(mockSupabase.functions.invoke).toHaveBeenCalledWith('verify-hssv-card', {
+      body: { action: 'check_code', orderId: 'order-9', email: 'an@fpt.edu.vn', code: '000000', consent: true },
+    })
+  })
+
+  it('lỗi 5xx (vd Brevo không gửi được) → ok:false kèm mã lỗi của máy chủ', async () => {
+    mockSupabase.functions.invoke.mockResolvedValue({
+      data: null,
+      error: { message: 'non-2xx', context: { json: async () => ({ ok: false, error: 'send_failed' }) } },
+    })
+    const { sendHssvEmailCode } = await import('../src/lib/checkout-order.js')
+
+    expect(await sendHssvEmailCode('order-9', 'an@fpt.edu.vn', { consent: true })).toMatchObject({ ok: false, error: 'send_failed' })
+  })
+
+  it('mất mạng (không có thân phản hồi) → ok:false, error "network"', async () => {
+    mockSupabase.functions.invoke.mockResolvedValue({ data: null, error: { message: 'Failed to fetch' } })
+    const { sendHssvEmailCode } = await import('../src/lib/checkout-order.js')
+
+    expect(await sendHssvEmailCode('order-9', 'an@fpt.edu.vn', { consent: true })).toMatchObject({ ok: false, error: 'network' })
+  })
+})
+
+describe('watchOrderPayment — số tiền của đơn đổi giữa chừng', () => {
+  it('admin áp giá HSSV (239k → 179k) thì báo onAmountChange đúng một lần, lần đọc đầu không báo', async () => {
+    vi.useFakeTimers()
+    const amounts = [239000, 239000, 179000, 179000]
+    let i = 0
+    const maybeSingle = vi.fn(async () => ({ data: { status: 'pending', amount: amounts[Math.min(i++, amounts.length - 1)] }, error: null }))
+    mockSupabase.from.mockReturnValue({ select: () => ({ eq: () => ({ maybeSingle }) }) })
+    const { watchOrderPayment } = await import('../src/lib/checkout-order.js')
+    const onAmountChange = vi.fn()
+
+    const stop = watchOrderPayment('DH482913', { onPaid: vi.fn(), onAmountChange, intervalMs: 1000 })
+    await vi.advanceTimersByTimeAsync(3500)
+    stop()
+    vi.useRealTimers()
+
+    expect(onAmountChange).toHaveBeenCalledTimes(1)
+    expect(onAmountChange).toHaveBeenCalledWith(179000)
   })
 })

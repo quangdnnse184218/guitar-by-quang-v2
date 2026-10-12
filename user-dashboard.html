@@ -579,24 +579,8 @@
                 <span id="modal-tab-price" class="whitespace-nowrap text-2xl sm:text-3xl font-extrabold text-accent-primary">239.000 VNĐ</span>
               </div>
 
-              <!-- 2b. HSSV: tick + upload ảnh thẻ để AI tự kiểm tra và đổi sang giá ưu đãi -->
-              <div id="modal-hssv-block" class="max-md:order-4 p-3.5 rounded-2xl modal-inner-card border border-glass-border space-y-2.5 text-xs">
-                <label class="flex items-center gap-2.5 cursor-pointer select-none">
-                  <input type="checkbox" id="modal-hssv-checkbox"
-                    class="w-4 h-4 rounded accent-accent-primary cursor-pointer flex-shrink-0">
-                  <span class="font-bold text-text-primary">Tôi là Học sinh/Sinh viên — áp dụng giá ưu đãi</span>
-                </label>
-                <div id="modal-hssv-upload-panel" class="hidden space-y-2.5 pt-1">
-                  <p class="text-text-muted leading-relaxed">Chụp/tải ảnh thẻ HSSV còn hiệu lực năm nay — hệ thống tự
-                    kiểm tra và đổi sang giá ưu đãi ngay nếu hợp lệ, không cần chờ admin duyệt.</p>
-                  <input type="file" accept="image/*" id="modal-hssv-file-input"
-                    class="block w-full text-[11px] text-text-muted file:mr-3 file:px-3 file:py-1.5 file:rounded-lg file:border-0 file:bg-accent-primary/15 file:text-accent-primary file:font-bold file:cursor-pointer cursor-pointer" />
-                  <button type="button" id="modal-hssv-verify-btn" disabled
-                    class="w-full py-2 rounded-xl bg-accent-solid text-white font-bold text-[11px] transition-all active:scale-98 disabled:opacity-50 disabled:cursor-not-allowed">Xác
-                    minh thẻ HSSV</button>
-                  <p id="modal-hssv-status" class="hidden font-bold text-[11px] leading-relaxed"></p>
-                </div>
-              </div>
+              <!-- 2b. Giá học sinh / sinh viên: nội dung do src/lib/hssv-flow.js dựng (dùng chung 3 trang) -->
+              <div id="modal-hssv-block" class="max-md:order-4 p-3.5 rounded-2xl modal-inner-card border border-glass-border space-y-2.5 text-xs"></div>
 
               <!-- 3/4. Tài liệu nhận được + Thông số chi tiết + Metronome — gom vào 1
                    khối thu gọn để màn thanh toán không quá dài, bấm mới cần xem thêm -->
