@@ -1,5 +1,17 @@
-import { describe, it, expect } from 'vitest'
-import { nextHeaderHidden } from '../src/common.js'
+import { describe, it, expect, vi } from 'vitest'
+
+// common.js nạp client Supabase thật, mà client đó cần VITE_SUPABASE_URL — máy CI không có
+// .env.local nên phải thay bằng bản giả (hàm đang test không đụng tới Supabase).
+vi.mock('../src/lib/supabase.js', () => ({
+  supabase: {
+    auth: {
+      getSession: async () => ({ data: { session: null } }),
+      onAuthStateChange: () => ({ data: { subscription: { unsubscribe() {} } } }),
+    },
+  },
+}))
+
+const { nextHeaderHidden } = await import('../src/common.js')
 
 describe('ẩn header khi cuộn xuống, hiện lại khi cuộn lên', () => {
   it('gần đầu trang thì luôn hiện, kể cả đang cuộn xuống', () => {
