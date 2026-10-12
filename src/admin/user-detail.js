@@ -129,7 +129,7 @@ function renderFavoritesPanel(favorites) {
     .map(
       (f) => `
       <span class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-black/5 dark:bg-white/5 border border-glass-border text-[11px] sm:text-xs font-semibold text-text-primary">
-        <svg class="w-3 h-3 text-rose-500 flex-shrink-0" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 20.25c-4.5-2.7-9-6.44-9-10.5C3 6.5 5.5 4 8.25 4c1.6 0 3 .8 3.75 2.1C12.75 4.8 14.15 4 15.75 4 18.5 4 21 6.5 21 9.75c0 4.06-4.5 7.8-9 10.5z"/></svg>
+        <svg class="w-3 h-3 text-rose-500 flex-shrink-0" aria-hidden="true" data-ph="heart" viewBox="0 0 256 256" fill="currentColor"><path d="M240,102c0,70-103.79,126.66-108.21,129a8,8,0,0,1-7.58,0C119.79,228.66,16,172,16,102A62.07,62.07,0,0,1,78,40c20.65,0,38.73,8.88,50,23.89C139.27,48.88,157.35,40,178,40A62.07,62.07,0,0,1,240,102Z"/></svg>
         ${escapeHtml(f.song_title)}
         <span class="text-text-muted font-mono text-[11px] sm:text-xs">${escapeHtml(formatDate(f.created_at))}</span>
       </span>`
@@ -191,7 +191,7 @@ function render() {
   root.innerHTML = `
     <button type="button" id="detail-back-btn"
       class="inline-flex items-center gap-1.5 text-xs font-bold text-text-muted hover:text-accent-primary transition-colors cursor-pointer">
-      <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M15 19l-7-7 7-7"/></svg>
+      <svg class="w-3.5 h-3.5" aria-hidden="true" data-ph="caret-left" viewBox="0 0 256 256" fill="currentColor"><path d="M168.49,199.51a12,12,0,0,1-17,17l-80-80a12,12,0,0,1,0-17l80-80a12,12,0,0,1,17,17L97,128Z"/></svg>
       Danh sách thành viên
     </button>
 
@@ -218,7 +218,7 @@ function render() {
             ${
               profile.email
                 ? `<button type="button" data-copy="${escapeHtml(profile.email)}" class="detail-copy-btn p-1 rounded-md text-text-muted hover:text-accent-primary transition-colors cursor-pointer flex-shrink-0" title="Copy email">
-                     <svg class="w-3 h-3" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"/></svg>
+                     <svg class="w-3 h-3" aria-hidden="true" data-ph="copy" viewBox="0 0 256 256" fill="currentColor"><path d="M216,28H88A12,12,0,0,0,76,40V76H40A12,12,0,0,0,28,88V216a12,12,0,0,0,12,12H168a12,12,0,0,0,12-12V180h36a12,12,0,0,0,12-12V40A12,12,0,0,0,216,28ZM156,204H52V100H156Zm48-48H180V88a12,12,0,0,0-12-12H100V52H204Z"/></svg>
                    </button>`
                 : ''
             }
@@ -227,7 +227,7 @@ function render() {
             <span class="text-text-muted flex-shrink-0">Mã UUID</span>
             <span class="font-mono text-accent-primary truncate">${escapeHtml(profile.id)}</span>
             <button type="button" data-copy="${escapeHtml(profile.id)}" class="detail-copy-btn p-1 rounded-md text-text-muted hover:text-accent-primary transition-colors cursor-pointer flex-shrink-0" title="Copy UUID">
-              <svg class="w-3 h-3" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"/></svg>
+              <svg class="w-3 h-3" aria-hidden="true" data-ph="copy" viewBox="0 0 256 256" fill="currentColor"><path d="M216,28H88A12,12,0,0,0,76,40V76H40A12,12,0,0,0,28,88V216a12,12,0,0,0,12,12H168a12,12,0,0,0,12-12V180h36a12,12,0,0,0,12-12V40A12,12,0,0,0,216,28ZM156,204H52V100H156Zm48-48H180V88a12,12,0,0,0-12-12H100V52H204Z"/></svg>
             </button>
           </div>
           <div class="flex items-center gap-1.5 min-w-0">
@@ -236,7 +236,7 @@ function render() {
             ${
               profile.zalo
                 ? `<button type="button" data-copy="${escapeHtml(profile.zalo)}" class="detail-copy-btn p-1 rounded-md text-text-muted hover:text-accent-primary transition-colors cursor-pointer flex-shrink-0" title="Copy Zalo">
-                     <svg class="w-3 h-3" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"/></svg>
+                     <svg class="w-3 h-3" aria-hidden="true" data-ph="copy" viewBox="0 0 256 256" fill="currentColor"><path d="M216,28H88A12,12,0,0,0,76,40V76H40A12,12,0,0,0,28,88V216a12,12,0,0,0,12,12H168a12,12,0,0,0,12-12V180h36a12,12,0,0,0,12-12V40A12,12,0,0,0,216,28ZM156,204H52V100H156Zm48-48H180V88a12,12,0,0,0-12-12H100V52H204Z"/></svg>
                    </button>`
                 : ''
             }

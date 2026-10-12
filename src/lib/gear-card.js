@@ -12,7 +12,7 @@ export const GEAR_INITIAL_LIMIT = 4
 export const GEAR_INITIAL_LIMIT_MOBILE = 2
 
 const ARROW_ICON =
-  '<svg class="w-3.5 h-3.5 transition-transform group-hover/link:translate-x-0.5" fill="none" stroke="currentColor" stroke-width="2.4" viewBox="0 0 24 24" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="M5 12h14M13 6l6 6-6 6"/></svg>'
+  '<svg class="w-3.5 h-3.5 transition-transform group-hover/link:translate-x-0.5" aria-hidden="true" data-ph="arrow-right" viewBox="0 0 256 256" fill="currentColor"><path d="M224.49,136.49l-72,72a12,12,0,0,1-17-17L187,140H40a12,12,0,0,1,0-24H187L135.51,64.48a12,12,0,0,1,17-17l72,72A12,12,0,0,1,224.49,136.49Z"/></svg>'
 
 const LINK_CLASS =
   'group/link inline-flex items-center gap-1 min-h-[40px] -my-2.5 text-xs sm:text-sm font-bold text-accent-primary hover:underline underline-offset-2 w-fit'

@@ -650,66 +650,44 @@ nav,
     0 14px 32px -18px rgb(50 32 14 / 0.5);
 }
 
-/* MÁY TÍNH (md+): header là khối nâu gỗ ĐẶC ở cả giao diện sáng lẫn tối — không trong suốt,
-   không làm mờ nền (người dùng yêu cầu 2026-10-12; bản trước nâu rất đậm + kính 92% bị chê
-   "đậm quá"). Ghi đè biến màu ngay trên #main-nav nên chữ, nút, menu tài khoản bên trong tự
-   đổi sang bộ màu sáng-trên-nền-tối. Điện thoại giữ header kính sáng cho hợp thanh dưới đáy. */
+/* MÁY TÍNH (md+): header nền TRẮNG ĐẶC (bản tối: nền thẻ, sáng hơn nền trang một bậc) — không
+   trong suốt, không làm mờ nền. Tách khỏi trang màu kem bằng viền mảnh + bóng nhẹ; cuộn xuống thì
+   thấp lại và bóng đậm hơn. Người dùng đã thử header nâu đậm (2026-10-12) và không thích — đừng
+   đổi lại sang nền tối. Điện thoại giữ header kính sáng cho hợp với thanh dưới đáy. */
 @media (min-width: 768px) {
-  #main-nav,
-  [data-theme='light'] #main-nav {
-    --nav-solid: 92 64 43;
-    --frost-tint: 74 52 36;
+  #main-nav {
     --frost-alpha-strong: 1;
     --frost-fx: none;
-    --frost-edge: rgb(255 255 255 / 0.12);
-    --frost-shine: inset 0 1px 0 rgb(255 255 255 / 0.08);
-    --text-primary: 250 243 232;
-    --text-muted: 222 206 184;
-    --text-faint: 186 168 144;
-    --accent-primary: 246 190 112;
-    --accent-primary-hover: 250 208 144;
-    --glass-bg: 112 80 56;
-    --glass-bg-hover: 128 93 66;
-    --glass-border: rgba(255 236 210 / 0.2);
-    --glass-border-rgb: 255 236 210;
-    --glass-border-alpha: 0.2;
-    background-color: rgb(var(--nav-solid));
+    background-color: rgb(var(--glass-bg));
     -webkit-backdrop-filter: none;
     backdrop-filter: none;
-    border-bottom-color: rgb(0 0 0 / 0.18);
-    box-shadow: 0 8px 22px -16px rgb(40 24 10 / 0.55);
+    border-bottom-color: rgb(var(--glass-border-rgb) / calc(var(--glass-border-alpha) * 1.5));
+    box-shadow:
+      0 1px 0 rgb(0 0 0 / 0.02),
+      0 8px 22px -16px rgb(60 40 20 / 0.28);
   }
   #main-nav.nav-shrunk {
-    box-shadow: 0 14px 30px -16px rgb(40 24 10 / 0.7);
+    box-shadow:
+      0 1px 0 rgb(0 0 0 / 0.03),
+      0 14px 30px -16px rgb(60 40 20 / 0.42);
   }
-  /* Bản tối: trầm hơn một chút nhưng vẫn sáng hơn hẳn nền trang để tách ra. */
-  :root:not([data-theme='light']) #main-nav {
-    --nav-solid: 66 48 34;
-    --frost-tint: 56 41 30;
-    --glass-bg: 86 63 45;
-    --glass-bg-hover: 102 75 54;
+}
+
+/* Vạch ngăn chỉ hiện ở màn rộng (xl+): dưới đó header đã đăng nhập không còn dư chỗ. */
+@media (min-width: 1280px) {
+  #desktop-auth-container {
+    position: relative;
+    padding-left: 0.875rem;
   }
-  #main-nav .nav-pill {
-    background: rgb(255 255 255 / 0.12);
-    box-shadow: inset 0 0 0 1px rgb(255 255 255 / 0.16);
-  }
-  /* Nút Đăng nhập: nền hổ phách sáng chữ nâu — nền đồng đậm mặc định chìm vào header nâu */
-  #main-nav a.bg-warm-gradient {
-    background: linear-gradient(135deg, #f6c478 0%, #eaa24a 100%);
-    color: #3a2413;
-    box-shadow: 0 4px 12px -6px rgb(0 0 0 / 0.5);
-  }
-  /* Màu viết cứng trong menu tài khoản (nút Đăng xuất…) cần bản sáng hơn trên nền nâu */
-  #main-nav .text-rose-700 {
-    color: #fecdd3;
-  }
-  #main-nav .text-emerald-700,
-  #main-nav .text-emerald-800 {
-    color: #a7f3d0;
-  }
-  #main-nav .text-amber-700,
-  #main-nav .text-amber-800 {
-    color: #fde68a;
+  #desktop-auth-container::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 50%;
+    height: 22px;
+    width: 1px;
+    transform: translateY(-50%);
+    background: rgb(var(--glass-border-rgb) / calc(var(--glass-border-alpha) * 1.6));
   }
 }
 

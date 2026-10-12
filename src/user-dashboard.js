@@ -865,7 +865,7 @@ window.openFreeTabModal = function openFreeTabModal(tabId) {
       pdfBtn.className =
         'w-full py-3 rounded-2xl bg-warm-gradient hover:brightness-105 text-white font-extrabold text-xs transition-all shadow-md flex items-center justify-center gap-2 text-center cursor-pointer active:scale-95'
       pdfBtn.innerHTML = `
-        <svg class="w-4 h-4 fill-none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>
+        <svg class="w-4 h-4" aria-hidden="true" data-ph="file-arrow-down" viewBox="0 0 256 256" fill="currentColor"><path d="M216.49,79.52l-56-56A12,12,0,0,0,152,20H56A20,20,0,0,0,36,40V216a20,20,0,0,0,20,20H200a20,20,0,0,0,20-20V88A12,12,0,0,0,216.49,79.52ZM160,57l23,23H160ZM60,212V44h76V92a12,12,0,0,0,12,12h48V212Zm100.49-60.49a12,12,0,0,1,0,17l-24,24a12,12,0,0,1-17,0l-24-24a12,12,0,0,1,17-17L116,155V124a12,12,0,0,1,24,0v31l3.51-3.52A12,12,0,0,1,160.49,151.51Z"/></svg>
         <span>Tải file PDF tab</span>
       `
     } else {
@@ -874,7 +874,7 @@ window.openFreeTabModal = function openFreeTabModal(tabId) {
       pdfBtn.className =
         'w-full py-3 rounded-2xl bg-glass-bg/40 border border-glass-border/50 text-text-faint font-semibold text-xs transition-all shadow-xs flex items-center justify-center gap-2 text-center cursor-not-allowed opacity-60 pointer-events-none'
       pdfBtn.innerHTML = `
-        <svg class="w-4 h-4 text-text-muted" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+        <svg class="w-4 h-4 text-text-muted" aria-hidden="true" data-ph="clock" viewBox="0 0 256 256" fill="currentColor"><path d="M128,20A108,108,0,1,0,236,128,108.12,108.12,0,0,0,128,20Zm0,192a84,84,0,1,1,84-84A84.09,84.09,0,0,1,128,212Zm68-84a12,12,0,0,1-12,12H128a12,12,0,0,1-12-12V72a12,12,0,0,1,24,0v44h44A12,12,0,0,1,196,128Z"/></svg>
         <span>Tải file PDF (Đang cập nhật)</span>
       `
     }
@@ -1217,16 +1217,16 @@ function renderLibraryItem(song, { owned = false, removable = false } = {}) {
   const primary = canOpen
     ? `<button type="button" class="btn-open-material inline-flex items-center gap-1.5 px-4 py-2 rounded-full bg-warm-gradient hover:brightness-105 text-white text-xs sm:text-sm font-bold shadow-sm whitespace-nowrap transition-all active:scale-95 cursor-pointer" data-id="${id}">
         <span>Mở Video Tab</span>
-        <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2.4" viewBox="0 0 24 24" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="M14 5h5v5M19 5l-8 8M10 5H6a1 1 0 00-1 1v12a1 1 0 001 1h12a1 1 0 001-1v-4"/></svg>
+        <svg class="w-3.5 h-3.5" aria-hidden="true" data-ph="arrow-square-out" viewBox="0 0 256 256" fill="currentColor"><path d="M228,104a12,12,0,0,1-24,0V69l-59.51,59.51a12,12,0,0,1-17-17L187,52H152a12,12,0,0,1,0-24h64a12,12,0,0,1,12,12Zm-44,24a12,12,0,0,0-12,12v64H52V84h64a12,12,0,0,0,0-24H48A20,20,0,0,0,28,80V208a20,20,0,0,0,20,20H176a20,20,0,0,0,20-20V140A12,12,0,0,0,184,128Z"/></svg>
       </button>`
     : `<a href="/kho-tab.html?tab=${encodeURIComponent(song.id)}" class="inline-flex items-center gap-1.5 px-4 py-2 rounded-full bg-glass-bg border border-accent-primary/40 hover:border-accent-primary text-accent-primary text-xs sm:text-sm font-bold whitespace-nowrap transition-colors">
         <span>Mua tab</span>
-        <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2.4" viewBox="0 0 24 24" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="M5 12h14M13 6l6 6-6 6"/></svg>
+        <svg class="w-3.5 h-3.5" aria-hidden="true" data-ph="arrow-right" viewBox="0 0 256 256" fill="currentColor"><path d="M224.49,136.49l-72,72a12,12,0,0,1-17-17L187,140H40a12,12,0,0,1,0-24H187L135.51,64.48a12,12,0,0,1,17-17l72,72A12,12,0,0,1,224.49,136.49Z"/></svg>
       </a>`
 
   const remove = removable
     ? `<button type="button" class="btn-remove-fav col-start-3 row-start-1 sm:col-start-4 self-start sm:self-center w-9 h-9 -mr-1 grid place-items-center rounded-full text-rose-500 hover:bg-rose-500/10 transition-colors cursor-pointer" data-id="${id}" aria-label="Bỏ ${title} khỏi yêu thích" title="Bỏ khỏi yêu thích">
-        <svg class="w-4 h-4 fill-current" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg>
+        <svg class="w-4 h-4" aria-hidden="true" data-ph="heart" viewBox="0 0 256 256" fill="currentColor"><path d="M240,102c0,70-103.79,126.66-108.21,129a8,8,0,0,1-7.58,0C119.79,228.66,16,172,16,102A62.07,62.07,0,0,1,78,40c20.65,0,38.73,8.88,50,23.89C139.27,48.88,157.35,40,178,40A62.07,62.07,0,0,1,240,102Z"/></svg>
       </button>`
     : ''
 
@@ -1252,7 +1252,7 @@ function renderLibraryEmpty({ title, body, cta }) {
       <p class="text-xs sm:text-sm text-text-muted max-w-sm mx-auto">${body}</p>
       ${
         cta
-          ? `<a href="/kho-tab.html" class="inline-flex items-center gap-1.5 mt-2 px-5 py-2.5 rounded-full bg-warm-gradient hover:brightness-105 text-white text-xs sm:text-sm font-bold shadow-sm transition-all">${cta}<svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2.4" viewBox="0 0 24 24" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="M5 12h14M13 6l6 6-6 6"/></svg></a>`
+          ? `<a href="/kho-tab.html" class="inline-flex items-center gap-1.5 mt-2 px-5 py-2.5 rounded-full bg-warm-gradient hover:brightness-105 text-white text-xs sm:text-sm font-bold shadow-sm transition-all">${cta}<svg class="w-3.5 h-3.5" aria-hidden="true" data-ph="arrow-right" viewBox="0 0 256 256" fill="currentColor"><path d="M224.49,136.49l-72,72a12,12,0,0,1-17-17L187,140H40a12,12,0,0,1,0-24H187L135.51,64.48a12,12,0,0,1,17-17l72,72A12,12,0,0,1,224.49,136.49Z"/></svg></a>`
           : ''
       }
     </div>`

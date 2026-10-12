@@ -328,8 +328,8 @@ export async function initAuthHeader() {
       `<a href="${href}" role="menuitem" ${extra} class="flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-semibold text-text-primary hover:bg-glass-bg-hover hover:text-accent-primary focus-visible:bg-glass-bg-hover outline-none transition-colors">
           <span class="w-4 h-4 text-text-muted flex-shrink-0">${icon}</span><span>${label}</span></a>`
 
-    const ICON_ZALO = '<svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="M4.5 18.5 6 15a7.5 7.5 0 1 1 3 2.5z"/></svg>'
-    const ICON_HELP = '<svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="1.8" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path stroke-linecap="round" d="M9.5 9a2.5 2.5 0 0 1 5 0c0 1.5-2.5 2-2.5 4"/><circle cx="12" cy="16.5" r=".6" fill="currentColor"/></svg>'
+    const ICON_ZALO = '<svg class="w-4 h-4" aria-hidden="true" data-ph="chat-circle" viewBox="0 0 256 256" fill="currentColor"><path d="M128,20A108,108,0,0,0,31.85,177.23L21,209.66A20,20,0,0,0,46.34,235l32.43-10.81A108,108,0,1,0,128,20Zm0,192a84,84,0,0,1-42.06-11.27,12,12,0,0,0-6-1.62,12.1,12.1,0,0,0-3.8.62l-29.79,9.93,9.93-29.79a12,12,0,0,0-1-9.81A84,84,0,1,1,128,212Z"/></svg>'
+    const ICON_HELP = '<svg class="w-4 h-4" aria-hidden="true" data-ph="question" viewBox="0 0 256 256" fill="currentColor"><path d="M144,180a16,16,0,1,1-16-16A16,16,0,0,1,144,180Zm92-52A108,108,0,1,1,128,20,108.12,108.12,0,0,1,236,128Zm-24,0a84,84,0,1,0-84,84A84.09,84.09,0,0,0,212,128ZM128,64c-24.26,0-44,17.94-44,40v4a12,12,0,0,0,24,0v-4c0-8.82,9-16,20-16s20,7.18,20,16-9,16-20,16a12,12,0,0,0-12,12v8a12,12,0,0,0,23.73,2.56C158.31,137.88,172,122.37,172,104,172,81.94,152.26,64,128,64Z"/></svg>'
 
     // Menu tài khoản: thẻ tên (vào trang cá nhân) · 2 ô số liệu bấm được · các lối
     // tắt khách hay cần (hồ sơ, nhắn Zalo hỗ trợ, hỏi đáp) · đăng xuất.
@@ -341,7 +341,7 @@ export async function initAuthHeader() {
           ${avatarHtml}
           <span class="text-sm font-bold text-text-primary hidden lg:inline-block truncate max-w-[110px]">${safeFullName}</span>
           <span class="hidden xl:inline-flex">${roleBadgeHtml}</span>
-          <svg id="user-header-dropdown-arrow" class="w-3.5 h-3.5 text-text-muted transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
+          <svg id="user-header-dropdown-arrow" class="w-3.5 h-3.5 text-text-muted transition-transform" aria-hidden="true" data-ph="caret-down" viewBox="0 0 256 256" fill="currentColor"><path d="M216.49,104.49l-80,80a12,12,0,0,1-17,0l-80-80a12,12,0,0,1,17-17L128,159l71.51-71.52a12,12,0,0,1,17,17Z"/></svg>
         </button>
         <div id="user-header-dropdown-menu" role="menu" aria-label="Tài khoản" class="user-menu absolute right-0 top-full pt-2 w-[18rem] max-w-[calc(100vw-1.5rem)] z-50">
           <div class="frost-strong rounded-2xl p-2">
@@ -351,7 +351,7 @@ export async function initAuthHeader() {
                 <span class="block text-sm font-bold text-text-primary truncate">${safeFullName}</span>
                 <span class="block text-xs text-text-muted truncate">${safeEmail}</span>
               </span>
-              <svg class="w-4 h-4 text-text-muted group-hover/me:text-accent-primary group-hover/me:translate-x-0.5 transition" fill="none" stroke="currentColor" stroke-width="2.2" viewBox="0 0 24 24" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7"/></svg>
+              <svg class="w-4 h-4 text-text-muted group-hover/me:text-accent-primary group-hover/me:translate-x-0.5 transition" aria-hidden="true" data-ph="caret-right" viewBox="0 0 256 256" fill="currentColor"><path d="M184.49,136.49l-80,80a12,12,0,0,1-17-17L159,128,87.51,56.49a12,12,0,1,1,17-17l80,80A12,12,0,0,1,184.49,136.49Z"/></svg>
             </a>
             <div class="grid grid-cols-2 gap-1.5 px-1 pt-1 pb-2">
               <a href="/user-dashboard.html#purchases" role="menuitem" class="rounded-xl bg-black/5 dark:bg-white/5 hover:bg-glass-bg-hover focus-visible:bg-glass-bg-hover outline-none px-3 py-2 transition-colors">
@@ -494,7 +494,7 @@ export async function initAuthHeader() {
              </div>
           </div>
           <button id="mobile-logout-btn" title="Đăng xuất" class="p-2 text-rose-500 hover:bg-rose-500/10 rounded-xl transition-colors cursor-pointer">
-            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"></path></svg>
+            <svg class="w-5 h-5" aria-hidden="true" data-ph="sign-out" viewBox="0 0 256 256" fill="currentColor"><path d="M120,216a8,8,0,0,1-8,8H48a8,8,0,0,1-8-8V40a8,8,0,0,1,8-8h64a8,8,0,0,1,0,16H56V208h56A8,8,0,0,1,120,216Zm109.66-93.66-40-40a8,8,0,0,0-11.32,11.32L204.69,120H112a8,8,0,0,0,0,16h92.69l-26.35,26.34a8,8,0,0,0,11.32,11.32l40-40A8,8,0,0,0,229.66,122.34Z"/></svg>
           </button>
         </div>
       `
@@ -715,38 +715,37 @@ export function initNavActiveSpy() {
 // ==========================================================================
 // Dựng bằng JS ở MỘT chỗ cho mọi trang có header công khai (#desktop-nav), để
 // không phải chép tay 5 lần. Kiểu dáng ở .bottom-nav trong style.css.
-const NAV_ICON = (d) =>
-  `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${d}</svg>`
+// Biểu tượng lấy từ Phosphor (node scripts/ph-icon.cjs <tên> regular) — kích thước do .bottom-nav__icon svg đặt.
 const BOTTOM_NAV_ITEMS = [
   {
     key: 'home',
     href: '/index.html',
     label: 'Trang chủ',
-    icon: NAV_ICON('<path d="M3.5 10.5 12 3.8l8.5 6.7V19a1.5 1.5 0 0 1-1.5 1.5h-4v-6h-6v6H5A1.5 1.5 0 0 1 3.5 19z"/>'),
+    icon: '<svg aria-hidden="true" data-ph="house" viewBox="0 0 256 256" fill="currentColor"><path d="M219.31,108.68l-80-80a16,16,0,0,0-22.62,0l-80,80A15.87,15.87,0,0,0,32,120v96a8,8,0,0,0,8,8h64a8,8,0,0,0,8-8V160h32v56a8,8,0,0,0,8,8h64a8,8,0,0,0,8-8V120A15.87,15.87,0,0,0,219.31,108.68ZM208,208H160V152a8,8,0,0,0-8-8H104a8,8,0,0,0-8,8v56H48V120l80-80,80,80Z"/></svg>',
   },
   {
     key: 'kho-tab',
     href: '/kho-tab.html',
     label: 'Kho tab',
-    icon: NAV_ICON('<path d="M9 18V5.5l11-2V16"/><circle cx="6.5" cy="18" r="2.5"/><circle cx="17.5" cy="16" r="2.5"/>'),
+    icon: '<svg aria-hidden="true" data-ph="music-notes" viewBox="0 0 256 256" fill="currentColor"><path d="M212.92,17.69a8,8,0,0,0-6.86-1.45l-128,32A8,8,0,0,0,72,56V166.08A36,36,0,1,0,88,196V110.25l112-28v51.83A36,36,0,1,0,216,164V24A8,8,0,0,0,212.92,17.69ZM52,216a20,20,0,1,1,20-20A20,20,0,0,1,52,216ZM88,93.75V62.25l112-28v31.5ZM180,184a20,20,0,1,1,20-20A20,20,0,0,1,180,184Z"/></svg>',
   },
   {
     key: 'tools',
     href: '/cong-cu.html',
     label: 'Công cụ',
-    icon: NAV_ICON('<path d="M9.5 3.5h5l3.5 17h-12z"/><path d="M12 16.5 15.5 6"/><path d="M8.2 14h7.6"/>'),
+    icon: '<svg aria-hidden="true" data-ph="metronome" viewBox="0 0 256 256" fill="currentColor"><path d="M187.14,114.84l26.78-29.46a8,8,0,0,0-11.84-10.76l-20.55,22.6-17.2-54.07A15.94,15.94,0,0,0,149.08,32H106.91A15.94,15.94,0,0,0,91.66,43.15l-50.91,160A16,16,0,0,0,56,224H200a16,16,0,0,0,15.25-20.85ZM184.72,160H146.08l28.62-31.48ZM106.91,48h42.17l20,62.9L124.46,160H71.27ZM56,208l10.18-32H189.81L200,208Z"/></svg>',
   },
   {
     key: 'game',
     href: '/luyen-cam-am.html',
     label: 'Cảm âm',
-    icon: NAV_ICON('<path d="M4 15v-3a8 8 0 0 1 16 0v3"/><rect x="3" y="14" width="4.5" height="7" rx="2"/><rect x="16.5" y="14" width="4.5" height="7" rx="2"/>'),
+    icon: '<svg aria-hidden="true" data-ph="headphones" viewBox="0 0 256 256" fill="currentColor"><path d="M201.89,54.66A103.43,103.43,0,0,0,128.79,24H128A104,104,0,0,0,24,128v56a24,24,0,0,0,24,24H64a24,24,0,0,0,24-24V144a24,24,0,0,0-24-24H40.36A88,88,0,0,1,128,40h.67a87.71,87.71,0,0,1,87,80H192a24,24,0,0,0-24,24v40a24,24,0,0,0,24,24h16a24,24,0,0,0,24-24V128A103.41,103.41,0,0,0,201.89,54.66ZM64,136a8,8,0,0,1,8,8v40a8,8,0,0,1-8,8H48a8,8,0,0,1-8-8V136Zm152,48a8,8,0,0,1-8,8H192a8,8,0,0,1-8-8V144a8,8,0,0,1,8-8h24Z"/></svg>',
   },
   {
     key: 'account',
     href: '/login.html',
     label: 'Tài khoản',
-    icon: NAV_ICON('<circle cx="12" cy="8" r="4"/><path d="M4.5 20.5a7.5 7.5 0 0 1 15 0"/>'),
+    icon: '<svg aria-hidden="true" data-ph="user" viewBox="0 0 256 256" fill="currentColor"><path d="M230.92,212c-15.23-26.33-38.7-45.21-66.09-54.16a72,72,0,1,0-73.66,0C63.78,166.78,40.31,185.66,25.08,212a8,8,0,1,0,13.85,8c18.84-32.56,52.14-52,89.07-52s70.23,19.44,89.07,52a8,8,0,1,0,13.85-8ZM72,96a56,56,0,1,1,56,56A56.06,56.06,0,0,1,72,96Z"/></svg>',
   },
 ]
 
