@@ -8,6 +8,7 @@ import {
 import { initThemeToggle } from './theme-toggle.js'
 import {
   fetchAllSongs,
+  fetchSongPopularity,
   extractYoutubeId,
   normalizeVideoPath,
   normalizeAudioPath,
@@ -16,6 +17,8 @@ import { applyScrollReveal } from './animations/scroll-reveal.js'
 import { toggleCompleted, getCompleted } from './lib/local-storage-service.js'
 import { supabase } from './lib/supabase.js'
 import { renderSongCard } from './lib/song-card.js'
+import { initQuickView } from './lib/quick-view.js'
+import { levelTier, isNewSong, hotSongIds, parseLevel } from './lib/song-format.js'
 import { initShareButtons } from './lib/share-song.js'
 import { withReturnTo } from './lib/navigate.js'
 import { createOrderAndBuildQr, downloadQrImage, watchOrderPayment } from './lib/checkout-order.js'
@@ -32,11 +35,17 @@ initCardTouchFeedback()
 // STATE
 // ==========================================================================
 let allSongs = []
-// Bộ lọc: nhóm chọn một (giá, thể loại), nhóm "Của tôi" chọn nhiều.
-const DEFAULT_FILTERS = { price: 'all', category: 'all' }
+// Bộ lọc: các nhóm chọn một (giá, độ khó, thể loại) — bấm lại chip đang bật là bỏ lọc;
+// nhóm "Của tôi" chọn nhiều.
+const DEFAULT_FILTERS = { price: 'all', level: 'all', category: 'all' }
 let filters = { ...DEFAULT_FILTERS }
 let mineFilters = new Set() // purchased | favorite | learned | unlearned
 let sortMode = 'default'
+// Số lượt mở khoá theo bài (cho nhãn "Bán chạy" và sắp xếp), và tập bài đang "Bán chạy".
+let buysBySong = new Map()
+let hotIds = new Set()
+const VIEW_KEY = 'gbq_kho_view'
+let viewMode = 'grid'
 let searchQuery = ''
 let isLoggedIn = false
 let activeCheckoutSyntax = ''
@@ -155,8 +164,7 @@ function removeAccents(str) {
 
 /** "6.5/10" → 6.5 (dùng cho sắp xếp theo độ khó); thiếu thì coi như giữa thang. */
 function levelNumber(song) {
-  const n = parseFloat(String(song.level ?? '').replace(',', '.'))
-  return Number.isFinite(n) ? n : 5
+  return parseLevel(song.level)
 }
 
 function activeFilterCount() {
@@ -173,6 +181,7 @@ function applyFilters(songs) {
     const free = Boolean(s.is_free || s.isFree)
     if (filters.price === 'free' && !free) return false
     if (filters.price === 'paid' && free) return false
+    if (filters.level !== 'all' && levelTier(s.level) !== filters.level) return false
     if (filters.category !== 'all' && (s.category || '') !== filters.category) return false
     if (mineFilters.has('purchased') && !purchasedSongIds.has(id)) return false
     if (mineFilters.has('favorite') && !favoriteSongIds.has(id)) return false
@@ -190,6 +199,12 @@ function applyFilters(songs) {
 
   if (sortMode === 'easy') list = [...list].sort((x, y) => levelNumber(x) - levelNumber(y))
   else if (sortMode === 'hard') list = [...list].sort((x, y) => levelNumber(y) - levelNumber(x))
+  else if (sortMode === 'newest')
+    list = [...list].sort((x, y) => new Date(y.created_at || 0) - new Date(x.created_at || 0))
+  else if (sortMode === 'hot')
+    list = [...list].sort(
+      (x, y) => (buysBySong.get(String(y.id)) || 0) - (buysBySong.get(String(x.id)) || 0)
+    )
   else if (sortMode === 'az')
     list = [...list].sort((x, y) => (x.title || '').localeCompare(y.title || '', 'vi'))
   return list
@@ -204,15 +219,8 @@ function updateGrid() {
 
   const resultCount = document.getElementById('result-count')
   if (resultCount) resultCount.textContent = `${filtered.length} bài`
-  const badge = document.getElementById('filter-count')
-  if (badge) {
-    badge.textContent = String(count)
-    badge.classList.toggle('hidden', count === 0)
-  }
   const reset = document.getElementById('filter-reset')
   if (reset) reset.disabled = count === 0 && !searchQuery
-  const apply = document.getElementById('filter-apply')
-  if (apply) apply.textContent = `Xem ${filtered.length} bài`
 
   if (filtered.length === 0) {
     grid.innerHTML = `<div class="col-span-full text-center py-16 px-6 rounded-2xl border border-dashed border-glass-border">
@@ -232,6 +240,9 @@ function updateGrid() {
         isPurchased: purchasedSongIds.has(String(song.id)),
         showFavoriteButton: true,
         showSwipeOverlay: true,
+        quickView: true,
+        isNew: isNewSong(song.created_at),
+        isHot: hotIds.has(String(song.id)),
       })
     )
     .join('')
@@ -243,14 +254,11 @@ function updateGrid() {
 }
 
 function syncChips() {
-  document.querySelectorAll('#filter-panel .filter-chips').forEach((group) => {
-    const key = group.dataset.group
-    group.querySelectorAll('.filter-chip').forEach((chip) => {
-      chip.setAttribute('aria-pressed', String(chip.dataset.value === filters[key]))
-    })
+  document.querySelectorAll('.filter-bar .filter-chip[data-filter]').forEach((chip) => {
+    chip.setAttribute('aria-pressed', String(chip.dataset.value === filters[chip.dataset.filter]))
   })
-  document.querySelectorAll('#filter-panel [data-group="mine"] input').forEach((box) => {
-    box.checked = mineFilters.has(box.value)
+  document.querySelectorAll('.filter-bar .filter-chip[data-mine]').forEach((chip) => {
+    chip.setAttribute('aria-pressed', String(mineFilters.has(chip.dataset.mine)))
   })
 }
 
@@ -264,34 +272,46 @@ function resetFilters() {
   updateGrid()
 }
 
-/** Thể loại lấy từ dữ liệu thật; mục "Của tôi · Đã mua/Yêu thích" chỉ hiện khi đã đăng nhập. */
+/** Thể loại lấy từ dữ liệu thật; chip "Đã mua"/"Yêu thích" chỉ hiện khi đã đăng nhập. */
 function populateFilterOptions() {
-  const group = document.querySelector('#filter-panel [data-group="category"]')
+  const group = document.getElementById('filter-categories')
   if (group) {
-    group.querySelectorAll('.filter-chip:not([data-value="all"])').forEach((c) => c.remove())
     const cats = [...new Set(allSongs.map((s) => s.category).filter(Boolean))].sort((x, y) =>
       x.localeCompare(y, 'vi')
     )
+    group.innerHTML = ''
     cats.forEach((cat) => {
       const chip = document.createElement('button')
       chip.type = 'button'
       chip.className = 'filter-chip'
+      chip.dataset.filter = 'category'
       chip.dataset.value = cat
+      chip.setAttribute('aria-pressed', 'false')
       chip.textContent = cat
       group.appendChild(chip)
     })
   }
   document
-    .querySelectorAll('#filter-panel .account-only')
+    .querySelectorAll('.filter-bar .account-only')
     .forEach((el) => el.classList.toggle('hidden', !isLoggedIn))
   syncChips()
 }
 
-function initSearchAndFilter() {
-  const panel = document.getElementById('filter-panel')
-  const backdrop = document.getElementById('filter-backdrop')
-  const openBtn = document.getElementById('filter-open')
+/** Kiểu xem lưới / danh sách, nhớ lại cho lần sau. */
+function setViewMode(mode, { persist = true } = {}) {
+  viewMode = mode === 'list' ? 'list' : 'grid'
+  document.getElementById('songs-grid')?.classList.toggle('is-list', viewMode === 'list')
+  document.getElementById('view-grid')?.setAttribute('aria-pressed', String(viewMode === 'grid'))
+  document.getElementById('view-list')?.setAttribute('aria-pressed', String(viewMode === 'list'))
+  if (!persist) return
+  try {
+    localStorage.setItem(VIEW_KEY, viewMode)
+  } catch {
+    // Trình duyệt chặn localStorage — vẫn đổi được, chỉ là không nhớ cho lần sau.
+  }
+}
 
+function initSearchAndFilter() {
   document.getElementById('search-input')?.addEventListener('input', (e) => {
     searchQuery = e.target.value
     updateGrid()
@@ -301,49 +321,40 @@ function initSearchAndFilter() {
     updateGrid()
   })
 
-  // Chip trong mọi nhóm (kể cả chip thể loại thêm sau) — bắt ở cấp panel
-  panel?.addEventListener('click', (e) => {
+  // Chip lọc — bắt ở cấp thanh lọc để chip thể loại thêm sau vẫn chạy.
+  document.querySelector('.filter-bar')?.addEventListener('click', (e) => {
     const chip = e.target.closest('.filter-chip')
     if (!chip) return
-    const key = chip.closest('.filter-chips')?.dataset.group
-    if (!key) return
-    filters[key] = chip.dataset.value
-    syncChips()
-    updateGrid()
-  })
-  panel?.addEventListener('change', (e) => {
-    const box = e.target.closest('[data-group="mine"] input')
-    if (!box) return
-    if (box.checked) {
-      mineFilters.add(box.value)
-      // "Đã học" và "Chưa học" loại trừ nhau
-      if (box.value === 'learned') mineFilters.delete('unlearned')
-      if (box.value === 'unlearned') mineFilters.delete('learned')
-    } else {
-      mineFilters.delete(box.value)
+
+    if (chip.dataset.filter) {
+      const key = chip.dataset.filter
+      // Bấm lại chip đang bật = bỏ lọc nhóm đó.
+      filters[key] = filters[key] === chip.dataset.value ? 'all' : chip.dataset.value
+    } else if (chip.dataset.mine) {
+      const key = chip.dataset.mine
+      if (mineFilters.has(key)) {
+        mineFilters.delete(key)
+      } else {
+        mineFilters.add(key)
+        // "Đã học" và "Chưa học" loại trừ nhau
+        if (key === 'learned') mineFilters.delete('unlearned')
+        if (key === 'unlearned') mineFilters.delete('learned')
+      }
     }
     syncChips()
     updateGrid()
   })
   document.getElementById('filter-reset')?.addEventListener('click', resetFilters)
 
-  // Điện thoại: bảng lọc trượt lên
-  const setSheet = (open) => {
-    panel?.classList.toggle('is-open', open)
-    backdrop?.classList.toggle('hidden', !open)
-    openBtn?.setAttribute('aria-expanded', String(open))
-    document.body.classList.toggle('overflow-hidden', open)
+  document.getElementById('view-grid')?.addEventListener('click', () => setViewMode('grid'))
+  document.getElementById('view-list')?.addEventListener('click', () => setViewMode('list'))
+  let saved = 'grid'
+  try {
+    saved = localStorage.getItem(VIEW_KEY) || 'grid'
+  } catch {
+    // Không đọc được lựa chọn cũ — dùng dạng lưới mặc định.
   }
-  openBtn?.addEventListener('click', () => setSheet(true))
-  backdrop?.addEventListener('click', () => setSheet(false))
-  document.getElementById('filter-close')?.addEventListener('click', () => setSheet(false))
-  document.getElementById('filter-apply')?.addEventListener('click', () => {
-    setSheet(false)
-    document.getElementById('songs-grid')?.scrollIntoView({ behavior: 'smooth', block: 'start' })
-  })
-  document.addEventListener('keydown', (e) => {
-    if (e.key === 'Escape' && panel?.classList.contains('is-open')) setSheet(false)
-  })
+  setViewMode(saved, { persist: false })
 }
 
 // ==========================================================================
@@ -428,8 +439,15 @@ function initSwipeToFavorite() {
 // LOAD DATA
 // ==========================================================================
 async function loadData() {
-  const [songs] = await Promise.all([fetchAllSongs(), loadFavoriteIds(), loadPurchasedIds()])
+  const [songs, popularity] = await Promise.all([
+    fetchAllSongs(),
+    fetchSongPopularity(),
+    loadFavoriteIds(),
+    loadPurchasedIds(),
+  ])
   allSongs = songs
+  buysBySong = new Map(popularity.map((p) => [String(p.song_id), Number(p.buys)]))
+  hotIds = hotSongIds(popularity)
   populateFilterOptions()
   applyUrlFilters()
   updateGrid()
@@ -1044,6 +1062,15 @@ const hssvFlow = initHssvFlow({
 
 document.addEventListener('DOMContentLoaded', () => {
   initSearchAndFilter()
+  initQuickView({
+    getSong: (id) => allSongs.find((t) => String(t.id) === String(id)),
+    isPurchased: (id) => purchasedSongIds.has(id),
+    badgesFor: (id) => ({
+      isNew: isNewSong(allSongs.find((t) => String(t.id) === id)?.created_at),
+      isHot: hotIds.has(id),
+    }),
+    toggleModal,
+  })
   initModalInteractions()
   initSwipeToFavorite()
   loadData()

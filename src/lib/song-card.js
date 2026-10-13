@@ -14,7 +14,7 @@
  */
 import { normalizeVideoPath, normalizeAudioPath } from './songs-service.js'
 import { iconHeadphones, iconGuitar, iconHeart, iconGraduationCap } from '../icons.js'
-import { extractDiscountPrice } from './song-format.js'
+import { extractDiscountPrice, levelDots, levelTier, TIER_LABEL, parseLevel } from './song-format.js'
 
 /**
  * Giá trên thẻ trả phí tách làm 2 chỗ thay vì nhồi 2 pill xếp dọc ở góc ảnh (góc
@@ -108,6 +108,30 @@ function renderPinnedBadge() {
   return `<span class="inline-flex items-center gap-1 px-1.5 sm:px-2 py-0.5 rounded-full text-[11px] sm:text-xs font-extrabold bg-amber-400 text-black uppercase tracking-wide" title="Nổi bật"><svg class="w-3 h-3" aria-hidden="true" data-ph="star" viewBox="0 0 256 256" fill="currentColor"><path d="M234.29,114.85l-45,38.83L203,211.75a16.4,16.4,0,0,1-24.5,17.82L128,198.49,77.47,229.57A16.4,16.4,0,0,1,53,211.75l13.76-58.07-45-38.83A16.46,16.46,0,0,1,31.08,86l59-4.76,22.76-55.08a16.36,16.36,0,0,1,30.27,0l22.75,55.08,59,4.76a16.46,16.46,0,0,1,9.37,28.86Z"/></svg><span class="sr-only sm:not-sr-only">Nổi bật</span></span>`
 }
 
+/** Nhãn nhỏ "Mới" / "Bán chạy" nằm trên tên bài. */
+export function renderStatusChips({ isNew = false, isHot = false } = {}) {
+  const chips = []
+  if (isHot) {
+    chips.push(
+      '<span class="song-chip song-chip-hot" title="Nhiều bạn đã mở khoá bài này"><svg class="w-3 h-3" aria-hidden="true" data-ph="fire" viewBox="0 0 256 256" fill="currentColor"><path d="M173.79,51.48a221.25,221.25,0,0,0-41.67-34.34,8,8,0,0,0-8.24,0A221.25,221.25,0,0,0,82.21,51.48C54.59,80.48,40,112.47,40,144a88,88,0,0,0,176,0C216,112.47,201.41,80.48,173.79,51.48ZM96,184c0-27.67,22.53-44.08,32-49.87,9.47,5.79,32,22.2,32,49.87a32,32,0,0,1-64,0Z"/></svg>Bán chạy</span>'
+    )
+  }
+  if (isNew) chips.push('<span class="song-chip song-chip-new">Mới</span>')
+  return chips.length ? `<div class="flex items-center gap-1 flex-wrap">${chips.join('')}</div>` : ''
+}
+
+/** 5 chấm độ khó + nhãn Dễ/Vừa/Khó + điểm /10 — thay cho thanh tiến độ cũ. */
+export function renderLevelDots(levelValue, rawLabel = '') {
+  const filled = levelDots(levelValue)
+  const tier = levelTier(levelValue)
+  const dots = Array.from(
+    { length: 5 },
+    (_, i) => `<span class="level-dot${i < filled ? ' is-on' : ''}"></span>`
+  ).join('')
+  const score = rawLabel || `${parseLevel(levelValue)}/10`
+  return `<span class="level-dots level-${tier}" title="Độ khó ${score}"><span class="flex items-center gap-[3px]" aria-hidden="true">${dots}</span><span class="level-dots-text"><strong>${TIER_LABEL[tier]}</strong> <span class="font-mono tabular-nums">${score}</span></span></span>`
+}
+
 /** Lớp phủ hiện ra giữa chừng khi vuốt thẻ sang phải để yêu thích. */
 function renderSwipeOverlay() {
   return `
@@ -192,6 +216,9 @@ function renderPaidArtworkCenter(tab, { isPurchased, video, audio }) {
  * @param {boolean} [options.isPurchased] Người dùng đã mua bài này chưa
  * @param {boolean} [options.showFavoriteButton] Có hiện nút tim không (trang chủ thì không)
  * @param {boolean} [options.showSwipeOverlay]   Có lớp phủ vuốt-để-yêu-thích không
+ * @param {boolean} [options.isNew]       Gắn nhãn "Mới"
+ * @param {boolean} [options.isHot]       Gắn nhãn "Bán chạy"
+ * @param {boolean} [options.quickView]   Bấm thẻ thì mở cửa sổ xem nhanh thay vì đi thẳng tới thanh toán
  */
 export function renderSongCard(tab, options = {}) {
   const {
@@ -201,10 +228,12 @@ export function renderSongCard(tab, options = {}) {
     isPurchased = false,
     showFavoriteButton = false,
     showSwipeOverlay = false,
+    isNew = false,
+    isHot = false,
+    quickView = false,
   } = options
 
   const levelNum = tab.level_num ?? tab.levelNum ?? 5
-  const percent = Math.min(100, Math.max(10, (levelNum / 10) * 100))
   const isFree = tab.is_free ?? tab.isFree ?? false
 
   const pinnedClass = isPinned ? 'song-card-pinned' : ''
@@ -216,25 +245,21 @@ export function renderSongCard(tab, options = {}) {
   // aspect-ratio kèm chiều cao tối thiểu sẽ sinh ra chiều rộng tối thiểu tự
   // động làm khung ảnh phình rộng hơn thẻ rồi bị cắt mất mép phải.
 
-  const levelRow = (accentClass, barClass, rightSlot = '') => `
-    <div class="space-y-0.5 sm:space-y-1 pt-0.5">
-      <div class="flex flex-wrap items-center justify-between gap-x-1 gap-y-1 text-[11px] sm:text-xs font-medium text-text-muted">
-        <span class="whitespace-nowrap">Độ khó: <strong class="${accentClass} font-mono tabular-nums">${tab.level || levelNum + '/10'}</strong></span>
-        ${rightSlot}
-      </div>
-      <div class="w-full bg-text-primary/10 rounded-full h-1 sm:h-1.5 overflow-hidden">
-        <div class="${barClass} h-1 sm:h-1.5 rounded-full transition-all duration-500" style="width: ${percent}%"></div>
-      </div>
+  const levelRow = (rightSlot = '') => `
+    <div class="flex flex-wrap items-center justify-between gap-x-2 gap-y-1 pt-0.5 text-[11px] sm:text-xs font-medium text-text-muted">
+      ${renderLevelDots(levelNum, tab.level)}
+      ${rightSlot}
     </div>
   `
+  const statusChips = renderStatusChips({ isNew, isHot })
 
   // ------------------------------------------------------------------ FREE
   if (isFree) {
     return `
-      <div onclick="window.openFreeTabModal('${tab.id}')" class="song-card glass-card card-interactive p-2.5 sm:p-4 rounded-2xl border border-glass-border flex flex-col justify-between space-y-2.5 sm:space-y-3.5 group cursor-pointer ${pinnedClass} ${extraClass}" data-id="${tab.id}">
+      <div onclick="${quickView ? `window.openQuickView('${tab.id}')` : `window.openFreeTabModal('${tab.id}')`}" class="song-card glass-card card-interactive p-2.5 sm:p-4 rounded-2xl border border-glass-border flex flex-col justify-between space-y-2.5 sm:space-y-3.5 group cursor-pointer ${pinnedClass} ${extraClass}" data-id="${tab.id}">
         ${swipeOverlay}
-        <div class="space-y-2 sm:space-y-3">
-          <div class="${SONG_THUMB_CLASS} bg-gradient-to-br from-[#1E3A2F] via-[#2A4D3E] to-[#172A22]">
+        <div class="song-card-body space-y-2 sm:space-y-3">
+          <div class="${SONG_THUMB_CLASS} song-card-thumb bg-gradient-to-br from-[#1E3A2F] via-[#2A4D3E] to-[#172A22]">
             <div class="flex justify-between items-start text-xs uppercase font-bold tracking-wider">
               <div class="flex items-center gap-1 flex-wrap w-full">
                 ${pinnedBadge}
@@ -251,15 +276,17 @@ export function renderSongCard(tab, options = {}) {
             ${renderThumbMetaRow(tab)}
           </div>
 
-          <div class="space-y-1">
+          <div class="song-card-info space-y-1">
+            ${statusChips}
             <h3 class="text-sm sm:text-base font-bold text-text-primary group-hover:text-emerald-600 dark:group-hover:text-emerald-400 transition-colors leading-snug line-clamp-2">
               ${tab.title}
             </h3>
-            ${levelRow('text-emerald-700 dark:text-emerald-400', 'bg-emerald-600 dark:bg-emerald-400')}
+            ${tab.singer ? `<p class="song-card-singer text-[11px] sm:text-xs text-text-muted truncate">${tab.singer}</p>` : ''}
+            ${levelRow()}
           </div>
         </div>
 
-        <div class="pt-1 sm:pt-2">
+        <div class="song-card-cta pt-1 sm:pt-2">
           <div class="w-full py-1.5 sm:py-2.5 px-1.5 rounded-full border border-emerald-700/40 bg-emerald-700/10 group-hover:bg-emerald-700 group-hover:border-emerald-700 text-emerald-800 dark:text-emerald-300 dark:border-emerald-400/40 group-hover:text-white dark:group-hover:text-white font-bold text-[11px] sm:text-xs transition-colors flex items-center justify-center gap-1 active:scale-95 text-center cursor-pointer">
             <span class="truncate">Xem Video Tab</span>
           </div>
@@ -288,10 +315,10 @@ export function renderSongCard(tab, options = {}) {
     : renderPriceBadge(priceFormatted)
 
   return `
-    <div onclick="${isPurchased ? 'window.navigateToPurchasesTab()' : `window.openCheckoutModal('${tab.id}')`}" class="song-card glass-card card-interactive p-2.5 sm:p-4 rounded-2xl border ${isPurchased ? 'border-amber-500/40 hover:border-amber-400' : 'border-glass-border'} flex flex-col justify-between space-y-2.5 sm:space-y-3.5 group cursor-pointer card-paid ${pinnedClass} ${extraClass}" data-id="${tab.id}">
+    <div onclick="${isPurchased ? 'window.navigateToPurchasesTab()' : quickView ? `window.openQuickView('${tab.id}')` : `window.openCheckoutModal('${tab.id}')`}" class="song-card glass-card card-interactive p-2.5 sm:p-4 rounded-2xl border ${isPurchased ? 'song-card-owned border-amber-500/70 hover:border-amber-400' : 'border-glass-border'} flex flex-col justify-between space-y-2.5 sm:space-y-3.5 group cursor-pointer card-paid ${pinnedClass} ${extraClass}" data-id="${tab.id}">
       ${swipeOverlay}
-      <div class="space-y-2 sm:space-y-3">
-        <div class="${SONG_THUMB_CLASS} bg-gradient-to-br ${thumbnailBg}">
+      <div class="song-card-body space-y-2 sm:space-y-3">
+        <div class="${SONG_THUMB_CLASS} song-card-thumb bg-gradient-to-br ${thumbnailBg}">
           <div class="flex justify-between items-start text-xs uppercase font-bold tracking-wider">
             <div class="flex items-center gap-1 flex-wrap w-full">
               ${pinnedBadge}
@@ -305,15 +332,17 @@ export function renderSongCard(tab, options = {}) {
           ${renderThumbMetaRow(tab)}
         </div>
 
-        <div class="space-y-1">
+        <div class="song-card-info space-y-1">
+          ${statusChips}
           <h3 class="text-sm sm:text-base font-bold text-text-primary group-hover:text-accent-primary transition-colors leading-snug line-clamp-2">
             ${tab.title}
           </h3>
-          ${levelRow('text-accent-primary', 'bg-warm-gradient', isPurchased ? '' : renderHssvNote(discountNote))}
+          ${tab.singer ? `<p class="song-card-singer text-[11px] sm:text-xs text-text-muted truncate">${tab.singer}</p>` : ''}
+          ${levelRow(isPurchased ? '' : renderHssvNote(discountNote))}
         </div>
       </div>
 
-      <div class="pt-1 sm:pt-2">
+      <div class="song-card-cta pt-1 sm:pt-2">
         ${
           isPurchased
             ? `<div class="w-full py-1.5 sm:py-2.5 px-1.5 rounded-full bg-amber-500/15 border border-amber-500/30 hover:bg-amber-500/25 text-amber-800 dark:text-amber-300 font-extrabold text-[11px] sm:text-xs transition-all flex items-center justify-center gap-1 active:scale-95 text-center cursor-pointer">

@@ -57,3 +57,57 @@ export function formatCompactDiscount(note) {
   }
   return str
 }
+
+// ==========================================================================
+// ĐỘ KHÓ, NHÃN "MỚI" / "BÁN CHẠY"
+// ==========================================================================
+
+/** "6.5/10" hoặc 6.5 → 6.5; thiếu hoặc không đọc được thì coi như giữa thang. */
+export function parseLevel(value) {
+  const n = parseFloat(String(value ?? '').replace(',', '.'))
+  return Number.isFinite(n) ? n : 5
+}
+
+/** Dễ ≤ 5, Vừa 5,5–7,5, Khó ≥ 8 — chia theo độ phân bố độ khó thật của kho. */
+export function levelTier(value) {
+  const n = parseLevel(value)
+  if (n <= 5) return 'easy'
+  if (n < 8) return 'mid'
+  return 'hard'
+}
+
+export const TIER_LABEL = { easy: 'Dễ', mid: 'Vừa', hard: 'Khó' }
+
+/** Quy thang 10 về 5 chấm: 4 → 2 chấm, 6,5 → 4 chấm, 9 → 5 chấm. Luôn ít nhất 1. */
+export function levelDots(value) {
+  return Math.min(5, Math.max(1, Math.ceil(parseLevel(value) / 2)))
+}
+
+export const NEW_SONG_DAYS = 45
+
+/** Bài thêm trong vòng NEW_SONG_DAYS ngày gần đây. */
+export function isNewSong(createdAt, now = new Date()) {
+  const t = new Date(createdAt).getTime()
+  if (!Number.isFinite(t)) return false
+  const age = now.getTime() - t
+  return age >= 0 && age <= NEW_SONG_DAYS * 86400000
+}
+
+export const HOT_MIN_BUYS = 2
+export const HOT_MAX = 3
+
+/**
+ * Các bài "Bán chạy": có ít nhất HOT_MIN_BUYS lượt mở khoá, tối đa HOT_MAX bài đứng đầu.
+ * Ít lượt hơn thì không gắn nhãn — một bài mới bán được một lần chưa phải "bán chạy".
+ * @param {Array<{song_id: string, buys: number}>} popularity
+ * @returns {Set<string>}
+ */
+export function hotSongIds(popularity) {
+  return new Set(
+    (popularity || [])
+      .filter((p) => Number(p.buys) >= HOT_MIN_BUYS)
+      .sort((a, b) => b.buys - a.buys)
+      .slice(0, HOT_MAX)
+      .map((p) => String(p.song_id))
+  )
+}

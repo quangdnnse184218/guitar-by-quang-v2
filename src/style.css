@@ -2656,84 +2656,96 @@ body.modal-open {
 }
 
 /* ==========================================================================
-   BỘ LỌC KHO TAB — cột trái đứng yên (lg+) / bảng trượt lên (dưới lg)
+   KHO TAB — thanh chip lọc, kiểu xem, độ khó 5 chấm, nhãn, xem nhanh
    ========================================================================== */
-.filter-panel {
-  background: rgb(var(--glass-bg));
-  border: 1px solid rgb(var(--glass-border-rgb) / var(--glass-border-alpha));
-  border-radius: 1.25rem;
-  padding: 1rem;
+
+/* Thanh lọc: một hàng chip cuộn ngang, đứng yên dưới header khi cuộn trang. */
+.filter-bar {
+  position: sticky;
+  top: 4.25rem;
+  z-index: 30;
+  margin-inline: -1.25rem;
+  padding: 0.5rem 1.25rem;
+  background: rgb(var(--bg-base) / 0.88);
+  -webkit-backdrop-filter: blur(14px);
+  backdrop-filter: blur(14px);
+  border-bottom: 1px solid rgb(var(--glass-border-rgb) / var(--glass-border-alpha));
 }
 
-
-@media (max-width: 1023.98px) {
-  .filter-panel {
-    position: fixed;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    z-index: 60;
-    max-height: 85vh;
-    overflow-y: auto;
-    border-radius: 1.5rem 1.5rem 0 0;
-    border-bottom: 0;
-    padding-bottom: calc(1.25rem + env(safe-area-inset-bottom));
-    background: rgb(var(--frost-tint) / var(--frost-alpha-strong));
-    -webkit-backdrop-filter: var(--frost-fx);
-    backdrop-filter: var(--frost-fx);
-    border-color: var(--frost-edge);
-    box-shadow:
-      var(--frost-shine),
-      0 -18px 40px -12px rgb(0 0 0 / 0.35);
-    transform: translateY(100%);
-    visibility: hidden;
-    transition:
-      transform 0.3s cubic-bezier(0.2, 0.8, 0.2, 1),
-      visibility 0.3s;
-  }
-  .filter-panel.is-open {
-    transform: none;
-    visibility: visible;
+@media (min-width: 640px) {
+  .filter-bar {
+    margin-inline: -2rem;
+    padding-inline: 2rem;
   }
 }
 
-.filter-group {
-  border: 0;
-  margin: 0;
-  padding: 0;
+@media (min-width: 768px) {
+  .filter-bar {
+    margin-inline: -3rem;
+    padding-inline: 3rem;
+  }
 }
 
-.filter-group legend {
-  margin-bottom: 0.4rem;
-  font-size: 0.75rem;
-  font-weight: 700;
-  color: rgb(var(--text-muted));
-}
-
-.filter-chips {
+.filter-bar-row {
   display: flex;
-  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.5rem;
+  overflow-x: auto;
+  scrollbar-width: none;
+  -webkit-overflow-scrolling: touch;
+  /* Mép phải mờ dần báo hiệu còn chip phía sau. */
+  -webkit-mask-image: linear-gradient(90deg, #000 calc(100% - 28px), transparent);
+  mask-image: linear-gradient(90deg, #000 calc(100% - 28px), transparent);
+  padding-right: 28px;
+}
+
+.filter-bar-row::-webkit-scrollbar {
+  display: none;
+}
+
+.filter-set {
+  display: flex;
+  align-items: center;
   gap: 0.375rem;
+  flex-shrink: 0;
+}
+
+.filter-sep {
+  flex-shrink: 0;
+  width: 1px;
+  height: 18px;
+  background: rgb(var(--glass-border-rgb) / 0.3);
 }
 
 .filter-chip {
-  padding: 0.4rem 0.8rem;
+  flex-shrink: 0;
+  white-space: nowrap;
+  padding: 0.45rem 0.85rem;
   border-radius: 9999px;
   border: 1px solid rgb(var(--glass-border-rgb) / var(--glass-border-alpha));
-  background: rgb(var(--bg-base) / 0.6);
+  background: rgb(var(--glass-bg));
   font-size: 0.75rem;
-  font-weight: 600;
+  font-weight: 700;
   color: rgb(var(--text-muted));
   cursor: pointer;
   transition:
     background-color 0.15s ease,
     color 0.15s ease,
-    border-color 0.15s ease;
+    border-color 0.15s ease,
+    transform 0.1s ease;
+}
+
+.filter-chip.hidden {
+  display: none;
 }
 
 .filter-chip:hover {
   color: rgb(var(--text-primary));
   border-color: rgb(var(--accent-primary) / 0.5);
+}
+
+.filter-chip:active {
+  transform: scale(0.96);
 }
 
 .filter-chip[aria-pressed='true'] {
@@ -2742,31 +2754,257 @@ body.modal-open {
   color: #fff;
 }
 
-.filter-check {
-  display: flex;
-  align-items: center;
-  gap: 0.6rem;
-  padding: 0.3rem 0.25rem;
-  border-radius: 0.6rem;
-  font-size: 0.8125rem;
-  font-weight: 600;
-  color: rgb(var(--text-primary));
-  cursor: pointer;
+/* Nút chuyển lưới / danh sách */
+.view-toggle {
+  display: inline-flex;
+  padding: 3px;
+  border-radius: 9999px;
+  background: rgb(var(--glass-bg));
+  border: 1px solid rgb(var(--glass-border-rgb) / var(--glass-border-alpha));
 }
 
-.filter-check.hidden {
+.view-toggle button {
+  width: 34px;
+  height: 34px;
+  display: grid;
+  place-items: center;
+  border-radius: 9999px;
+  color: rgb(var(--text-muted));
+  cursor: pointer;
+  transition:
+    background-color 0.15s ease,
+    color 0.15s ease;
+}
+
+.view-toggle button[aria-pressed='true'] {
+  background: rgb(var(--accent-solid));
+  color: #fff;
+}
+
+/* Độ khó: 5 chấm + nhãn */
+.level-dots {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  white-space: nowrap;
+}
+
+.level-dot {
+  display: block;
+  width: 7px;
+  height: 7px;
+  border-radius: 9999px;
+  background: rgb(var(--text-primary) / 0.16);
+}
+
+.level-dot.is-on {
+  background: rgb(var(--accent-primary));
+}
+
+.level-easy .level-dot.is-on {
+  background: #059669;
+}
+
+.level-hard .level-dot.is-on {
+  background: #be123c;
+}
+
+.level-dots-text {
+  font-size: 11px;
+  color: rgb(var(--text-muted));
+}
+
+.level-dots-text strong {
+  color: rgb(var(--text-primary));
+  font-weight: 800;
+}
+
+@media (min-width: 640px) {
+  .level-dots-text {
+    font-size: 0.75rem;
+  }
+}
+
+/* Nhãn Mới / Bán chạy */
+.song-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
+  padding: 1px 7px;
+  border-radius: 9999px;
+  font-size: 11px;
+  font-weight: 800;
+  line-height: 1.5;
+}
+
+.song-chip-hot {
+  background: rgb(190 18 60 / 0.12);
+  color: #be123c;
+}
+
+.song-chip-new {
+  background: rgb(5 150 105 / 0.14);
+  color: #047857;
+}
+
+[data-theme='dark'] .song-chip-hot {
+  background: rgb(251 113 133 / 0.16);
+  color: #fda4af;
+}
+
+[data-theme='dark'] .song-chip-new {
+  background: rgb(52 211 153 / 0.16);
+  color: #6ee7b7;
+}
+
+/* Bài đã mua: viền đồng + quầng sáng nhẹ để liếc lưới là thấy */
+.song-card-owned {
+  box-shadow:
+    0 0 0 1px rgb(245 158 11 / 0.35),
+    0 10px 28px -14px rgb(245 158 11 / 0.55);
+}
+
+/* Tên ca sĩ chỉ hiện ở dạng danh sách; lưới giữ thẻ gọn như cũ */
+.song-card-singer {
   display: none;
 }
 
-.filter-check input {
-  width: 1rem;
-  height: 1rem;
-  accent-color: rgb(var(--accent-primary));
+/* Dạng danh sách: thẻ nằm ngang — ảnh bên trái, thông tin ở giữa, nút bên phải */
+.songs-grid.is-list {
+  grid-template-columns: minmax(0, 1fr);
+  gap: 0.75rem;
+}
+
+.songs-grid.is-list .song-card {
+  display: grid;
+  grid-template-columns: 148px minmax(0, 1fr);
+  grid-template-areas: 'thumb info' 'thumb cta';
+  align-items: center;
+  gap: 0.25rem 1rem;
+  padding: 0.65rem;
+}
+
+.songs-grid.is-list .song-card-body {
+  display: contents;
+}
+
+.songs-grid.is-list .song-card-thumb {
+  grid-area: thumb;
+  height: 112px;
+  aspect-ratio: auto;
+}
+
+.songs-grid.is-list .song-card-info {
+  grid-area: info;
+  align-self: end;
+}
+
+.songs-grid.is-list .song-card-singer {
+  display: block;
+}
+
+.songs-grid.is-list .song-card-cta {
+  grid-area: cta;
+  align-self: start;
+  padding-top: 0.25rem;
+}
+
+@media (min-width: 640px) {
+  .songs-grid.is-list .song-card {
+    grid-template-columns: 200px minmax(0, 1fr) 190px;
+    grid-template-areas: 'thumb info cta';
+    padding: 0.75rem;
+  }
+  .songs-grid.is-list .song-card-thumb {
+    height: 124px;
+  }
+  .songs-grid.is-list .song-card-info,
+  .songs-grid.is-list .song-card-cta {
+    align-self: center;
+  }
+  .songs-grid.is-list .song-card-cta {
+    padding-top: 0;
+  }
+}
+
+/* Cửa sổ xem nhanh */
+.qv-media {
+  border-radius: 1.5rem 1.5rem 0 0;
+  overflow: hidden;
+  background: #0d0a08;
+}
+
+.qv-video {
+  display: block;
+  width: 100%;
+  aspect-ratio: 16 / 9;
+  object-fit: cover;
+  background: #000;
+}
+
+.qv-art {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  aspect-ratio: 16 / 9;
+  padding: 1.25rem;
+  color: #fff;
+}
+
+.qv-art-icon {
+  width: 56px;
+  height: 56px;
+  display: grid;
+  place-items: center;
+  border-radius: 9999px;
+  background: rgb(0 0 0 / 0.28);
+  border: 1px solid rgb(255 255 255 / 0.25);
+}
+
+.qv-cta {
+  width: 100%;
+  padding: 0.85rem 1rem;
+  border-radius: 9999px;
+  font-size: 0.875rem;
+  font-weight: 800;
   cursor: pointer;
+  transition:
+    filter 0.15s ease,
+    transform 0.1s ease;
+}
+
+.qv-cta:active {
+  transform: scale(0.98);
+}
+
+.qv-cta-buy {
+  background: linear-gradient(135deg, rgb(var(--accent-solid)) 0%, rgb(var(--accent-solid-deep)) 100%);
+  color: #fff;
+}
+
+.qv-cta-buy:hover {
+  filter: brightness(1.08);
+}
+
+.qv-cta-free {
+  background: #047857;
+  color: #fff;
+}
+
+.qv-cta-owned {
+  background: rgb(245 158 11 / 0.16);
+  border: 1px solid rgb(245 158 11 / 0.4);
+  color: #92400e;
+}
+
+[data-theme='dark'] .qv-cta-owned {
+  color: #fcd34d;
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .filter-panel {
+  .filter-chip,
+  .qv-cta {
     transition: none;
   }
 }
@@ -3260,4 +3498,259 @@ body.admin-palette-open {
   .admin-skeleton span {
     animation: none;
   }
+}
+
+/* ==========================================================================
+   TRANG CHỦ — video hero xem trước, dải 3 bước mua, nút trượt hàng bài nổi bật
+   ========================================================================== */
+
+/* Video hero: không còn thanh điều khiển xám của trình duyệt. Mặc định là bản xem trước
+   câm chạy lặp; bấm nút lớn mới chuyển sang xem có tiếng, lúc đó mới hiện điều khiển. */
+.hero-play {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  align-content: center;
+  gap: 0.6rem;
+  cursor: pointer;
+  background: linear-gradient(180deg, rgb(0 0 0 / 0.05) 40%, rgb(0 0 0 / 0.5));
+  color: #fff;
+  transition: opacity 0.25s ease;
+}
+
+.hero-play-label {
+  padding: 0.3rem 0.75rem;
+  border-radius: 9999px;
+  background: rgb(0 0 0 / 0.55);
+  -webkit-backdrop-filter: blur(6px);
+  backdrop-filter: blur(6px);
+  font-size: 0.75rem;
+  font-weight: 700;
+}
+
+.hero-video-wrap[data-mode='full'] .hero-play {
+  opacity: 0;
+  pointer-events: none;
+}
+
+.hero-video-wrap[data-mode='preview'] video {
+  pointer-events: none;
+}
+
+/* Dải 3 bước mua */
+.buy-steps {
+  display: grid;
+  gap: 0.75rem;
+  grid-template-columns: minmax(0, 1fr);
+  counter-reset: step;
+}
+
+@media (min-width: 768px) {
+  .buy-steps {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 1rem;
+  }
+}
+
+.buy-step {
+  position: relative;
+  display: flex;
+  align-items: flex-start;
+  gap: 0.9rem;
+  padding: 1rem 1.1rem;
+  border-radius: var(--r-card);
+  background: rgb(var(--glass-bg));
+  border: 1px solid rgb(var(--glass-border-rgb) / var(--glass-border-alpha));
+}
+
+.buy-step-num {
+  flex-shrink: 0;
+  width: 2.25rem;
+  height: 2.25rem;
+  display: grid;
+  place-items: center;
+  border-radius: 9999px;
+  background: rgb(var(--accent-primary) / 0.16);
+  color: rgb(var(--accent-primary));
+  font-weight: 800;
+  font-size: 0.95rem;
+}
+
+/* Mũi tên nối giữa các bước (chỉ máy tính, nằm trên khe giữa hai thẻ) */
+@media (min-width: 768px) {
+  .buy-step:not(:last-child)::after {
+    content: '';
+    position: absolute;
+    top: 50%;
+    right: -0.8rem;
+    width: 0.6rem;
+    height: 0.6rem;
+    border-top: 2px solid rgb(var(--accent-primary) / 0.6);
+    border-right: 2px solid rgb(var(--accent-primary) / 0.6);
+    transform: translateY(-50%) rotate(45deg);
+  }
+}
+
+/* Nút trượt + chấm báo của hàng bài nổi bật (chỉ dưới md — từ md là lưới 4 cột) */
+.featured-wrap {
+  position: relative;
+}
+
+.featured-wrap.has-more::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  right: -1.5rem;
+  width: 3rem;
+  pointer-events: none;
+  background: linear-gradient(90deg, transparent, rgb(var(--bg-base) / 0.85));
+}
+
+@media (min-width: 768px) {
+  .featured-wrap.has-more::after {
+    display: none;
+  }
+}
+
+.featured-arrow {
+  position: absolute;
+  top: 38%;
+  z-index: 5;
+  width: 2.5rem;
+  height: 2.5rem;
+  display: none;
+  place-items: center;
+  border-radius: 9999px;
+  background: rgb(var(--bg-base) / 0.92);
+  border: 1px solid rgb(var(--glass-border-rgb) / 0.3);
+  color: rgb(var(--text-primary));
+  box-shadow: 0 6px 16px -6px rgb(0 0 0 / 0.5);
+  cursor: pointer;
+}
+
+.featured-arrow.is-prev {
+  left: -0.5rem;
+}
+
+.featured-arrow.is-next {
+  right: -0.5rem;
+}
+
+.featured-wrap.can-prev .featured-arrow.is-prev,
+.featured-wrap.can-next .featured-arrow.is-next {
+  display: grid;
+}
+
+@media (min-width: 768px) {
+  .featured-wrap .featured-arrow,
+  .featured-wrap.can-prev .featured-arrow.is-prev,
+  .featured-wrap.can-next .featured-arrow.is-next {
+    display: none;
+  }
+}
+
+.featured-dots {
+  display: flex;
+  justify-content: center;
+  gap: 0.4rem;
+  margin-top: 0.9rem;
+}
+
+.featured-dots button {
+  width: 0.45rem;
+  height: 0.45rem;
+  border-radius: 9999px;
+  background: rgb(var(--text-primary) / 0.22);
+  transition:
+    width 0.2s ease,
+    background-color 0.2s ease;
+  cursor: pointer;
+}
+
+.featured-dots button[aria-current='true'] {
+  width: 1.3rem;
+  background: rgb(var(--accent-primary));
+}
+
+@media (min-width: 768px) {
+  .featured-dots {
+    display: none;
+  }
+}
+
+/* Thẻ Luyện tập: nền thẻ trầm theo giao diện, chỉ một vệt màu nhẹ + đĩa icon màu —
+   thay cho hai khối cam / xanh đặc nổi hơn hẳn mọi mục khác. */
+.practice-card {
+  --pc-rgb: 217 119 24;
+  --pc-ink: #f0b45c;
+  color: rgb(var(--text-primary));
+  background:
+    linear-gradient(135deg, rgb(var(--pc-rgb) / 0.2), rgb(var(--pc-rgb) / 0.04) 62%),
+    rgb(var(--glass-bg));
+  border: 1px solid rgb(var(--pc-rgb) / 0.32);
+  border-radius: var(--r-panel);
+  box-shadow: var(--elev-card);
+  transition:
+    transform 0.25s ease,
+    box-shadow 0.25s ease,
+    border-color 0.25s ease;
+}
+
+.practice-card--ear {
+  --pc-rgb: 20 150 120;
+  --pc-ink: #5fd3b5;
+}
+
+[data-theme='light'] .practice-card {
+  --pc-ink: #8a4a08;
+}
+
+[data-theme='light'] .practice-card--ear {
+  --pc-ink: #0f6a58;
+}
+
+.practice-card:hover {
+  transform: translateY(-3px);
+  filter: none;
+  border-color: rgb(var(--pc-rgb) / 0.6);
+  box-shadow: var(--elev-raised);
+}
+
+.practice-sub {
+  color: rgb(var(--text-muted));
+}
+
+.practice-disc {
+  color: var(--pc-ink);
+  background: rgb(var(--pc-rgb) / 0.18);
+  box-shadow: inset 0 0 0 1px rgb(var(--pc-rgb) / 0.35);
+}
+
+.practice-go {
+  background: rgb(var(--pc-rgb));
+  color: #fff;
+  box-shadow: var(--elev-button);
+}
+
+/* Thẻ đồ nghề gọn hơn: ảnh nhỏ lại, bớt đệm */
+@media (min-width: 640px) {
+  .gear-row {
+    padding: 0.75rem;
+  }
+  .gear-row > :first-child {
+    width: 5.5rem;
+    height: 5.5rem;
+  }
+}
+
+/* Chấm nhịp của thẻ Máy gõ nhịp: màu cố định trắng trong HTML không thấy được trên nền thẻ sáng. */
+.practice-card--tempo .practice-dot {
+  background: rgb(var(--pc-rgb) / 0.32) !important;
+  box-shadow: none;
+}
+
+.practice-card--tempo .practice-dot:first-child {
+  background: rgb(var(--pc-rgb)) !important;
 }

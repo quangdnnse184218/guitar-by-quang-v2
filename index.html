@@ -160,13 +160,17 @@
               </div>
 
               <div id="hero-tilt-card" class="relative glass-card radius-panel p-3 sm:p-4">
-                <div class="relative overflow-hidden rounded-2xl aspect-video bg-black/70 border border-glass-border">
-                  <video id="hero-cover-video" controls playsinline webkit-playsinline preload="metadata"
+                <div id="hero-video-wrap" data-mode="preview" class="hero-video-wrap relative overflow-hidden rounded-2xl aspect-video bg-black/70 border border-glass-border">
+                  <video id="hero-cover-video" muted loop playsinline webkit-playsinline preload="metadata"
                     poster="/assets/resg1ctk-poster.jpg"
                     class="w-full h-full aspect-video rounded-2xl object-cover">
                     <source src="https://covzjzcqerldfssxasax.supabase.co/storage/v1/object/public/uploads/songs/migrated-resg1ctk.mp4#t=0.001" type="video/mp4">
                     Trình duyệt của bạn không hỗ trợ phát video trực tiếp.
                   </video>
+                  <button type="button" id="hero-video-play" class="hero-play" aria-label="Xem video có tiếng">
+                    <span class="play-soundhole w-14 h-14 sm:w-16 sm:h-16" aria-hidden="true"><svg class="w-6 h-6 sm:w-7 sm:h-7 translate-x-[1px]" aria-hidden="true" data-ph="play" viewBox="0 0 256 256" fill="currentColor"><path d="M240,128a15.74,15.74,0,0,1-7.6,13.51L88.32,229.65a16,16,0,0,1-16.2.3A15.86,15.86,0,0,1,64,216.13V39.87a15.86,15.86,0,0,1,8.12-13.82,16,16,0,0,1,16.2.3L232.4,114.49A15.74,15.74,0,0,1,240,128Z"/></svg></span>
+                    <span class="hero-play-label">Xem có tiếng</span>
+                  </button>
                 </div>
                 <div class="pt-3 px-1 flex items-center justify-between gap-3">
                   <div class="min-w-0 space-y-0.5">
@@ -186,6 +190,37 @@
 
 
     <!-- ================================================================
+           1b. MUA TAB TRONG 3 BƯỚC — quy trình tự động là điểm mạnh nhất, nên nằm ngay sau hero
+           ================================================================ -->
+    <section id="mua-tab" class="relative pb-4 sm:pb-6" aria-label="Cách mua tab">
+      <div class="relative z-10 max-w-5xl mx-auto px-6 sm:px-8 md:px-12">
+        <ol class="buy-steps">
+          <li class="buy-step">
+            <span class="buy-step-num" aria-hidden="true">1</span>
+            <span class="min-w-0">
+              <span class="block text-sm sm:text-base font-extrabold text-text-primary leading-snug">Chọn bài</span>
+              <span class="block text-[13px] sm:text-sm text-text-muted font-medium leading-snug mt-0.5">Xem demo, chọn bài vừa sức. Có cả tab miễn phí.</span>
+            </span>
+          </li>
+          <li class="buy-step">
+            <span class="buy-step-num" aria-hidden="true">2</span>
+            <span class="min-w-0">
+              <span class="block text-sm sm:text-base font-extrabold text-text-primary leading-snug">Quét mã QR</span>
+              <span class="block text-[13px] sm:text-sm text-text-muted font-medium leading-snug mt-0.5">Chuyển khoản bằng app ngân hàng, nội dung điền sẵn.</span>
+            </span>
+          </li>
+          <li class="buy-step">
+            <span class="buy-step-num" aria-hidden="true">3</span>
+            <span class="min-w-0">
+              <span class="block text-sm sm:text-base font-extrabold text-text-primary leading-snug">Nhận tab ngay</span>
+              <span class="block text-[13px] sm:text-sm text-text-muted font-medium leading-snug mt-0.5">Tab tự mở sau vài giây, không cần chờ ai duyệt.</span>
+            </span>
+          </li>
+        </ol>
+      </div>
+    </section>
+
+    <!-- ================================================================
            2. BÀI HÁT NỔI BẬT — sản phẩm chính, đặt ngay sau phần giới thiệu.
            ================================================================ -->
     <section id="kho-tab" class="section-featured relative py-10 sm:py-14 overflow-hidden">
@@ -199,6 +234,9 @@
         </div>
 
         <!-- Điện thoại: dải thẻ vuốt ngang (snap); từ md: lưới 4 cột -->
+        <div id="featured-wrap" class="featured-wrap">
+        <button type="button" class="featured-arrow is-prev" aria-label="Bài trước"><svg class="w-4 h-4 rotate-180" aria-hidden="true" data-ph="arrow-right" viewBox="0 0 256 256" fill="currentColor"><path d="M224.49,136.49l-72,72a12,12,0,0,1-17-17L187,140H40a12,12,0,0,1,0-24H187L135.51,64.48a12,12,0,0,1,17-17l72,72A12,12,0,0,1,224.49,136.49Z"/></svg></button>
+        <button type="button" class="featured-arrow is-next" aria-label="Bài sau"><svg class="w-4 h-4" aria-hidden="true" data-ph="arrow-right" viewBox="0 0 256 256" fill="currentColor"><path d="M224.49,136.49l-72,72a12,12,0,0,1-17-17L187,140H40a12,12,0,0,1,0-24H187L135.51,64.48a12,12,0,0,1,17-17l72,72A12,12,0,0,1,224.49,136.49Z"/></svg></button>
         <div id="featured-grid"
           class="flex overflow-x-auto scrollbar-none snap-x snap-mandatory -mx-6 px-6 scroll-px-6 sm:-mx-8 sm:px-8 sm:scroll-px-8 md:mx-0 md:px-0 md:grid md:grid-cols-4 md:overflow-visible gap-3 sm:gap-5 lg:gap-6 md:w-full">
           <div class="shrink-0 snap-start w-[62%] min-w-[160px] sm:w-[38%] md:w-full md:min-w-0 skeleton-pulse rounded-2xl bg-glass-bg border border-glass-border aspect-[3/4]"></div>
@@ -206,6 +244,8 @@
           <div class="shrink-0 snap-start w-[62%] min-w-[160px] sm:w-[38%] md:w-full md:min-w-0 skeleton-pulse rounded-2xl bg-glass-bg border border-glass-border aspect-[3/4]"></div>
           <div class="shrink-0 snap-start w-[62%] min-w-[160px] sm:w-[38%] md:w-full md:min-w-0 skeleton-pulse rounded-2xl bg-glass-bg border border-glass-border aspect-[3/4]"></div>
         </div>
+        <div id="featured-dots" class="featured-dots" aria-label="Vị trí trong hàng bài"></div>
+      </div>
 
         <div class="mt-8 sm:mt-10 text-center">
           <a href="/kho-tab.html"

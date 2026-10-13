@@ -811,6 +811,139 @@ function initHeroTiltEffect() {
 }
 
 // ==========================================================================
+// VIDEO HERO — bản xem trước câm chạy lặp, bấm mới xem có tiếng
+// ==========================================================================
+// Trước đây là trình phát mặc định của trình duyệt (thanh điều khiển xám) đứng im ở ảnh bìa.
+// Giờ vào trang là thấy cây đàn "sống": đoạn đầu video tự chạy câm, lặp lại. Người dùng bật
+// tiết kiệm dữ liệu / giảm chuyển động thì giữ nguyên ảnh bìa, không tự chạy gì cả.
+const HERO_PREVIEW_SECONDS = 9
+
+function initHeroVideo() {
+  const wrap = document.getElementById('hero-video-wrap')
+  const video = document.getElementById('hero-cover-video')
+  const playBtn = document.getElementById('hero-video-play')
+  if (!wrap || !video || !playBtn) return
+
+  const reduceMotion = window.matchMedia?.('(prefers-reduced-motion: reduce)').matches
+  const saveData = navigator.connection?.saveData === true
+  const canAutoplay = !reduceMotion && !saveData
+
+  const setMode = (mode) => {
+    wrap.dataset.mode = mode
+    const full = mode === 'full'
+    video.muted = !full
+    video.controls = full
+  }
+
+  const startPreview = () => {
+    if (!canAutoplay || wrap.dataset.mode === 'full') return
+    video.play().catch(() => {
+      // Trình duyệt chặn tự chạy — giữ ảnh bìa, nút phát vẫn dùng được.
+    })
+  }
+
+  setMode('preview')
+
+  // Giữ phần xem trước trong vài giây đầu, rồi quay lại từ đầu.
+  video.addEventListener('timeupdate', () => {
+    if (wrap.dataset.mode === 'preview' && video.currentTime >= HERO_PREVIEW_SECONDS) {
+      video.currentTime = 0
+    }
+  })
+
+  // Rời khỏi màn hình thì dừng (đỡ pin, đỡ data), quay lại thì chạy tiếp bản xem trước.
+  if ('IntersectionObserver' in window) {
+    new IntersectionObserver(
+      (entries) => {
+        const visible = entries.some((e) => e.isIntersecting)
+        if (visible) startPreview()
+        else if (wrap.dataset.mode === 'preview') video.pause()
+      },
+      { threshold: 0.35 }
+    ).observe(wrap)
+  } else {
+    startPreview()
+  }
+
+  // Tab trình duyệt bị ẩn thì trình duyệt không cho tự chạy; quay lại tab là chạy tiếp nếu video đang trong màn hình.
+  document.addEventListener('visibilitychange', () => {
+    if (document.visibilityState !== 'visible') return
+    const r = wrap.getBoundingClientRect()
+    if (r.bottom > 0 && r.top < window.innerHeight) startPreview()
+  })
+
+  playBtn.addEventListener('click', () => {
+    setMode('full')
+    video.currentTime = 0
+    video.play().catch(() => {})
+  })
+
+  video.addEventListener('ended', () => {
+    setMode('preview')
+    video.currentTime = 0
+    startPreview()
+  })
+}
+
+// ==========================================================================
+// HÀNG BÀI NỔI BẬT — nút trượt + chấm báo (dưới md; từ md là lưới 4 cột)
+// ==========================================================================
+function initFeaturedCarousel() {
+  const wrap = document.getElementById('featured-wrap')
+  const track = document.getElementById('featured-grid')
+  const dotsEl = document.getElementById('featured-dots')
+  if (!wrap || !track || !dotsEl) return
+
+  const cards = [...track.querySelectorAll('.song-card')]
+  if (cards.length < 2) return
+
+  dotsEl.innerHTML = cards
+    .map((_, i) => `<button type="button" aria-label="Tới bài ${i + 1}" data-i="${i}"></button>`)
+    .join('')
+
+  const update = () => {
+    const max = track.scrollWidth - track.clientWidth
+    wrap.classList.toggle('can-prev', track.scrollLeft > 4)
+    wrap.classList.toggle('can-next', track.scrollLeft < max - 4)
+    wrap.classList.toggle('has-more', max > 4 && track.scrollLeft < max - 4)
+
+    // Thẻ nào đang nằm sát mép trái thì chấm đó sáng.
+    const left = track.getBoundingClientRect().left
+    let current = 0
+    let best = Infinity
+    cards.forEach((c, i) => {
+      const d = Math.abs(c.getBoundingClientRect().left - left)
+      if (d < best) {
+        best = d
+        current = i
+      }
+    })
+    // Cuộn tới cuối thì thẻ cuối không thể sát mép trái — vẫn tính là đang ở thẻ cuối.
+    if (max > 4 && track.scrollLeft >= max - 4) current = cards.length - 1
+    dotsEl.querySelectorAll('button').forEach((b, i) => {
+      b.setAttribute('aria-current', String(i === current))
+    })
+  }
+
+  const step = (dir) => {
+    const w = cards[0].getBoundingClientRect().width + 12
+    track.scrollBy({ left: dir * w, behavior: 'smooth' })
+  }
+  wrap.querySelector('.featured-arrow.is-prev')?.addEventListener('click', () => step(-1))
+  wrap.querySelector('.featured-arrow.is-next')?.addEventListener('click', () => step(1))
+  dotsEl.addEventListener('click', (e) => {
+    const b = e.target.closest('button[data-i]')
+    if (!b) return
+    const card = cards[Number(b.dataset.i)]
+    track.scrollTo({ left: card.offsetLeft - track.offsetLeft, behavior: 'smooth' })
+  })
+
+  track.addEventListener('scroll', update, { passive: true })
+  window.addEventListener('resize', update)
+  update()
+}
+
+// ==========================================================================
 // INITIALIZATION
 // ==========================================================================
 
@@ -821,6 +954,7 @@ async function initHome() {
   // tải trang — trước đây mọi thứ hiện cùng lúc, không có nhịp xuất hiện nào
   // dù phần nội dung bên dưới đã có applyScrollReveal khi cuộn tới.
   applyHeroEntrance('.hero-reveal-item')
+  initHeroVideo()
 
   // Reveal static sections (About story/step cards, FAQ items, Contact service
   // cards) as they scroll into view — previously only song/gear cards animated.
@@ -844,6 +978,7 @@ async function initHome() {
 
       featuredContainer.innerHTML = songsHtml
       applyScrollReveal('#featured-grid .song-card')
+      initFeaturedCarousel()
     } else {
       featuredContainer.innerHTML = `
         <div class="col-span-full py-10 text-center text-text-muted glass-card p-6 rounded-3xl">

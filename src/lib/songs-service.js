@@ -357,6 +357,21 @@ export async function fetchAllSongs() {
 }
 
 /**
+ * Số lượt mở khoá của từng bài (không kèm thông tin người mua) — cho nhãn "Bán chạy".
+ * Lỗi thì trả mảng rỗng: thiếu nhãn là chuyện nhỏ, không được làm hỏng cả kho tab.
+ * @returns {Promise<Array<{song_id: string, buys: number}>>}
+ */
+export async function fetchSongPopularity() {
+  try {
+    const { data, error } = await supabase.rpc('public_song_popularity')
+    if (error || !Array.isArray(data)) return []
+    return data
+  } catch {
+    return []
+  }
+}
+
+/**
  * Fetch a single song by ID
  */
 export async function fetchSongById(id) {

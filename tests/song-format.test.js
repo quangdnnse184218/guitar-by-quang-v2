@@ -81,3 +81,48 @@ describe('extractDiscountPrice', () => {
     expect(extractDiscountPrice(null)).toBe('')
   })
 })
+
+describe('độ khó và nhãn thẻ', () => {
+  it('chia độ khó thành Dễ / Vừa / Khó', async () => {
+    const { levelTier } = await import('../src/lib/song-format.js')
+    expect(levelTier('4/10')).toBe('easy')
+    expect(levelTier('5/10')).toBe('easy')
+    expect(levelTier('5.5/10')).toBe('mid')
+    expect(levelTier('7.5/10')).toBe('mid')
+    expect(levelTier('8.5/10')).toBe('hard')
+    expect(levelTier(9)).toBe('hard')
+    expect(levelTier(undefined)).toBe('easy')
+  })
+
+  it('quy về 5 chấm, ít nhất 1 và nhiều nhất 5', async () => {
+    const { levelDots } = await import('../src/lib/song-format.js')
+    expect(levelDots('4/10')).toBe(2)
+    expect(levelDots('6.5/10')).toBe(4)
+    expect(levelDots('9/10')).toBe(5)
+    expect(levelDots('10/10')).toBe(5)
+    expect(levelDots('0/10')).toBe(1)
+  })
+
+  it('"Mới" chỉ khi thêm trong 45 ngày gần đây', async () => {
+    const { isNewSong } = await import('../src/lib/song-format.js')
+    const now = new Date('2026-10-14T00:00:00Z')
+    expect(isNewSong('2026-09-13T00:00:00Z', now)).toBe(true)
+    expect(isNewSong('2026-08-24T00:00:00Z', now)).toBe(false)
+    expect(isNewSong('2026-12-01T00:00:00Z', now)).toBe(false)
+    expect(isNewSong(null, now)).toBe(false)
+    expect(isNewSong('không phải ngày', now)).toBe(false)
+  })
+
+  it('"Bán chạy" cần từ 2 lượt, lấy tối đa 3 bài đứng đầu', async () => {
+    const { hotSongIds } = await import('../src/lib/song-format.js')
+    const hot = hotSongIds([
+      { song_id: 'a', buys: 5 },
+      { song_id: 'b', buys: 2 },
+      { song_id: 'c', buys: 1 },
+      { song_id: 'd', buys: 3 },
+      { song_id: 'e', buys: 4 },
+    ])
+    expect([...hot].sort()).toEqual(['a', 'd', 'e'])
+    expect(hotSongIds(null).size).toBe(0)
+  })
+})
