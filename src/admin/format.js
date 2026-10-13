@@ -83,3 +83,15 @@ export async function copyText(text) {
     return false
   }
 }
+
+/** Mốc bắt đầu của khoảng lọc theo giờ máy (tuần bắt đầu từ thứ Hai); null = không giới hạn. */
+export function rangeStart(range, now = new Date()) {
+  const d = new Date(now.getFullYear(), now.getMonth(), now.getDate())
+  if (range === 'week') {
+    d.setDate(d.getDate() - ((d.getDay() + 6) % 7))
+    return d
+  }
+  if (range === 'month') return new Date(now.getFullYear(), now.getMonth(), 1)
+  if (range === 'year') return new Date(now.getFullYear(), 0, 1)
+  return null
+}

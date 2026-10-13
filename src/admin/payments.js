@@ -19,7 +19,7 @@ import { showToast } from './toast.js'
 import { navigate } from './router.js'
 import { confirmDialog } from './confirm.js'
 import { updateOrdersBadge } from './badge.js'
-import { escapeHtml, formatVnd, formatAge, formatDateTime } from './format.js'
+import { escapeHtml, formatVnd, formatAge, formatDateTime, rangeStart } from './format.js'
 
 const unmatchedEl = document.getElementById('payments-unmatched')
 const recentEl = document.getElementById('payments-recent')
@@ -28,6 +28,8 @@ const refreshBtn = document.getElementById('payments-refresh')
 const unmatchedCountEl = document.getElementById('payments-unmatched-count')
 const moreWrapEl = document.getElementById('payments-more-wrap')
 const moreBtn = document.getElementById('payments-more')
+const rangeEl = document.getElementById('payments-range')
+const summaryEl = document.getElementById('payments-summary')
 
 const PAGE_SIZE = 50
 
@@ -47,10 +49,21 @@ const STATUS_PILL = {
   unmatched: { label: 'Chưa khớp', cls: 'bg-amber-500/15 text-amber-600 dark:text-amber-400' },
   assigned: { label: 'Đã gán', cls: 'bg-sky-500/15 text-sky-600 dark:text-sky-400' },
   dismissed: { label: 'Đã bỏ qua', cls: 'bg-black/10 dark:bg-white/10 text-text-muted' },
+  // Đơn trả trước khi hệ thống bắt đầu ghi giao dịch ngân hàng: chỉ có đơn, không có dòng ngân hàng.
+  legacy: { label: 'Đơn cũ', cls: 'bg-emerald-500/15 text-emerald-700 dark:text-emerald-400' },
 }
+
+const RANGES = [
+  ['all', 'Tất cả'],
+  ['week', 'Tuần này'],
+  ['month', 'Tháng này'],
+  ['year', 'Năm nay'],
+]
 
 let unmatched = []
 let history = []
+let activeRange = 'all'
+let historyTotals = { count: 0, amount: 0 }
 let historyExhausted = false
 
 /** RPC chưa tồn tại = chưa chạy file SQL. */
@@ -248,7 +261,7 @@ function renderRecent(list) {
   moreWrapEl?.classList.toggle('hidden', historyExhausted || list.length === 0)
 
   if (list.length === 0) {
-    recentEl.innerHTML = `<div class="p-8 text-center text-xs text-text-muted">Chưa có khoản tiền nào được ghi lại.</div>`
+    recentEl.innerHTML = `<div class="p-8 text-center text-xs text-text-muted">Không có khoản tiền nào trong khoảng này.</div>`
     return
   }
 
@@ -274,32 +287,81 @@ function renderRecent(list) {
     .join('')
 }
 
-/** Lấy một trang lịch sử; trước khi chạy file SQL phân trang thì dùng hàm cũ (60 dòng đầu). */
+/**
+ * Lấy một trang lịch sử theo khoảng đang lọc. Chưa có hàm mới trên DB thì lùi về hàm cũ
+ * (60 dòng gần nhất, không lọc được).
+ */
 async function fetchHistoryPage(offset) {
-  const res = await supabase.rpc('admin_get_transactions_page', { p_limit: PAGE_SIZE, p_offset: offset })
+  const since = rangeStart(activeRange)
+  const res = await supabase.rpc('admin_get_payment_history', {
+    p_limit: PAGE_SIZE,
+    p_offset: offset,
+    p_since: since ? since.toISOString() : null,
+  })
   if (res.error && isMissingFunction(res.error) && offset === 0) {
     const legacy = await supabase.rpc('admin_get_recent_transactions')
     if (legacy.error) throw legacy.error
-    historyExhausted = true
-    return legacy.data || []
+    const rows = legacy.data || []
+    return { rows, totalCount: rows.length, totalAmount: rows.reduce((n, r) => n + Number(r.amount || 0), 0) }
   }
   if (res.error) throw res.error
-  return res.data || []
+  const data = res.data || {}
+  return {
+    rows: data.rows || [],
+    totalCount: Number(data.total_count || 0),
+    totalAmount: Number(data.total_amount || 0),
+  }
+}
+
+function applyHistoryPage(page, append) {
+  history = append ? history.concat(page.rows) : page.rows
+  historyTotals = { count: page.totalCount, amount: page.totalAmount }
+  historyExhausted = history.length >= page.totalCount
+  renderRange()
+  renderRecent(history)
+}
+
+function renderRange() {
+  if (rangeEl) {
+    rangeEl.innerHTML = RANGES.map(([key, label]) => {
+      const on = activeRange === key
+      return `<button type="button" data-range="${key}"
+        class="px-3 py-1.5 rounded-full text-[11px] sm:text-xs font-bold whitespace-nowrap transition-colors cursor-pointer border ${
+          on
+            ? 'bg-accent-solid text-white border-accent-primary'
+            : 'bg-glass-bg text-text-muted border-glass-border hover:text-text-primary'
+        }">${label}</button>`
+    }).join('')
+  }
+  if (summaryEl) {
+    summaryEl.innerHTML = `${historyTotals.count} khoản · <span class="font-mono font-bold text-text-primary">${formatVnd(historyTotals.amount)}</span>`
+  }
 }
 
 async function loadMoreHistory() {
   if (!moreBtn || historyExhausted) return
   moreBtn.disabled = true
   try {
-    const page = await fetchHistoryPage(history.length)
-    history = history.concat(page)
-    if (page.length < PAGE_SIZE) historyExhausted = true
-    renderRecent(history)
+    applyHistoryPage(await fetchHistoryPage(history.length), true)
   } catch (err) {
     console.error(err)
     showToast('❌ ' + (err.message || 'Không tải được thêm lịch sử'), 'error')
   } finally {
     moreBtn.disabled = false
+  }
+}
+
+async function changeRange(range) {
+  if (range === activeRange) return
+  activeRange = range
+  renderRange()
+  if (recentEl) recentEl.innerHTML = `<div class="p-8 text-center text-xs text-text-muted">Đang tải…</div>`
+  moreWrapEl?.classList.add('hidden')
+  try {
+    applyHistoryPage(await fetchHistoryPage(0), false)
+  } catch (err) {
+    console.error(err)
+    showToast('❌ ' + (err.message || 'Không tải được lịch sử'), 'error')
   }
 }
 
@@ -318,7 +380,6 @@ export async function loadPayments() {
     unmatchedEl.innerHTML = `<div class="p-8 text-center text-xs text-text-muted">Đang tải…</div>`
   }
 
-  historyExhausted = false
   const [unmatchedRes, recentRes] = await Promise.allSettled([
     fetchUnmatchedTransactions(),
     fetchHistoryPage(0),
@@ -345,9 +406,7 @@ export async function loadPayments() {
   renderUnmatched()
 
   if (recentRes.status === 'fulfilled') {
-    history = recentRes.value
-    if (history.length < PAGE_SIZE) historyExhausted = true
-    renderRecent(history)
+    applyHistoryPage(recentRes.value, false)
   } else if (recentEl) {
     recentEl.innerHTML = ''
   }
@@ -356,4 +415,8 @@ export async function loadPayments() {
 export function initPaymentsSection() {
   refreshBtn?.addEventListener('click', loadPayments)
   moreBtn?.addEventListener('click', loadMoreHistory)
+  rangeEl?.addEventListener('click', (e) => {
+    const btn = e.target.closest('[data-range]')
+    if (btn) changeRange(btn.dataset.range)
+  })
 }
