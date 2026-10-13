@@ -16,6 +16,7 @@
 import { supabase } from '../lib/supabase.js'
 import { showToast } from './toast.js'
 import { navigate } from './router.js'
+import { state } from './state.js'
 import { updateOrdersBadge } from './badge.js'
 import { fetchUnmatchedTransactions } from './payments.js'
 import { escapeHtml, formatVnd, formatVndShort, formatAge, percentChange } from './format.js'
@@ -382,10 +383,27 @@ function renderAll() {
   }
   renderActivity()
 
+  renderGreeting()
+
   const stamp = document.getElementById('ov-updated')
   if (stamp) {
     stamp.textContent = `Cập nhật ${new Date().toLocaleTimeString('vi-VN', { hour: '2-digit', minute: '2-digit' })}`
   }
+}
+
+/** "Chào buổi tối, Quang" theo giờ máy; chưa có tên thì chỉ chào. */
+export function greetingFor(hour, name) {
+  const part = hour < 11 ? 'buổi sáng' : hour < 14 ? 'buổi trưa' : hour < 18 ? 'buổi chiều' : 'buổi tối'
+  const first = String(name || '')
+    .trim()
+    .split(/\s+/)
+    .pop()
+  return first ? `Chào ${part}, ${first}` : `Chào ${part}`
+}
+
+function renderGreeting() {
+  const el = document.getElementById('ov-greeting')
+  if (el) el.textContent = greetingFor(new Date().getHours(), state.adminProfile?.full_name)
 }
 
 export async function loadOverview() {

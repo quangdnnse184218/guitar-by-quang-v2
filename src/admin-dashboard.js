@@ -25,6 +25,7 @@ import { loadHssv, loadHssvBadge, initHssvSection } from './admin/hssv.js'
 import { enterGrantPage, initGrantSection } from './admin/grant.js'
 import { loadRecentGrants, loadRecentRevocations, initHistorySection } from './admin/history.js'
 import { loadOverview, initOverviewSection } from './admin/overview.js'
+import { initPalette } from './admin/palette.js'
 import { loadUserDetail } from './admin/user-detail.js'
 import { enterSettingsPage, initSettingsSection, renderAdminIdentity } from './admin/settings.js'
 
@@ -202,6 +203,7 @@ async function initDashboard() {
   initUsersSection()
   initOrdersSection()
   initPaymentsSection()
+  initPalette()
   initHssvSection()
   initGrantSection()
   initHistorySection()

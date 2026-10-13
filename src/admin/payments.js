@@ -33,6 +33,9 @@ const summaryEl = document.getElementById('payments-summary')
 
 const PAGE_SIZE = 50
 
+/** Ba dòng giữ chỗ nhấp nháy trong lúc tải, đỡ giật hơn dòng chữ "Đang tải…". */
+const SKELETON = '<div class="admin-skeleton" aria-busy="true" aria-label="Đang tải"><span></span><span></span><span></span></div>'
+
 const REASONS = {
   no_code: { label: 'Không có mã đơn', hint: 'Dữ liệu cũ (trước 22/09): từ nay tiền không có mã đơn không còn được ghi' },
   order_not_found: { label: 'Mã đơn không tồn tại', hint: 'Nội dung có mã nhưng không có đơn nào khớp' },
@@ -256,34 +259,76 @@ async function dismissTransaction(id) {
   }
 }
 
+/** "Hôm nay", "Hôm qua", còn lại là "Thứ Hai, 12/09/2026". */
+function dayLabel(date, now = new Date()) {
+  const startOf = (d) => new Date(d.getFullYear(), d.getMonth(), d.getDate()).getTime()
+  const diff = Math.round((startOf(now) - startOf(date)) / 86400000)
+  if (diff === 0) return 'Hôm nay'
+  if (diff === 1) return 'Hôm qua'
+  const weekday = ['Chủ nhật', 'Thứ Hai', 'Thứ Ba', 'Thứ Tư', 'Thứ Năm', 'Thứ Sáu', 'Thứ Bảy'][date.getDay()]
+  return `${weekday}, ${date.toLocaleDateString('vi-VN')}`
+}
+
+function timeOf(value) {
+  return new Date(value).toLocaleTimeString('vi-VN', { hour: '2-digit', minute: '2-digit' })
+}
+
+function historyRow(t) {
+  const pill = STATUS_PILL[t.status] || STATUS_PILL.dismissed
+  const name = t.user_name || t.user_email || 'Khách chưa xác định'
+  const detail = [t.song_title, t.order_code].filter(Boolean).join(' · ')
+  const note = t.resolved_note ? `“${t.resolved_note}”${t.resolved_by_name ? ' — ' + t.resolved_by_name : ''}` : ''
+  const initial = (name.trim()[0] || '?').toUpperCase()
+  return `
+    <div class="admin-tx-row">
+      <span class="admin-tx-avatar" aria-hidden="true">${escapeHtml(initial)}</span>
+      <div class="min-w-0 flex-1">
+        <div class="text-[13px] font-bold text-text-primary truncate">${escapeHtml(name)}</div>
+        <div class="text-[11px] sm:text-xs text-text-muted truncate">${escapeHtml(detail || t.content || '—')}</div>
+        ${note ? `<div class="text-[11px] sm:text-xs text-text-muted italic truncate">${escapeHtml(note)}</div>` : ''}
+      </div>
+      <div class="text-right flex-shrink-0">
+        <div class="font-mono font-extrabold text-sm tabular-nums text-text-primary">${formatVnd(t.amount)}</div>
+        <div class="mt-1 flex items-center justify-end gap-1.5">
+          <span class="px-2 py-0.5 rounded-full text-[11px] sm:text-xs font-bold whitespace-nowrap ${pill.cls}">${pill.label}</span>
+          <span class="text-[11px] sm:text-xs text-text-muted font-mono">${escapeHtml(timeOf(t.occurred_at || t.received_at))}</span>
+        </div>
+      </div>
+    </div>`
+}
+
 function renderRecent(list) {
   if (!recentEl) return
   moreWrapEl?.classList.toggle('hidden', historyExhausted || list.length === 0)
 
   if (list.length === 0) {
-    recentEl.innerHTML = `<div class="p-8 text-center text-xs text-text-muted">Không có khoản tiền nào trong khoảng này.</div>`
+    recentEl.innerHTML = `<div class="p-10 text-center text-xs text-text-muted">Không có khoản tiền nào trong khoảng này.</div>`
     return
   }
 
-  recentEl.innerHTML = list
-    .map((t) => {
-      const pill = STATUS_PILL[t.status] || STATUS_PILL.dismissed
-      const who = [t.user_name, t.song_title].filter(Boolean).join(' · ')
-      const note = t.resolved_note ? `“${t.resolved_note}”` : ''
-      return `
-      <div class="p-3.5 flex items-center gap-3">
-        <div class="flex-1 min-w-0">
-          <div class="flex items-center gap-2 flex-wrap">
-            <span class="font-mono font-bold text-xs text-text-primary">${formatVnd(t.amount)}</span>
-            <span class="px-2 py-0.5 rounded-full text-[11px] sm:text-xs font-bold whitespace-nowrap ${pill.cls}">${pill.label}</span>
-            ${t.order_code ? `<span class="font-code text-[11px] sm:text-xs text-text-muted">${escapeHtml(t.order_code)}</span>` : ''}
-          </div>
-          <div class="text-[11px] sm:text-xs text-text-muted truncate mt-0.5">${escapeHtml(who || t.content || '—')}</div>
-          ${note ? `<div class="text-[11px] sm:text-xs text-text-muted italic truncate">${escapeHtml(note)}${t.resolved_by_name ? ' — ' + escapeHtml(t.resolved_by_name) : ''}</div>` : ''}
-        </div>
-        <span class="text-[11px] sm:text-xs text-text-muted font-mono flex-shrink-0 text-right">${escapeHtml(formatDateTime(t.occurred_at || t.received_at))}</span>
-      </div>`
-    })
+  // Gom theo ngày (giờ máy), giữ thứ tự mới nhất ở trên; mỗi ngày kèm tổng tiền của riêng nó.
+  const days = []
+  for (const t of list) {
+    const d = new Date(t.occurred_at || t.received_at)
+    const key = `${d.getFullYear()}-${d.getMonth()}-${d.getDate()}`
+    let day = days[days.length - 1]
+    if (!day || day.key !== key) {
+      day = { key, date: d, rows: [], total: 0 }
+      days.push(day)
+    }
+    day.rows.push(t)
+    day.total += Number(t.amount || 0)
+  }
+
+  recentEl.innerHTML = days
+    .map(
+      (day) => `
+      <div class="admin-tx-day">
+        <span>${escapeHtml(dayLabel(day.date))}</span>
+        <span class="font-mono tabular-nums">${formatVnd(day.total)}</span>
+      </div>
+      ${day.rows.map(historyRow).join('')}`
+    )
     .join('')
 }
 
@@ -355,7 +400,7 @@ async function changeRange(range) {
   if (range === activeRange) return
   activeRange = range
   renderRange()
-  if (recentEl) recentEl.innerHTML = `<div class="p-8 text-center text-xs text-text-muted">Đang tải…</div>`
+  if (recentEl) recentEl.innerHTML = SKELETON
   moreWrapEl?.classList.add('hidden')
   try {
     applyHistoryPage(await fetchHistoryPage(0), false)
@@ -377,7 +422,7 @@ function showSetupNotice(show) {
 
 export async function loadPayments() {
   if (unmatchedEl) {
-    unmatchedEl.innerHTML = `<div class="p-8 text-center text-xs text-text-muted">Đang tải…</div>`
+    unmatchedEl.innerHTML = SKELETON
   }
 
   const [unmatchedRes, recentRes] = await Promise.allSettled([
