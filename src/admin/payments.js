@@ -26,6 +26,10 @@ const recentEl = document.getElementById('payments-recent')
 const setupNoticeEl = document.getElementById('payments-setup-notice')
 const refreshBtn = document.getElementById('payments-refresh')
 const unmatchedCountEl = document.getElementById('payments-unmatched-count')
+const moreWrapEl = document.getElementById('payments-more-wrap')
+const moreBtn = document.getElementById('payments-more')
+
+const PAGE_SIZE = 50
 
 const REASONS = {
   no_code: { label: 'Không có mã đơn', hint: 'Dữ liệu cũ (trước 22/09): từ nay tiền không có mã đơn không còn được ghi' },
@@ -46,6 +50,8 @@ const STATUS_PILL = {
 }
 
 let unmatched = []
+let history = []
+let historyExhausted = false
 
 /** RPC chưa tồn tại = chưa chạy file SQL. */
 function isMissingFunction(err) {
@@ -239,9 +245,10 @@ async function dismissTransaction(id) {
 
 function renderRecent(list) {
   if (!recentEl) return
+  moreWrapEl?.classList.toggle('hidden', historyExhausted || list.length === 0)
 
   if (list.length === 0) {
-    recentEl.innerHTML = `<div class="p-8 text-center text-xs text-text-muted">Chưa ghi nhận giao dịch nào. Các khoản tiền có mã đơn từ giờ sẽ hiện ở đây.</div>`
+    recentEl.innerHTML = `<div class="p-8 text-center text-xs text-text-muted">Chưa có khoản tiền nào được ghi lại.</div>`
     return
   }
 
@@ -267,6 +274,35 @@ function renderRecent(list) {
     .join('')
 }
 
+/** Lấy một trang lịch sử; trước khi chạy file SQL phân trang thì dùng hàm cũ (60 dòng đầu). */
+async function fetchHistoryPage(offset) {
+  const res = await supabase.rpc('admin_get_transactions_page', { p_limit: PAGE_SIZE, p_offset: offset })
+  if (res.error && isMissingFunction(res.error) && offset === 0) {
+    const legacy = await supabase.rpc('admin_get_recent_transactions')
+    if (legacy.error) throw legacy.error
+    historyExhausted = true
+    return legacy.data || []
+  }
+  if (res.error) throw res.error
+  return res.data || []
+}
+
+async function loadMoreHistory() {
+  if (!moreBtn || historyExhausted) return
+  moreBtn.disabled = true
+  try {
+    const page = await fetchHistoryPage(history.length)
+    history = history.concat(page)
+    if (page.length < PAGE_SIZE) historyExhausted = true
+    renderRecent(history)
+  } catch (err) {
+    console.error(err)
+    showToast('❌ ' + (err.message || 'Không tải được thêm lịch sử'), 'error')
+  } finally {
+    moreBtn.disabled = false
+  }
+}
+
 function showSetupNotice(show) {
   setupNoticeEl?.classList.toggle('hidden', !show)
   if (show) {
@@ -282,9 +318,10 @@ export async function loadPayments() {
     unmatchedEl.innerHTML = `<div class="p-8 text-center text-xs text-text-muted">Đang tải…</div>`
   }
 
+  historyExhausted = false
   const [unmatchedRes, recentRes] = await Promise.allSettled([
     fetchUnmatchedTransactions(),
-    supabase.rpc('admin_get_recent_transactions'),
+    fetchHistoryPage(0),
   ])
 
   if (unmatchedRes.status === 'rejected') {
@@ -307,8 +344,10 @@ export async function loadPayments() {
   updateOrdersBadge(unmatched.length)
   renderUnmatched()
 
-  if (recentRes.status === 'fulfilled' && !recentRes.value.error) {
-    renderRecent(recentRes.value.data || [])
+  if (recentRes.status === 'fulfilled') {
+    history = recentRes.value
+    if (history.length < PAGE_SIZE) historyExhausted = true
+    renderRecent(history)
   } else if (recentEl) {
     recentEl.innerHTML = ''
   }
@@ -316,4 +355,5 @@ export async function loadPayments() {
 
 export function initPaymentsSection() {
   refreshBtn?.addEventListener('click', loadPayments)
+  moreBtn?.addEventListener('click', loadMoreHistory)
 }

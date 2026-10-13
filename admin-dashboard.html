@@ -416,25 +416,9 @@
           <!-- ============================================================ -->
           <div id="section-payments" class="space-y-5 hidden">
 
-            <!-- Hiện khi chưa chạy file SQL bank_transactions -->
-            <div id="payments-setup-notice" class="hidden rounded-2xl border border-amber-500/30 bg-amber-500/[0.07] p-4 text-xs leading-relaxed text-text-primary space-y-1.5">
-              <div class="font-extrabold">Cần bật theo dõi tiền về (làm một lần)</div>
               <p>Mở Supabase → SQL Editor, dán và chạy file <code class="font-mono bg-black/5 dark:bg-white/10 px-1.5 py-0.5 rounded">supabase/migrations/20260920_bank_transactions.sql</code>. Xong là mọi khoản tiền về được ghi lại và trang này hoạt động.</p>
             </div>
 
-            <details class="group rounded-2xl border border-sky-500/25 bg-sky-500/[0.06] text-xs text-text-primary">
-              <summary class="list-none [&::-webkit-details-marker]:hidden cursor-pointer select-none flex items-center gap-2 min-h-[40px] px-4 font-bold">
-                <svg class="w-4 h-4 text-sky-700 dark:text-sky-300 flex-shrink-0" aria-hidden="true" data-ph="info" viewBox="0 0 256 256" fill="currentColor"><path d="M108,84a16,16,0,1,1,16,16A16,16,0,0,1,108,84Zm128,44A108,108,0,1,1,128,20,108.12,108.12,0,0,1,236,128Zm-24,0a84,84,0,1,0-84,84A84.09,84.09,0,0,0,212,128Zm-72,36.68V132a20,20,0,0,0-20-20,12,12,0,0,0-4,23.32V168a20,20,0,0,0,20,20,12,12,0,0,0,4-23.32Z"/></svg>
-                <span class="flex-1">Trang này hoạt động thế nào?</span>
-                <svg class="w-3.5 h-3.5 text-text-muted transition-transform duration-200 group-open:rotate-180 flex-shrink-0" aria-hidden="true" data-ph="caret-down" viewBox="0 0 256 256" fill="currentColor"><path d="M216.49,104.49l-80,80a12,12,0,0,1-17,0l-80-80a12,12,0,0,1,17-17L128,159l71.51-71.52a12,12,0,0,1,17,17Z"/></svg>
-              </summary>
-              <div class="px-4 pb-4 leading-relaxed">
-              Chỉ những khoản tiền <strong>mang mã đơn DH…</strong> (khách quét QR trên web) mới được ghi lại. Tiền chuyển vào
-              không có mã đơn (bạn bè, tiền cá nhân…) và tiền chi ra bị bỏ qua hoàn toàn: không lưu, không báo email.
-              Khoản nào có mã nhưng <strong>không tự khớp được đơn</strong> (trả muộn, chuyển thiếu, trả thừa…) hiện ở đây và bạn nhận
-              được email báo. Gán nó cho đúng khách là xong: khách nhận tab, Drive được chia sẻ và doanh thu được ghi.
-              </div>
-            </details>
 
             <section class="glass-card border border-glass-border rounded-2xl overflow-hidden">
               <div class="p-4 sm:p-5 border-b border-glass-border flex items-center justify-between gap-3">
@@ -451,10 +435,13 @@
 
             <section class="glass-card border border-glass-border rounded-2xl overflow-hidden">
               <div class="p-4 sm:p-5 border-b border-glass-border">
-                <h3 class="text-sm font-extrabold text-text-primary">Giao dịch gần đây</h3>
-                <p class="text-[11px] sm:text-xs text-text-muted mt-0.5">60 khoản tiền có mã đơn gần nhất, gồm cả khoản tự khớp và khoản đã xử lý.</p>
+                <h3 class="text-sm font-extrabold text-text-primary">Lịch sử tiền về</h3>
+                <p class="text-[11px] sm:text-xs text-text-muted mt-0.5">Toàn bộ khoản tiền có mã đơn, mới nhất ở trên: gồm khoản tự khớp, đã gán và đã bỏ qua.</p>
               </div>
-              <div id="payments-recent" class="divide-y divide-glass-border max-h-[480px] overflow-y-auto"></div>
+              <div id="payments-recent" class="divide-y divide-glass-border"></div>
+              <div id="payments-more-wrap" class="hidden p-3.5 border-t border-glass-border text-center">
+                <button type="button" id="payments-more" class="px-4 py-2 rounded-xl bg-glass-bg border border-glass-border text-text-primary hover:border-accent-primary hover:text-accent-primary text-[11px] sm:text-xs font-bold transition-colors cursor-pointer disabled:opacity-50">Xem thêm</button>
+              </div>
             </section>
           </div>
 
@@ -463,23 +450,9 @@
           <!-- ============================================================ -->
           <div id="section-hssv" class="space-y-5 hidden">
 
-            <!-- Hiện khi chưa chạy file SQL 20260921 -->
-            <div id="hssv-setup-notice" class="hidden rounded-2xl border border-amber-500/30 bg-amber-500/[0.07] p-4 text-xs leading-relaxed text-text-primary space-y-1.5">
-              <div class="font-extrabold">Cần bật tính năng duyệt HSSV (làm một lần)</div>
               <p>Mở Supabase → SQL Editor, dán và chạy file <code class="font-mono bg-black/5 dark:bg-white/10 px-1.5 py-0.5 rounded">supabase/migrations/20260921_hssv_verifications.sql</code>.</p>
             </div>
 
-            <details class="group rounded-2xl border border-sky-500/25 bg-sky-500/[0.06] text-xs text-text-primary">
-              <summary class="list-none [&::-webkit-details-marker]:hidden cursor-pointer select-none flex items-center gap-2 min-h-[40px] px-4 font-bold">
-                <svg class="w-4 h-4 text-sky-700 dark:text-sky-300 flex-shrink-0" aria-hidden="true" data-ph="info" viewBox="0 0 256 256" fill="currentColor"><path d="M108,84a16,16,0,1,1,16,16A16,16,0,0,1,108,84Zm128,44A108,108,0,1,1,128,20,108.12,108.12,0,0,1,236,128Zm-24,0a84,84,0,1,0-84,84A84.09,84.09,0,0,0,212,128Zm-72,36.68V132a20,20,0,0,0-20-20,12,12,0,0,0-4,23.32V168a20,20,0,0,0,20,20,12,12,0,0,0,4-23.32Z"/></svg>
-                <span class="flex-1">Trang này hoạt động thế nào?</span>
-                <svg class="w-3.5 h-3.5 text-text-muted transition-transform duration-200 group-open:rotate-180 flex-shrink-0" aria-hidden="true" data-ph="caret-down" viewBox="0 0 256 256" fill="currentColor"><path d="M216.49,104.49l-80,80a12,12,0,0,1-17,0l-80-80a12,12,0,0,1,17-17L128,159l71.51-71.52a12,12,0,0,1,17,17Z"/></svg>
-              </summary>
-              <div class="px-4 pb-4 leading-relaxed space-y-1.5">
-              <p><strong>Sinh viên</strong> phải xác nhận email trường (.edu.vn) bằng mã rồi mới gửi ảnh thẻ. AI đọc thẻ, so với email và <strong>tự duyệt khi thẻ rõ, còn hạn, email khớp mã hoặc tên trên thẻ, và cả thẻ lẫn email chưa dùng ở tài khoản khác</strong>. Trường hợp chưa chắc nằm ở đây chờ bạn.</p>
-              <p>Bấm <strong>Đã xem</strong> thì ảnh tự xoá sau 3 ngày (không xem thì tối đa 30 ngày kể từ lúc khách tải lên); kết quả đọc thẻ vẫn được giữ để chặn một thẻ dùng cho nhiều tài khoản.</p>
-              </div>
-            </details>
 
             <!-- Học sinh / sinh viên không có email trường: khách nhắn Zalo kèm mã đơn, admin áp giá tay -->
             <form id="hssv-manual-form" class="glass-card border border-glass-border rounded-2xl p-4 sm:p-5 space-y-3">
@@ -524,18 +497,6 @@
           <!-- ============================================================ -->
           <div id="section-orders" class="space-y-5 hidden">
 
-            <details class="group rounded-2xl border border-sky-500/25 bg-sky-500/[0.06] text-xs text-text-primary">
-              <summary class="list-none [&::-webkit-details-marker]:hidden cursor-pointer select-none flex items-center gap-2 min-h-[40px] px-4 font-bold">
-                <svg class="w-4 h-4 text-sky-700 dark:text-sky-300 flex-shrink-0" aria-hidden="true" data-ph="info" viewBox="0 0 256 256" fill="currentColor"><path d="M108,84a16,16,0,1,1,16,16A16,16,0,0,1,108,84Zm128,44A108,108,0,1,1,128,20,108.12,108.12,0,0,1,236,128Zm-24,0a84,84,0,1,0-84,84A84.09,84.09,0,0,0,212,128Zm-72,36.68V132a20,20,0,0,0-20-20,12,12,0,0,0-4,23.32V168a20,20,0,0,0,20,20,12,12,0,0,0,4-23.32Z"/></svg>
-                <span class="flex-1">Trang này hoạt động thế nào?</span>
-                <svg class="w-3.5 h-3.5 text-text-muted transition-transform duration-200 group-open:rotate-180 flex-shrink-0" aria-hidden="true" data-ph="caret-down" viewBox="0 0 256 256" fill="currentColor"><path d="M216.49,104.49l-80,80a12,12,0,0,1-17,0l-80-80a12,12,0,0,1,17-17L128,159l71.51-71.52a12,12,0,0,1,17,17Z"/></svg>
-              </summary>
-              <div class="px-4 pb-4 leading-relaxed">
-              Đây là các đơn khách đã tạo nhưng <strong>chưa có tiền nào về</strong> — phần lớn là khách mở form thanh toán rồi bỏ giữa chừng, không cần làm gì.
-              Đơn quá 3 ngày tự hết hạn. Khi khách báo <em>“đã chuyển khoản mà chưa nhận được tab”</em>, hãy vào mục <a href="#/tien-ve" data-route-link="tien-ve" class="font-bold text-accent-primary hover:underline">Tiền về</a>:
-              khoản tiền của họ nằm ở đó và gán được chỉ bằng một cú bấm. Trang này chỉ để tra cứu đơn của một khách.
-              </div>
-            </details>
 
             <div id="orders-summary" class="grid grid-cols-3 gap-2.5 sm:gap-4"></div>
 
