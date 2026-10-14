@@ -4,6 +4,13 @@ import { defineConfig } from 'vite'
 export default defineConfig({
   build: {
     rollupOptions: {
+      // Mọi file build có hash trong tên nằm riêng ở /static để vercel.json đặt cache "immutable" được
+      // mà không đụng tới ảnh tĩnh không hash ở /assets (qr.jpg, ảnh đồ nghề...).
+      output: {
+        entryFileNames: 'static/[name]-[hash].js',
+        chunkFileNames: 'static/[name]-[hash].js',
+        assetFileNames: 'static/[name]-[hash][extname]',
+      },
       input: {
         main: resolve(import.meta.dirname, 'index.html'),
         khoTab: resolve(import.meta.dirname, 'kho-tab.html'),

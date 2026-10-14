@@ -864,6 +864,7 @@ async function submitScoreIfBest(modeToSubmit, score) {
       p_score: score,
     })
     if (error) throw error
+    boardCache.clear()
   } catch {
     // Không nộp được (mất mạng, bảng chưa tạo…) thì bỏ qua — kỷ lục vẫn còn
     // nguyên trong localStorage, không ảnh hưởng gì tới việc chơi tiếp.
@@ -893,14 +894,18 @@ function renderBoardRows(rows) {
   if (myRow) myRow.scrollIntoView({ block: 'center' })
 }
 
-async function openLeaderboard(modeToShow) {
-  boardTitle.textContent = `Bảng xếp hạng · ${modeName(modeToShow)}`
-  boardList.hidden = true
-  boardStatus.hidden = false
-  boardStatus.textContent = 'Đang tải…'
-  boardModal.hidden = false
+// Bảng xếp hạng ít đổi, nhưng mỗi lần mở lại đợi một vòng mạng. Giữ bản đã tải theo từng chế độ:
+// mở lần sau hiện NGAY bản cũ rồi cập nhật ngầm nếu đã quá hạn; và tải sẵn khi người chơi vừa
+// rê/chạm vào nút bảng xếp hạng. Nộp điểm xong thì xoá cache để bảng luôn có điểm của mình.
+const BOARD_FRESH_MS = 30_000
+const boardCache = new Map() // mode -> { at, rows }
+const boardInflight = new Map() // mode -> Promise (tránh gọi trùng khi vừa tải sẵn vừa mở)
 
-  try {
+async function fetchBoardRows(modeToShow) {
+  const pending = boardInflight.get(modeToShow)
+  if (pending) return pending
+
+  const request = (async () => {
     const { data, error } = await supabase
       .from(LEADERBOARD_TABLE)
       .select('player_id, player_name, score')
@@ -908,23 +913,62 @@ async function openLeaderboard(modeToShow) {
       .order('score', { ascending: false })
       .order('updated_at', { ascending: true })
       .limit(LEADERBOARD_LIMIT)
-
     if (error) throw error
+    const rows = data || []
+    boardCache.set(modeToShow, { at: Date.now(), rows })
+    return rows
+  })()
 
-    if (!data || data.length === 0) {
-      boardStatus.textContent = 'Chưa có ai lập kỷ lục ở chế độ này — làm người đầu tiên nhé!'
-      boardStatus.hidden = false
-      boardList.hidden = true
-      return
-    }
+  boardInflight.set(modeToShow, request)
+  try {
+    return await request
+  } finally {
+    boardInflight.delete(modeToShow)
+  }
+}
 
-    // Hiện danh sách TRƯỚC rồi mới render+cuộn — scrollIntoView không tính
-    // được vị trí gì cả nếu phần tử còn nằm trong nhánh đang bị [hidden]
-    // (display:none), nên cuộn-tới-dòng-của-mình sẽ lặng lẽ không làm gì.
-    boardStatus.hidden = true
-    boardList.hidden = false
-    renderBoardRows(data)
+function prefetchLeaderboard(modeToShow) {
+  const cached = boardCache.get(modeToShow)
+  if (cached && Date.now() - cached.at < BOARD_FRESH_MS) return
+  fetchBoardRows(modeToShow).catch(() => {})
+}
+
+function showBoardRows(rows) {
+  if (rows.length === 0) {
+    boardStatus.textContent = 'Chưa có ai lập kỷ lục ở chế độ này — làm người đầu tiên nhé!'
+    boardStatus.hidden = false
+    boardList.hidden = true
+    return
+  }
+  // Hiện danh sách TRƯỚC rồi mới render+cuộn — scrollIntoView không tính
+  // được vị trí gì cả nếu phần tử còn nằm trong nhánh đang bị [hidden]
+  // (display:none), nên cuộn-tới-dòng-của-mình sẽ lặng lẽ không làm gì.
+  boardStatus.hidden = true
+  boardList.hidden = false
+  renderBoardRows(rows)
+}
+
+async function openLeaderboard(modeToShow) {
+  boardTitle.textContent = `Bảng xếp hạng · ${modeName(modeToShow)}`
+  boardModal.hidden = false
+
+  const cached = boardCache.get(modeToShow)
+  if (cached) {
+    showBoardRows(cached.rows)
+    if (Date.now() - cached.at < BOARD_FRESH_MS) return
+  } else {
+    boardList.hidden = true
+    boardStatus.hidden = false
+    boardStatus.textContent = 'Đang tải…'
+  }
+
+  try {
+    const rows = await fetchBoardRows(modeToShow)
+    // Người chơi có thể đã đóng bảng hoặc chuyển chế độ trong lúc chờ.
+    if (boardModal.hidden) return
+    if (!cached || JSON.stringify(cached.rows) !== JSON.stringify(rows)) showBoardRows(rows)
   } catch {
+    if (cached) return // đã có bản cũ trên màn hình, lỗi làm mới thì cứ giữ nguyên
     boardStatus.textContent = 'Không tải được bảng xếp hạng — thử lại sau nhé.'
     boardStatus.hidden = false
     boardList.hidden = true
@@ -1704,6 +1748,17 @@ modeHearBtn.addEventListener('click', () => setMode('hear'))
 // chơi xong (màn kết thúc) — không cần chọn lại vì đã đứng sẵn đúng chỗ rồi.
 boardLinkSee.addEventListener('click', () => openLeaderboard('see'))
 boardLinkHear.addEventListener('click', () => openLeaderboard('hear'))
+// Tải sẵn ngay khi rê chuột / chạm / focus vào nút — lúc bấm hẳn thì dữ liệu đã về.
+for (const [btn, m] of [
+  [boardLinkSee, 'see'],
+  [boardLinkHear, 'hear'],
+]) {
+  for (const evt of ['pointerenter', 'touchstart', 'focus']) {
+    btn.addEventListener(evt, () => prefetchLeaderboard(m), { passive: true })
+  }
+}
+// Rảnh rỗi sau khi vào trang thì tải sẵn chế độ mặc định.
+;(window.requestIdleCallback || ((fn) => setTimeout(fn, 1500)))(() => prefetchLeaderboard('see'))
 boardLinkOver.addEventListener('click', () => openLeaderboard(mode))
 boardCloseBtn.addEventListener('click', closeLeaderboard)
 boardModal.addEventListener('click', (event) => {

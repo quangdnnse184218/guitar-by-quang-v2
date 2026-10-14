@@ -3,7 +3,7 @@
  * "239.000đ", để trống...). Badge giá trên thẻ rất hẹp nên mọi kiểu nhập đều
  * phải quy về một dạng ngắn gọn — test ở đây khoá lại các quy tắc quy đổi đó.
  */
-import { describe, expect, it } from 'vitest'
+import { describe, expect, it, vi } from 'vitest'
 import {
   formatCompactPrice,
   formatCompactDiscount,
@@ -124,5 +124,29 @@ describe('độ khó và nhãn thẻ', () => {
     ])
     expect([...hot].sort()).toEqual(['a', 'd', 'e'])
     expect(hotSongIds(null).size).toBe(0)
+  })
+})
+
+describe('readCachedSongs', () => {
+  it('chỉ trả bản đã lưu thật, không bao giờ trả danh sách mặc định cài sẵn', async () => {
+    localStorage.clear()
+    const store = {
+      set gbq_songs(v) {
+        localStorage.setItem('gbq_songs', v)
+      },
+    }
+    vi.resetModules()
+    vi.doMock('../src/lib/supabase.js', () => ({ supabase: {} }))
+    const { readCachedSongs } = await import('../src/lib/songs-service.js')
+    expect(readCachedSongs()).toBeNull()
+    store.gbq_songs = 'không phải json'
+    expect(readCachedSongs()).toBeNull()
+    store.gbq_songs = '[]'
+    expect(readCachedSongs()).toBeNull()
+    store.gbq_songs = JSON.stringify([
+      { id: 'b', order: 2 },
+      { id: 'a', order: 1 },
+    ])
+    expect(readCachedSongs().map((s) => s.id)).toEqual(['a', 'b'])
   })
 })

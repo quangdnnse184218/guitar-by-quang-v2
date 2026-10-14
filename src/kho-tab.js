@@ -9,6 +9,7 @@ import { initThemeToggle } from './theme-toggle.js'
 import {
   fetchAllSongs,
   fetchSongPopularity,
+  readCachedSongs,
   extractYoutubeId,
   normalizeVideoPath,
   normalizeAudioPath,
@@ -439,18 +440,35 @@ function initSwipeToFavorite() {
 // LOAD DATA
 // ==========================================================================
 async function loadData() {
-  const [songs, popularity] = await Promise.all([
-    fetchAllSongs(),
-    fetchSongPopularity(),
-    loadFavoriteIds(),
-    loadPurchasedIds(),
-  ])
+  // Nhãn "Bán chạy" không đáng để chặn việc hiện danh sách: tải song song, về trước thì tốt,
+  // về sau thì vẽ lại lưới.
+  fetchSongPopularity().then((popularity) => {
+    buysBySong = new Map(popularity.map((p) => [String(p.song_id), Number(p.buys)]))
+    hotIds = hotSongIds(popularity)
+    if (allSongs.length > 0) updateGrid()
+  })
+
+  // Khách chưa đăng nhập (đa số): vẽ ngay từ bản đã lưu lần trước, đỡ đợi mạng. Người đã đăng
+  // nhập thì chờ đủ dữ liệu — vẽ sớm sẽ nháy nút "Mua tab" trên bài họ đã sở hữu.
+  const {
+    data: { session },
+  } = await supabase.auth.getSession()
+  const cached = session?.user ? null : readCachedSongs()
+  if (cached) {
+    allSongs = cached
+    populateFilterOptions()
+    applyUrlFilters()
+    updateGrid()
+  }
+
+  const [songs] = await Promise.all([fetchAllSongs(), loadFavoriteIds(), loadPurchasedIds()])
+  const changed = !cached || JSON.stringify(songs) !== JSON.stringify(cached)
   allSongs = songs
-  buysBySong = new Map(popularity.map((p) => [String(p.song_id), Number(p.buys)]))
-  hotIds = hotSongIds(popularity)
-  populateFilterOptions()
-  applyUrlFilters()
-  updateGrid()
+  if (changed) {
+    populateFilterOptions()
+    if (!cached) applyUrlFilters()
+    updateGrid()
+  }
   openSongFromUrlParam()
   focusSearchFromHash()
 }

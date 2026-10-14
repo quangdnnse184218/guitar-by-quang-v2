@@ -16,6 +16,7 @@ import {
 import { initThemeToggle } from './theme-toggle.js'
 import {
   fetchFeaturedSongs,
+  readCachedSongs,
   extractYoutubeId,
   normalizeVideoPath,
   normalizeAudioPath,
@@ -947,6 +948,32 @@ function initFeaturedCarousel() {
 // INITIALIZATION
 // ==========================================================================
 
+/** Vẽ hàng bài nổi bật (cũng khởi tạo lại nút trượt vì thẻ vừa được thay mới). */
+function renderFeatured(songs) {
+  const featuredContainer = document.getElementById('featured-grid')
+  if (!featuredContainer) return
+
+  if (songs && songs.length > 0) {
+    featuredContainer.innerHTML = songs
+      .slice(0, 4)
+      .map((tab) =>
+        renderSongCard(tab, {
+          extraClass: 'shrink-0 snap-start w-[62%] min-w-[160px] sm:w-[38%] md:w-full md:min-w-0',
+          isPurchased: purchasedSongIds.has(String(tab.id)),
+        })
+      )
+      .join('')
+    applyScrollReveal('#featured-grid .song-card')
+    initFeaturedCarousel()
+  } else {
+    featuredContainer.innerHTML = `
+        <div class="col-span-full py-10 text-center text-text-muted glass-card p-6 rounded-3xl">
+          Có chút trục trặc khi kết nối, anh em tải lại trang giúp mình nhé! 🎸
+        </div>
+      `
+  }
+}
+
 async function initHome() {
   setupEventListeners()
 
@@ -961,36 +988,27 @@ async function initHome() {
   applyScrollReveal('.reveal-item', { stagger: 0.08 })
   applyScrollReveal('.faq-item', { stagger: 0.06 })
 
-  // 1. Fetch & Render Featured Songs
-  ;[featuredSongs] = await Promise.all([fetchFeaturedSongs(), loadPurchasedIds()])
-  const featuredContainer = document.getElementById('featured-grid')
-  if (featuredContainer) {
-    if (featuredSongs && featuredSongs.length > 0) {
-      const songsHtml = featuredSongs
-        .slice(0, 4)
-        .map((tab) =>
-          renderSongCard(tab, {
-            extraClass: 'shrink-0 snap-start w-[62%] min-w-[160px] sm:w-[38%] md:w-full md:min-w-0',
-            isPurchased: purchasedSongIds.has(String(tab.id)),
-          })
-        )
-        .join('')
+  // Đồ nghề không phụ thuộc bài hát: bắt đầu tải ngay, song song, thay vì đợi bài hát xong mới tải.
+  const gearsPromise = fetchAllGears()
 
-      featuredContainer.innerHTML = songsHtml
-      applyScrollReveal('#featured-grid .song-card')
-      initFeaturedCarousel()
-    } else {
-      featuredContainer.innerHTML = `
-        <div class="col-span-full py-10 text-center text-text-muted glass-card p-6 rounded-3xl">
-          Có chút trục trặc khi kết nối, anh em tải lại trang giúp mình nhé! 🎸
-        </div>
-      `
-    }
+  // 1. Bài nổi bật. Khách chưa đăng nhập (đa số) vẽ ngay từ bản lưu lần trước rồi mới cập nhật;
+  // người đã đăng nhập chờ đủ dữ liệu để không nháy nút "Mua tab" trên bài đã sở hữu.
+  const {
+    data: { session },
+  } = await supabase.auth.getSession()
+  const cachedFeatured = session?.user ? null : readCachedSongs()?.slice(0, 4)
+  if (cachedFeatured?.length) {
+    featuredSongs = cachedFeatured
+    renderFeatured(featuredSongs)
   }
 
-  // 2. Fetch & Render Gears
-  const gears = await fetchAllGears()
-  renderGears(gears)
+  ;[featuredSongs] = await Promise.all([fetchFeaturedSongs(), loadPurchasedIds()])
+  if (!cachedFeatured?.length || JSON.stringify(featuredSongs) !== JSON.stringify(cachedFeatured)) {
+    renderFeatured(featuredSongs)
+  }
+
+  // 2. Đồ nghề
+  renderGears(await gearsPromise)
 
   // 3. Initialize FAQ Interactions
   initFaq()

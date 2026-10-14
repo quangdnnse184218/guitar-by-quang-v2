@@ -302,6 +302,23 @@ function getLocalSongs() {
   return DEFAULT_SONGS
 }
 
+/**
+ * Bản danh sách bài đã lưu từ lần tải thật gần nhất — KHÁC getLocalSongs ở chỗ không bao giờ trả
+ * danh sách mặc định cài sẵn: chỉ dùng để vẽ ngay lúc chờ mạng, nên chưa có cache thật thì trả null.
+ * @returns {object[]|null}
+ */
+export function readCachedSongs() {
+  try {
+    const parsed = JSON.parse(localStorage.getItem('gbq_songs') || 'null')
+    if (Array.isArray(parsed) && parsed.length > 0) {
+      return [...parsed].sort((a, b) => (a.order || 99) - (b.order || 99))
+    }
+  } catch {
+    // Cache hỏng thì coi như chưa có.
+  }
+  return null
+}
+
 function setLocalSongs(songs) {
   try {
     localStorage.setItem('gbq_songs', JSON.stringify(songs))

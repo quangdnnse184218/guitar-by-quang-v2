@@ -338,6 +338,14 @@ async function checkAuthAndInit() {
 
     currentUser = session.user
 
+    // Bài hát, yêu thích và đã mua không phụ thuộc hồ sơ nên bắt đầu tải ngay, chạy song song với
+    // hồ sơ — trước đây phải đợi hồ sơ xong mới gửi 3 yêu cầu này, cộng thêm một vòng mạng chờ không cần thiết.
+    const listsPromise = Promise.all([
+      fetchAllSongs(),
+      supabase.from('favorites').select('song_id').eq('user_id', currentUser.id),
+      supabase.from('purchases').select('song_id').eq('user_id', currentUser.id),
+    ])
+
     // Fetch Profile
     const { data: profile } = await supabase
       .from('profiles')
@@ -374,12 +382,7 @@ async function checkAuthAndInit() {
     // Update Header & Banner UI
     updateUserInfoUI()
 
-    // Fetch songs, favorites and purchases concurrently
-    const [songs, favRes, purRes] = await Promise.all([
-      fetchAllSongs(),
-      supabase.from('favorites').select('song_id').eq('user_id', currentUser.id),
-      supabase.from('purchases').select('song_id').eq('user_id', currentUser.id),
-    ])
+    const [songs, favRes, purRes] = await listsPromise
 
     allSongs = songs || []
     favoriteSongIds = new Set((favRes.data || []).map((f) => String(f.song_id)))
