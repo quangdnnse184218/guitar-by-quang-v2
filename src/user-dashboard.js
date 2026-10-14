@@ -29,7 +29,8 @@ import {
 import { isPasswordPwned, PWNED_PASSWORD_MESSAGE } from './lib/pwned-password.js'
 import { initShareButtons } from './lib/share-song.js'
 import { formatCompactPrice, formatCompactDiscount } from './lib/song-format.js'
-import { renderSongCard, renderPlayDisc } from './lib/song-card.js'
+import { renderSongCard, renderPlayDisc, renderLevelDots } from './lib/song-card.js'
+import { getCompleted, toggleCompleted } from './lib/local-storage-service.js'
 import { createOrderAndBuildQr, downloadQrImage, watchOrderPayment } from './lib/checkout-order.js'
 import { initHssvFlow } from './lib/hssv-flow.js'
 
@@ -86,6 +87,10 @@ const userEmailDisplay = document.getElementById('user-email-display')
 const statJoinDate = document.getElementById('stat-join-date')
 const statPurchasedCount = document.getElementById('stat-purchased-count')
 const statFavCount = document.getElementById('stat-fav-count')
+const statLearnedCount = document.getElementById('stat-learned-count')
+const tabCountPurchases = document.getElementById('tab-count-purchases')
+const tabCountFavorites = document.getElementById('tab-count-favorites')
+const navTabProfile = document.getElementById('nav-tab-profile')
 
 const dashboardTabBar = document.getElementById('dashboard-tab-bar')
 const navTabFavorites = document.getElementById('nav-tab-favorites')
@@ -201,19 +206,21 @@ function setActiveTab(tab) {
   librarySection?.classList.toggle('hidden', isProfile)
   commonSections?.classList.toggle('hidden', isProfile)
   sectionProfile?.classList.toggle('hidden', !isProfile)
-  if (isProfile) return
 
-  lastLibraryTab = tab
+  if (!isProfile) lastLibraryTab = tab
   const tabs = [
     { key: 'purchases', btn: navTabPurchases, sec: sectionPurchases },
     { key: 'favorites', btn: navTabFavorites, sec: sectionFavorites },
+    { key: 'profile', btn: navTabProfile, sec: null },
   ]
   tabs.forEach(({ key, btn, sec }) => {
     const on = key === tab
     btn?.setAttribute('aria-selected', String(on))
     if (btn) btn.tabIndex = on ? 0 : -1
-    sec?.classList.toggle('hidden', !on)
+    // Thư viện chỉ có hai panel; khi mở Hồ sơ cả khối thư viện đã bị ẩn ở trên.
+    if (sec && !isProfile) sec.classList.toggle('hidden', !on)
   })
+  if (isProfile) return
 
   if (tab === 'favorites') renderFavorites()
   else renderPurchases()
@@ -252,17 +259,21 @@ navTabPurchases?.addEventListener('click', () => goToTab('purchases'))
 document.querySelectorAll('[data-go-tab]').forEach((btn) => {
   btn.addEventListener('click', () => {
     goToTab(btn.dataset.goTab)
-    librarySection?.scrollIntoView({ behavior: 'smooth', block: 'start' })
+    dashboardTabBar?.scrollIntoView({ behavior: 'smooth', block: 'start' })
   })
 })
 navTabFavorites?.addEventListener('click', () => goToTab('favorites'))
+navTabProfile?.addEventListener('click', () => goToTab('profile'))
 
 // Phím mũi tên chuyển giữa 2 tab (chuẩn role="tablist").
 dashboardTabBar?.addEventListener('keydown', (e) => {
   if (e.key !== 'ArrowLeft' && e.key !== 'ArrowRight') return
-  const next = activeTab === 'purchases' ? 'favorites' : 'purchases'
+  const order = ['purchases', 'favorites', 'profile']
+  const buttons = { purchases: navTabPurchases, favorites: navTabFavorites, profile: navTabProfile }
+  const step = e.key === 'ArrowRight' ? 1 : -1
+  const next = order[(order.indexOf(activeTab) + step + order.length) % order.length]
   goToTab(next)
-  ;(next === 'purchases' ? navTabPurchases : navTabFavorites)?.focus()
+  buttons[next]?.focus()
 })
 
 // Vuốt ngang trên danh sách thư viện để chuyển Đã mua ↔ Yêu thích (trang dùng
@@ -468,6 +479,13 @@ function updateCounters() {
 
   if (statFavCount) statFavCount.textContent = favCount
   if (statPurchasedCount) statPurchasedCount.textContent = purCount
+  if (tabCountFavorites) tabCountFavorites.textContent = favCount
+  if (tabCountPurchases) tabCountPurchases.textContent = purCount
+  if (statLearnedCount) {
+    // Chỉ đếm bài còn có trong kho (bài đã bị admin xoá thì bỏ qua).
+    const known = new Set(allSongs.map((s) => String(s.id)))
+    statLearnedCount.textContent = getCompleted().filter((id) => known.has(String(id))).length
+  }
 }
 
 // ==========================================================================
@@ -475,7 +493,13 @@ function updateCounters() {
 // ==========================================================================
 function renderOverviewFeatured() {
   if (!overviewFeaturedTabs) return
-  const featured = allSongs.slice(0, 4)
+  // Gợi ý những bài khách chưa mở khoá và chưa học; thiếu thì bù bằng các bài còn lại cho đủ 4.
+  const learned = new Set(getCompleted().map(String))
+  const fresh = allSongs.filter(
+    (s) => !purchasedSongIds.has(String(s.id)) && !learned.has(String(s.id))
+  )
+  const rest = allSongs.filter((s) => !fresh.includes(s))
+  const featured = [...fresh, ...rest].slice(0, 4)
 
   if (featured.length === 0) {
     overviewFeaturedTabs.innerHTML =
@@ -1101,8 +1125,8 @@ function filterLibrary(songs, filter, query) {
 }
 
 /**
- * Một hàng trong thư viện: nút demo (lỗ đàn) · tên + thông số · nút chính.
- * Điện thoại: nút chính xuống dòng dưới tên để tên bài không bị cắt cụt.
+ * Một thẻ trong thư viện: ô màu có nút demo · tên + thông số · hành động (mở tab, đánh dấu đã học,
+ * bỏ yêu thích). Điện thoại: hành động xuống dòng dưới để tên bài không bị cắt cụt.
  */
 function renderLibraryItem(song, { owned = false, removable = false } = {}) {
   const id = escapeHtml(String(song.id))
@@ -1115,46 +1139,62 @@ function renderLibraryItem(song, { owned = false, removable = false } = {}) {
     song.capo === 0 || song.capo === '0' || song.capo == null || song.capo === ''
       ? 'Không capo'
       : `Capo ${escapeHtml(String(song.capo))}`
+  const bpm = song.tempo
+    ? escapeHtml(/bpm/i.test(song.tempo) ? String(song.tempo) : `${song.tempo} BPM`)
+    : ''
+  const levelNum = song.level_num ?? song.levelNum ?? song.level
   const facts = [
-    song.level ? `Độ khó ${escapeHtml(String(song.level))}` : '',
-    capo,
-    // tempo có khi đã ghi sẵn "~120 BPM" — chỉ thêm đơn vị khi thiếu
-    song.tempo
-      ? escapeHtml(/bpm/i.test(song.tempo) ? String(song.tempo) : `${song.tempo} BPM`)
-      : '',
+    song.level ? renderLevelDots(levelNum, String(song.level)) : '',
+    `<span>${capo}</span>`,
+    bpm ? `<span>${bpm}</span>` : '',
   ]
     .filter(Boolean)
-    .join(' · ')
+    .join('')
 
-  const canOpen = owned || song.is_free
+  const isFree = Boolean(song.is_free)
+  const canOpen = owned || isFree
+  const chip = isFree
+    ? '<span class="lib-chip">Miễn phí</span>'
+    : owned
+      ? '<span class="lib-chip is-owned">Đã mua</span>'
+      : ''
+  const learned = getCompleted().map(String).includes(String(song.id))
+
   const primary = canOpen
-    ? `<button type="button" class="btn-open-material inline-flex items-center gap-1.5 px-4 py-2 rounded-full bg-warm-gradient hover:brightness-105 text-white text-xs sm:text-sm font-bold shadow-sm whitespace-nowrap transition-all active:scale-95 cursor-pointer" data-id="${id}">
+    ? `<button type="button" class="btn-open-material lib-primary inline-flex items-center gap-1.5 px-4 py-2.5 rounded-full bg-warm-gradient hover:brightness-105 text-white text-xs sm:text-sm font-bold shadow-sm whitespace-nowrap transition-all active:scale-95 cursor-pointer" data-id="${id}">
         <span>Mở Video Tab</span>
         <svg class="w-3.5 h-3.5" aria-hidden="true" data-ph="arrow-square-out" viewBox="0 0 256 256" fill="currentColor"><path d="M228,104a12,12,0,0,1-24,0V69l-59.51,59.51a12,12,0,0,1-17-17L187,52H152a12,12,0,0,1,0-24h64a12,12,0,0,1,12,12Zm-44,24a12,12,0,0,0-12,12v64H52V84h64a12,12,0,0,0,0-24H48A20,20,0,0,0,28,80V208a20,20,0,0,0,20,20H176a20,20,0,0,0,20-20V140A12,12,0,0,0,184,128Z"/></svg>
       </button>`
-    : `<a href="/kho-tab.html?tab=${encodeURIComponent(song.id)}" class="inline-flex items-center gap-1.5 px-4 py-2 rounded-full bg-glass-bg border border-accent-primary/40 hover:border-accent-primary text-accent-primary text-xs sm:text-sm font-bold whitespace-nowrap transition-colors">
+    : `<a href="/kho-tab.html?tab=${encodeURIComponent(song.id)}" class="lib-primary inline-flex items-center gap-1.5 px-4 py-2.5 rounded-full bg-glass-bg border border-accent-primary/40 hover:border-accent-primary text-accent-primary text-xs sm:text-sm font-bold whitespace-nowrap transition-colors">
         <span>Mua tab</span>
         <svg class="w-3.5 h-3.5" aria-hidden="true" data-ph="arrow-right" viewBox="0 0 256 256" fill="currentColor"><path d="M224.49,136.49l-72,72a12,12,0,0,1-17-17L187,140H40a12,12,0,0,1,0-24H187L135.51,64.48a12,12,0,0,1,17-17l72,72A12,12,0,0,1,224.49,136.49Z"/></svg>
       </a>`
 
+  // Đánh dấu "đã học xong" — dùng chung dữ liệu với kho tab (localStorage), ngay trên thẻ khỏi phải sang kho tab.
+  const learnedBtn = canOpen
+    ? `<button type="button" class="btn-learned lib-icon-btn" data-id="${id}" aria-pressed="${learned}" aria-label="Đã học xong ${title}" title="Đã học xong">
+        <svg class="w-4 h-4" aria-hidden="true" viewBox="0 0 256 256" fill="currentColor"><path d="M229.66,77.66l-128,128a8,8,0,0,1-11.32,0l-56-56a8,8,0,0,1,11.32-11.32L96,188.69,218.34,66.34a8,8,0,0,1,11.32,11.32Z"/></svg>
+      </button>`
+    : ''
+
   const remove = removable
-    ? `<button type="button" class="btn-remove-fav col-start-3 row-start-1 sm:col-start-4 self-start sm:self-center w-9 h-9 -mr-1 grid place-items-center rounded-full text-rose-500 hover:bg-rose-500/10 transition-colors cursor-pointer" data-id="${id}" aria-label="Bỏ ${title} khỏi yêu thích" title="Bỏ khỏi yêu thích">
+    ? `<button type="button" class="btn-remove-fav lib-icon-btn is-fav" data-id="${id}" aria-label="Bỏ ${title} khỏi yêu thích" title="Bỏ khỏi yêu thích">
         <svg class="w-4 h-4" aria-hidden="true" data-ph="heart" viewBox="0 0 256 256" fill="currentColor"><path d="M240,102c0,70-103.79,126.66-108.21,129a8,8,0,0,1-7.58,0C119.79,228.66,16,172,16,102A62.07,62.07,0,0,1,78,40c20.65,0,38.73,8.88,50,23.89C139.27,48.88,157.35,40,178,40A62.07,62.07,0,0,1,240,102Z"/></svg>
       </button>`
     : ''
 
   return `
-    <article class="group grid grid-cols-[auto_minmax(0,1fr)_auto] sm:grid-cols-[auto_minmax(0,1fr)_auto_auto] items-center gap-x-3 sm:gap-x-4 gap-y-2.5 p-3 sm:p-4 rounded-2xl bg-glass-bg border border-glass-border hover:border-accent-primary/40 hover:shadow-md transition-all" data-song-id="${id}">
-      <div class="row-span-2 sm:row-span-1 self-start sm:self-center p-2.5">
+    <article class="lib-card group" data-song-id="${id}">
+      <div class="lib-thumb ${isFree ? 'is-free' : ''}">
         ${renderPlayDisc({ label: `Xem demo ${title}`, size: 'w-9 h-9 sm:w-10 sm:h-10', className: 'btn-demo-view', attrs: `data-id="${id}"` })}
       </div>
-      <div class="min-w-0">
+      <div class="lib-body">
+        ${chip}
         <h3 class="text-sm sm:text-base font-bold text-text-primary leading-snug line-clamp-2">${title}</h3>
         <p class="text-xs text-text-muted font-medium truncate">${meta}</p>
-        <p class="mt-0.5 text-[11px] sm:text-xs text-text-faint font-medium truncate">${facts}</p>
+        <div class="lib-facts">${facts}</div>
       </div>
-      <div class="col-start-2 row-start-2 sm:col-start-3 sm:row-start-1 justify-self-start">${primary}</div>
-      ${remove}
+      <div class="lib-actions">${primary}${learnedBtn}${remove}</div>
     </article>`
 }
 
@@ -1272,6 +1312,17 @@ function attachSongCardEvents(container) {
           'info'
         )
       }
+    })
+  })
+
+  // Đánh dấu đã học xong
+  container.querySelectorAll('.btn-learned').forEach((btn) => {
+    btn.addEventListener('click', (e) => {
+      e.stopPropagation()
+      const done = toggleCompleted(btn.dataset.id)
+      btn.setAttribute('aria-pressed', String(done))
+      updateCounters()
+      showToast(done ? 'Đã đánh dấu đã học xong ✓' : 'Đã bỏ đánh dấu đã học xong')
     })
   })
 

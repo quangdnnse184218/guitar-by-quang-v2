@@ -115,68 +115,60 @@
           </a>
         </div>
 
-        <!-- Đầu trang cá nhân: một dòng gọn (ảnh, lời chào, email). Hồ sơ & mật khẩu mở từ menu tài khoản.
-             Không còn 3 ô số liệu to — số bài đã mua/yêu thích nằm ngay trên nút thư viện. -->
-        <header class="flex items-center gap-4 sm:gap-5">
-          <div id="user-avatar-container" class="w-14 h-14 sm:w-[72px] sm:h-[72px] flex-shrink-0 rounded-full bg-warm-gradient text-white flex items-center justify-center text-xl sm:text-2xl font-extrabold shadow-md ring-2 ring-amber-400/70 ring-offset-2 ring-offset-[rgb(var(--bg-base))] overflow-hidden">
-            <span id="user-avatar-initial">U</span>
-            <img id="user-avatar-img" src="" alt="Ảnh đại diện" class="w-full h-full object-cover hidden" />
+        <!-- Thẻ hồ sơ: ảnh, lời chào, ngày tham gia và 3 số liệu trong một khối. Đã mua / Yêu thích bấm được
+             để mở đúng tab bên dưới; "Chỉnh sửa hồ sơ" mở tab Hồ sơ. -->
+        <header class="me-hero">
+          <div class="me-hero-top">
+            <div id="user-avatar-container" class="me-avatar">
+              <span id="user-avatar-initial">U</span>
+              <img id="user-avatar-img" src="" alt="Ảnh đại diện" class="w-full h-full object-cover hidden" />
+            </div>
+
+            <div class="min-w-0 flex-1">
+              <h1 class="text-xl sm:text-3xl font-extrabold text-text-primary tracking-tight leading-tight break-words">
+                <span id="greeting-prefix">Xin chào</span>, <span id="user-display-name" class="text-accent-primary">...</span>
+              </h1>
+              <p class="mt-1 text-xs sm:text-sm text-text-muted font-medium truncate">
+                <span id="user-email-display">...</span>
+              </p>
+              <p class="mt-0.5 text-[11px] sm:text-xs text-text-faint font-medium">Thành viên từ <span id="stat-join-date">...</span></p>
+            </div>
+
+            <button type="button" data-go-tab="profile" class="me-edit"><svg class="w-4 h-4" aria-hidden="true" viewBox="0 0 256 256" fill="currentColor"><path d="M227.31,73.37,182.63,28.68a16,16,0,0,0-22.63,0L36.69,152A15.86,15.86,0,0,0,32,163.31V208a16,16,0,0,0,16,16H92.69A15.86,15.86,0,0,0,104,219.31L227.31,96a16,16,0,0,0,0-22.63ZM92.69,208H48V163.31l88-88L180.69,120ZM192,108.68,147.31,64l24-24L216,84.68Z"/></svg><span>Chỉnh sửa hồ sơ</span></button>
           </div>
 
-          <div class="min-w-0 flex-1">
-            <h1 class="text-2xl sm:text-4xl font-extrabold text-text-primary tracking-tight leading-tight break-words">
-              <span id="greeting-prefix">Xin chào</span>, <span id="user-display-name" class="text-accent-primary">...</span>
-            </h1>
-            <p class="mt-1 text-xs sm:text-sm text-text-muted font-medium truncate">
-              <span id="user-email-display">...</span>
-            </p>
+          <div id="member-stats" class="me-stats">
+            <button type="button" data-go-tab="purchases" class="me-stat">
+              <span id="stat-purchased-count" class="me-stat-num">0</span>
+              <span class="me-stat-label"><svg class="w-3.5 h-3.5" aria-hidden="true" viewBox="0 0 256 256" fill="currentColor"><path d="M232,48H160a40,40,0,0,0-32,16A40,40,0,0,0,96,48H24a8,8,0,0,0-8,8V200a8,8,0,0,0,8,8H96a24,24,0,0,1,24,24,8,8,0,0,0,16,0,24,24,0,0,1,24-24h72a8,8,0,0,0,8-8V56A8,8,0,0,0,232,48ZM96,192H32V64H96a24,24,0,0,1,24,24V200A39.81,39.81,0,0,0,96,192Zm128,0H160a39.81,39.81,0,0,0-24,8V88a24,24,0,0,1,24-24h64Z"/></svg>Đã mua</span>
+            </button>
+            <button type="button" data-go-tab="favorites" class="me-stat">
+              <span id="stat-fav-count" class="me-stat-num">0</span>
+              <span class="me-stat-label"><svg class="w-3.5 h-3.5" aria-hidden="true" viewBox="0 0 256 256" fill="currentColor"><path d="M178,40c-20.65,0-38.73,8.88-50,23.89C116.73,48.88,98.65,40,78,40a62.07,62.07,0,0,0-62,62c0,70,103.79,126.66,108.21,129a8,8,0,0,0,7.58,0C136.21,228.66,240,172,240,102A62.07,62.07,0,0,0,178,40ZM128,214.8C109.74,204.16,32,155.69,32,102A46.06,46.06,0,0,1,78,56c19.45,0,35.78,10.36,42.6,27a8,8,0,0,0,14.8,0c6.82-16.67,23.15-27,42.6-27a46.06,46.06,0,0,1,46,46C224,155.61,146.24,204.15,128,214.8Z"/></svg>Yêu thích</span>
+            </button>
+            <div class="me-stat">
+              <span id="stat-learned-count" class="me-stat-num">0</span>
+              <span class="me-stat-label"><svg class="w-3.5 h-3.5" aria-hidden="true" viewBox="0 0 256 256" fill="currentColor"><path d="M229.66,77.66l-128,128a8,8,0,0,1-11.32,0l-56-56a8,8,0,0,1,11.32-11.32L96,188.69,218.34,66.34a8,8,0,0,1,11.32,11.32Z"/></svg>Đã học xong</span>
+            </div>
           </div>
-
         </header>
 
-        <!-- Tóm tắt nhanh: 3 ô trong MỘT khung, ngăn bằng đường mảnh (gap-px trên nền
-             màu viền; ô dùng glass-bg đục) — không phải 4 thẻ rời. Hai ô Tab đã mua /
-             Yêu thích bấm được để mở đúng mục thư viện. -->
-        <div id="member-stats" class="grid grid-cols-3 gap-px rounded-2xl overflow-hidden border border-glass-border bg-glass-border">
-          <button type="button" data-go-tab="purchases" class="group text-left bg-glass-bg hover:bg-glass-bg-hover p-3 sm:p-5 transition-colors cursor-pointer">
-            <span class="flex items-center justify-between text-xs font-semibold text-text-muted">Đã mua
-              <svg class="w-3.5 h-3.5 opacity-0 group-hover:opacity-100 transition-opacity" aria-hidden="true" data-ph="arrow-right" viewBox="0 0 256 256" fill="currentColor"><path d="M224.49,136.49l-72,72a12,12,0,0,1-17-17L187,140H40a12,12,0,0,1,0-24H187L135.51,64.48a12,12,0,0,1,17-17l72,72A12,12,0,0,1,224.49,136.49Z"/></svg>
-            </span>
-            <span id="stat-purchased-count" class="block mt-1 text-lg sm:text-3xl font-extrabold tabular-nums text-text-primary">0</span>
+        <!-- Thanh tab: Đã mua · Yêu thích · Hồ sơ. Dính dưới header khi cuộn. -->
+        <nav id="dashboard-tab-bar" role="tablist" aria-label="Khu vực của tôi" class="dash-tabs">
+          <button id="nav-tab-purchases" type="button" role="tab" aria-selected="true" aria-controls="section-purchases" class="dash-tab">
+            <span>Đã mua</span><span id="tab-count-purchases" class="dash-tab-count">0</span>
           </button>
-          <button type="button" data-go-tab="favorites" class="group text-left bg-glass-bg hover:bg-glass-bg-hover p-3 sm:p-5 transition-colors cursor-pointer">
-            <span class="flex items-center justify-between text-xs font-semibold text-text-muted">Yêu thích
-              <svg class="w-3.5 h-3.5 opacity-0 group-hover:opacity-100 transition-opacity" aria-hidden="true" data-ph="arrow-right" viewBox="0 0 256 256" fill="currentColor"><path d="M224.49,136.49l-72,72a12,12,0,0,1-17-17L187,140H40a12,12,0,0,1,0-24H187L135.51,64.48a12,12,0,0,1,17-17l72,72A12,12,0,0,1,224.49,136.49Z"/></svg>
-            </span>
-            <span id="stat-fav-count" class="block mt-1 text-lg sm:text-3xl font-extrabold tabular-nums text-text-primary">0</span>
+          <button id="nav-tab-favorites" type="button" role="tab" aria-selected="false" aria-controls="section-favorites" tabindex="-1" class="dash-tab">
+            <span>Yêu thích</span><span id="tab-count-favorites" class="dash-tab-count">0</span>
           </button>
-          <div class="bg-glass-bg p-3 sm:p-5">
-            <span class="block text-xs font-semibold text-text-muted">Tham gia</span>
-            <span id="stat-join-date" class="block mt-1 text-sm leading-7 sm:leading-normal sm:text-3xl font-extrabold tabular-nums text-text-primary">...</span>
-          </div>
-        </div>
+          <button id="nav-tab-profile" type="button" role="tab" aria-selected="false" aria-controls="section-profile" tabindex="-1" class="dash-tab">
+            <span>Hồ sơ</span>
+          </button>
+        </nav>
 
         <!-- Thư viện của tôi: chỉ 2 mục thật sự của riêng khách. Các khối khám phá
              bên dưới (game, bài nổi bật, đồ nghề, hỏi đáp) luôn hiện, không đổi theo tab. -->
-        <section id="library" class="space-y-4 sm:space-y-5 pt-2 scroll-mt-32" aria-labelledby="library-heading">
-          <div class="flex flex-col sm:flex-row sm:items-end justify-between gap-3">
-            <div class="min-w-0">
-              <h2 id="library-heading" class="text-2xl sm:text-3xl font-extrabold text-text-primary">Thư viện của tôi</h2>
-            </div>
-
-            <div id="dashboard-tab-bar" role="tablist" aria-label="Thư viện của tôi"
-              class="flex w-full sm:w-auto p-1 rounded-full bg-black/5 dark:bg-white/5 border border-glass-border">
-              <button id="nav-tab-purchases" type="button" role="tab" aria-selected="true" aria-controls="section-purchases"
-                class="library-tab group flex-1 sm:flex-none inline-flex items-center justify-center gap-2 px-4 sm:px-5 py-2 rounded-full text-sm font-bold text-text-muted hover:text-text-primary aria-selected:bg-glass-bg aria-selected:text-text-primary aria-selected:shadow-sm transition-colors cursor-pointer">
-                <span>Đã mua</span>
-              </button>
-              <button id="nav-tab-favorites" type="button" role="tab" aria-selected="false" aria-controls="section-favorites" tabindex="-1"
-                class="library-tab group flex-1 sm:flex-none inline-flex items-center justify-center gap-2 px-4 sm:px-5 py-2 rounded-full text-sm font-bold text-text-muted hover:text-text-primary aria-selected:bg-glass-bg aria-selected:text-text-primary aria-selected:shadow-sm transition-colors cursor-pointer">
-                <span>Yêu thích</span>
-              </button>
-            </div>
-          </div>
-
+        <section id="library" class="space-y-4 sm:space-y-5 pt-2 scroll-mt-32">
           <!-- Đã mua -->
           <div id="section-purchases" role="tabpanel" aria-labelledby="nav-tab-purchases" class="space-y-3">
             <!-- Ô tìm/lọc chỉ hiện khi danh sách đủ dài để cần (xem LIBRARY_TOOLS_MIN) -->
@@ -224,9 +216,9 @@
           <div class="space-y-6 pt-4">
             <div class="flex flex-col md:flex-row md:items-end justify-between gap-4 pb-4 border-b border-glass-border">
               <div class="space-y-1.5 max-w-2xl">
-                <h2 class="text-xl sm:text-2xl text-text-primary font-extrabold tracking-tight">Bài hát nổi bật</h2>
+                <h2 class="text-xl sm:text-2xl text-text-primary font-extrabold tracking-tight">Gợi ý cho bạn</h2>
                 <p class="text-text-muted text-xs sm:text-sm font-medium leading-relaxed">
-                  Những bài được anh em xem và mua nhiều nhất.</p>
+                  Những bài bạn chưa mở khoá và chưa học, theo thứ tự nổi bật.</p>
               </div>
             </div>
 
@@ -263,14 +255,6 @@
 
         <!-- TAB CONTENT 4: HỒ SƠ & MẬT KHẨU (PROFILE & SETTINGS) -->
         <section id="section-profile" class="space-y-6 hidden scroll-mt-32">
-          <div class="flex items-center justify-between">
-            <a href="#library" class="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-glass-bg border border-glass-border hover:border-accent-primary/50 text-sm font-bold text-text-primary hover:text-accent-primary transition-colors">
-              <svg class="w-4 h-4" aria-hidden="true" data-ph="caret-left" viewBox="0 0 256 256" fill="currentColor"><path d="M168.49,199.51a12,12,0,0,1-17,17l-80-80a12,12,0,0,1,0-17l80-80a12,12,0,0,1,17,17L97,128Z"/></svg>
-              <span>Quay lại thư viện</span>
-            </a>
-            <span class="text-xs font-mono font-bold text-accent-primary uppercase tracking-wider">Cài đặt tài khoản</span>
-          </div>
-
           <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
             
             <!-- Left Form: Hồ sơ cá nhân -->
