@@ -4,6 +4,8 @@
  * ==============================================================================
  */
 
+import { initLiquidGlass } from './lib/liquid-glass.js'
+
 const STORAGE_KEY = 'gbq_theme'
 const themeListeners = new Set()
 
@@ -83,6 +85,9 @@ export function onThemeChange(callback) {
  * Khởi tạo Theme Toggle cho trang
  */
 export function initThemeToggle() {
+  // Mọi trang đều gọi hàm này nên đây là chỗ khởi tạo hiệu ứng kính lỏng chung (xem lib/liquid-glass.js).
+  initLiquidGlass()
+
   const currentTheme = getPreferredTheme()
   applyTheme(currentTheme, false)
 

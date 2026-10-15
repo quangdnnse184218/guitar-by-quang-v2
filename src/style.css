@@ -4129,3 +4129,116 @@ button.me-stat:active {
     display: none;
   }
 }
+
+/* ==========================================================================
+   KÍNH LỎNG (liquid glass) — nâng cấp hệ --frost-* ở trên. Mọi bề mặt đã dùng
+   .frost / .frost-strong / var(--frost-shine) tự đẹp lên theo; vài thanh nổi
+   được làm trong suốt thật. Khúc xạ ở mép do src/lib/liquid-glass.js bật (Chrome/Edge).
+   ========================================================================== */
+:root {
+  --frost-fx: blur(22px) saturate(1.9) brightness(1.04);
+  --frost-edge: rgb(255 255 255 / 0.16);
+  /* Viền sáng LỆCH GÓC: sáng ở mép trên-trái, mờ hơn ở dưới-phải — như ánh sáng chiếu qua cạnh kính. */
+  --frost-shine:
+    inset 1px 1px 0 rgb(255 255 255 / 0.34),
+    inset -1px -1px 0 rgb(255 255 255 / 0.12),
+    inset 0 0 18px rgb(255 255 255 / 0.05);
+  --lg-sheen: 0.2;
+}
+
+[data-theme='light'] {
+  --frost-edge: rgb(255 255 255 / 0.85);
+  --frost-shine:
+    inset 1px 1px 0 rgb(255 255 255 / 0.95),
+    inset -1px -1px 0 rgb(255 255 255 / 0.55),
+    inset 0 -1px 0 rgb(120 90 50 / 0.07),
+    inset 0 0 20px rgb(255 255 255 / 0.35);
+  --lg-sheen: 0.7;
+}
+
+/* Người dùng bật "giảm độ trong suốt": quay về nền gần đục (khai báo lại vì các biến trên vừa đè). */
+@media (prefers-reduced-transparency: reduce) {
+  :root,
+  [data-theme='light'] {
+    --frost-alpha: 0.97;
+    --frost-alpha-strong: 0.98;
+    --frost-fx: none;
+    --lg-sheen: 0;
+  }
+}
+
+/* Vệt sáng: một vệt cố định mờ ở mép trên + một đốm sáng bám theo ngón tay / con trỏ. */
+#main-nav,
+.bottom-nav,
+.dash-tabs,
+.view-toggle,
+.filter-bar {
+  background-image:
+    radial-gradient(
+      160px circle at var(--lg-x, 50%) var(--lg-y, -90%),
+      rgb(255 255 255 / var(--lg-sheen)),
+      transparent 70%
+    ),
+    linear-gradient(180deg, rgb(255 255 255 / calc(var(--lg-sheen) * 0.45)), transparent 55%);
+}
+
+/* Các thanh nổi nhỏ: trong suốt thật để thấy nội dung trượt phía sau. */
+.dash-tabs,
+.view-toggle {
+  background-color: rgb(var(--frost-tint) / var(--frost-alpha));
+  -webkit-backdrop-filter: var(--frost-fx);
+  backdrop-filter: var(--frost-fx);
+  border: 1px solid var(--frost-edge);
+  box-shadow:
+    var(--frost-shine),
+    var(--elev-raised);
+}
+
+.filter-bar {
+  background-color: rgb(var(--frost-tint) / calc(var(--frost-alpha) + 0.1));
+  -webkit-backdrop-filter: var(--frost-fx);
+  backdrop-filter: var(--frost-fx);
+  border-bottom-color: var(--frost-edge);
+}
+
+#main-nav {
+  box-shadow:
+    0 1px 0 rgb(0 0 0 / 0.03),
+    inset 0 -1px 0 var(--frost-edge);
+}
+
+.admin-palette-panel {
+  background-color: rgb(var(--frost-tint) / var(--frost-alpha-strong));
+  -webkit-backdrop-filter: var(--frost-fx);
+  backdrop-filter: var(--frost-fx);
+  border-color: var(--frost-edge);
+  box-shadow:
+    var(--frost-shine),
+    0 30px 80px -20px rgb(0 0 0 / 0.55);
+}
+
+/* Có khúc xạ: nền trong hơn một chút để thấy rõ ảnh nền bị bẻ ở mép; chữ vẫn đủ tương phản nhờ tint. */
+.lg-refracting {
+  --frost-alpha: 0.5;
+}
+
+/* Nút nhấn "lún" nhẹ như kính được ấn xuống */
+.dash-tab,
+.view-toggle button {
+  transition:
+    background-color 0.15s ease,
+    color 0.15s ease,
+    transform 0.12s ease;
+}
+
+.dash-tab:active,
+.view-toggle button:active {
+  transform: scale(0.95);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .dash-tab:active,
+  .view-toggle button:active {
+    transform: none;
+  }
+}
