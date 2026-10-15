@@ -812,77 +812,30 @@ function initHeroTiltEffect() {
 }
 
 // ==========================================================================
-// VIDEO HERO — bản xem trước câm chạy lặp, bấm mới xem có tiếng
+// VIDEO HERO — chỉ phát khi người xem bấm
 // ==========================================================================
-// Trước đây là trình phát mặc định của trình duyệt (thanh điều khiển xám) đứng im ở ảnh bìa.
-// Giờ vào trang là thấy cây đàn "sống": đoạn đầu video tự chạy câm, lặp lại. Người dùng bật
-// tiết kiệm dữ liệu / giảm chuyển động thì giữ nguyên ảnh bìa, không tự chạy gì cả.
-const HERO_PREVIEW_SECONDS = 9
-
+// Không tự phát gì cả: vào trang chỉ thấy ảnh bìa và một nút phát. Bấm thì phát từ đầu, có tiếng,
+// và lúc đó mới hiện thanh điều khiển của trình duyệt.
 function initHeroVideo() {
   const wrap = document.getElementById('hero-video-wrap')
   const video = document.getElementById('hero-cover-video')
   const playBtn = document.getElementById('hero-video-play')
   if (!wrap || !video || !playBtn) return
 
-  const reduceMotion = window.matchMedia?.('(prefers-reduced-motion: reduce)').matches
-  const saveData = navigator.connection?.saveData === true
-  const canAutoplay = !reduceMotion && !saveData
-
-  const setMode = (mode) => {
-    wrap.dataset.mode = mode
-    const full = mode === 'full'
-    video.muted = !full
-    video.controls = full
-  }
-
-  const startPreview = () => {
-    if (!canAutoplay || wrap.dataset.mode === 'full') return
-    video.play().catch(() => {
-      // Trình duyệt chặn tự chạy — giữ ảnh bìa, nút phát vẫn dùng được.
-    })
-  }
-
-  setMode('preview')
-
-  // Giữ phần xem trước trong vài giây đầu, rồi quay lại từ đầu.
-  video.addEventListener('timeupdate', () => {
-    if (wrap.dataset.mode === 'preview' && video.currentTime >= HERO_PREVIEW_SECONDS) {
-      video.currentTime = 0
-    }
-  })
-
-  // Rời khỏi màn hình thì dừng (đỡ pin, đỡ data), quay lại thì chạy tiếp bản xem trước.
-  if ('IntersectionObserver' in window) {
-    new IntersectionObserver(
-      (entries) => {
-        const visible = entries.some((e) => e.isIntersecting)
-        if (visible) startPreview()
-        else if (wrap.dataset.mode === 'preview') video.pause()
-      },
-      { threshold: 0.35 }
-    ).observe(wrap)
-  } else {
-    startPreview()
-  }
-
-  // Tab trình duyệt bị ẩn thì trình duyệt không cho tự chạy; quay lại tab là chạy tiếp nếu video đang trong màn hình.
-  document.addEventListener('visibilitychange', () => {
-    if (document.visibilityState !== 'visible') return
-    const r = wrap.getBoundingClientRect()
-    if (r.bottom > 0 && r.top < window.innerHeight) startPreview()
-  })
-
   playBtn.addEventListener('click', () => {
-    setMode('full')
+    wrap.dataset.mode = 'playing'
+    video.controls = true
     video.currentTime = 0
-    video.play().catch(() => {})
+    video.play().catch(() => {
+      // Trình duyệt từ chối phát (hiếm khi sau một cú bấm) — người xem dùng thanh điều khiển vừa hiện ra.
+    })
   })
 
+  // Xem xong thì trả về ảnh bìa và nút phát.
   video.addEventListener('ended', () => {
-    setMode('preview')
-    video.currentTime = 0
-    startPreview()
+    wrap.dataset.mode = 'poster'
+    video.controls = false
+    video.load()
   })
 }
 

@@ -3503,38 +3503,49 @@ body.admin-palette-open {
    TRANG CHỦ — video hero xem trước, dải 3 bước mua, nút trượt hàng bài nổi bật
    ========================================================================== */
 
-/* Video hero: không còn thanh điều khiển xám của trình duyệt. Mặc định là bản xem trước
-   câm chạy lặp; bấm nút lớn mới chuyển sang xem có tiếng, lúc đó mới hiện điều khiển. */
+/* Video hero: ảnh bìa + một nút phát tròn đơn giản. Không tự phát; bấm mới phát (có tiếng, có
+   thanh điều khiển). */
 .hero-play {
   position: absolute;
   inset: 0;
   display: grid;
   place-items: center;
-  align-content: center;
-  gap: 0.6rem;
   cursor: pointer;
-  background: linear-gradient(180deg, rgb(0 0 0 / 0.05) 40%, rgb(0 0 0 / 0.5));
-  color: #fff;
+  background: linear-gradient(180deg, rgb(0 0 0 / 0.02) 50%, rgb(0 0 0 / 0.28));
   transition: opacity 0.25s ease;
 }
 
-.hero-play-label {
-  padding: 0.3rem 0.75rem;
+.hero-play-btn {
+  width: 4rem;
+  height: 4rem;
+  display: grid;
+  place-items: center;
+  padding-left: 0.2rem;
   border-radius: 9999px;
-  background: rgb(0 0 0 / 0.55);
-  -webkit-backdrop-filter: blur(6px);
-  backdrop-filter: blur(6px);
-  font-size: 0.75rem;
-  font-weight: 700;
+  background: rgb(255 255 255 / 0.94);
+  color: #1f1812;
+  box-shadow: 0 10px 30px -8px rgb(0 0 0 / 0.55);
+  transition: transform 0.18s ease;
 }
 
-.hero-video-wrap[data-mode='full'] .hero-play {
+.hero-play:hover .hero-play-btn {
+  transform: scale(1.07);
+}
+
+.hero-play:focus-visible .hero-play-btn {
+  outline: 3px solid rgb(var(--accent-primary));
+  outline-offset: 3px;
+}
+
+.hero-video-wrap[data-mode='playing'] .hero-play {
   opacity: 0;
   pointer-events: none;
 }
 
-.hero-video-wrap[data-mode='preview'] video {
-  pointer-events: none;
+@media (prefers-reduced-motion: reduce) {
+  .hero-play-btn {
+    transition: none;
+  }
 }
 
 /* Dải 3 bước mua */
