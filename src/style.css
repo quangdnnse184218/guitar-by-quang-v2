@@ -3923,9 +3923,10 @@ button.me-stat:active {
   border-radius: 9999px;
   background: rgb(var(--glass-bg));
   border: 1px solid rgb(var(--glass-border-rgb) / 0.3);
-  position: sticky;
-  top: 4.25rem;
-  z-index: 30;
+  /* Không dính theo màn hình: lúc cuộn xuống thanh tab trong suốt đè lên các thẻ bài bên dưới
+     trông như lỗi, mà trang này đủ ngắn để không cần. */
+  position: relative;
+  z-index: 1;
   box-shadow: var(--elev-card);
 }
 

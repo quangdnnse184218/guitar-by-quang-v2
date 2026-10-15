@@ -14,8 +14,7 @@
  * Không dùng thư viện ngoài: các thư viện "liquid glass" hiện có đều là bản demo tự vẽ canvas cho
  * từng phần tử, nặng hơn mà kết quả giống hệt đoạn ngắn dưới đây.
  *
- * Chỉ gắn khúc xạ cho vài thanh nhỏ nổi lên trên nội dung (thanh tab trang cá nhân, nút chuyển
- * kiểu xem). Thẻ nội dung và thanh rộng cả chiều ngang không dùng: nhiều lớp
+ * Chỉ gắn khúc xạ cho vài thanh nhỏ nổi lên trên nội dung (nút chuyển kiểu xem lưới/danh sách). Thẻ nội dung và thanh rộng cả chiều ngang không dùng: nhiều lớp
  * backdrop-filter chồng nhau làm giật máy yếu, và thanh quá dài thì mép bẻ cong trông lạ.
  */
 
@@ -25,7 +24,7 @@
  * ra (đã thử trong Chromium; sticky và absolute thì vẽ bình thường). Thanh đó vẫn có kính mờ +
  * viền sáng + vệt sáng bám ngón tay.
  */
-const REFRACT_SELECTOR = '.dash-tabs, .view-toggle'
+const REFRACT_SELECTOR = '.view-toggle'
 /** Thanh có vệt sáng bám theo con trỏ (gồm cả header, không khúc xạ). */
 const LIVE_SELECTOR = '#main-nav, .bottom-nav, .dash-tabs, .view-toggle, .filter-bar'
 
