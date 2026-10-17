@@ -31,41 +31,41 @@
      `--glass-border` không theo định dạng này: nó là rgba() mờ sẵn (10%) dùng
      trơn ở hơn 400 chỗ; Tailwind khai nó bằng hàm NHÂN độ mờ (xem
      --glass-border-rgb/--glass-border-alpha bên dưới và tailwind.config.js). */
-  --bg-base: 23 18 16;
+  --bg-base: 14 18 24;
   /* Trước đây mỗi section một sắc riêng (6 tông khác nhau) khiến trang chủ
      nhìn loang lổ, có "đường kẻ ngăn cách" giữa các khối. Giờ chỉ luân phiên
      2 tông: nền gốc và một tông "nổi" hơn một chút — section nào đã có khung
      spotlight/card riêng (Bài Hát Nổi Bật) thì để nền gốc, section trơn mới
      cần tông nổi để tách bạch với section trơn liền kề. */
-  --sec-raised-bg: rgb(255 236 212 / 0.03);
+  --sec-raised-bg: rgb(170 195 235 / 0.035);
   --sec-hero-bg: transparent;
   --sec-about-bg: transparent;
   --sec-featured-bg: transparent;
   --sec-tools-bg: var(--sec-raised-bg);
   --sec-faq-bg: var(--sec-raised-bg);
   --sec-contact-bg: transparent;
-  --header-bg: rgba(23, 18, 16, 0.8);
-  --footer-bg-grad: linear-gradient(to bottom, #1a1411, #0f0b0a);
+  --header-bg: rgba(14, 18, 24, 0.8);
+  --footer-bg-grad: linear-gradient(to bottom, #121820, #0a0d12);
 
   /* Brand Floating Blobs */
   --blob-amber: #e9a452;
-  --blob-violet: #a8455a;
+  --blob-violet: #8e4a7a;
   --blob-rose: #b0621a;
 
   /* Card Surfaces — Dark Mode Elevation */
-  --glass-bg: 38 30 25;
-  --glass-border: rgba(240, 220, 195, 0.13);
+  --glass-bg: 22 29 38;
+  --glass-border: rgba(180, 205, 240, 0.14);
   /* Tách riêng màu + độ mờ gốc của --glass-border để Tailwind nhân độ mờ của
      modifier (border-glass-border/60 = 60% của 0.1) — xem tailwind.config.js. */
-  --glass-border-rgb: 235 215 190;
+  --glass-border-rgb: 180 205 240;
   --glass-border-alpha: 0.13;
-  --glass-bg-hover: 49 39 32;
+  --glass-bg-hover: 31 40 52;
   --glass-blur: 20px;
 
   /* High-Contrast Neutral Text */
-  --text-primary: 246 238 224;
-  --text-muted: 208 193 171;
-  --text-faint: 162 147 126;
+  --text-primary: 243 240 234;
+  --text-muted: 186 196 211;
+  --text-faint: 143 155 172;
 
   /* Primary Brand Color: Antique Brass */
   --accent-primary: 233 164 82;
@@ -103,10 +103,10 @@
   --neutral-border: rgba(255, 255, 255, 0.12);
 
   /* Modal Tokens — Dark Mode */
-  --modal-surface-bg: #231b17;
-  --modal-surface-border: rgba(235, 215, 190, 0.14);
-  --modal-card-bg: #2e241e;
-  --modal-card-border: rgba(235, 215, 190, 0.09);
+  --modal-surface-bg: #151c25;
+  --modal-surface-border: rgba(180, 205, 240, 0.16);
+  --modal-card-bg: #1d2630;
+  --modal-card-border: rgba(180, 205, 240, 0.1);
   --badge-free-bg: rgba(52, 211, 153, 0.16);
   --badge-free-text: #34d399;
   --badge-free-border: rgba(52, 211, 153, 0.35);
@@ -403,10 +403,10 @@ nav,
    - --well:        ô ảnh lõm vào trong thẻ */
 :root {
   --elev-card:
-    inset 0 1px 0 rgb(255 240 220 / 0.06), 0 1px 2px rgb(0 0 0 / 0.3),
+    inset 0 1px 0 rgb(220 235 255 / 0.07), 0 1px 2px rgb(0 0 0 / 0.35),
     0 10px 24px -12px rgb(0 0 0 / 0.6);
   --elev-raised:
-    inset 0 1px 0 rgb(255 240 220 / 0.08), 0 2px 4px rgb(0 0 0 / 0.3),
+    inset 0 1px 0 rgb(220 235 255 / 0.09), 0 2px 4px rgb(0 0 0 / 0.35),
     0 20px 36px -16px rgb(0 0 0 / 0.75);
   --elev-button: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
   --well: inset 0 1px 3px rgb(0 0 0 / 0.3);
@@ -426,7 +426,7 @@ nav,
    điện thoại yếu.
    ============================================================================== */
 :root {
-  --frost-tint: 33 26 22;
+  --frost-tint: 19 25 33;
   --frost-alpha: 0.62;
   --frost-alpha-strong: 0.86;
   --frost-fx: blur(22px) saturate(1.7);
@@ -1237,7 +1237,7 @@ nav,
   height: 500px;
   top: -180px;
   left: -140px;
-  background: radial-gradient(circle, rgb(var(--accent-primary) / 0.42), transparent 70%);
+  background: radial-gradient(circle, rgb(var(--accent-primary) / 0.3), transparent 70%);
 }
 
 .site-ambient-blob-2 {
@@ -1245,7 +1245,7 @@ nav,
   height: 440px;
   top: 8%;
   right: -160px;
-  background: radial-gradient(circle, rgba(168, 69, 90, 0.38), transparent 70%);
+  background: radial-gradient(circle, rgba(142, 74, 140, 0.32), transparent 70%);
 }
 
 .site-ambient-blob-3 {
@@ -1253,7 +1253,7 @@ nav,
   height: 400px;
   bottom: -160px;
   left: 18%;
-  background: radial-gradient(circle, rgb(var(--accent-primary) / 0.32), transparent 70%);
+  background: radial-gradient(circle, rgba(40, 120, 150, 0.28), transparent 70%);
 }
 
 [data-theme='light'] .site-ambient-blob-1 {
@@ -4261,9 +4261,9 @@ body:not(.admin-page)::before {
   z-index: -1;
   pointer-events: none;
   background:
-    radial-gradient(60vmax 45vmax at 88% -8%, rgb(var(--accent-primary) / 0.14), transparent 62%),
-    radial-gradient(55vmax 48vmax at -12% 38%, rgb(168 69 90 / 0.15), transparent 62%),
-    radial-gradient(50vmax 40vmax at 62% 118%, rgb(var(--accent-primary) / 0.1), transparent 62%);
+    radial-gradient(60vmax 45vmax at 88% -8%, rgb(var(--accent-primary) / 0.17), transparent 62%),
+    radial-gradient(55vmax 48vmax at -12% 40%, rgb(142 74 140 / 0.2), transparent 62%),
+    radial-gradient(50vmax 40vmax at 62% 118%, rgb(40 120 150 / 0.16), transparent 62%);
 }
 
 [data-theme='light'] body::before {
