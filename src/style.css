@@ -31,21 +31,21 @@
      `--glass-border` không theo định dạng này: nó là rgba() mờ sẵn (10%) dùng
      trơn ở hơn 400 chỗ; Tailwind khai nó bằng hàm NHÂN độ mờ (xem
      --glass-border-rgb/--glass-border-alpha bên dưới và tailwind.config.js). */
-  --bg-base: 22 18 15;
+  --bg-base: 23 18 16;
   /* Trước đây mỗi section một sắc riêng (6 tông khác nhau) khiến trang chủ
      nhìn loang lổ, có "đường kẻ ngăn cách" giữa các khối. Giờ chỉ luân phiên
      2 tông: nền gốc và một tông "nổi" hơn một chút — section nào đã có khung
      spotlight/card riêng (Bài Hát Nổi Bật) thì để nền gốc, section trơn mới
      cần tông nổi để tách bạch với section trơn liền kề. */
-  --sec-raised-bg: #1d1814;
-  --sec-hero-bg: rgb(var(--bg-base));
-  --sec-about-bg: rgb(var(--bg-base));
-  --sec-featured-bg: rgb(var(--bg-base));
+  --sec-raised-bg: rgb(255 236 212 / 0.03);
+  --sec-hero-bg: transparent;
+  --sec-about-bg: transparent;
+  --sec-featured-bg: transparent;
   --sec-tools-bg: var(--sec-raised-bg);
   --sec-faq-bg: var(--sec-raised-bg);
-  --sec-contact-bg: rgb(var(--bg-base));
-  --header-bg: rgba(22, 18, 15, 0.88);
-  --footer-bg-grad: linear-gradient(to bottom, #1a1512, #100d0b);
+  --sec-contact-bg: transparent;
+  --header-bg: rgba(23, 18, 16, 0.8);
+  --footer-bg-grad: linear-gradient(to bottom, #1a1411, #0f0b0a);
 
   /* Brand Floating Blobs */
   --blob-amber: #e9a452;
@@ -53,19 +53,19 @@
   --blob-rose: #b0621a;
 
   /* Card Surfaces — Dark Mode Elevation */
-  --glass-bg: 32 26 22;
-  --glass-border: rgba(235, 215, 190, 0.1);
+  --glass-bg: 38 30 25;
+  --glass-border: rgba(240, 220, 195, 0.13);
   /* Tách riêng màu + độ mờ gốc của --glass-border để Tailwind nhân độ mờ của
      modifier (border-glass-border/60 = 60% của 0.1) — xem tailwind.config.js. */
   --glass-border-rgb: 235 215 190;
-  --glass-border-alpha: 0.1;
-  --glass-bg-hover: 42 34 28;
+  --glass-border-alpha: 0.13;
+  --glass-bg-hover: 49 39 32;
   --glass-blur: 20px;
 
   /* High-Contrast Neutral Text */
-  --text-primary: 244 238 228;
-  --text-muted: 188 174 154;
-  --text-faint: 146 131 112;
+  --text-primary: 246 238 224;
+  --text-muted: 208 193 171;
+  --text-faint: 162 147 126;
 
   /* Primary Brand Color: Antique Brass */
   --accent-primary: 233 164 82;
@@ -103,9 +103,9 @@
   --neutral-border: rgba(255, 255, 255, 0.12);
 
   /* Modal Tokens — Dark Mode */
-  --modal-surface-bg: #1d1814;
+  --modal-surface-bg: #231b17;
   --modal-surface-border: rgba(235, 215, 190, 0.14);
-  --modal-card-bg: #272019;
+  --modal-card-bg: #2e241e;
   --modal-card-border: rgba(235, 215, 190, 0.09);
   --badge-free-bg: rgba(52, 211, 153, 0.16);
   --badge-free-text: #34d399;
@@ -402,8 +402,12 @@ nav,
    - --elev-button: nút bấm đặc (trùng shadow-md của Tailwind)
    - --well:        ô ảnh lõm vào trong thẻ */
 :root {
-  --elev-card: 0 1px 2px rgb(0 0 0 / 0.3), 0 10px 24px -12px rgb(0 0 0 / 0.6);
-  --elev-raised: 0 2px 4px rgb(0 0 0 / 0.3), 0 20px 36px -16px rgb(0 0 0 / 0.75);
+  --elev-card:
+    inset 0 1px 0 rgb(255 240 220 / 0.06), 0 1px 2px rgb(0 0 0 / 0.3),
+    0 10px 24px -12px rgb(0 0 0 / 0.6);
+  --elev-raised:
+    inset 0 1px 0 rgb(255 240 220 / 0.08), 0 2px 4px rgb(0 0 0 / 0.3),
+    0 20px 36px -16px rgb(0 0 0 / 0.75);
   --elev-button: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
   --well: inset 0 1px 3px rgb(0 0 0 / 0.3);
 }
@@ -422,7 +426,7 @@ nav,
    điện thoại yếu.
    ============================================================================== */
 :root {
-  --frost-tint: 30 24 20;
+  --frost-tint: 33 26 22;
   --frost-alpha: 0.62;
   --frost-alpha-strong: 0.86;
   --frost-fx: blur(22px) saturate(1.7);
@@ -4242,4 +4246,26 @@ button.me-stat:active {
   .view-toggle button:active {
     transform: none;
   }
+}
+
+
+/* ==========================================================================
+   NỀN TỐI CÓ ÁNH SÁNG — thay cho một mảng nâu phẳng. Ba vệt sáng mờ cố định (đồng thau trên-phải,
+   đỏ rượu vang bên trái, đồng thau mờ dưới) nằm sau mọi nội dung; thẻ và kính phía trên nhờ đó
+   có thứ để nhìn xuyên và làm rực lên. Các section nền tối đã để trong suốt (xem --sec-*-bg).
+   ========================================================================== */
+body:not(.admin-page)::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
+  background:
+    radial-gradient(60vmax 45vmax at 88% -8%, rgb(var(--accent-primary) / 0.14), transparent 62%),
+    radial-gradient(55vmax 48vmax at -12% 38%, rgb(168 69 90 / 0.15), transparent 62%),
+    radial-gradient(50vmax 40vmax at 62% 118%, rgb(var(--accent-primary) / 0.1), transparent 62%);
+}
+
+[data-theme='light'] body::before {
+  display: none;
 }
