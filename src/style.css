@@ -31,49 +31,49 @@
      `--glass-border` không theo định dạng này: nó là rgba() mờ sẵn (10%) dùng
      trơn ở hơn 400 chỗ; Tailwind khai nó bằng hàm NHÂN độ mờ (xem
      --glass-border-rgb/--glass-border-alpha bên dưới và tailwind.config.js). */
-  --bg-base: 8 10 14;
+  --bg-base: 5 9 8;
   /* Trước đây mỗi section một sắc riêng (6 tông khác nhau) khiến trang chủ
      nhìn loang lổ, có "đường kẻ ngăn cách" giữa các khối. Giờ chỉ luân phiên
      2 tông: nền gốc và một tông "nổi" hơn một chút — section nào đã có khung
      spotlight/card riêng (Bài Hát Nổi Bật) thì để nền gốc, section trơn mới
      cần tông nổi để tách bạch với section trơn liền kề. */
-  --sec-raised-bg: rgb(170 195 235 / 0.022);
+  --sec-raised-bg: rgb(120 255 190 / 0.022);
   --sec-hero-bg: transparent;
   --sec-about-bg: transparent;
   --sec-featured-bg: transparent;
   --sec-tools-bg: var(--sec-raised-bg);
   --sec-faq-bg: var(--sec-raised-bg);
   --sec-contact-bg: transparent;
-  --header-bg: rgba(8, 10, 14, 0.82);
-  --footer-bg-grad: linear-gradient(to bottom, #0b0e13, #040608);
+  --header-bg: rgba(5, 9, 8, 0.82);
+  --footer-bg-grad: linear-gradient(to bottom, #08100d, #030605);
 
   /* Brand Floating Blobs */
   --blob-amber: #e9a452;
-  --blob-violet: #8e4a7a;
+  --blob-violet: #1f9d6a;
   --blob-rose: #b0621a;
 
   /* Card Surfaces — Dark Mode Elevation */
-  --glass-bg: 15 19 25;
-  --glass-border: rgba(180, 205, 240, 0.11);
+  --glass-bg: 11 18 15;
+  --glass-border: rgba(120, 255, 190, 0.12);
   /* Tách riêng màu + độ mờ gốc của --glass-border để Tailwind nhân độ mờ của
      modifier (border-glass-border/60 = 60% của 0.1) — xem tailwind.config.js. */
-  --glass-border-rgb: 180 205 240;
-  --glass-border-alpha: 0.11;
-  --glass-bg-hover: 22 28 37;
+  --glass-border-rgb: 120 255 190;
+  --glass-border-alpha: 0.12;
+  --glass-bg-hover: 17 28 23;
   --glass-blur: 20px;
 
   /* High-Contrast Neutral Text */
-  --text-primary: 243 240 234;
-  --text-muted: 186 196 211;
-  --text-faint: 143 155 172;
+  --text-primary: 238 247 242;
+  --text-muted: 172 194 183;
+  --text-faint: 126 150 138;
 
   /* Primary Brand Color: Antique Brass */
-  --accent-primary: 233 164 82;
-  --accent-primary-hover: 242 186 116;
-  --accent-secondary: 233 164 82;
+  --accent-primary: 52 226 140;
+  --accent-primary-hover: 112 242 176;
+  --accent-secondary: 52 226 140;
   /* Nền nút đặc: chữ trắng đạt 4,5:1 ở cả hai giao diện (màu nhấn bản tối quá sáng để đặt chữ trắng). */
-  --accent-solid: 176 98 24;
-  --accent-solid-deep: 150 80 16;
+  --accent-solid: 6 128 82;
+  --accent-solid-deep: 4 102 66;
   --terracotta: #a8455a;
   --terracotta-light: rgba(168, 69, 90, 0.18);
 
@@ -103,10 +103,10 @@
   --neutral-border: rgba(255, 255, 255, 0.12);
 
   /* Modal Tokens — Dark Mode */
-  --modal-surface-bg: #0e1218;
-  --modal-surface-border: rgba(180, 205, 240, 0.16);
-  --modal-card-bg: #151b23;
-  --modal-card-border: rgba(180, 205, 240, 0.1);
+  --modal-surface-bg: #09110e;
+  --modal-surface-border: rgba(120, 255, 190, 0.16);
+  --modal-card-bg: #0f1b16;
+  --modal-card-border: rgba(120, 255, 190, 0.1);
   --badge-free-bg: rgba(52, 211, 153, 0.16);
   --badge-free-text: #34d399;
   --badge-free-border: rgba(52, 211, 153, 0.35);
@@ -403,10 +403,10 @@ nav,
    - --well:        ô ảnh lõm vào trong thẻ */
 :root {
   --elev-card:
-    inset 0 1px 0 rgb(220 235 255 / 0.07), 0 1px 2px rgb(0 0 0 / 0.35),
+    inset 0 1px 0 rgb(180 255 220 / 0.07), 0 1px 2px rgb(0 0 0 / 0.4),
     0 10px 24px -12px rgb(0 0 0 / 0.6);
   --elev-raised:
-    inset 0 1px 0 rgb(220 235 255 / 0.09), 0 2px 4px rgb(0 0 0 / 0.35),
+    inset 0 1px 0 rgb(180 255 220 / 0.1), 0 2px 4px rgb(0 0 0 / 0.4),
     0 20px 36px -16px rgb(0 0 0 / 0.75);
   --elev-button: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
   --well: inset 0 1px 3px rgb(0 0 0 / 0.3);
@@ -426,7 +426,7 @@ nav,
    điện thoại yếu.
    ============================================================================== */
 :root {
-  --frost-tint: 11 14 19;
+  --frost-tint: 8 14 12;
   --frost-alpha: 0.62;
   --frost-alpha-strong: 0.86;
   --frost-fx: blur(22px) saturate(1.7);
@@ -1245,7 +1245,7 @@ nav,
   height: 440px;
   top: 8%;
   right: -160px;
-  background: radial-gradient(circle, rgba(142, 74, 140, 0.18), transparent 70%);
+  background: radial-gradient(circle, rgba(0, 170, 120, 0.18), transparent 70%);
 }
 
 .site-ambient-blob-3 {
@@ -1253,7 +1253,7 @@ nav,
   height: 400px;
   bottom: -160px;
   left: 18%;
-  background: radial-gradient(circle, rgba(40, 120, 150, 0.15), transparent 70%);
+  background: radial-gradient(circle, rgba(90, 230, 90, 0.12), transparent 70%);
 }
 
 [data-theme='light'] .site-ambient-blob-1 {
@@ -4261,11 +4261,21 @@ body:not(.admin-page)::before {
   z-index: -1;
   pointer-events: none;
   background:
-    radial-gradient(60vmax 45vmax at 88% -8%, rgb(var(--accent-primary) / 0.1), transparent 62%),
-    radial-gradient(55vmax 48vmax at -12% 40%, rgb(142 74 140 / 0.11), transparent 62%),
-    radial-gradient(50vmax 40vmax at 62% 118%, rgb(40 120 150 / 0.09), transparent 62%);
+    radial-gradient(60vmax 45vmax at 88% -8%, rgb(var(--accent-primary) / 0.13), transparent 62%),
+    radial-gradient(55vmax 48vmax at -12% 40%, rgb(0 170 120 / 0.11), transparent 62%),
+    radial-gradient(50vmax 40vmax at 62% 118%, rgb(90 230 90 / 0.07), transparent 62%);
 }
 
 [data-theme='light'] body::before {
   display: none;
+}
+
+
+/* Neon nhẹ (chỉ bản tối): nút đặc có quầng xanh, chữ/viền nhấn sáng lên khi rê chuột. */
+:root:not([data-theme='light']) .bg-warm-gradient {
+  box-shadow: 0 0 22px -6px rgb(var(--accent-primary) / 0.45);
+}
+
+:root:not([data-theme='light']) .glass-card:hover {
+  border-color: rgb(var(--accent-primary) / 0.35);
 }
