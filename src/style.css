@@ -77,6 +77,33 @@
   --terracotta: #a8455a;
   --terracotta-light: rgba(168, 69, 90, 0.18);
 
+  /* Nền ảnh bìa bài hát — dùng chung hai giao diện (khung ảnh luôn tối, chữ trắng; chữ trắng
+     trên điểm sáng nhất của từng nền ≥ 4,5:1). Mặc định: bài miễn phí = gỗ óc chó (trầm, không
+     át), bài có phí = rượu vang. Đồng thau để dành cho nút mua (điểm nhấn mạnh nhất của thẻ). */
+  --thumb-walnut-from: 98 70 50;
+  --thumb-walnut-to: 40 28 20;
+  --thumb-wine-from: 142 52 72;
+  --thumb-wine-to: 66 22 34;
+  --thumb-brass-from: 160 104 28;
+  --thumb-brass-to: 84 50 12;
+  --thumb-slate-from: 74 74 80;
+  --thumb-slate-to: 30 30 34;
+
+  /* Màu thương hiệu của BÊN NGOÀI (logo Zalo, Facebook): không thuộc bảng màu Guitar By Quang,
+     giữ đúng màu gốc để khách nhận ra kênh liên hệ. Dùng chung hai giao diện. */
+  --brand-zalo: 0 104 255;
+  --brand-zalo-hover: 0 82 204;
+  --brand-facebook: 24 119 242;
+
+  /* Bảy chấm màu của bảy nốt nhạc ở thẻ "Game luyện cảm âm" trên trang chủ. */
+  --note-1: 226 179 74;
+  --note-2: 224 141 75;
+  --note-3: 208 103 79;
+  --note-4: 194 106 134;
+  --note-5: 143 124 192;
+  --note-6: 90 162 148;
+  --note-7: 159 174 90;
+
   /* Semantic Functional Colors — Dark Mode */
   --success-text: #34d399;
   --success-bg: rgba(52, 211, 153, 0.15);
@@ -497,6 +524,36 @@ nav,
 }
 .thumb-well {
   box-shadow: var(--well);
+}
+
+/* Nền ảnh bìa bài hát: tên class lưu ở songs.thumbnail_bg (xem src/lib/thumb-theme.js). */
+.thumb-walnut {
+  background-image: linear-gradient(
+    to bottom right,
+    rgb(var(--thumb-walnut-from)),
+    rgb(var(--thumb-walnut-to))
+  );
+}
+.thumb-wine {
+  background-image: linear-gradient(
+    to bottom right,
+    rgb(var(--thumb-wine-from)),
+    rgb(var(--thumb-wine-to))
+  );
+}
+.thumb-brass {
+  background-image: linear-gradient(
+    to bottom right,
+    rgb(var(--thumb-brass-from)),
+    rgb(var(--thumb-brass-to))
+  );
+}
+.thumb-slate {
+  background-image: linear-gradient(
+    to bottom right,
+    rgb(var(--thumb-slate-from)),
+    rgb(var(--thumb-slate-to))
+  );
 }
 
 /* Interactive Cards (Song cards, Gear cards, clickables) */

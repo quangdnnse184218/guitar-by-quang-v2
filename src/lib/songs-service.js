@@ -25,7 +25,7 @@ export const DEFAULT_SONGS = [
     target_url: 'https://youtu.be/NPWSiVFlPf0?si=ZDdTXuL7mZbhnhv2',
     tab_url: 'https://youtu.be/NPWSiVFlPf0?si=ZDdTXuL7mZbhnhv2',
     button_text: 'Link xem tab',
-    thumbnail_bg: 'from-[#D8C4AC] to-[#647A6C]',
+    thumbnail_bg: 'thumb-walnut',
     order: 1,
   },
   {
@@ -56,7 +56,7 @@ export const DEFAULT_SONGS = [
       'https://covzjzcqerldfssxasax.supabase.co/storage/v1/object/public/uploads/songs/migrated-resg1ctkdemo.mp4',
     button_type: 'buy',
     button_text: 'Mua Video Tab',
-    thumbnail_bg: 'from-[#C1602F] to-[#6E3B1F]',
+    thumbnail_bg: 'thumb-wine',
     target_url: '',
     tab_url: '',
     order: 2,
@@ -85,7 +85,7 @@ export const DEFAULT_SONGS = [
     target_url: 'https://youtu.be/z28fkDnirKY?si=eLIvQpSSoxCZQaWr',
     tab_url: 'https://youtu.be/z28fkDnirKY?si=eLIvQpSSoxCZQaWr',
     button_text: 'Link xem tab',
-    thumbnail_bg: 'from-[#C9AE92] to-[#8C6E8A]',
+    thumbnail_bg: 'thumb-walnut',
     order: 3,
   },
   {
@@ -116,7 +116,7 @@ export const DEFAULT_SONGS = [
     target_url: 'https://www.tiktok.com/@quangdnn104/video/7627688728240147732',
     tab_url: 'https://www.tiktok.com/@quangdnn104/video/7627688728240147732',
     button_text: 'Tải video tab',
-    thumbnail_bg: 'from-[#CBB79E] to-[#7E9885]',
+    thumbnail_bg: 'thumb-walnut',
     order: 4,
   },
   {
@@ -147,7 +147,7 @@ export const DEFAULT_SONGS = [
     target_url: 'https://www.tiktok.com/@quangdnn104/video/7625293561130405141',
     tab_url: 'https://www.tiktok.com/@quangdnn104/video/7625293561130405141',
     button_text: 'Tải video tab (Miễn phí)',
-    thumbnail_bg: 'from-[#D9C3A0] to-[#8C6E8A]',
+    thumbnail_bg: 'thumb-walnut',
     order: 5,
   },
   {
@@ -174,7 +174,7 @@ export const DEFAULT_SONGS = [
     target_url: 'https://youtu.be/z9jFiANmQTs?si=3N703CQfBFtX7Dx9',
     tab_url: 'https://youtu.be/z9jFiANmQTs?si=3N703CQfBFtX7Dx9',
     button_text: 'Link xem tab',
-    thumbnail_bg: 'from-[#C7B49C] to-[#6B5844]',
+    thumbnail_bg: 'thumb-walnut',
     order: 6,
   },
   {
@@ -201,7 +201,7 @@ export const DEFAULT_SONGS = [
     target_url: 'https://youtu.be/4MQ4mfm5mDs?si=y0Wm8PhRbTjh1qrF',
     tab_url: 'https://youtu.be/4MQ4mfm5mDs?si=y0Wm8PhRbTjh1qrF',
     button_text: 'Link xem tab',
-    thumbnail_bg: 'from-[#D6BE9E] to-[#7E9885]',
+    thumbnail_bg: 'thumb-walnut',
     order: 7,
   },
   {
@@ -228,7 +228,7 @@ export const DEFAULT_SONGS = [
     target_url: 'https://youtu.be/4pHsZuNtcZo?si=3XrQIwyXBBvhFCmO',
     tab_url: 'https://youtu.be/4pHsZuNtcZo?si=3XrQIwyXBBvhFCmO',
     button_text: 'Link xem tab',
-    thumbnail_bg: 'from-[#BFA88E] to-[#5F4C3B]',
+    thumbnail_bg: 'thumb-walnut',
     order: 8,
   },
   {
@@ -255,7 +255,7 @@ export const DEFAULT_SONGS = [
     target_url: 'https://youtu.be/83pXGn1t-94?si=a9GVYFPvRSRJBqyE',
     tab_url: 'https://youtu.be/83pXGn1t-94?si=a9GVYFPvRSRJBqyE',
     button_text: 'Link xem tab',
-    thumbnail_bg: 'from-[#E0C9A6] to-[#CE9145]',
+    thumbnail_bg: 'thumb-walnut',
     order: 9,
   },
   {
@@ -282,7 +282,7 @@ export const DEFAULT_SONGS = [
     target_url: 'https://youtu.be/It3GVRIy3gs?si=KlPfcyWcCoHcQ6sp',
     tab_url: 'https://youtu.be/It3GVRIy3gs?si=KlPfcyWcCoHcQ6sp',
     button_text: 'Link xem tab',
-    thumbnail_bg: 'from-[#C4AC93] to-[#6B5844]',
+    thumbnail_bg: 'thumb-walnut',
     order: 10,
   },
 ]

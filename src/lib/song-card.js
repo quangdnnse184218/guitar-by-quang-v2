@@ -15,6 +15,7 @@
 import { normalizeVideoPath, normalizeAudioPath } from './songs-service.js'
 import { iconHeadphones, iconGuitar, iconHeart, iconGraduationCap } from '../icons.js'
 import { extractDiscountPrice, levelDots, levelTier, TIER_LABEL, parseLevel } from './song-format.js'
+import { resolveThumbTheme } from './thumb-theme.js'
 
 /**
  * Giá trên thẻ trả phí tách làm 2 chỗ thay vì nhồi 2 pill xếp dọc ở góc ảnh (góc
@@ -259,7 +260,7 @@ export function renderSongCard(tab, options = {}) {
       <div onclick="${quickView ? `window.openQuickView('${tab.id}')` : `window.openFreeTabModal('${tab.id}')`}" class="song-card glass-card card-interactive p-2.5 sm:p-4 rounded-2xl border border-glass-border flex flex-col justify-between space-y-2.5 sm:space-y-3.5 group cursor-pointer ${pinnedClass} ${extraClass}" data-id="${tab.id}">
         ${swipeOverlay}
         <div class="song-card-body space-y-2 sm:space-y-3">
-          <div class="${SONG_THUMB_CLASS} song-card-thumb bg-gradient-to-br from-[#1E3A2F] via-[#2A4D3E] to-[#172A22]">
+          <div class="${SONG_THUMB_CLASS} song-card-thumb ${resolveThumbTheme(tab.thumbnail_bg || tab.thumbnailBg, true)}">
             <div class="flex justify-between items-start text-xs uppercase font-bold tracking-wider">
               <div class="flex items-center gap-1 flex-wrap w-full">
                 ${pinnedBadge}
@@ -298,7 +299,7 @@ export function renderSongCard(tab, options = {}) {
   // ------------------------------------------------------------------ PAID
   const priceFormatted = tab.price_formatted || tab.priceFormatted || '239k'
   const discountNote = tab.discount_note || tab.discountNote || ''
-  const thumbnailBg = tab.thumbnail_bg || tab.thumbnailBg || 'from-[#C1602F] to-[#6E3B1F]'
+  const thumbnailBg = resolveThumbTheme(tab.thumbnail_bg || tab.thumbnailBg, false)
 
   const rawVideo = tab.demo_video_url || tab.video_demo || tab.videoDemo || tab.youtube_id || ''
   const rawAudio = tab.audio_demo || tab.demo_audio_url || tab.audio_url || ''
@@ -318,7 +319,7 @@ export function renderSongCard(tab, options = {}) {
     <div onclick="${isPurchased ? 'window.navigateToPurchasesTab()' : quickView ? `window.openQuickView('${tab.id}')` : `window.openCheckoutModal('${tab.id}')`}" class="song-card glass-card card-interactive p-2.5 sm:p-4 rounded-2xl border ${isPurchased ? 'song-card-owned border-amber-500/70 hover:border-amber-400' : 'border-glass-border'} flex flex-col justify-between space-y-2.5 sm:space-y-3.5 group cursor-pointer card-paid ${pinnedClass} ${extraClass}" data-id="${tab.id}">
       ${swipeOverlay}
       <div class="song-card-body space-y-2 sm:space-y-3">
-        <div class="${SONG_THUMB_CLASS} song-card-thumb bg-gradient-to-br ${thumbnailBg}">
+        <div class="${SONG_THUMB_CLASS} song-card-thumb ${thumbnailBg}">
           <div class="flex justify-between items-start text-xs uppercase font-bold tracking-wider">
             <div class="flex items-center gap-1 flex-wrap w-full">
               ${pinnedBadge}

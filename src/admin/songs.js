@@ -22,6 +22,7 @@ import {
 } from '../lib/songs-service.js'
 import { uploadToStorage, removeFromStorageByUrl, formatBytes, MAX_UPLOAD_BYTES } from '../lib/storage-service.js'
 import { formatCompactPrice } from '../lib/song-format.js'
+import { DEFAULT_THUMB_FREE, DEFAULT_THUMB_PAID, resolveThumbTheme } from '../lib/thumb-theme.js'
 
 const adminSongsTbody = document.getElementById('admin-songs-tbody')
 const addSongBtn = document.getElementById('add-song-btn')
@@ -306,7 +307,7 @@ window.openAddSongModal = function (type = 'free') {
     document.getElementById('song-capo').value = '0'
     document.getElementById('song-duration').value = '03:15'
     document.getElementById('song-free-audio-url').value = ''
-    document.getElementById('song-thumbnail-bg').value = 'from-[#D8C4AC] to-[#647A6C]'
+    document.getElementById('song-thumbnail-bg').value = DEFAULT_THUMB_FREE
     if (songModalTitle) songModalTitle.textContent = 'Thêm tab miễn phí'
   } else {
     document.getElementById('song-level').value = '8'
@@ -316,7 +317,7 @@ window.openAddSongModal = function (type = 'free') {
     document.getElementById('song-paid-price').value = '239k'
     document.getElementById('song-paid-discount').value = 'HSSV: 179k'
     document.getElementById('song-paid-audio-url').value = ''
-    document.getElementById('song-thumbnail-bg').value = 'from-[#C1602F] to-[#6E3B1F]'
+    document.getElementById('song-thumbnail-bg').value = DEFAULT_THUMB_PAID
     if (songModalTitle) songModalTitle.textContent = 'Thêm Video Tab có phí'
   }
   toggleModal(songModal, true)
@@ -346,10 +347,10 @@ window.editSong = function (id) {
   document.getElementById('song-capo').value = song.capo ?? (isSongFree ? 0 : 1)
   document.getElementById('song-duration').value = song.duration || (isSongFree ? '03:15' : '03:40')
   document.getElementById('song-description').value = song.description || ''
-  document.getElementById('song-thumbnail-bg').value =
-    song.thumbnail_bg ||
-    song.thumbnailBg ||
-    (isSongFree ? 'from-[#D8C4AC] to-[#647A6C]' : 'from-[#C1602F] to-[#6E3B1F]')
+  document.getElementById('song-thumbnail-bg').value = resolveThumbTheme(
+    song.thumbnail_bg || song.thumbnailBg,
+    isSongFree
+  )
   document.getElementById('song-is-featured').checked = Boolean(song.is_featured ?? song.isFeatured)
 
   const audioDemoVal = song.audio_demo || song.demo_audio_url || song.audio_url || ''
@@ -486,9 +487,10 @@ if (songForm) {
     const capoVal = String(document.getElementById('song-capo').value ?? (isFree ? '0' : '1'))
     const durationVal =
       document.getElementById('song-duration').value.trim() || (isFree ? '03:15' : '03:40')
-    const thumbnailBgVal =
-      document.getElementById('song-thumbnail-bg').value ||
-      (isFree ? 'from-[#D8C4AC] to-[#647A6C]' : 'from-[#C1602F] to-[#6E3B1F]')
+    const thumbnailBgVal = resolveThumbTheme(
+      document.getElementById('song-thumbnail-bg').value,
+      isFree
+    )
     const descriptionVal = document.getElementById('song-description').value.trim()
     const isFeatured = document.getElementById('song-is-featured').checked
 

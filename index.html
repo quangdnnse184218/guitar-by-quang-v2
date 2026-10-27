@@ -292,7 +292,7 @@
             <span class="min-w-0 flex-1">
               <span class="block text-base sm:text-lg font-extrabold leading-tight">Game luyện cảm âm</span>
               <span class="practice-sub block text-[13px] sm:text-sm font-medium leading-snug mt-1">Nghe chuỗi nốt rồi lặp lại đúng thứ tự.</span>
-              <span class="flex items-center gap-1.5 mt-3" aria-hidden="true"><span class="practice-dot" style="background:#e2b34a"></span><span class="practice-dot" style="background:#e08d4b"></span><span class="practice-dot" style="background:#d0674f"></span><span class="practice-dot" style="background:#c26a86"></span><span class="practice-dot" style="background:#8f7cc0"></span><span class="practice-dot" style="background:#5aa294"></span><span class="practice-dot" style="background:#9fae5a"></span></span>
+              <span class="flex items-center gap-1.5 mt-3" aria-hidden="true"><span class="practice-dot" style="background:rgb(var(--note-1))"></span><span class="practice-dot" style="background:rgb(var(--note-2))"></span><span class="practice-dot" style="background:rgb(var(--note-3))"></span><span class="practice-dot" style="background:rgb(var(--note-4))"></span><span class="practice-dot" style="background:rgb(var(--note-5))"></span><span class="practice-dot" style="background:rgb(var(--note-6))"></span><span class="practice-dot" style="background:rgb(var(--note-7))"></span></span>
             </span>
             <span aria-hidden="true" class="practice-go flex-shrink-0 w-10 h-10 rounded-full grid place-items-center">
               <svg class="w-4 h-4 flex-shrink-0" aria-hidden="true" data-ph="arrow-right" viewBox="0 0 256 256" fill="currentColor"><path d="M224.49,136.49l-72,72a12,12,0,0,1-17-17L187,140H40a12,12,0,0,1,0-24H187L135.51,64.48a12,12,0,0,1,17-17l72,72A12,12,0,0,1,224.49,136.49Z"/></svg>
@@ -505,14 +505,14 @@
              Zalo/Facebook để khách nhận ra (trước là 2 nút xanh tô kín, full ngang trên điện thoại). -->
         <div class="grid grid-cols-2 gap-2.5 sm:gap-3 max-w-md mx-auto">
           <a href="https://zalo.me/0326768885" target="_blank" rel="noopener noreferrer" class="contact-chip group">
-            <span class="w-9 h-9 rounded-full bg-[#0068FF] text-white font-extrabold grid place-items-center text-sm flex-shrink-0" aria-hidden="true">Z</span>
+            <span class="w-9 h-9 rounded-full bg-brand-zalo text-white font-extrabold grid place-items-center text-sm flex-shrink-0" aria-hidden="true">Z</span>
             <span class="min-w-0 flex flex-col leading-tight text-left">
               <span class="text-sm font-bold text-text-primary group-hover:text-accent-primary transition-colors">Zalo</span>
               <span class="text-xs font-semibold text-text-muted tabular-nums truncate">0326.768.885</span>
             </span>
           </a>
           <a href="https://www.facebook.com/quang.doan.969429" target="_blank" rel="noopener noreferrer" class="contact-chip group">
-            <span class="w-9 h-9 rounded-full bg-[#1877F2] text-white grid place-items-center flex-shrink-0" aria-hidden="true">
+            <span class="w-9 h-9 rounded-full bg-brand-facebook text-white grid place-items-center flex-shrink-0" aria-hidden="true">
               <svg class="w-4 h-4" aria-hidden="true" data-ph="facebook-logo" viewBox="0 0 256 256" fill="currentColor"><path d="M232,128a104.16,104.16,0,0,1-91.55,103.26,4,4,0,0,1-4.45-4V152h24a8,8,0,0,0,8-8.53,8.17,8.17,0,0,0-8.25-7.47H136V112a16,16,0,0,1,16-16h16a8,8,0,0,0,8-8.53A8.17,8.17,0,0,0,167.73,80H152a32,32,0,0,0-32,32v24H96a8,8,0,0,0-8,8.53A8.17,8.17,0,0,0,96.27,152H120v75.28a4,4,0,0,1-4.44,4A104.15,104.15,0,0,1,24.07,124.09c2-54,45.74-97.9,99.78-100A104.12,104.12,0,0,1,232,128Z"/></svg>
             </span>
             <span class="min-w-0 flex flex-col leading-tight text-left">
@@ -814,8 +814,8 @@
               <span class="text-[10px] font-bold text-text-muted uppercase tracking-wider block">Gửi bài tab này cho bạn bè:</span>
               <div class="grid grid-cols-2 gap-2">
                 <button id="share-zalo-btn" type="button"
-                  class="py-2.5 px-3 rounded-xl bg-[#0068FF] hover:bg-[#0052cc] text-white text-xs font-bold transition-all flex items-center justify-center gap-1.5 cursor-pointer shadow-sm active:scale-95">
-                  <span class="w-4 h-4 rounded-full bg-white text-[#0068FF] font-extrabold flex items-center justify-center text-[9px]">Z</span>
+                  class="py-2.5 px-3 rounded-xl bg-brand-zalo hover:bg-brand-zalo-hover text-white text-xs font-bold transition-all flex items-center justify-center gap-1.5 cursor-pointer shadow-sm active:scale-95">
+                  <span class="w-4 h-4 rounded-full bg-white text-brand-zalo font-extrabold flex items-center justify-center text-[9px]">Z</span>
                   <span>Zalo</span>
                 </button>
                 <button id="share-messenger-btn" type="button"
@@ -851,7 +851,7 @@
       </div>
       <div class="relative overflow-hidden rounded-2xl aspect-video bg-black/90 shadow-lg border border-glass-border">
         <!-- Audio Demo Player khi phát file âm thanh -->
-        <div id="demo-modal-audio-container" class="w-full h-full flex flex-col items-center justify-center p-6 bg-gradient-to-br from-[#1c1815] to-[#111622] hidden">
+        <div id="demo-modal-audio-container" class="w-full h-full flex flex-col items-center justify-center p-6 thumb-walnut hidden">
           <div class="w-16 h-16 rounded-full bg-accent-primary/20 text-accent-primary flex items-center justify-center mb-3 shadow-lg shadow-accent-primary/10">
             <svg class="w-7 h-7" aria-hidden="true" data-ph="headphones" viewBox="0 0 256 256" fill="currentColor"><path d="M201.89,54.66A103.43,103.43,0,0,0,128.79,24H128A104,104,0,0,0,24,128v56a24,24,0,0,0,24,24H64a24,24,0,0,0,24-24V144a24,24,0,0,0-24-24H40.36A88,88,0,0,1,128,40h.67a87.71,87.71,0,0,1,87,80H192a24,24,0,0,0-24,24v40a24,24,0,0,0,24,24h16a24,24,0,0,0,24-24V128A103.41,103.41,0,0,0,201.89,54.66ZM64,136a8,8,0,0,1,8,8v40a8,8,0,0,1-8,8H48a8,8,0,0,1-8-8V136Zm152,48a8,8,0,0,1-8,8H192a8,8,0,0,1-8-8V144a8,8,0,0,1,8-8h24Z"/></svg>
           </div>

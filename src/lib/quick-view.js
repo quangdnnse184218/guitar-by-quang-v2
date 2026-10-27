@@ -11,6 +11,7 @@ import { normalizeVideoPath, normalizeAudioPath } from './songs-service.js'
 import { iconHeadphones, iconGuitar } from '../icons.js'
 import { renderLevelDots, renderStatusChips, renderHssvNote } from './song-card.js'
 import { formatCompactPrice } from './song-format.js'
+import { resolveThumbTheme } from './thumb-theme.js'
 
 const MODAL_ID = 'quick-view-modal'
 
@@ -25,7 +26,7 @@ function escapeHtml(value) {
 function mediaHtml(song) {
   const rawVideo = song.demo_video_url || song.video_demo || song.videoDemo || ''
   const rawAudio = song.audio_demo || song.demo_audio_url || song.audio_url || ''
-  const bg = song.thumbnail_bg || song.thumbnailBg || 'from-[#C1602F] to-[#6E3B1F]'
+  const bg = resolveThumbTheme(song.thumbnail_bg || song.thumbnailBg, song.is_free ?? song.isFree ?? false)
   const isYoutube = /youtu\.?be/i.test(rawVideo)
 
   if (rawVideo && !isYoutube) {
@@ -36,12 +37,12 @@ function mediaHtml(song) {
   if (rawAudio) {
     const src = normalizeAudioPath(rawAudio)
     const encoded = src.startsWith('http') ? src : encodeURI(src)
-    return `<div class="qv-art bg-gradient-to-br ${bg}">
+    return `<div class="qv-art ${bg}">
       <span class="qv-art-icon">${iconHeadphones('w-7 h-7')}</span>
       <audio src="${escapeHtml(encoded)}" controls preload="none" class="w-full max-w-xs mt-3"></audio>
     </div>`
   }
-  return `<div class="qv-art bg-gradient-to-br ${bg}">
+  return `<div class="qv-art ${bg}">
     <span class="qv-art-icon">${iconGuitar('w-7 h-7')}</span>
     <span class="text-xs font-bold text-white/85 mt-2">Chưa có video demo cho bài này</span>
   </div>`
