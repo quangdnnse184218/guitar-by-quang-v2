@@ -31,7 +31,7 @@
      `--glass-border` không theo định dạng này: nó là rgba() mờ sẵn (10%) dùng
      trơn ở hơn 400 chỗ; Tailwind khai nó bằng hàm NHÂN độ mờ (xem
      --glass-border-rgb/--glass-border-alpha bên dưới và tailwind.config.js). */
-  --bg-base: 8 8 9;
+  --bg-base: 17 17 19;
   /* Trước đây mỗi section một sắc riêng (6 tông khác nhau) khiến trang chủ
      nhìn loang lổ, có "đường kẻ ngăn cách" giữa các khối. Giờ chỉ luân phiên
      2 tông: nền gốc và một tông "nổi" hơn một chút — section nào đã có khung
@@ -44,22 +44,22 @@
   --sec-tools-bg: var(--sec-raised-bg);
   --sec-faq-bg: var(--sec-raised-bg);
   --sec-contact-bg: transparent;
-  --header-bg: rgba(8, 8, 9, 0.82);
-  --footer-bg-grad: linear-gradient(to bottom, #0e0e10, #040405);
+  --header-bg: rgba(17, 17, 19, 0.84);
+  --footer-bg-grad: linear-gradient(to bottom, #1a1a1d, #08080a);
 
   /* Brand Floating Blobs */
-  --blob-amber: #e9a452;
-  --blob-violet: #a8455a;
-  --blob-rose: #b0621a;
+  --blob-amber: #e28e64;
+  --blob-violet: #c2506a;
+  --blob-rose: #a85428;
 
   /* Card Surfaces — Dark Mode Elevation */
-  --glass-bg: 18 18 20;
+  --glass-bg: 28 28 31;
   --glass-border: rgba(255, 255, 255, 0.09);
   /* Tách riêng màu + độ mờ gốc của --glass-border để Tailwind nhân độ mờ của
      modifier (border-glass-border/60 = 60% của 0.1) — xem tailwind.config.js. */
   --glass-border-rgb: 255 255 255;
   --glass-border-alpha: 0.09;
-  --glass-bg-hover: 27 27 30;
+  --glass-bg-hover: 38 38 42;
   --glass-blur: 20px;
 
   /* High-Contrast Neutral Text */
@@ -68,14 +68,14 @@
   --text-faint: 130 130 139;
 
   /* Primary Brand Color: Antique Brass */
-  --accent-primary: 233 164 82;
-  --accent-primary-hover: 242 186 116;
-  --accent-secondary: 233 164 82;
+  --accent-primary: 226 142 100;
+  --accent-primary-hover: 238 170 134;
+  --accent-secondary: 226 142 100;
   /* Nền nút đặc: chữ trắng đạt 4,5:1 ở cả hai giao diện (màu nhấn bản tối quá sáng để đặt chữ trắng). */
-  --accent-solid: 176 98 24;
-  --accent-solid-deep: 150 80 16;
-  --terracotta: #a8455a;
-  --terracotta-light: rgba(168, 69, 90, 0.18);
+  --accent-solid: 168 84 40;
+  --accent-solid-deep: 140 68 30;
+  --terracotta: #c2506a;
+  --terracotta-light: rgba(194, 80, 106, 0.18);
 
   /* Nền ảnh bìa bài hát — dùng chung hai giao diện (khung ảnh luôn tối, chữ trắng; chữ trắng
      trên điểm sáng nhất của từng nền ≥ 4,5:1). Mặc định: bài miễn phí = gỗ óc chó (trầm, không
@@ -164,21 +164,21 @@
      vang là chỗ duy nhất có màu. Chọn ngày 2026-10-27 (phương án C trong review màu).
      Nền tối hơn kem nên accent đậm lại một bậc (#94520e) và chữ mờ đậm lại (#685a48) để
      giữ tương phản ≥ 4,5:1 (accent 4,85:1 · chữ mờ 5,35:1 trên nền này). */
-  --bg-base: 232 230 225;
-  --sec-raised-bg: #dfddd7;
+  --bg-base: 236 235 233;
+  --sec-raised-bg: #e1e0dd;
   --sec-hero-bg: rgb(var(--bg-base));
   --sec-about-bg: rgb(var(--bg-base));
   --sec-featured-bg: rgb(var(--bg-base));
   --sec-tools-bg: var(--sec-raised-bg);
   --sec-faq-bg: var(--sec-raised-bg);
   --sec-contact-bg: rgb(var(--bg-base));
-  --header-bg: rgba(232, 230, 225, 0.9);
-  --footer-bg: #dfddd7;
-  --footer-bg-grad: linear-gradient(180deg, #dfddd7 0%, #d6d3cc 100%);
+  --header-bg: rgba(236, 235, 233, 0.9);
+  --footer-bg: #e1e0dd;
+  --footer-bg-grad: linear-gradient(180deg, #e1e0dd 0%, #d5d4d0 100%);
 
-  --blob-amber: #c98a3a;
-  --blob-violet: #7a2e3a;
-  --blob-rose: #b0621a;
+  --blob-amber: #d68058;
+  --blob-violet: #9a3450;
+  --blob-rose: #a85428;
 
   /* Card Surfaces — Light Mode Elevation */
   --glass-bg: 255 255 255;
@@ -188,18 +188,18 @@
   --glass-bg-hover: 244 243 240;
 
   /* Legible Walnut & Charcoal Text */
-  --text-primary: 31 24 18;
-  --text-muted: 94 80 64;
-  --text-faint: 104 90 72;
+  --text-primary: 30 28 28;
+  --text-muted: 92 88 86;
+  --text-faint: 106 102 100;
 
   /* Primary Brand Color: Antique Brass */
-  --accent-primary: 148 82 14;
-  --accent-primary-hover: 124 68 10;
-  --accent-secondary: 148 82 14;
-  --accent-solid: 148 82 14;
-  --accent-solid-deep: 128 68 12;
-  --terracotta: #6e2a38;
-  --terracotta-light: rgba(110, 42, 56, 0.1);
+  --accent-primary: 150 70 30;
+  --accent-primary-hover: 124 56 22;
+  --accent-secondary: 150 70 30;
+  --accent-solid: 150 70 30;
+  --accent-solid-deep: 124 56 22;
+  --terracotta: #8a2f46;
+  --terracotta-light: rgba(138, 47, 70, 0.1);
 
   /* Semantic Functional Colors — Light Mode (Rich, High Contrast WCAG AA) */
   --success-text: #065f46;
@@ -359,13 +359,13 @@ select option {
 }
 
 select optgroup {
-  background-color: #1a1512 !important;
-  color: #bcae9a !important;
+  background-color: #1c1c1f !important;
+  color: #b4b4bc !important;
 }
 
 [data-theme='light'] select optgroup {
-  background-color: #e8e6e1 !important;
-  color: #5e5040 !important;
+  background-color: #ecebe9 !important;
+  color: #5c5856 !important;
 }
 
 /* Consistent Type Scale */
