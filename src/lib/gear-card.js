@@ -22,6 +22,12 @@ function jsArg(str) {
   return escapeHtml(String(str || '')).replace(/\\/g, '\\\\').replace(/&#039;/g, "\\'")
 }
 
+/** Loại đồ trong dữ liệu đang lưu IN HOA ("GUITAR CHÍNH") — hiện dạng câu thường: "Guitar chính". */
+function sentenceCase(text) {
+  const lower = String(text || '').trim().toLocaleLowerCase('vi')
+  return lower.charAt(0).toLocaleUpperCase('vi') + lower.slice(1)
+}
+
 export function renderGearCard(gear, idx) {
   const title = gear.title || gear.name || ''
   const description = gear.description || ''
@@ -62,7 +68,7 @@ export function renderGearCard(gear, idx) {
       <article class="gear-row flex gap-3.5 sm:gap-4 p-3 sm:p-4 rounded-2xl ${extraClass}">
         ${thumbHtml}
         <div class="min-w-0 flex-1 flex flex-col gap-1">
-          <span class="text-[13px] sm:text-sm font-bold text-accent-primary truncate">${escapeHtml(gear.category || 'Phụ kiện')}</span>
+          <span class="text-[13px] sm:text-sm font-bold text-accent-primary truncate">${escapeHtml(sentenceCase(gear.category) || 'Phụ kiện')}</span>
           <h4 class="-mt-0.5 text-sm sm:text-base font-bold text-text-primary leading-snug truncate" title="${escapeHtml(title)}">${escapeHtml(title)}</h4>
           <p class="text-[13px] sm:text-sm text-text-muted leading-relaxed line-clamp-2">${escapeHtml(description)}</p>
           ${noteHtml}
