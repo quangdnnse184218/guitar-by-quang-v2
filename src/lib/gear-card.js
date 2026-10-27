@@ -15,7 +15,7 @@ const ARROW_ICON =
   '<svg class="w-3.5 h-3.5 transition-transform group-hover/link:translate-x-0.5" aria-hidden="true" data-ph="arrow-right" viewBox="0 0 256 256" fill="currentColor"><path d="M224.49,136.49l-72,72a12,12,0,0,1-17-17L187,140H40a12,12,0,0,1,0-24H187L135.51,64.48a12,12,0,0,1,17-17l72,72A12,12,0,0,1,224.49,136.49Z"/></svg>'
 
 const LINK_CLASS =
-  'group/link inline-flex items-center gap-1 min-h-[40px] -my-2.5 text-xs sm:text-sm font-bold text-accent-primary hover:underline underline-offset-2 w-fit'
+  'group/link inline-flex items-center gap-1 min-h-[44px] -my-3 text-xs sm:text-sm font-bold text-accent-primary hover:underline underline-offset-2 w-fit'
 
 /** Chuỗi nhúng vào onclick="...('…')" — escape cả nháy và ký tự HTML. */
 function jsArg(str) {

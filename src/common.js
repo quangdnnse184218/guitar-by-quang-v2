@@ -399,7 +399,7 @@ export async function initAuthHeader() {
     // xuống không bị rơi vào khe hở làm menu tắt.
     const userDropdownHtml = `
       <div class="relative" id="user-header-dropdown-wrap">
-        <button id="user-header-dropdown-btn" type="button" aria-expanded="false" aria-haspopup="menu" aria-controls="user-header-dropdown-menu" aria-label="Tài khoản của ${safeFullName}" class="flex items-center gap-2 min-h-[40px] pl-1.5 pr-2.5 sm:pr-3 rounded-full bg-glass-bg border border-glass-border hover:border-accent-primary/50 transition-colors cursor-pointer">
+        <button id="user-header-dropdown-btn" type="button" aria-expanded="false" aria-haspopup="menu" aria-controls="user-header-dropdown-menu" aria-label="Tài khoản của ${safeFullName}" class="flex items-center gap-2 min-h-[44px] pl-1.5 pr-2.5 sm:pr-3 rounded-full bg-glass-bg border border-glass-border hover:border-accent-primary/50 transition-colors cursor-pointer">
           ${avatarHtml}
           <span class="text-sm font-bold text-text-primary hidden lg:inline-block truncate max-w-[110px]">${safeFullName}</span>
           <span class="hidden xl:inline-flex">${roleBadgeHtml}</span>

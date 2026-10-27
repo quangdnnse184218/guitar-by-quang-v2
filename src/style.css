@@ -792,6 +792,13 @@ nav,
   outline-offset: 2px;
 }
 
+/* Viền focus bàn phím chung cho mọi phần tử bấm được. :where() có độ ưu tiên 0 nên các quy tắc
+   focus riêng (nav-link, ô nhập, thanh trượt...) vẫn thắng, chỉ chỗ chưa có kiểu riêng mới dùng viền này. */
+:where(a[href], button, summary, select, textarea, input, [role='button'], [tabindex]):focus-visible {
+  outline: 3px solid rgb(var(--accent-primary));
+  outline-offset: 2px;
+}
+
 /* Chưa có JS / không dựng được viên kính: mục đang mở vẫn có nền riêng */
 #desktop-nav:not(.has-pill) .nav-link.active {
   background: rgb(var(--accent-primary) / 0.1);
@@ -1118,7 +1125,7 @@ nav,
   white-space: nowrap;
   text-align: center;
   position: relative;
-  min-height: 40px;
+  min-height: 44px;
   padding: 6px 14px;
   border-radius: 9999px;
   font-size: 0.75rem;
