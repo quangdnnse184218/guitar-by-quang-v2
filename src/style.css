@@ -3562,24 +3562,27 @@ body.admin-palette-open {
 /* Dải 3 bước mua */
 .buy-steps {
   display: grid;
-  gap: 0.75rem;
-  grid-template-columns: minmax(0, 1fr);
+  gap: 0.5rem;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
   counter-reset: step;
 }
 
 @media (min-width: 768px) {
   .buy-steps {
-    grid-template-columns: repeat(3, minmax(0, 1fr));
     gap: 1rem;
   }
 }
 
+/* Điện thoại: 3 bước thành một hàng ngang (số trên, tên bước dưới; câu mô tả chỉ còn cho
+   trình đọc màn hình) để khối này cao ~90px thay vì ~300px, kéo bài nổi bật lên gần màn hình đầu. */
 .buy-step {
   position: relative;
   display: flex;
-  align-items: flex-start;
-  gap: 0.9rem;
-  padding: 1rem 1.1rem;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 0.75rem 0.4rem;
+  text-align: center;
   border-radius: var(--r-card);
   background: rgb(var(--glass-bg));
   border: 1px solid rgb(var(--glass-border-rgb) / var(--glass-border-alpha));
@@ -3595,7 +3598,24 @@ body.admin-palette-open {
   background: rgb(var(--accent-primary) / 0.16);
   color: rgb(var(--accent-primary));
   font-weight: 800;
-  font-size: 0.95rem;
+  /* 19px đậm là "chữ lớn" (ngưỡng tương phản 3:1); ở 15px nền sáng chỉ đạt 4,36:1, thiếu 4,5:1 */
+  font-size: 1.2rem;
+}
+
+/* Nền sáng: nền chấm nhạt hơn để chữ đạt 4,5:1 kể cả khi coi là chữ thường */
+[data-theme='light'] .buy-step-num {
+  background: rgb(var(--accent-primary) / 0.08);
+}
+
+/* Từ máy tính bảng: mỗi bước một thẻ nằm ngang, số bên trái, chữ căn trái, có câu mô tả. */
+@media (min-width: 768px) {
+  .buy-step {
+    flex-direction: row;
+    align-items: flex-start;
+    gap: 0.9rem;
+    padding: 1rem 1.1rem;
+    text-align: left;
+  }
 }
 
 /* Mũi tên nối giữa các bước (chỉ máy tính, nằm trên khe giữa hai thẻ) */
@@ -3639,8 +3659,8 @@ body.admin-palette-open {
   position: absolute;
   top: 38%;
   z-index: 5;
-  width: 2.5rem;
-  height: 2.5rem;
+  width: 2.75rem;
+  height: 2.75rem;
   display: none;
   place-items: center;
   border-radius: 9999px;
@@ -3680,6 +3700,7 @@ body.admin-palette-open {
 }
 
 .featured-dots button {
+  position: relative;
   width: 0.45rem;
   height: 0.45rem;
   border-radius: 9999px;
@@ -3688,6 +3709,14 @@ body.admin-palette-open {
     width 0.2s ease,
     background-color 0.2s ease;
   cursor: pointer;
+}
+
+/* Chấm chỉ rộng 7px: nới vùng bấm cao 44px bằng ::before, nét vẽ giữ nguyên. Chiều ngang chỉ
+   nới 3px mỗi bên vì khe giữa hai chấm là 6px — nới hơn thì vùng bấm của các chấm chồng nhau. */
+.featured-dots button::before {
+  content: '';
+  position: absolute;
+  inset: -19px -3px;
 }
 
 .featured-dots button[aria-current='true'] {
