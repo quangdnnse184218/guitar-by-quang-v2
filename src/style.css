@@ -924,7 +924,7 @@ nav,
     min-height: 52px;
     border-radius: 20px;
     color: rgb(var(--text-primary) / 0.74);
-    font-size: 11px;
+    font-size: 12px;
     font-weight: 600;
     line-height: 1;
     white-space: nowrap;
@@ -2820,7 +2820,7 @@ body.modal-open {
 }
 
 .level-dots-text {
-  font-size: 11px;
+  font-size: 0.75rem;
   color: rgb(var(--text-muted));
 }
 
@@ -2842,7 +2842,7 @@ body.modal-open {
   gap: 3px;
   padding: 1px 7px;
   border-radius: 9999px;
-  font-size: 11px;
+  font-size: 0.75rem;
   font-weight: 800;
   line-height: 1.5;
 }
@@ -3208,7 +3208,7 @@ body.kb-open {
     height: 1.75rem;
   }
   .contact-chip > span:last-child > span:last-child {
-    font-size: 11px;
+    font-size: 0.75rem;
     letter-spacing: -0.01em;
   }
 }
@@ -3227,7 +3227,7 @@ body.kb-open {
     gap: 4px;
   }
   #faq-filters .faq-filter-pill {
-    font-size: 11px;
+    font-size: 0.75rem;
     padding: 7px 2px;
   }
 }

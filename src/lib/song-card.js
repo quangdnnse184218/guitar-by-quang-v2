@@ -29,7 +29,7 @@ export function renderPriceBadge(priceFormatted) {
   // Cùng khuôn (padding, cỡ chữ, font) với badge "FREE" — chỉ khác màu. Trên
   // mobile hàng này chỉ rộng ~120px: badge dùng font mono cũ rộng hơn FREE
   // đúng 2px là đủ đẩy nút tim xuống dòng.
-  return `<span class="px-1.5 sm:px-2 py-0.5 rounded-full text-[11px] sm:text-xs font-extrabold text-stone-900 bg-white uppercase tracking-wide tabular-nums whitespace-nowrap" title="Giá ${priceFormatted}">${priceFormatted}</span>`
+  return `<span class="px-1.5 sm:px-2 py-0.5 rounded-full text-xs font-extrabold text-stone-900 bg-white uppercase tracking-wide tabular-nums whitespace-nowrap" title="Giá ${priceFormatted}">${priceFormatted}</span>`
 }
 
 export function renderHssvNote(discountNote) {
@@ -37,7 +37,7 @@ export function renderHssvNote(discountNote) {
   const hssvLabel = extractDiscountPrice(discountNote) || discountNote
   // Chip cam = màu "khuyến mãi", tách hẳn khỏi màu đồng của "Độ khó" ngay cạnh
   // (trước cùng màu nên chìm), hồng của giá và xanh của "miễn phí".
-  return `<span class="inline-flex items-center gap-0.5 px-1.5 py-0.5 rounded-full text-[11px] sm:text-xs font-extrabold whitespace-nowrap bg-orange-100 text-orange-700 ring-1 ring-orange-300 dark:bg-orange-500/15 dark:text-orange-300 dark:ring-orange-400/40" title="Giá ưu đãi cho học sinh, sinh viên (xác minh thẻ khi thanh toán)">${iconGraduationCap('w-3 h-3 sm:w-3.5 sm:h-3.5 flex-shrink-0')}HSSV ${hssvLabel}</span>`
+  return `<span class="inline-flex items-center gap-0.5 px-1.5 py-0.5 rounded-full text-xs font-extrabold whitespace-nowrap bg-orange-100 text-orange-700 ring-1 ring-orange-300 dark:bg-orange-500/15 dark:text-orange-300 dark:ring-orange-400/40" title="Giá ưu đãi cho học sinh, sinh viên (xác minh thẻ khi thanh toán)">${iconGraduationCap('w-3 h-3 sm:w-3.5 sm:h-3.5 flex-shrink-0')}HSSV ${hssvLabel}</span>`
 }
 
 /** Tam giác play bo góc (mềm hơn tam giác nhọn cũ), lệch phải 1px cho cân thị giác. */
@@ -46,7 +46,7 @@ const PLAY_ICON =
 
 /** Nhãn nhỏ dưới nút play ("Xem demo"...). Cách nút đủ xa để không đè vòng khảm. */
 export const PLAY_LABEL_CLASS =
-  'text-[11px] sm:text-xs font-bold mt-3 sm:mt-3.5 text-white/95 bg-black/60 px-2 py-1 rounded-full backdrop-blur-xs leading-none whitespace-nowrap'
+  'text-xs font-bold mt-3 sm:mt-3.5 text-white/95 bg-black/60 px-2 py-1 rounded-full backdrop-blur-xs leading-none whitespace-nowrap'
 
 /**
  * Nút play giữa khung ảnh thẻ bài hát — hình lỗ thoát âm đàn acoustic (xem
@@ -94,18 +94,18 @@ export function renderThumbMetaRow(song, fallbackDuration = 'Full Video') {
   const tuning = (song.tuning || '').trim()
   const tuningHtml =
     tuning && !/^standard$/i.test(tuning)
-      ? `<span class="text-white/85 text-[11px] sm:text-xs truncate min-w-0">${tuning}</span>`
+      ? `<span class="text-white/85 text-xs truncate min-w-0">${tuning}</span>`
       : ''
   return `
     <div class="flex justify-between items-end gap-1 text-white/95 font-semibold">
-      <span class="font-mono tabular-nums text-[11px] sm:text-xs flex-shrink-0">${song.duration || fallbackDuration}</span>
+      <span class="font-mono tabular-nums text-xs flex-shrink-0">${song.duration || fallbackDuration}</span>
       ${tuningHtml}
     </div>
   `
 }
 
 function renderPinnedBadge() {
-  return `<span class="inline-flex items-center gap-1 px-1.5 sm:px-2 py-0.5 rounded-full text-[11px] sm:text-xs font-extrabold bg-amber-400 text-black uppercase tracking-wide" title="Nổi bật"><svg class="w-3 h-3" aria-hidden="true" data-ph="star" viewBox="0 0 256 256" fill="currentColor"><path d="M234.29,114.85l-45,38.83L203,211.75a16.4,16.4,0,0,1-24.5,17.82L128,198.49,77.47,229.57A16.4,16.4,0,0,1,53,211.75l13.76-58.07-45-38.83A16.46,16.46,0,0,1,31.08,86l59-4.76,22.76-55.08a16.36,16.36,0,0,1,30.27,0l22.75,55.08,59,4.76a16.46,16.46,0,0,1,9.37,28.86Z"/></svg><span class="sr-only sm:not-sr-only">Nổi bật</span></span>`
+  return `<span class="inline-flex items-center gap-1 px-1.5 sm:px-2 py-0.5 rounded-full text-xs font-extrabold bg-amber-400 text-black uppercase tracking-wide" title="Nổi bật"><svg class="w-3 h-3" aria-hidden="true" data-ph="star" viewBox="0 0 256 256" fill="currentColor"><path d="M234.29,114.85l-45,38.83L203,211.75a16.4,16.4,0,0,1-24.5,17.82L128,198.49,77.47,229.57A16.4,16.4,0,0,1,53,211.75l13.76-58.07-45-38.83A16.46,16.46,0,0,1,31.08,86l59-4.76,22.76-55.08a16.36,16.36,0,0,1,30.27,0l22.75,55.08,59,4.76a16.46,16.46,0,0,1,9.37,28.86Z"/></svg><span class="sr-only sm:not-sr-only">Nổi bật</span></span>`
 }
 
 /** Nhãn nhỏ "Mới" / "Bán chạy" nằm trên tên bài. */
@@ -200,7 +200,7 @@ function renderPaidArtworkCenter(tab, { isPurchased, video, audio }) {
       <div class="w-6 h-6 sm:w-8 sm:h-8 rounded-full bg-black/30 flex items-center justify-center text-white shadow-sm">
         ${iconGuitar('w-3 h-3 sm:w-3.5 sm:h-3.5')}
       </div>
-      <span class="text-[11px] sm:text-xs font-bold mt-0.5 text-white/80">Acoustic Tab</span>
+      <span class="text-xs font-bold mt-0.5 text-white/80">Acoustic Tab</span>
     </div>
   `
 }
@@ -246,7 +246,7 @@ export function renderSongCard(tab, options = {}) {
   // động làm khung ảnh phình rộng hơn thẻ rồi bị cắt mất mép phải.
 
   const levelRow = (rightSlot = '') => `
-    <div class="flex flex-wrap items-center justify-between gap-x-2 gap-y-1 pt-0.5 text-[11px] sm:text-xs font-medium text-text-muted">
+    <div class="flex flex-wrap items-center justify-between gap-x-2 gap-y-1 pt-0.5 text-xs font-medium text-text-muted">
       ${renderLevelDots(levelNum, tab.level)}
       ${rightSlot}
     </div>
@@ -263,7 +263,7 @@ export function renderSongCard(tab, options = {}) {
             <div class="flex justify-between items-start text-xs uppercase font-bold tracking-wider">
               <div class="flex items-center gap-1 flex-wrap w-full">
                 ${pinnedBadge}
-                <span class="px-1.5 sm:px-2 py-0.5 rounded-full text-[11px] sm:text-xs font-extrabold bg-emerald-700 text-white uppercase tracking-wide">FREE</span>
+                <span class="px-1.5 sm:px-2 py-0.5 rounded-full text-xs font-extrabold bg-emerald-700 text-white uppercase tracking-wide">FREE</span>
                 ${favButton}
               </div>
             </div>
@@ -281,13 +281,13 @@ export function renderSongCard(tab, options = {}) {
             <h3 class="text-sm sm:text-base font-bold text-text-primary group-hover:text-emerald-600 dark:group-hover:text-emerald-400 transition-colors leading-snug line-clamp-2">
               ${tab.title}
             </h3>
-            ${tab.singer ? `<p class="song-card-singer text-[11px] sm:text-xs text-text-muted truncate">${tab.singer}</p>` : ''}
+            ${tab.singer ? `<p class="song-card-singer text-xs text-text-muted truncate">${tab.singer}</p>` : ''}
             ${levelRow()}
           </div>
         </div>
 
         <div class="song-card-cta pt-1 sm:pt-2">
-          <div class="w-full py-1.5 sm:py-2.5 px-1.5 rounded-full border border-emerald-700/40 bg-emerald-700/10 group-hover:bg-emerald-700 group-hover:border-emerald-700 text-emerald-800 dark:text-emerald-300 dark:border-emerald-400/40 group-hover:text-white dark:group-hover:text-white font-bold text-[11px] sm:text-xs transition-colors flex items-center justify-center gap-1 active:scale-95 text-center cursor-pointer">
+          <div class="w-full py-1.5 sm:py-2.5 px-1.5 rounded-full border border-emerald-700/40 bg-emerald-700/10 group-hover:bg-emerald-700 group-hover:border-emerald-700 text-emerald-800 dark:text-emerald-300 dark:border-emerald-400/40 group-hover:text-white dark:group-hover:text-white font-bold text-xs transition-colors flex items-center justify-center gap-1 active:scale-95 text-center cursor-pointer">
             <span class="truncate">Xem Video Tab</span>
           </div>
         </div>
@@ -307,7 +307,7 @@ export function renderSongCard(tab, options = {}) {
 
   const badgeHtml = isPurchased
     ? `
-    <span class="px-1.5 sm:px-2 py-0.5 rounded-full text-[11px] sm:text-xs font-extrabold bg-emerald-700 text-white uppercase tracking-wide flex items-center gap-0.5">
+    <span class="px-1.5 sm:px-2 py-0.5 rounded-full text-xs font-extrabold bg-emerald-700 text-white uppercase tracking-wide flex items-center gap-0.5">
       <svg class="hidden sm:block w-3 h-3" aria-hidden="true" data-ph="check" viewBox="0 0 256 256" fill="currentColor"><path d="M232.49,80.49l-128,128a12,12,0,0,1-17,0l-56-56a12,12,0,1,1,17-17L96,183,215.51,63.51a12,12,0,0,1,17,17Z"/></svg>
       <span>ĐÃ MUA</span>
     </span>
@@ -337,7 +337,7 @@ export function renderSongCard(tab, options = {}) {
           <h3 class="text-sm sm:text-base font-bold text-text-primary group-hover:text-accent-primary transition-colors leading-snug line-clamp-2">
             ${tab.title}
           </h3>
-          ${tab.singer ? `<p class="song-card-singer text-[11px] sm:text-xs text-text-muted truncate">${tab.singer}</p>` : ''}
+          ${tab.singer ? `<p class="song-card-singer text-xs text-text-muted truncate">${tab.singer}</p>` : ''}
           ${levelRow(isPurchased ? '' : renderHssvNote(discountNote))}
         </div>
       </div>
@@ -345,10 +345,10 @@ export function renderSongCard(tab, options = {}) {
       <div class="song-card-cta pt-1 sm:pt-2">
         ${
           isPurchased
-            ? `<div class="w-full py-1.5 sm:py-2.5 px-1.5 rounded-full bg-amber-500/15 border border-amber-500/30 hover:bg-amber-500/25 text-amber-800 dark:text-amber-300 font-extrabold text-[11px] sm:text-xs transition-all flex items-center justify-center gap-1 active:scale-95 text-center cursor-pointer">
+            ? `<div class="w-full py-1.5 sm:py-2.5 px-1.5 rounded-full bg-amber-500/15 border border-amber-500/30 hover:bg-amber-500/25 text-amber-800 dark:text-amber-300 font-extrabold text-xs transition-all flex items-center justify-center gap-1 active:scale-95 text-center cursor-pointer">
           <span class="truncate">Mở tab đã mua</span>
         </div>`
-            : `<div class="w-full py-1.5 sm:py-2.5 px-1.5 rounded-full bg-warm-gradient hover:brightness-105 text-white font-bold text-[11px] sm:text-xs transition-all flex items-center justify-center gap-1 active:scale-95 text-center cursor-pointer">
+            : `<div class="w-full py-1.5 sm:py-2.5 px-1.5 rounded-full bg-warm-gradient hover:brightness-105 text-white font-bold text-xs transition-all flex items-center justify-center gap-1 active:scale-95 text-center cursor-pointer">
           <span class="truncate">Mua tab<span class="hidden sm:inline"> · <span class="uppercase tabular-nums">${priceFormatted}</span></span></span>
         </div>`
         }
