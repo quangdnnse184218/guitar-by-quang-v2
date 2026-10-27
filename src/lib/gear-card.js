@@ -62,7 +62,7 @@ export function renderGearCard(gear, idx) {
       <article class="gear-row flex gap-3.5 sm:gap-4 p-3 sm:p-4 rounded-2xl ${extraClass}">
         ${thumbHtml}
         <div class="min-w-0 flex-1 flex flex-col gap-1">
-          <span class="text-[11px] sm:text-xs font-bold uppercase tracking-wider text-accent-primary truncate">${escapeHtml(gear.category || 'Phụ kiện')}</span>
+          <span class="text-[13px] sm:text-sm font-bold text-accent-primary truncate">${escapeHtml(gear.category || 'Phụ kiện')}</span>
           <h4 class="-mt-0.5 text-sm sm:text-base font-bold text-text-primary leading-snug truncate" title="${escapeHtml(title)}">${escapeHtml(title)}</h4>
           <p class="text-[13px] sm:text-sm text-text-muted leading-relaxed line-clamp-2">${escapeHtml(description)}</p>
           ${noteHtml}
