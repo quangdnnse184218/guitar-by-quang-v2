@@ -572,8 +572,7 @@ const modeHearBtn = document.getElementById('mode-hear')
 const bestSeeLabel = document.getElementById('best-see')
 const bestHearLabel = document.getElementById('best-hear')
 const startBtn = document.getElementById('start-btn')
-const boardLinkSee = document.getElementById('board-link-see')
-const boardLinkHear = document.getElementById('board-link-hear')
+const boardLinkStart = document.getElementById('board-link-start')
 const boardLinkOver = document.getElementById('board-link-over')
 
 const nicknameModal = document.getElementById('nickname-modal')
@@ -1744,18 +1743,12 @@ volumeSlider.addEventListener('change', () => {
 modeSeeBtn.addEventListener('click', () => setMode('see'))
 modeHearBtn.addEventListener('click', () => setMode('hear'))
 
-// Bảng xếp hạng: mở đúng chế độ của thẻ vừa bấm (màn chọn), hoặc chế độ vừa
-// chơi xong (màn kết thúc) — không cần chọn lại vì đã đứng sẵn đúng chỗ rồi.
-boardLinkSee.addEventListener('click', () => openLeaderboard('see'))
-boardLinkHear.addEventListener('click', () => openLeaderboard('hear'))
+// Bảng xếp hạng: mở đúng chế độ đang chọn (màn chọn), hoặc chế độ vừa chơi xong
+// (màn kết thúc) — không cần chọn lại vì đã đứng sẵn đúng chỗ rồi.
+boardLinkStart.addEventListener('click', () => openLeaderboard(mode))
 // Tải sẵn ngay khi rê chuột / chạm / focus vào nút — lúc bấm hẳn thì dữ liệu đã về.
-for (const [btn, m] of [
-  [boardLinkSee, 'see'],
-  [boardLinkHear, 'hear'],
-]) {
-  for (const evt of ['pointerenter', 'touchstart', 'focus']) {
-    btn.addEventListener(evt, () => prefetchLeaderboard(m), { passive: true })
-  }
+for (const evt of ['pointerenter', 'touchstart', 'focus']) {
+  boardLinkStart.addEventListener(evt, () => prefetchLeaderboard(mode), { passive: true })
 }
 // Rảnh rỗi sau khi vào trang thì tải sẵn chế độ mặc định.
 ;(window.requestIdleCallback || ((fn) => setTimeout(fn, 1500)))(() => prefetchLeaderboard('see'))

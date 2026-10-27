@@ -109,7 +109,7 @@
         touch-action: manipulation;
         -webkit-tap-highlight-color: transparent;
       }
-      .pad, .nav-btn, .mode-card, .mode-board-link, .btn-primary, .btn-ghost, .btn-board, .board-row {
+      .pad, .nav-btn, .mode-card, .start-board-link, .btn-primary, .btn-ghost, .btn-board, .board-row {
         -webkit-user-select: none;
         user-select: none;
       }
@@ -229,20 +229,13 @@
       }
       .subtitle {
         text-align: center;
-        font-size: 12px;
-        font-weight: 800;
-        letter-spacing: 0.2em;
-        text-transform: uppercase;
-        color: var(--gold);
-        margin: 11px 0 0;
-      }
-      .lede {
-        text-align: center;
-        font-size: 14px;
-        line-height: 1.65;
+        font-size: 15px;
+        font-weight: 600;
+        line-height: 1.5;
         color: var(--ink-dim);
-        margin: 14px auto 22px;
-        max-width: 40ch;
+        margin: 10px auto 0;
+        max-width: 34ch;
+        text-wrap: balance;
       }
 
       .how {
@@ -281,9 +274,12 @@
         margin-bottom: 10px;
       }
       .modes { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 20px; }
-      .mode-slot { display: flex; flex-direction: column; gap: 6px; }
       .mode-card {
         flex: 1;
+        display: flex;
+        flex-direction: column;
+        align-items: stretch;
+        justify-content: flex-start;
         position: relative;
         border: 2px solid var(--line);
         background: var(--panel);
@@ -345,33 +341,30 @@
         margin-bottom: 5px;
         color: var(--ink);
       }
-      .mode-desc { display: block; font-size: 12px; line-height: 1.5; color: var(--ink-faint); }
-      .mode-best { display: block; margin-top: 8px; font-size: 12px; font-weight: 700; color: var(--gold); }
-      /* Trước đây chỉ là chữ nhạt gần như vô hình — đổi hẳn thành thẻ có nền,
-         viền, để mắt bắt được ngay là có thể bấm vào xem, không lướt qua mất. */
-      .mode-board-link {
+      .mode-desc { display: block; font-size: 12px; line-height: 1.5; color: var(--ink-faint); text-wrap: pretty; }
+      .mode-best { display: block; margin-top: auto; padding-top: 8px; font-size: 12px; font-weight: 700; color: var(--gold); }
+      /* Một nút chung dưới nút Bắt đầu, chữ nhạt có biểu tượng cúp: việc phụ, để Bắt đầu nổi nhất. */
+      .start-board-link {
         display: flex;
         align-items: center;
         justify-content: center;
-        gap: 6px;
+        gap: 7px;
+        width: 100%;
+        margin-top: 6px;
+        min-height: 44px;
         font-family: inherit;
-        font-size: 12px;
-        font-weight: 800;
-        color: var(--gold);
-        background: color-mix(in srgb, var(--gold-solid) 12%, var(--panel));
-        border: 1.5px solid color-mix(in srgb, var(--gold-solid) 45%, transparent);
+        font-size: 14px;
+        font-weight: 700;
+        color: var(--ink-dim);
+        background: none;
+        border: 0;
         border-radius: 999px;
-        padding: 7px 10px;
-        text-align: center;
         cursor: pointer;
-        transition: color 0.15s, border-color 0.15s, background 0.15s, transform 0.1s;
+        transition: color 0.15s, background 0.15s;
       }
-      .mode-board-link:hover {
-        color: var(--gold-solid-ink);
-        background: var(--gold-solid);
-        border-color: var(--gold-solid);
-      }
-      .mode-board-link:active { transform: scale(0.97); }
+      .start-board-link:hover { color: var(--gold); background: color-mix(in srgb, var(--gold-solid) 12%, transparent); }
+      .start-board-link svg { width: 16px; height: 16px; flex-shrink: 0; }
+      .start-deco { display: none; }
 
       .btn-primary {
         display: block;
@@ -1236,35 +1229,24 @@
         line-height: 1.1;
         letter-spacing: -0.01em;
       }
-      .subtitle { letter-spacing: 0.16em; margin-top: 10px; }
 
-      /* Ba bước là một trình tự thật nên giữ số; xếp thành danh sách một cột
-         để mỗi bước nằm trọn một dòng thay vì ba ô chữ nhỏ xuống hàng. */
-      .how {
-        grid-template-columns: 1fr;
-        gap: 0;
-        background: var(--panel);
-        border: 1px solid var(--line);
-        border-radius: 16px;
-        padding: 2px 14px;
-        box-shadow: var(--shadow-soft);
-      }
+      /* Ba bước là một trình tự thật nên giữ số. Điện thoại: ba ô ngang, mỗi ô một số và vài chữ;
+         máy tính (khối min-width 900px) xếp thành danh sách dọc. */
+      .how { gap: 8px; margin: 18px 0 20px; }
       .how-step {
         display: flex;
+        flex-direction: column;
         align-items: center;
-        gap: 12px;
-        text-align: left;
-        background: none;
-        border: 0;
-        border-radius: 0;
-        padding: 10px 0;
+        gap: 7px;
+        padding: 12px 6px;
+        border-radius: 14px;
+        box-shadow: var(--shadow-soft);
       }
-      .how-step + .how-step { border-top: 1px solid var(--line); }
       .how-num { width: 24px; height: 24px; margin: 0; flex-shrink: 0; font-size: 12px; }
       .how-step:nth-child(1) .how-num { background: var(--n1); }
       .how-step:nth-child(2) .how-num { background: var(--n6); color: #06231f; }
       .how-step:nth-child(3) .how-num { background: var(--n3); color: #fff; }
-      .how-text { font-size: 13px; color: var(--ink); }
+      .how-text { font-size: 13px; font-weight: 600; line-height: 1.3; color: var(--ink); }
 
       .mode-label { font-size: 13px; }
       .mode-card { border-radius: 16px; padding: 12px 12px 13px; }
@@ -1287,16 +1269,7 @@
       .mode-card[aria-pressed='true'] {
         box-shadow: 0 0 0 3px color-mix(in srgb, var(--gold-solid) 22%, transparent), var(--shadow-soft);
       }
-      /* Hai nút bảng xếp hạng là việc phụ: chữ có biểu tượng, không tô nền,
-         để nút "Bắt đầu" là thứ nổi nhất màn. */
-      .mode-board-link {
-        min-height: 40px;
-        background: none;
-        border-color: transparent;
-        padding: 6px 8px;
-      }
-      .mode-board-link svg, .btn-board svg { width: 16px; height: 16px; flex-shrink: 0; }
-      .mode-board-link:hover { background: color-mix(in srgb, var(--gold-solid) 16%, transparent); color: var(--gold); border-color: transparent; }
+      .btn-board svg { width: 16px; height: 16px; flex-shrink: 0; }
       .btn-board { display: flex; align-items: center; justify-content: center; gap: 7px; }
 
       /* Nút chính có "chân" nổi khối như nút bấm thật, lún xuống khi nhấn. */
@@ -1393,20 +1366,6 @@
       @media (min-width: 900px) {
         main { padding: 30px 28px 34px; }
 
-        #screen-start {
-          max-width: 980px;
-          display: grid;
-          grid-template-columns: minmax(0, 1.02fr) minmax(0, 0.98fr);
-          gap: 46px;
-          align-items: center;
-        }
-        .start-intro { text-align: left; }
-        .start-intro .hero-mark { width: 128px; height: 128px; margin: 0 0 20px; }
-        .start-intro .hero-mark svg { width: 42px; height: 42px; }
-        .start-intro h1 { text-align: left; font-size: clamp(30px, 2.8vw, 40px); }
-        .start-intro .subtitle { text-align: left; }
-        .start-intro .lede { text-align: left; margin: 14px 0 24px; max-width: 44ch; }
-        .how { margin-bottom: 0; }
 
         .start-panel {
           background: var(--panel);
@@ -1575,7 +1534,6 @@
         .mode-desc { display: none; }
         .mode-card { padding: 10px 10px 11px; }
         .mode-icon { width: 32px; height: 32px; }
-        .mode-board-link { font-size: 11px; padding: 6px 2px; }
       }
 
       /* Máy cầm tay: bóp gọn mọi khoảng cách để cả trang lọt trong một màn
@@ -1595,12 +1553,11 @@
         .hero-mark { width: 100px; height: 100px; margin-bottom: 9px; }
         .hero-mark svg { width: 32px; height: 32px; }
         h1 { font-size: clamp(21px, 6.2vw, 28px); }
-        .subtitle { font-size: 11px; margin-top: 7px; }
-        .lede { display: none; }
+        .subtitle { font-size: 13px; margin-top: 7px; }
 
-        .how { gap: 0; margin-bottom: 13px; margin-top: 14px; }
-        .how-step { padding: 8px 0; }
-        .how-num { width: 18px; height: 18px; font-size: 11px; margin-bottom: 0; }
+        .how { gap: 6px; margin: 12px 0 13px; }
+        .how-step { padding: 9px 4px; gap: 5px; }
+        .how-num { width: 20px; height: 20px; font-size: 11px; }
         .how-text { font-size: 12px; }
 
         .mode-label { margin-bottom: 7px; }
@@ -1666,6 +1623,166 @@
         .hero-mark { width: 76px; height: 76px; margin-bottom: 7px; }
         .hero-mark svg { width: 24px; height: 24px; }
       }
+      /* ===== Màn mở đầu trên máy tính: hai cột dùng hết chiều ngang, khóa cuộn trang ===== */
+      @media (min-width: 900px) {
+        #screen-start {
+          position: relative;
+          max-width: min(1480px, 100%);
+          display: grid;
+          grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+          column-gap: clamp(36px, 5vw, 110px);
+          align-items: center;
+          min-height: calc(100dvh - 190px);
+        }
+        .start-intro, .start-panel { position: relative; z-index: 1; }
+
+        .start-deco {
+          display: block;
+          position: fixed;
+          inset: 0;
+          z-index: 0;
+          pointer-events: none;
+          overflow: hidden;
+          background:
+            radial-gradient(520px 380px at 7% 14%, color-mix(in srgb, var(--n1) 20%, transparent), transparent 70%),
+            radial-gradient(460px 360px at 3% 98%, color-mix(in srgb, var(--n7) 22%, transparent), transparent 70%),
+            radial-gradient(540px 420px at 99% 99%, color-mix(in srgb, var(--n5) 18%, transparent), transparent 70%),
+            radial-gradient(380px 280px at 97% 6%, color-mix(in srgb, var(--n2) 16%, transparent), transparent 70%);
+        }
+        .start-deco svg { position: absolute; display: block; }
+        .deco-leaf { left: 0; bottom: 0; width: clamp(110px, 11vw, 190px); color: var(--n7); opacity: 0.55; }
+        .deco-note { right: 3.5%; bottom: 9%; width: clamp(40px, 4vw, 68px); color: var(--n6); opacity: 0.6; transform: rotate(8deg); }
+        .deco-spark { position: absolute; width: 26px; height: 5px; border-radius: 4px; background: var(--n1); opacity: 0.7; }
+        .deco-spark-1 { right: 4%; top: 8%; transform: rotate(-55deg); }
+        .deco-spark-2 { right: 6.2%; top: 11%; width: 18px; transform: rotate(-40deg); }
+        .deco-spark-3 { left: 30%; top: 12%; width: 20px; background: var(--n2); transform: rotate(35deg); }
+
+        .start-intro { text-align: center; }
+        .start-intro .hero-mark {
+          width: clamp(92px, min(11vw, 18vh), 210px);
+          height: clamp(92px, min(11vw, 18vh), 210px);
+          margin: 0 auto clamp(10px, 2vh, 24px);
+        }
+        .start-intro .hero-mark svg { width: 46%; height: 46%; max-width: 78px; max-height: 78px; }
+        .start-intro h1 { text-align: center; font-size: clamp(34px, min(4.4vw, 7.4vh), 78px); line-height: 1.04; }
+        .start-intro .subtitle {
+          text-align: center;
+          margin: 12px auto 0;
+          max-width: none;
+          font-size: clamp(16px, 1.35vw, 23px);
+        }
+
+        /* Ba bước: dải màu theo số, có mũi tên — cùng màu với ba chấm số */
+        .how {
+          grid-template-columns: 1fr;
+          gap: 10px;
+          margin: clamp(14px, 2.8vh, 32px) 0 0;
+          padding: clamp(8px, 1.6vh, 14px);
+          background: var(--panel);
+          border: 1px solid var(--line);
+          border-radius: 24px;
+          box-shadow: var(--shadow-soft);
+        }
+        .how-step {
+          flex-direction: row;
+          align-items: center;
+          justify-content: flex-start;
+          gap: 14px;
+          padding: clamp(7px, 1.3vh, 12px) 16px;
+          text-align: left;
+          border: 0;
+          border-radius: 16px;
+          box-shadow: none;
+          background: color-mix(in srgb, var(--tint) 15%, var(--panel));
+        }
+        .how-step:nth-child(1) { --tint: var(--n1); }
+        .how-step:nth-child(2) { --tint: var(--n6); }
+        .how-step:nth-child(3) { --tint: var(--n3); }
+        .how-step::after {
+          content: '';
+          width: 18px;
+          height: 18px;
+          flex-shrink: 0;
+          background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23777' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m9 6 6 6-6 6'/%3E%3C/svg%3E") center / contain no-repeat;
+          opacity: 0.55;
+        }
+        .how-num { width: clamp(34px, 2.4vw, 44px); height: clamp(34px, 2.4vw, 44px); font-size: clamp(16px, 1.2vw, 20px); }
+        .how-text { flex: 1; font-size: clamp(15px, 1.2vw, 20px); font-weight: 700; }
+
+        /* Khung chọn chế độ */
+        .start-panel {
+          padding: clamp(22px, 2.6vw, 48px);
+          border-radius: 28px;
+        }
+        .mode-label {
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          gap: 10px;
+          font-size: clamp(16px, 1.4vw, 19px);
+          margin-bottom: clamp(14px, 2.2vh, 22px);
+        }
+        .mode-label::before {
+          content: '';
+          width: 34px;
+          height: 34px;
+          border-radius: 50%;
+          background: color-mix(in srgb, var(--gold-solid) 28%, transparent) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%23c98a1a'%3E%3Cpath d='M17 3v12.5a3.5 3.5 0 1 1-2-3.16V6.2L9 7.6v9.9a3.5 3.5 0 1 1-2-3.16V5z'/%3E%3C/svg%3E") center / 18px no-repeat;
+        }
+        .modes { gap: 16px; margin-bottom: clamp(16px, 2.6vh, 24px); }
+        .start-panel .mode-card { padding: 18px 18px 16px; border-radius: 20px; }
+        .mode-top { margin-bottom: 14px; }
+        .mode-icon { width: clamp(48px, 3.4vw, 60px); height: clamp(48px, 3.4vw, 60px); border-radius: 14px; }
+        .mode-icon svg { width: 55%; height: 55%; }
+        .mode-badge { font-size: 12px; padding: 4px 11px; }
+        .mode-name { font-size: clamp(17px, 1.5vw, 25px); margin-bottom: 6px; }
+        .mode-desc { font-size: clamp(14px, 1.05vw, 16px); margin-bottom: 14px; }
+        .mode-best {
+          display: inline-flex;
+          align-items: center;
+          align-self: flex-start;
+          gap: 6px;
+          margin-top: auto;
+          padding: 6px 12px;
+          border-radius: 999px;
+          font-size: 13px;
+          background: color-mix(in srgb, var(--gold-solid) 16%, transparent);
+        }
+        .mode-best::after { content: ''; width: 14px; height: 14px; background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 256 256' fill='%23d9a21a'%3E%3Cpath d='M232 64h-24V48a8 8 0 0 0-8-8H56a8 8 0 0 0-8 8v16H24A16 16 0 0 0 8 80v16a40 40 0 0 0 40 40h3.65A80.13 80.13 0 0 0 120 191.61V216H96a8 8 0 0 0 0 16h64a8 8 0 0 0 0-16h-24v-24.42c31.94-3.23 58.44-25.64 68.08-55.58H208a40 40 0 0 0 40-40V80a16 16 0 0 0-16-16zM48 120a24 24 0 0 1-24-24V80h24v32q0 4 .39 8zm184-24a24 24 0 0 1-24 24h-.5a81.81 81.81 0 0 0 .5-8.9V80h24z'/%3E%3C/svg%3E") center / contain no-repeat; }
+
+        #start-btn {
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          gap: 12px;
+          padding: clamp(16px, 2.4vh, 22px);
+          font-size: clamp(15px, 1.3vw, 21px);
+        }
+        #start-btn::before {
+          content: '';
+          width: 34px;
+          height: 34px;
+          flex-shrink: 0;
+          border-radius: 50%;
+          background: #fff url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%23d9831f'%3E%3Cpath d='M7 4.5v15a1 1 0 0 0 1.5.86l12-7.5a1 1 0 0 0 0-1.72l-12-7.5A1 1 0 0 0 7 4.5z'/%3E%3C/svg%3E") 56% 50% / 15px no-repeat;
+        }
+        #start-btn:disabled::before { opacity: 0.6; }
+        .start-board-link { font-size: 15px; min-height: 50px; margin-top: 8px; }
+        .start-board-link::after {
+          content: '';
+          width: 16px;
+          height: 16px;
+          background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23777' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m9 6 6 6-6 6'/%3E%3C/svg%3E") center / contain no-repeat;
+          opacity: 0.6;
+        }
+      }
+
+      /* Khóa cuộn trang khi đang ở màn mở đầu trên máy tính (màn đủ cao để mọi thứ vừa một khung).
+         Màn thấp hơn 620px vẫn cho cuộn để không che mất nút Bắt đầu. */
+      @media (min-width: 900px) and (min-height: 620px) {
+        html:has(#screen-start:not([hidden])),
+        html:has(#screen-start:not([hidden])) body { overflow: hidden; }
+      }
     </style>
       <link rel="preconnect" href="https://covzjzcqerldfssxasax.supabase.co" crossorigin />
   </head>
@@ -1697,6 +1814,12 @@
     <main>
       <!-- ============ MÀN HÌNH MỞ ĐẦU ============ -->
       <section class="screen" id="screen-start">
+        <!-- Nền trang trí: mảng màu, cây, nốt nhạc. Chỉ hiện ở máy tính, để dùng hết chỗ trống hai bên. -->
+        <div class="start-deco" aria-hidden="true">
+          <svg class="deco-leaf" viewBox="0 0 120 140" fill="currentColor"><path d="M8 140C6 96 20 52 58 20c10 34 4 74-22 108 14-18 36-26 56-26-18-30-50-34-84 38z"/><path d="M60 60c14-14 30-20 48-22-4 20-18 34-40 40z" opacity=".7"/></svg>
+          <svg class="deco-note" viewBox="0 0 64 64" fill="currentColor"><path d="M44 6v34.6A9 9 0 1 1 38 32V16L22 20v26.6A9 9 0 1 1 16 38V14z"/></svg>
+          <i class="deco-spark deco-spark-1"></i><i class="deco-spark deco-spark-2"></i><i class="deco-spark deco-spark-3"></i>
+        </div>
         <div class="start-intro">
         <div class="hero-mark" aria-hidden="true">
           <i class="hero-dot"></i><i class="hero-dot"></i><i class="hero-dot"></i><i class="hero-dot"></i><i class="hero-dot"></i><i class="hero-dot"></i><i class="hero-dot"></i>
@@ -1706,65 +1829,58 @@
             <rect x="44" y="35" width="14" height="21" rx="7" fill="currentColor" />
           </svg>
         </div>
-        <h1>Game luyện cảm âm và trí nhớ</h1>
-        <p class="subtitle">Nghe · Nhớ · Lặp lại</p>
-        <p class="lede">Máy phát một chuỗi nốt guitar, bạn bấm lại đúng thứ tự. Đúng thì chuỗi dài thêm một nốt. Bạn có một trái tim — bấm sai là mất tim, nhưng được nghe lại chuỗi và làm lại chính vòng đó.</p>
+        <h1>Luyện cảm âm</h1>
+        <p class="subtitle">Nghe chuỗi nốt, rồi bấm lại đúng thứ tự.</p>
 
         <div class="how">
           <div class="how-step">
             <span class="how-num">1</span>
-            <span class="how-text">Nghe máy phát chuỗi nốt</span>
+            <span class="how-text">Nghe nốt</span>
           </div>
           <div class="how-step">
             <span class="how-num">2</span>
-            <span class="how-text">Bấm lại đúng thứ tự vừa nghe</span>
+            <span class="how-text">Bấm lại đúng</span>
           </div>
           <div class="how-step">
             <span class="how-num">3</span>
-            <span class="how-text">Sai thì mất tim, hết tim còn Cơ Hội Cuối</span>
+            <span class="how-text">Sai mất tim</span>
           </div>
         </div>
         </div>
 
         <div class="start-panel">
-        <p class="mode-label">Có 2 chế độ — chọn 1 rồi bấm chơi</p>
+        <p class="mode-label">Chọn chế độ</p>
         <div class="modes">
-          <!-- Nút xem bảng xếp hạng nằm NGOÀI mode-card (mode-card vốn đã là
-               <button>, không được lồng thêm phần tử tương tác bên trong) —
-               bọc chung một .mode-slot để gắn liền ngay dưới thẻ. -->
-          <div class="mode-slot">
-            <button type="button" class="mode-card" id="mode-see" aria-pressed="true">
-              <span class="mode-top">
-                <span class="mode-icon" aria-hidden="true"><svg class=" flex-shrink-0" aria-hidden="true" data-ph="eye" viewBox="0 0 256 256" fill="currentColor"><path d="M251,123.13c-.37-.81-9.13-20.26-28.48-39.61C196.63,57.67,164,44,128,44S59.37,57.67,33.51,83.52C14.16,102.87,5.4,122.32,5,123.13a12.08,12.08,0,0,0,0,9.75c.37.82,9.13,20.26,28.49,39.61C59.37,198.34,92,212,128,212s68.63-13.66,94.48-39.51c19.36-19.35,28.12-38.79,28.49-39.61A12.08,12.08,0,0,0,251,123.13Zm-46.06,33C183.47,177.27,157.59,188,128,188s-55.47-10.73-76.91-31.88A130.36,130.36,0,0,1,29.52,128,130.45,130.45,0,0,1,51.09,99.89C72.54,78.73,98.41,68,128,68s55.46,10.73,76.91,31.89A130.36,130.36,0,0,1,226.48,128,130.45,130.45,0,0,1,204.91,156.12ZM128,84a44,44,0,1,0,44,44A44.05,44.05,0,0,0,128,84Zm0,64a20,20,0,1,1,20-20A20,20,0,0,1,128,148Z"/></svg></span>
-                <span class="mode-badge easy">Dễ</span>
-                <span class="mode-check" aria-hidden="true">
-                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5" /></svg>
-                </span>
+          <button type="button" class="mode-card" id="mode-see" aria-pressed="true">
+            <span class="mode-top">
+              <span class="mode-icon" aria-hidden="true"><svg class=" flex-shrink-0" aria-hidden="true" data-ph="eye" viewBox="0 0 256 256" fill="currentColor"><path d="M251,123.13c-.37-.81-9.13-20.26-28.48-39.61C196.63,57.67,164,44,128,44S59.37,57.67,33.51,83.52C14.16,102.87,5.4,122.32,5,123.13a12.08,12.08,0,0,0,0,9.75c.37.82,9.13,20.26,28.49,39.61C59.37,198.34,92,212,128,212s68.63-13.66,94.48-39.51c19.36-19.35,28.12-38.79,28.49-39.61A12.08,12.08,0,0,0,251,123.13Zm-46.06,33C183.47,177.27,157.59,188,128,188s-55.47-10.73-76.91-31.88A130.36,130.36,0,0,1,29.52,128,130.45,130.45,0,0,1,51.09,99.89C72.54,78.73,98.41,68,128,68s55.46,10.73,76.91,31.89A130.36,130.36,0,0,1,226.48,128,130.45,130.45,0,0,1,204.91,156.12ZM128,84a44,44,0,1,0,44,44A44.05,44.05,0,0,0,128,84Zm0,64a20,20,0,1,1,20-20A20,20,0,0,1,128,148Z"/></svg></span>
+              <span class="mode-badge easy">Dễ</span>
+              <span class="mode-check" aria-hidden="true">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5" /></svg>
               </span>
-              <span class="mode-name">Nhìn &amp; Nghe</span>
-              <span class="mode-desc">Phím sáng lên theo từng nốt. Dễ vào, hợp người mới.</span>
-              <span class="mode-best" id="best-see">Kỷ lục: 0 vòng</span>
-            </button>
-            <button type="button" class="mode-board-link" id="board-link-see"><svg class=" flex-shrink-0" aria-hidden="true" data-ph="trophy" viewBox="0 0 256 256" fill="currentColor"><path d="M232,64H208V48a8,8,0,0,0-8-8H56a8,8,0,0,0-8,8V64H24A16,16,0,0,0,8,80V96a40,40,0,0,0,40,40h3.65A80.13,80.13,0,0,0,120,191.61V216H96a8,8,0,0,0,0,16h64a8,8,0,0,0,0-16H136V191.58c31.94-3.23,58.44-25.64,68.08-55.58H208a40,40,0,0,0,40-40V80A16,16,0,0,0,232,64ZM48,120A24,24,0,0,1,24,96V80H48v32q0,4,.39,8ZM232,96a24,24,0,0,1-24,24h-.5a81.81,81.81,0,0,0,.5-8.9V80h24Z"/></svg><span>Bảng xếp hạng</span></button>
-          </div>
-          <div class="mode-slot">
-            <button type="button" class="mode-card" id="mode-hear" aria-pressed="false">
-              <span class="mode-top">
-                <span class="mode-icon" aria-hidden="true"><svg class=" flex-shrink-0" aria-hidden="true" data-ph="ear" viewBox="0 0 256 256" fill="currentColor"><path d="M220,104a12,12,0,0,1-24,0,68,68,0,0,0-136,0c0,25,7.58,32.3,16.35,40.76S96,163.71,96,188a32,32,0,0,0,32,32c9,0,16.19-3.7,22.75-11.64a12,12,0,0,1,18.5,15.28C158.09,237.15,144.21,244,128,244a56.06,56.06,0,0,1-56-56c0-14.09-4.63-18.56-12.31-26C49.13,151.86,36,139.19,36,104a92,92,0,0,1,184,0Zm-40.13,53.61a12,12,0,0,0-16.4,4.38,4,4,0,0,1-7.47-2c0-7.61,3.65-12.86,9.6-20.8C172,130.65,180,120,180,104a52,52,0,0,0-104,0,12,12,0,0,0,24,0,28,28,0,0,1,56,0c0,7.61-3.65,12.86-9.6,20.8C140,133.35,132,144,132,160a28,28,0,0,0,52.25,14A12,12,0,0,0,179.87,157.61Z"/></svg></span>
-                <span class="mode-badge hard">Khó</span>
-                <span class="mode-check" aria-hidden="true">
-                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5" /></svg>
-                </span>
+            </span>
+            <span class="mode-name">Nhìn &amp; Nghe</span>
+            <span class="mode-desc">Phím sáng theo từng nốt.</span>
+            <span class="mode-best" id="best-see">Kỷ lục: 0 vòng</span>
+          </button>
+          <button type="button" class="mode-card" id="mode-hear" aria-pressed="false">
+            <span class="mode-top">
+              <span class="mode-icon" aria-hidden="true"><svg class=" flex-shrink-0" aria-hidden="true" data-ph="ear" viewBox="0 0 256 256" fill="currentColor"><path d="M220,104a12,12,0,0,1-24,0,68,68,0,0,0-136,0c0,25,7.58,32.3,16.35,40.76S96,163.71,96,188a32,32,0,0,0,32,32c9,0,16.19-3.7,22.75-11.64a12,12,0,0,1,18.5,15.28C158.09,237.15,144.21,244,128,244a56.06,56.06,0,0,1-56-56c0-14.09-4.63-18.56-12.31-26C49.13,151.86,36,139.19,36,104a92,92,0,0,1,184,0Zm-40.13,53.61a12,12,0,0,0-16.4,4.38,4,4,0,0,1-7.47-2c0-7.61,3.65-12.86,9.6-20.8C172,130.65,180,120,180,104a52,52,0,0,0-104,0,12,12,0,0,0,24,0,28,28,0,0,1,56,0c0,7.61-3.65,12.86-9.6,20.8C140,133.35,132,144,132,160a28,28,0,0,0,52.25,14A12,12,0,0,0,179.87,157.61Z"/></svg></span>
+              <span class="mode-badge hard">Khó</span>
+              <span class="mode-check" aria-hidden="true">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5" /></svg>
               </span>
-              <span class="mode-name">Chỉ nghe</span>
-              <span class="mode-desc">Phím không sáng — phải mò bằng tai. Kỷ lục tính riêng.</span>
-              <span class="mode-best" id="best-hear">Kỷ lục: 0 vòng</span>
-            </button>
-            <button type="button" class="mode-board-link" id="board-link-hear"><svg class=" flex-shrink-0" aria-hidden="true" data-ph="trophy" viewBox="0 0 256 256" fill="currentColor"><path d="M232,64H208V48a8,8,0,0,0-8-8H56a8,8,0,0,0-8,8V64H24A16,16,0,0,0,8,80V96a40,40,0,0,0,40,40h3.65A80.13,80.13,0,0,0,120,191.61V216H96a8,8,0,0,0,0,16h64a8,8,0,0,0,0-16H136V191.58c31.94-3.23,58.44-25.64,68.08-55.58H208a40,40,0,0,0,40-40V80A16,16,0,0,0,232,64ZM48,120A24,24,0,0,1,24,96V80H48v32q0,4,.39,8ZM232,96a24,24,0,0,1-24,24h-.5a81.81,81.81,0,0,0,.5-8.9V80h24Z"/></svg><span>Bảng xếp hạng</span></button>
-          </div>
+            </span>
+            <span class="mode-name">Chỉ nghe</span>
+            <span class="mode-desc">Phím không sáng, chỉ dùng tai.</span>
+            <span class="mode-best" id="best-hear">Kỷ lục: 0 vòng</span>
+          </button>
         </div>
 
         <button type="button" class="btn-primary" id="start-btn" disabled>Đang tải âm thanh…</button>
+        <!-- Một nút xếp hạng chung cho cả hai chế độ: mở bảng của chế độ đang chọn
+             (tiêu đề bảng ghi rõ tên chế độ). -->
+        <button type="button" class="start-board-link" id="board-link-start"><svg class=" flex-shrink-0" aria-hidden="true" data-ph="trophy" viewBox="0 0 256 256" fill="currentColor"><path d="M232,64H208V48a8,8,0,0,0-8-8H56a8,8,0,0,0-8,8V64H24A16,16,0,0,0,8,80V96a40,40,0,0,0,40,40h3.65A80.13,80.13,0,0,0,120,191.61V216H96a8,8,0,0,0,0,16h64a8,8,0,0,0,0-16H136V191.58c31.94-3.23,58.44-25.64,68.08-55.58H208a40,40,0,0,0,40-40V80A16,16,0,0,0,232,64ZM48,120A24,24,0,0,1,24,96V80H48v32q0,4,.39,8ZM232,96a24,24,0,0,1-24,24h-.5a81.81,81.81,0,0,0,.5-8.9V80h24Z"/></svg><span>Bảng xếp hạng</span></button>
         </div>
       </section>
 
@@ -1951,7 +2067,7 @@
       </section>
     </main>
 
-    <p class="footnote">Tiếng đàn lấy từ bộ mẫu guitar dây thép FluidR3_GM (CC BY 3.0).</p>
+    <p class="footnote">Tiếng đàn: FluidR3_GM (CC BY 3.0).</p>
 
     <!-- Hỏi biệt danh đúng MỘT lần trước khi vào chơi lần đầu — biệt danh
          này gắn với điểm nộp lên bảng xếp hạng ẩn danh (không cần đăng nhập,
@@ -1972,8 +2088,8 @@
       </div>
     </div>
 
-    <!-- Bảng xếp hạng ẩn danh, tách riêng theo từng chế độ. Mở từ nút dưới
-         mỗi thẻ chế độ ở màn chọn, hoặc từ màn kết thúc sau khi chơi xong. -->
+    <!-- Bảng xếp hạng ẩn danh, tách riêng theo từng chế độ. Mở từ nút ở màn chọn
+         (theo chế độ đang chọn), hoặc từ màn kết thúc sau khi chơi xong. -->
     <div class="modal-backdrop" id="board-modal" hidden>
       <div class="modal-card">
         <div class="modal-head">
