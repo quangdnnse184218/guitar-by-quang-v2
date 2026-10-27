@@ -287,9 +287,9 @@ export function renderSongCard(tab, options = {}) {
         </div>
 
         <div class="song-card-cta pt-1 sm:pt-2">
-          <div class="w-full py-1.5 sm:py-2.5 px-1.5 rounded-full border border-emerald-700/40 bg-emerald-700/10 group-hover:bg-emerald-700 group-hover:border-emerald-700 text-emerald-800 dark:text-emerald-300 dark:border-emerald-400/40 group-hover:text-white dark:group-hover:text-white font-bold text-xs transition-colors flex items-center justify-center gap-1 active:scale-95 text-center cursor-pointer">
+          <button type="button" class="w-full py-1.5 sm:py-2.5 px-1.5 rounded-full border border-emerald-700/40 bg-emerald-700/10 group-hover:bg-emerald-700 group-hover:border-emerald-700 text-emerald-800 dark:text-emerald-300 dark:border-emerald-400/40 group-hover:text-white dark:group-hover:text-white font-bold text-xs transition-colors flex items-center justify-center gap-1 active:scale-95 text-center cursor-pointer">
             <span class="truncate">Xem Video Tab</span>
-          </div>
+          </button>
         </div>
       </div>
     `
@@ -345,12 +345,12 @@ export function renderSongCard(tab, options = {}) {
       <div class="song-card-cta pt-1 sm:pt-2">
         ${
           isPurchased
-            ? `<div class="w-full py-1.5 sm:py-2.5 px-1.5 rounded-full bg-amber-500/15 border border-amber-500/30 hover:bg-amber-500/25 text-amber-800 dark:text-amber-300 font-extrabold text-xs transition-all flex items-center justify-center gap-1 active:scale-95 text-center cursor-pointer">
+            ? `<button type="button" class="w-full py-1.5 sm:py-2.5 px-1.5 rounded-full bg-amber-500/15 border border-amber-500/30 hover:bg-amber-500/25 text-amber-800 dark:text-amber-300 font-extrabold text-xs transition-all flex items-center justify-center gap-1 active:scale-95 text-center cursor-pointer">
           <span class="truncate">Mở tab đã mua</span>
-        </div>`
-            : `<div class="w-full py-1.5 sm:py-2.5 px-1.5 rounded-full bg-warm-gradient hover:brightness-105 text-white font-bold text-xs transition-all flex items-center justify-center gap-1 active:scale-95 text-center cursor-pointer">
+        </button>`
+            : `<button type="button" class="w-full py-1.5 sm:py-2.5 px-1.5 rounded-full bg-warm-gradient hover:brightness-105 text-white font-bold text-xs transition-all flex items-center justify-center gap-1 active:scale-95 text-center cursor-pointer">
           <span class="truncate">Mua tab<span class="hidden sm:inline"> · <span class="uppercase tabular-nums">${priceFormatted}</span></span></span>
-        </div>`
+        </button>`
         }
       </div>
     </div>
