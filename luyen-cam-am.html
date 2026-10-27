@@ -32,15 +32,17 @@
          <html> có class "dark" (xem src/theme-toggle.js).
          ===================================================================== */
       :root {
-        --ground: #e8e6e1;
-        --ground-glow: #f1e6d3;
+        /* Trung tính (nền, khung, chữ) đi cùng bảng xám chì của cả web; riêng vàng, bảy màu nốt và
+           nút Bắt đầu là bản sắc riêng của game nên giữ nguyên. */
+        --ground: #ecebe9;
+        --ground-glow: #f6f5f3;
         --panel: #ffffff;
-        --panel-hi: #f1f0ec;
-        --line: #e9e2d6;
-        --line-strong: #d9cfbf;
-        --ink: #1f1812;
-        --ink-dim: #5e5040;
-        --ink-faint: #685a48;
+        --panel-hi: #f3f2f0;
+        --line: #dddbd7;
+        --line-strong: #cdcac4;
+        --ink: #1e1c1c;
+        --ink-dim: #5c5856;
+        --ink-faint: #6a6664;
         --gold: #94520e;
         --gold-solid: #eaa62c;
         --gold-solid-ink: #2a1d12;
@@ -48,8 +50,8 @@
         --bad: #b83a26;
         --teach: #3f8577;
         --teach-ink: #ffffff;
-        --shadow-soft: 0 10px 30px rgba(74, 52, 26, 0.12);
-        --shadow-lift: 0 16px 40px rgba(74, 52, 26, 0.18);
+        --shadow-soft: 0 10px 30px rgba(30, 28, 28, 0.12);
+        --shadow-lift: 0 16px 40px rgba(30, 28, 28, 0.18);
         --pad-rest: 0.97;
         /* Bảy màu của bảy nốt — dùng chung cho phím, vòng quỹ đạo và hình ở màn mở đầu. */
         --n1: #f4b52e;
@@ -71,15 +73,15 @@
       }
 
       :root.dark {
-        --ground: #16120f;
-        --ground-glow: #241c16;
-        --panel: #201a16;
-        --panel-hi: #2a221c;
-        --line: #3a2f26;
-        --line-strong: #4d3f33;
-        --ink: #f4eee4;
-        --ink-dim: #bcae9a;
-        --ink-faint: #a3927c;
+        --ground: #111113;
+        --ground-glow: #1d1d21;
+        --panel: #1c1c1f;
+        --panel-hi: #26262a;
+        --line: #34343a;
+        --line-strong: #46464d;
+        --ink: #f6f6f7;
+        --ink-dim: #b4b4bc;
+        --ink-faint: #9c9ca5;
         --gold: #e9a452;
         --gold-solid: #eaa62c;
         --gold-solid-ink: #1e1713;
@@ -1181,9 +1183,9 @@
       }
       .topbar-brand img { width: 28px; height: 28px; border-radius: 50%; object-fit: cover; flex-shrink: 0; }
       .topbar-brand span { overflow: hidden; text-overflow: ellipsis; }
-      .topbar-brand { min-width: 0; min-height: 40px; }
-      .back-link { min-height: 40px; white-space: nowrap; flex-shrink: 0; }
-      #theme-toggle-btn { width: 40px; height: 40px; }
+      .topbar-brand { min-width: 0; min-height: 44px; }
+      .back-link { min-height: 44px; white-space: nowrap; flex-shrink: 0; }
+      #theme-toggle-btn { width: 44px; height: 44px; }
       #theme-toggle-btn svg { width: 18px; height: 18px; }
 
       /* ---------- Màn mở đầu ---------- */
@@ -1263,7 +1265,7 @@
       .mode-icon svg { width: 20px; height: 20px; }
       #mode-see .mode-icon { background: var(--n6); }
       #mode-hear .mode-icon { background: var(--n4); }
-      .mode-badge { font-size: 11px; padding: 3px 9px; }
+      .mode-badge { font-size: 12px; padding: 3px 9px; }
       .mode-check { margin-left: auto; width: 20px; height: 20px; }
       .mode-name { text-transform: none; font-size: 15px; letter-spacing: 0; }
       .mode-card[aria-pressed='true'] {
@@ -1557,15 +1559,15 @@
 
         .how { gap: 6px; margin: 12px 0 13px; }
         .how-step { padding: 9px 4px; gap: 5px; }
-        .how-num { width: 20px; height: 20px; font-size: 11px; }
+        .how-num { width: 20px; height: 20px; font-size: 12px; }
         .how-text { font-size: 12px; }
 
         .mode-label { margin-bottom: 7px; }
         .modes { gap: 8px; margin-bottom: 11px; }
         .mode-card { padding: 10px 11px; border-radius: 12px; }
         .mode-name { font-size: 12.5px; margin-bottom: 3px; }
-        .mode-desc { font-size: 11px; }
-        .mode-best { margin-top: 5px; font-size: 11px; }
+        .mode-desc { font-size: 12px; }
+        .mode-best { margin-top: 5px; font-size: 12px; }
 
         .btn-primary { padding: 13px; font-size: 14px; }
 
@@ -1603,7 +1605,7 @@
         .over-stats { margin-bottom: 16px; gap: 26px; }
         .over-stat-val { font-size: 32px; }
 
-        .footnote { padding: 0 16px 11px; font-size: 11px; }
+        .footnote { padding: 0 16px 11px; font-size: 12px; }
 
         /* Lúc nghe làm quen có thêm dải nhãn và nút bấm, nên vòng phím phải
            nhỏ hơn nữa. Giai đoạn này chỉ nghe chứ không cần bấm chính xác. */
