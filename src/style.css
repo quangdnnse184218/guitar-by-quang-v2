@@ -77,6 +77,33 @@
   --terracotta: #a8455a;
   --terracotta-light: rgba(168, 69, 90, 0.18);
 
+  /* Nền ảnh bìa bài hát — dùng chung hai giao diện (khung ảnh luôn tối, chữ trắng; chữ trắng
+     trên điểm sáng nhất của từng nền ≥ 4,5:1). Mặc định: bài miễn phí = gỗ óc chó (trầm, không
+     át), bài có phí = rượu vang. Đồng thau để dành cho nút mua (điểm nhấn mạnh nhất của thẻ). */
+  --thumb-walnut-from: 98 70 50;
+  --thumb-walnut-to: 40 28 20;
+  --thumb-wine-from: 142 52 72;
+  --thumb-wine-to: 66 22 34;
+  --thumb-brass-from: 160 104 28;
+  --thumb-brass-to: 84 50 12;
+  --thumb-slate-from: 74 74 80;
+  --thumb-slate-to: 30 30 34;
+
+  /* Màu thương hiệu của BÊN NGOÀI (logo Zalo, Facebook): không thuộc bảng màu Guitar By Quang,
+     giữ đúng màu gốc để khách nhận ra kênh liên hệ. Dùng chung hai giao diện. */
+  --brand-zalo: 0 104 255;
+  --brand-zalo-hover: 0 82 204;
+  --brand-facebook: 24 119 242;
+
+  /* Bảy chấm màu của bảy nốt nhạc ở thẻ "Game luyện cảm âm" trên trang chủ. */
+  --note-1: 226 179 74;
+  --note-2: 224 141 75;
+  --note-3: 208 103 79;
+  --note-4: 194 106 134;
+  --note-5: 143 124 192;
+  --note-6: 90 162 148;
+  --note-7: 159 174 90;
+
   /* Semantic Functional Colors — Dark Mode */
   --success-text: #34d399;
   --success-bg: rgba(52, 211, 153, 0.15);
@@ -132,19 +159,22 @@
    ============================================================================== */
 [data-theme='light'] {
   color-scheme: light;
-  /* Nền vải lanh xưởng mộc (linen), không phải kem #F4F1EA hay gặp — cùng bộ
-     đôi đồng thau/rượu vang như bản tối để hai theme là một bảng màu duy nhất. */
-  --bg-base: 248 245 239;
-  --sec-raised-bg: #f0ebe1;
+  /* Nền "đá ấm" #e8e6e1 (xám ấm, độ bão hoà ~13%) — cố ý KHÔNG phải kem #F4F1EA hay gặp ở
+     trang do AI dựng; cùng tinh thần trung tính với nền tối #080809, để đồng thau và rượu
+     vang là chỗ duy nhất có màu. Chọn ngày 2026-10-27 (phương án C trong review màu).
+     Nền tối hơn kem nên accent đậm lại một bậc (#94520e) và chữ mờ đậm lại (#685a48) để
+     giữ tương phản ≥ 4,5:1 (accent 4,85:1 · chữ mờ 5,35:1 trên nền này). */
+  --bg-base: 232 230 225;
+  --sec-raised-bg: #dfddd7;
   --sec-hero-bg: rgb(var(--bg-base));
   --sec-about-bg: rgb(var(--bg-base));
   --sec-featured-bg: rgb(var(--bg-base));
   --sec-tools-bg: var(--sec-raised-bg);
   --sec-faq-bg: var(--sec-raised-bg);
   --sec-contact-bg: rgb(var(--bg-base));
-  --header-bg: rgba(248, 245, 239, 0.9);
-  --footer-bg: #ece5d8;
-  --footer-bg-grad: linear-gradient(180deg, #f0ebe1 0%, #e8e0d2 100%);
+  --header-bg: rgba(232, 230, 225, 0.9);
+  --footer-bg: #dfddd7;
+  --footer-bg-grad: linear-gradient(180deg, #dfddd7 0%, #d6d3cc 100%);
 
   --blob-amber: #c98a3a;
   --blob-violet: #7a2e3a;
@@ -155,18 +185,18 @@
   --glass-border: rgba(96, 72, 44, 0.15);
   --glass-border-rgb: 96 72 44;
   --glass-border-alpha: 0.15;
-  --glass-bg-hover: 250 246 239;
+  --glass-bg-hover: 244 243 240;
 
   /* Legible Walnut & Charcoal Text */
   --text-primary: 31 24 18;
   --text-muted: 94 80 64;
-  --text-faint: 118 102 84;
+  --text-faint: 104 90 72;
 
   /* Primary Brand Color: Antique Brass */
-  --accent-primary: 158 88 18;
-  --accent-primary-hover: 130 70 12;
-  --accent-secondary: 158 88 18;
-  --accent-solid: 158 88 18;
+  --accent-primary: 148 82 14;
+  --accent-primary-hover: 124 68 10;
+  --accent-secondary: 148 82 14;
+  --accent-solid: 148 82 14;
   --accent-solid-deep: 128 68 12;
   --terracotta: #6e2a38;
   --terracotta-light: rgba(110, 42, 56, 0.1);
@@ -189,14 +219,14 @@
   --warning-border: #fde68a;
   --warning-solid: #d97706;
 
-  --neutral-subtle: #f4efe6;
-  --neutral-border: #e4dccf;
+  --neutral-subtle: #efeeea;
+  --neutral-border: #d6d3cc;
 
   /* Modal Tokens — Light Mode */
   --modal-surface-bg: #ffffff;
-  --modal-surface-border: #e4dccf;
-  --modal-card-bg: #f8f5ef;
-  --modal-card-border: #e9e2d6;
+  --modal-surface-border: #d6d3cc;
+  --modal-card-bg: #f1f0ec;
+  --modal-card-border: #dcd9d2;
   --badge-free-bg: #def7ec;
   --badge-free-text: #03543f;
   --badge-free-border: #84e1bc;
@@ -208,11 +238,11 @@
   --metro-badge-bg: rgb(var(--accent-primary) / 0.08);
   --metro-badge-text: rgb(var(--accent-primary));
   --metro-badge-border: rgb(var(--accent-primary) / 0.28);
-  --metro-dot-idle: #d8cfc0;
+  --metro-dot-idle: #cdcac3;
   --metro-dot-active: rgb(var(--accent-primary));
   --metro-pulse-idle-dot: rgb(var(--accent-primary));
-  --metro-kbd-bg: #f4efe6;
-  --metro-kbd-border: #e4dccf;
+  --metro-kbd-bg: #efeeea;
+  --metro-kbd-border: #d6d3cc;
   --metro-kbd-text: rgb(var(--accent-primary));
   --metro-bpm-sub: rgb(var(--accent-primary));
 }
@@ -334,7 +364,7 @@ select optgroup {
 }
 
 [data-theme='light'] select optgroup {
-  background-color: #f8f5ef !important;
+  background-color: #e8e6e1 !important;
   color: #5e5040 !important;
 }
 
@@ -494,6 +524,36 @@ nav,
 }
 .thumb-well {
   box-shadow: var(--well);
+}
+
+/* Nền ảnh bìa bài hát: tên class lưu ở songs.thumbnail_bg (xem src/lib/thumb-theme.js). */
+.thumb-walnut {
+  background-image: linear-gradient(
+    to bottom right,
+    rgb(var(--thumb-walnut-from)),
+    rgb(var(--thumb-walnut-to))
+  );
+}
+.thumb-wine {
+  background-image: linear-gradient(
+    to bottom right,
+    rgb(var(--thumb-wine-from)),
+    rgb(var(--thumb-wine-to))
+  );
+}
+.thumb-brass {
+  background-image: linear-gradient(
+    to bottom right,
+    rgb(var(--thumb-brass-from)),
+    rgb(var(--thumb-brass-to))
+  );
+}
+.thumb-slate {
+  background-image: linear-gradient(
+    to bottom right,
+    rgb(var(--thumb-slate-from)),
+    rgb(var(--thumb-slate-to))
+  );
 }
 
 /* Interactive Cards (Song cards, Gear cards, clickables) */
@@ -792,6 +852,13 @@ nav,
   outline-offset: 2px;
 }
 
+/* Viền focus bàn phím chung cho mọi phần tử bấm được. :where() có độ ưu tiên 0 nên các quy tắc
+   focus riêng (nav-link, ô nhập, thanh trượt...) vẫn thắng, chỉ chỗ chưa có kiểu riêng mới dùng viền này. */
+:where(a[href], button, summary, select, textarea, input, [role='button'], [tabindex]):focus-visible {
+  outline: 3px solid rgb(var(--accent-primary));
+  outline-offset: 2px;
+}
+
 /* Chưa có JS / không dựng được viên kính: mục đang mở vẫn có nền riêng */
 #desktop-nav:not(.has-pill) .nav-link.active {
   background: rgb(var(--accent-primary) / 0.1);
@@ -917,7 +984,7 @@ nav,
     min-height: 52px;
     border-radius: 20px;
     color: rgb(var(--text-primary) / 0.74);
-    font-size: 11px;
+    font-size: 12px;
     font-weight: 600;
     line-height: 1;
     white-space: nowrap;
@@ -1118,7 +1185,7 @@ nav,
   white-space: nowrap;
   text-align: center;
   position: relative;
-  min-height: 40px;
+  min-height: 44px;
   padding: 6px 14px;
   border-radius: 9999px;
   font-size: 0.75rem;
@@ -2813,7 +2880,7 @@ body.modal-open {
 }
 
 .level-dots-text {
-  font-size: 11px;
+  font-size: 0.75rem;
   color: rgb(var(--text-muted));
 }
 
@@ -2835,7 +2902,7 @@ body.modal-open {
   gap: 3px;
   padding: 1px 7px;
   border-radius: 9999px;
-  font-size: 11px;
+  font-size: 0.75rem;
   font-weight: 800;
   line-height: 1.5;
 }
@@ -3201,7 +3268,7 @@ body.kb-open {
     height: 1.75rem;
   }
   .contact-chip > span:last-child > span:last-child {
-    font-size: 11px;
+    font-size: 0.75rem;
     letter-spacing: -0.01em;
   }
 }
@@ -3220,7 +3287,7 @@ body.kb-open {
     gap: 4px;
   }
   #faq-filters .faq-filter-pill {
-    font-size: 11px;
+    font-size: 0.75rem;
     padding: 7px 2px;
   }
 }
@@ -3555,24 +3622,27 @@ body.admin-palette-open {
 /* Dải 3 bước mua */
 .buy-steps {
   display: grid;
-  gap: 0.75rem;
-  grid-template-columns: minmax(0, 1fr);
+  gap: 0.5rem;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
   counter-reset: step;
 }
 
 @media (min-width: 768px) {
   .buy-steps {
-    grid-template-columns: repeat(3, minmax(0, 1fr));
     gap: 1rem;
   }
 }
 
+/* Điện thoại: 3 bước thành một hàng ngang (số trên, tên bước dưới; câu mô tả chỉ còn cho
+   trình đọc màn hình) để khối này cao ~90px thay vì ~300px, kéo bài nổi bật lên gần màn hình đầu. */
 .buy-step {
   position: relative;
   display: flex;
-  align-items: flex-start;
-  gap: 0.9rem;
-  padding: 1rem 1.1rem;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 0.75rem 0.4rem;
+  text-align: center;
   border-radius: var(--r-card);
   background: rgb(var(--glass-bg));
   border: 1px solid rgb(var(--glass-border-rgb) / var(--glass-border-alpha));
@@ -3588,7 +3658,24 @@ body.admin-palette-open {
   background: rgb(var(--accent-primary) / 0.16);
   color: rgb(var(--accent-primary));
   font-weight: 800;
-  font-size: 0.95rem;
+  /* 19px đậm là "chữ lớn" (ngưỡng tương phản 3:1); ở 15px nền sáng chỉ đạt 4,36:1, thiếu 4,5:1 */
+  font-size: 1.2rem;
+}
+
+/* Nền sáng: nền chấm nhạt hơn để chữ đạt 4,5:1 kể cả khi coi là chữ thường */
+[data-theme='light'] .buy-step-num {
+  background: rgb(var(--accent-primary) / 0.08);
+}
+
+/* Từ máy tính bảng: mỗi bước một thẻ nằm ngang, số bên trái, chữ căn trái, có câu mô tả. */
+@media (min-width: 768px) {
+  .buy-step {
+    flex-direction: row;
+    align-items: flex-start;
+    gap: 0.9rem;
+    padding: 1rem 1.1rem;
+    text-align: left;
+  }
 }
 
 /* Mũi tên nối giữa các bước (chỉ máy tính, nằm trên khe giữa hai thẻ) */
@@ -3632,8 +3719,8 @@ body.admin-palette-open {
   position: absolute;
   top: 38%;
   z-index: 5;
-  width: 2.5rem;
-  height: 2.5rem;
+  width: 2.75rem;
+  height: 2.75rem;
   display: none;
   place-items: center;
   border-radius: 9999px;
@@ -3673,6 +3760,7 @@ body.admin-palette-open {
 }
 
 .featured-dots button {
+  position: relative;
   width: 0.45rem;
   height: 0.45rem;
   border-radius: 9999px;
@@ -3681,6 +3769,14 @@ body.admin-palette-open {
     width 0.2s ease,
     background-color 0.2s ease;
   cursor: pointer;
+}
+
+/* Chấm chỉ rộng 7px: nới vùng bấm cao 44px bằng ::before, nét vẽ giữ nguyên. Chiều ngang chỉ
+   nới 3px mỗi bên vì khe giữa hai chấm là 6px — nới hơn thì vùng bấm của các chấm chồng nhau. */
+.featured-dots button::before {
+  content: '';
+  position: absolute;
+  inset: -19px -3px;
 }
 
 .featured-dots button[aria-current='true'] {
