@@ -4,9 +4,10 @@
 -- src/style.css. Giao diện đã có lớp đệm (src/lib/thumb-theme.js) nên chạy đúng DÙ migration này
 -- đã áp dụng hay chưa — migration chỉ làm dữ liệu gọn và khớp với giá trị trang quản trị sẽ ghi.
 --
--- Dữ liệu tại thời điểm viết (đã SELECT, 24 hàng):
+-- Dữ liệu tại thời điểm viết (đã SELECT, 25 hàng):
 --   is_free = false : 'from-[#C1602F] to-[#6E3B1F]'  x 3   -> thumb-wine
---   is_free = true  : 14 hàng 'from-[#D8C4AC] to-[#647A6C]' + 7 hàng cặp be khác -> thumb-walnut
+--   is_free = true  : 22 hàng (14 hàng 'from-[#D8C4AC] to-[#647A6C]' + 8 hàng cặp be khác) -> thumb-walnut
+-- Sau khi chạy phải còn 25 hàng, 0 hàng bắt đầu bằng 'from-': 22 hàng thumb-walnut + 3 hàng thumb-wine.
 -- Chỉ động vào hàng còn mang giá trị kiểu cũ (bắt đầu bằng 'from-'); hàng đã là tên nền, hoặc
 -- NULL, thì giữ nguyên. Chạy lại nhiều lần không đổi thêm gì (idempotent).
 --
