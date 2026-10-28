@@ -1,4 +1,4 @@
-import { openLoginGate } from './lib/login-gate.js'
+import { applyCheckoutLoginGate } from './lib/login-gate.js'
 import {
   initNavbarShrink,
   initMobileMenu,
@@ -18,7 +18,6 @@ import { applyScrollReveal } from './animations/scroll-reveal.js'
 import { toggleCompleted, getCompleted } from './lib/local-storage-service.js'
 import { supabase } from './lib/supabase.js'
 import { renderSongCard } from './lib/song-card.js'
-import { initQuickView } from './lib/quick-view.js'
 import { levelTier, isNewSong, hotSongIds, parseLevel } from './lib/song-format.js'
 import { initShareButtons } from './lib/share-song.js'
 import { withReturnTo } from './lib/navigate.js'
@@ -241,7 +240,6 @@ function updateGrid() {
         isPurchased: purchasedSongIds.has(String(song.id)),
         showFavoriteButton: true,
         showSwipeOverlay: true,
-        quickView: true,
         isNew: isNewSong(song.created_at),
         isHot: hotIds.has(String(song.id)),
       })
@@ -739,18 +737,16 @@ window.openCheckoutModal = async function openCheckoutModal(tabId) {
   const tab = allSongs.find((t) => t.id === tabId)
   if (!tab) return
 
-  // Gate Check for paid cards: MUST BE LOGGED IN
+  // Chưa đăng nhập vẫn xem được chi tiết; chỉ khoá phần thanh toán (không tạo đơn, không hiện QR).
   let currentUserId = null
   try {
     const {
       data: { session },
     } = await supabase.auth.getSession()
-    if (!session || !session.user) {
-      openLoginGate(tab, toggleModal)
-      return
+    if (session?.user) {
+      currentUserId = session.user.id
+      activeUserId = currentUserId
     }
-    currentUserId = session.user.id
-    activeUserId = currentUserId
   } catch (e) {
     console.warn('Auth check error in openCheckoutModal:', e)
   }
@@ -807,7 +803,8 @@ window.openCheckoutModal = async function openCheckoutModal(tabId) {
   // Reset khối HSSV về trạng thái ban đầu mỗi lần mở modal cho 1 bài mới —
   // chỉ hiện nếu bài có giá ưu đãi (discount_note), ẩn hẳn nếu không.
   activeOrder = null
-  hssvFlow.reset({ available: Boolean(discountNote) })
+  hssvFlow.reset({ available: Boolean(currentUserId) && Boolean(discountNote) })
+  applyCheckoutLoginGate(tab, Boolean(currentUserId))
 
   const cleanSongCode = tab.title
     .replace(/[^a-zA-Z0-9]/g, '')
@@ -1005,12 +1002,10 @@ function initModalInteractions() {
   const closeFreeBtn = document.getElementById('close-free-tab-modal')
   const closeVideoDemoBtn = document.getElementById('close-video-demo-modal')
   const closeImageBtn = document.getElementById('close-image-modal')
-  const closeAuthReqBtn = document.getElementById('close-auth-required-modal')
   const checkoutModal = document.getElementById('checkout-modal')
   const freeTabModal = document.getElementById('free-tab-modal')
   const videoDemoModal = document.getElementById('video-demo-modal')
   const imageModal = document.getElementById('image-preview-modal')
-  const authReqModal = document.getElementById('auth-required-modal')
 
   if (closeCheckoutBtn)
     closeCheckoutBtn.addEventListener('click', () => toggleModal('checkout-modal', false))
@@ -1020,15 +1015,12 @@ function initModalInteractions() {
     closeVideoDemoBtn.addEventListener('click', () => toggleModal('video-demo-modal', false))
   if (closeImageBtn)
     closeImageBtn.addEventListener('click', () => toggleModal('image-preview-modal', false))
-  if (closeAuthReqBtn)
-    closeAuthReqBtn.addEventListener('click', () => toggleModal('auth-required-modal', false))
 
   window.addEventListener('click', (e) => {
     if (e.target === checkoutModal) toggleModal('checkout-modal', false)
     if (e.target === freeTabModal) toggleModal('free-tab-modal', false)
     if (e.target === videoDemoModal) toggleModal('video-demo-modal', false)
     if (e.target === imageModal) toggleModal('image-preview-modal', false)
-    if (e.target === authReqModal) toggleModal('auth-required-modal', false)
   })
 
   window.addEventListener('keydown', (e) => {
@@ -1037,7 +1029,6 @@ function initModalInteractions() {
       toggleModal('free-tab-modal', false)
       toggleModal('video-demo-modal', false)
       toggleModal('image-preview-modal', false)
-      toggleModal('auth-required-modal', false)
     }
   })
 
@@ -1080,15 +1071,6 @@ const hssvFlow = initHssvFlow({
 
 document.addEventListener('DOMContentLoaded', () => {
   initSearchAndFilter()
-  initQuickView({
-    getSong: (id) => allSongs.find((t) => String(t.id) === String(id)),
-    isPurchased: (id) => purchasedSongIds.has(id),
-    badgesFor: (id) => ({
-      isNew: isNewSong(allSongs.find((t) => String(t.id) === id)?.created_at),
-      isHot: hotIds.has(id),
-    }),
-    toggleModal,
-  })
   initModalInteractions()
   initSwipeToFavorite()
   loadData()

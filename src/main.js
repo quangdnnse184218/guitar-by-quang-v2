@@ -6,7 +6,7 @@
  * v2's Glassmorphism & Light/Dark Theme System.
  */
 
-import { openLoginGate } from './lib/login-gate.js'
+import { applyCheckoutLoginGate } from './lib/login-gate.js'
 import {
   initNavbarShrink,
   initMobileMenu,
@@ -418,22 +418,18 @@ window.openCheckoutModal = async function openCheckoutModal(tabId) {
   const tab = featuredSongs.find((t) => t.id === tabId)
   if (!tab) return
 
-  // Gate Check for paid cards: MUST BE LOGGED IN
-  let currentUserId
+  // Chưa đăng nhập vẫn xem được chi tiết; chỉ khoá phần thanh toán (không tạo đơn, không hiện QR).
+  let currentUserId = null
   try {
     const {
       data: { session },
     } = await supabase.auth.getSession()
-    if (!session || !session.user) {
-      openLoginGate(tab, toggleModal)
-      return
+    if (session?.user) {
+      currentUserId = session.user.id
+      activeUserId = currentUserId
     }
-    currentUserId = session.user.id
-    activeUserId = currentUserId
   } catch (e) {
     console.warn('Auth check error in openCheckoutModal:', e)
-    openLoginGate(tab, toggleModal)
-    return
   }
 
   // Already owns this tab — send to purchases instead of re-selling it.
@@ -488,7 +484,8 @@ window.openCheckoutModal = async function openCheckoutModal(tabId) {
   // Reset khối HSSV về trạng thái ban đầu mỗi lần mở modal cho 1 bài mới —
   // chỉ hiện nếu bài có giá ưu đãi (discount_note), ẩn hẳn nếu không.
   activeOrder = null
-  hssvFlow.reset({ available: Boolean(discountNote) })
+  hssvFlow.reset({ available: Boolean(currentUserId) && Boolean(discountNote) })
+  applyCheckoutLoginGate(tab, Boolean(currentUserId))
 
   const cleanSongCode = tab.title
     .replace(/[^a-zA-Z0-9]/g, '')
@@ -700,10 +697,6 @@ function setupEventListeners() {
   if (closeImageModalBtn)
     closeImageModalBtn.addEventListener('click', () => toggleModal('image-preview-modal', false))
 
-  const closeAuthReqBtn = document.getElementById('close-auth-required-modal')
-  if (closeAuthReqBtn)
-    closeAuthReqBtn.addEventListener('click', () => toggleModal('auth-required-modal', false))
-
   const qrTrigger = document.getElementById('qr-preview-trigger')
   if (qrTrigger) {
     qrTrigger.addEventListener('click', () => {
@@ -749,7 +742,6 @@ function setupEventListeners() {
     'free-tab-modal',
     'video-demo-modal',
     'image-preview-modal',
-    'auth-required-modal',
   ]
   modals.forEach((id) => {
     const el = document.getElementById(id)

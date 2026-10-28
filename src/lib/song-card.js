@@ -219,7 +219,6 @@ function renderPaidArtworkCenter(tab, { isPurchased, video, audio }) {
  * @param {boolean} [options.showSwipeOverlay]   Có lớp phủ vuốt-để-yêu-thích không
  * @param {boolean} [options.isNew]       Gắn nhãn "Mới"
  * @param {boolean} [options.isHot]       Gắn nhãn "Bán chạy"
- * @param {boolean} [options.quickView]   Bấm thẻ thì mở cửa sổ xem nhanh thay vì đi thẳng tới thanh toán
  */
 export function renderSongCard(tab, options = {}) {
   const {
@@ -231,7 +230,6 @@ export function renderSongCard(tab, options = {}) {
     showSwipeOverlay = false,
     isNew = false,
     isHot = false,
-    quickView = false,
   } = options
 
   const levelNum = tab.level_num ?? tab.levelNum ?? 5
@@ -257,7 +255,7 @@ export function renderSongCard(tab, options = {}) {
   // ------------------------------------------------------------------ FREE
   if (isFree) {
     return `
-      <div onclick="${quickView ? `window.openQuickView('${tab.id}')` : `window.openFreeTabModal('${tab.id}')`}" class="song-card glass-card card-interactive p-2.5 sm:p-4 rounded-2xl border border-glass-border flex flex-col justify-between space-y-2.5 sm:space-y-3.5 group cursor-pointer ${pinnedClass} ${extraClass}" data-id="${tab.id}">
+      <div onclick="window.openFreeTabModal('${tab.id}')" class="song-card glass-card card-interactive p-2.5 sm:p-4 rounded-2xl border border-glass-border flex flex-col justify-between space-y-2.5 sm:space-y-3.5 group cursor-pointer ${pinnedClass} ${extraClass}" data-id="${tab.id}">
         ${swipeOverlay}
         <div class="song-card-body space-y-2 sm:space-y-3">
           <div class="${SONG_THUMB_CLASS} song-card-thumb ${resolveThumbTheme(tab.thumbnail_bg || tab.thumbnailBg, true)}">
@@ -316,7 +314,7 @@ export function renderSongCard(tab, options = {}) {
     : renderPriceBadge(priceFormatted)
 
   return `
-    <div onclick="${isPurchased ? 'window.navigateToPurchasesTab()' : quickView ? `window.openQuickView('${tab.id}')` : `window.openCheckoutModal('${tab.id}')`}" class="song-card glass-card card-interactive p-2.5 sm:p-4 rounded-2xl border ${isPurchased ? 'song-card-owned border-amber-500/70 hover:border-amber-400' : 'border-glass-border'} flex flex-col justify-between space-y-2.5 sm:space-y-3.5 group cursor-pointer card-paid ${pinnedClass} ${extraClass}" data-id="${tab.id}">
+    <div onclick="${isPurchased ? 'window.navigateToPurchasesTab()' : `window.openCheckoutModal('${tab.id}')`}" class="song-card glass-card card-interactive p-2.5 sm:p-4 rounded-2xl border ${isPurchased ? 'song-card-owned border-amber-500/70 hover:border-amber-400' : 'border-glass-border'} flex flex-col justify-between space-y-2.5 sm:space-y-3.5 group cursor-pointer card-paid ${pinnedClass} ${extraClass}" data-id="${tab.id}">
       ${swipeOverlay}
       <div class="song-card-body space-y-2 sm:space-y-3">
         <div class="${SONG_THUMB_CLASS} song-card-thumb ${thumbnailBg}">

@@ -1,14 +1,15 @@
 import { describe, it, expect, beforeEach, vi } from 'vitest'
-import { loginGateLinks, openLoginGate } from '../src/lib/login-gate.js'
+import { loginGateLinks, applyCheckoutLoginGate } from '../src/lib/login-gate.js'
 import { safeRedirectPath } from '../src/lib/navigate.js'
 
-describe('hộp "Đăng nhập để mua tab"', () => {
+describe('cửa sổ thanh toán cho khách chưa đăng nhập', () => {
   beforeEach(() => {
     document.body.innerHTML = `
-      <span id="auth-required-song-title"></span>
-      <span id="auth-required-song-price"></span>
-      <a id="auth-required-login-btn" href="/login.html"></a>
-      <a id="auth-required-register-btn" href="/register.html"></a>`
+      <div id="checkout-login-gate" class="hidden">
+        <a id="checkout-gate-login-btn" href="/login.html"></a>
+        <a id="checkout-gate-register-btn" href="/register.html"></a>
+      </div>
+      <div id="checkout-pay-block"></div>`
   })
 
   it('đăng nhập và đăng ký đều quay lại đúng bài đang mua', () => {
@@ -29,20 +30,23 @@ describe('hộp "Đăng nhập để mua tab"', () => {
     expect(new URL(back, 'https://x.invalid').searchParams.get('tab')).toBe('a&b=1#x')
   })
 
-  it('ghi tên bài + giá vào hộp, gắn link, rồi mở hộp', () => {
-    const toggleModal = vi.fn()
-    openLoginGate({ id: 'tab-1', title: 'Sóng gió', price_formatted: '139k' }, toggleModal)
-    expect(document.getElementById('auth-required-song-title').textContent).toBe('Sóng gió')
-    expect(document.getElementById('auth-required-song-price').textContent).toBe('139k')
-    expect(document.getElementById('auth-required-login-btn').getAttribute('href')).toContain('tab%3Dtab-1')
-    expect(document.getElementById('auth-required-register-btn').getAttribute('href')).toContain('tab%3Dtab-1')
-    expect(toggleModal).toHaveBeenCalledWith('auth-required-modal', true)
+  it('chưa đăng nhập: hiện lời mời đăng nhập, ẩn khối chuyển khoản/QR, link quay lại đúng bài', () => {
+    applyCheckoutLoginGate({ id: 'tab-1' }, false)
+    expect(document.getElementById('checkout-login-gate').classList.contains('hidden')).toBe(false)
+    expect(document.getElementById('checkout-pay-block').classList.contains('hidden')).toBe(true)
+    expect(document.getElementById('checkout-gate-login-btn').getAttribute('href')).toContain('tab%3Dtab-1')
+    expect(document.getElementById('checkout-gate-register-btn').getAttribute('href')).toContain('tab%3Dtab-1')
   })
 
-  it('tên bài chứa HTML không được chạy như mã', () => {
-    openLoginGate({ id: 't', title: '<img src=x onerror=alert(1)>' }, () => {})
-    const el = document.getElementById('auth-required-song-title')
-    expect(el.querySelector('img')).toBeNull()
-    expect(el.textContent).toBe('<img src=x onerror=alert(1)>')
+  it('đã đăng nhập: hiện khối chuyển khoản, ẩn lời mời (kể cả sau khi vừa mở ở trạng thái khách)', () => {
+    applyCheckoutLoginGate({ id: 'tab-1' }, false)
+    applyCheckoutLoginGate({ id: 'tab-1' }, true)
+    expect(document.getElementById('checkout-login-gate').classList.contains('hidden')).toBe(true)
+    expect(document.getElementById('checkout-pay-block').classList.contains('hidden')).toBe(false)
+  })
+
+  it('thiếu phần tử trên trang (vd. trang cá nhân) thì không lỗi', () => {
+    document.body.innerHTML = ''
+    expect(() => applyCheckoutLoginGate({ id: 't' }, false)).not.toThrow()
   })
 })

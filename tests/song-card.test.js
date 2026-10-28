@@ -35,18 +35,16 @@ describe('thẻ bài hát', () => {
     expect(badged).toContain('Mới')
   })
 
-  it('quickView mở cửa sổ xem nhanh thay vì đi thẳng tới thanh toán / tab miễn phí', () => {
+  it('bấm thẻ mở thẳng cửa sổ chi tiết: trả phí → thanh toán, miễn phí → xem tab', () => {
     expect(renderSongCard(paid)).toContain("openCheckoutModal('tab-1')")
-    expect(renderSongCard(paid, { quickView: true })).toContain("openQuickView('tab-1')")
     expect(renderSongCard(free)).toContain("openFreeTabModal('tab-9')")
-    expect(renderSongCard(free, { quickView: true })).toContain("openQuickView('tab-9')")
   })
 
-  it('bài đã mua có viền riêng và luôn mở tab đã mua, kể cả khi bật xem nhanh', () => {
-    const owned = renderSongCard(paid, { isPurchased: true, quickView: true })
+  it('bài đã mua có viền riêng và luôn mở tab đã mua', () => {
+    const owned = renderSongCard(paid, { isPurchased: true })
     expect(owned).toContain('song-card-owned')
     expect(owned).toContain('navigateToPurchasesTab')
-    expect(owned).not.toContain('openQuickView')
+    expect(owned).not.toContain('openCheckoutModal')
   })
 
   it('bài trả phí hiện giá HSSV ngay trên thẻ', () => {

@@ -2997,84 +2997,8 @@ body.modal-open {
   }
 }
 
-/* Cửa sổ xem nhanh */
-.qv-media {
-  border-radius: 1.5rem 1.5rem 0 0;
-  overflow: hidden;
-  background: #0d0a08;
-}
-
-.qv-video {
-  display: block;
-  width: 100%;
-  aspect-ratio: 16 / 9;
-  object-fit: cover;
-  background: #000;
-}
-
-.qv-art {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  aspect-ratio: 16 / 9;
-  padding: 1.25rem;
-  color: #fff;
-}
-
-.qv-art-icon {
-  width: 56px;
-  height: 56px;
-  display: grid;
-  place-items: center;
-  border-radius: 9999px;
-  background: rgb(0 0 0 / 0.28);
-  border: 1px solid rgb(255 255 255 / 0.25);
-}
-
-.qv-cta {
-  width: 100%;
-  padding: 0.85rem 1rem;
-  border-radius: 9999px;
-  font-size: 0.875rem;
-  font-weight: 800;
-  cursor: pointer;
-  transition:
-    filter 0.15s ease,
-    transform 0.1s ease;
-}
-
-.qv-cta:active {
-  transform: scale(0.98);
-}
-
-.qv-cta-buy {
-  background: linear-gradient(135deg, rgb(var(--accent-solid)) 0%, rgb(var(--accent-solid-deep)) 100%);
-  color: #fff;
-}
-
-.qv-cta-buy:hover {
-  filter: brightness(1.08);
-}
-
-.qv-cta-free {
-  background: #047857;
-  color: #fff;
-}
-
-.qv-cta-owned {
-  background: rgb(245 158 11 / 0.16);
-  border: 1px solid rgb(245 158 11 / 0.4);
-  color: #92400e;
-}
-
-[data-theme='dark'] .qv-cta-owned {
-  color: #fcd34d;
-}
-
 @media (prefers-reduced-motion: reduce) {
-  .filter-chip,
-  .qv-cta {
+  .filter-chip {
     transition: none;
   }
 }
