@@ -11,6 +11,7 @@ import { state } from './state.js'
 import { showToast } from './toast.js'
 import { toggleModal } from './modal.js'
 import { confirmDialog } from './confirm.js'
+import { escapeHtml, jsArg } from './format.js'
 import {
   fetchAllSongs,
   saveSong,
@@ -112,13 +113,16 @@ function renderSongsTable() {
         : formatCompactPrice(song.price_formatted || song.priceFormatted || song.price)
       const priceText = isFree
         ? '<span class="px-2.5 py-1 rounded-full badge-semantic-success font-bold font-mono text-xs">FREE</span>'
-        : `<span class="font-mono tabular-nums font-bold text-rose-700 dark:text-rose-300 text-xs">${priceDisplay}</span>`
+        : `<span class="font-mono tabular-nums font-bold text-rose-700 dark:text-rose-300 text-xs">${escapeHtml(priceDisplay)}</span>`
       const currentOrder = song.order || idx + 1
+      // Dữ liệu do admin nhập nhưng vẫn escape: một tên có dấu " hay < là đủ vỡ hàng bảng.
+      const idAttr = escapeHtml(song.id)
+      const idJs = jsArg(song.id)
       const isFirst = idx === 0
       const isLast = idx === filtered.length - 1
 
       return `
-      <tr class="hover:bg-black/5 dark:hover:bg-white/5 transition-colors admin-song-card-row" data-id="${song.id}">
+      <tr class="hover:bg-black/5 dark:hover:bg-white/5 transition-colors admin-song-card-row" data-id="${idAttr}">
         <!-- Vị Trí & Di Chuyển -->
         <td data-label="Vị Trí & Thứ Tự" class="py-3 px-3 text-center song-col-order">
           <div class="inline-flex items-center gap-1 sm:gap-1.5 p-1 rounded-xl bg-black/5 dark:bg-white/5 border border-glass-border w-full sm:w-auto justify-between sm:justify-center">
@@ -129,13 +133,13 @@ function renderSongsTable() {
                 min="1"
                 max="${state.songsList.length}"
                 value="${currentOrder}"
-                id="order-input-song-${song.id}"
-                onkeydown="if(event.key==='Enter') window.handleSaveSongPosition('${song.id}')"
+                id="order-input-song-${idAttr}"
+                onkeydown="if(event.key==='Enter') window.handleSaveSongPosition('${idJs}')"
                 class="w-9 sm:w-11 text-center py-0.5 sm:py-1 bg-glass-bg border border-glass-border rounded-lg font-mono tabular-nums font-bold text-[11px] sm:text-xs text-text-primary focus:border-accent-primary focus:outline-none shadow-xs"
                 title="Nhập số thứ tự vị trí mong muốn rồi bấm Lưu hoặc nhấn Enter"
               />
               <button
-                onclick="window.handleSaveSongPosition('${song.id}')"
+                onclick="window.handleSaveSongPosition('${idJs}')"
                 class="px-2 sm:px-2.5 py-0.5 sm:py-1 rounded-lg bg-warm-gradient hover:brightness-105 text-white font-bold text-[11px] sm:text-xs transition-all shadow-xs cursor-pointer active:scale-95"
                 title="Lưu vị trí mới: Bài này sẽ chèn vào vị trí trên, các bài khác tự động dời">
                 Lưu
@@ -143,13 +147,13 @@ function renderSongsTable() {
             </div>
             <div class="flex sm:flex-col gap-0.5">
               <button
-                onclick="window.handleMoveSong('${song.id}', 'up')"
+                onclick="window.handleMoveSong('${idJs}', 'up')"
                 ${isFirst ? 'disabled class="p-1 sm:p-0.5 rounded text-text-muted/30 cursor-not-allowed"' : 'class="p-1 sm:p-0.5 rounded hover:bg-glass-bg text-text-primary hover:text-accent-primary transition-colors cursor-pointer"'}
                 title="Di chuyển lên 1 bậc">
                 <svg class="w-3.5 h-3.5" aria-hidden="true" data-ph="caret-up" viewBox="0 0 256 256" fill="currentColor"><path d="M216.49,168.49a12,12,0,0,1-17,0L128,97,56.49,168.49a12,12,0,0,1-17-17l80-80a12,12,0,0,1,17,0l80,80A12,12,0,0,1,216.49,168.49Z"/></svg>
               </button>
               <button
-                onclick="window.handleMoveSong('${song.id}', 'down')"
+                onclick="window.handleMoveSong('${idJs}', 'down')"
                 ${isLast ? 'disabled class="p-1 sm:p-0.5 rounded text-text-muted/30 cursor-not-allowed"' : 'class="p-1 sm:p-0.5 rounded hover:bg-glass-bg text-text-primary hover:text-accent-primary transition-colors cursor-pointer"'}
                 title="Di chuyển xuống 1 bậc">
                 <svg class="w-3.5 h-3.5" aria-hidden="true" data-ph="caret-down" viewBox="0 0 256 256" fill="currentColor"><path d="M216.49,104.49l-80,80a12,12,0,0,1-17,0l-80-80a12,12,0,0,1,17-17L128,159l71.51-71.52a12,12,0,0,1,17,17Z"/></svg>
@@ -160,16 +164,16 @@ function renderSongsTable() {
 
         <td data-label="Bài Hát" class="py-3.5 px-4 font-bold text-text-primary song-col-title">
           <div class="flex flex-col text-left">
-            <span class="text-xs sm:text-sm font-extrabold line-clamp-2 leading-snug">${song.title}</span>
-            <span class="text-[11px] sm:text-xs text-text-muted font-medium mt-0.5">${song.singer || 'Guitar By Quang'}</span>
+            <span class="text-xs sm:text-sm font-extrabold line-clamp-2 leading-snug">${escapeHtml(song.title)}</span>
+            <span class="text-[11px] sm:text-xs text-text-muted font-medium mt-0.5">${escapeHtml(song.singer || 'Guitar By Quang')}</span>
           </div>
         </td>
         <td data-label="Thể Loại" class="py-3.5 px-3 song-col-category">
-          <span class="px-2.5 py-1 rounded-lg bg-black/5 dark:bg-white/5 text-xs font-bold text-text-muted">${song.category || 'Fingerstyle'}</span>
+          <span class="px-2.5 py-1 rounded-lg bg-black/5 dark:bg-white/5 text-xs font-bold text-text-muted">${escapeHtml(song.category || 'Fingerstyle')}</span>
         </td>
-        <td data-label="Độ Khó" class="py-3.5 px-3 font-mono tabular-nums font-bold text-accent-primary text-xs song-col-level">${level}/10</td>
+        <td data-label="Độ Khó" class="py-3.5 px-3 font-mono tabular-nums font-bold text-accent-primary text-xs song-col-level">${escapeHtml(level)}/10</td>
         <td data-label="Tuning / Capo" class="py-3.5 px-3 text-text-muted text-xs font-medium song-col-tuning">
-          ${song.tuning || 'Standard'} / C:${song.capo ?? 0}
+          ${escapeHtml(song.tuning || 'Standard')} / C:${escapeHtml(song.capo ?? 0)}
         </td>
         <td data-label="Loại / Giá" class="py-3.5 px-3 song-col-price">${priceText}</td>
         <td data-label="Nổi Bật" class="py-3.5 px-3 song-col-featured">
@@ -177,10 +181,10 @@ function renderSongsTable() {
         </td>
         <td data-label="Thao Tác" class="py-3.5 px-4 text-right song-col-actions">
           <div class="flex items-center justify-end gap-1.5 sm:gap-2 w-full">
-            <button onclick="window.editSong('${song.id}')" class="flex-1 sm:flex-initial py-1.5 px-3 rounded-lg sm:rounded-xl bg-warm-gradient hover:brightness-105 text-white font-bold text-xs transition-all shadow-xs text-center cursor-pointer active:scale-95">
+            <button onclick="window.editSong('${idJs}')" class="flex-1 sm:flex-initial py-1.5 px-3 rounded-lg sm:rounded-xl bg-warm-gradient hover:brightness-105 text-white font-bold text-xs transition-all shadow-xs text-center cursor-pointer active:scale-95">
               Sửa
             </button>
-            <button onclick="window.deleteSong('${song.id}', '${song.title.replace(/'/g, "\\'")}')" class="flex-1 sm:flex-initial py-1.5 px-2.5 rounded-lg sm:rounded-xl bg-rose-500/10 hover:bg-rose-500/20 text-rose-700 dark:text-rose-300 font-bold text-xs border border-rose-500/30 transition-colors text-center cursor-pointer active:scale-95">
+            <button onclick="window.deleteSong('${idJs}', '${jsArg(song.title)}')" class="flex-1 sm:flex-initial py-1.5 px-2.5 rounded-lg sm:rounded-xl bg-rose-500/10 hover:bg-rose-500/20 text-rose-700 dark:text-rose-300 font-bold text-xs border border-rose-500/30 transition-colors text-center cursor-pointer active:scale-95">
               Xóa
             </button>
           </div>

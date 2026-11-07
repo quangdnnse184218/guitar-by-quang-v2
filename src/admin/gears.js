@@ -8,6 +8,7 @@ import { state } from './state.js'
 import { showToast } from './toast.js'
 import { toggleModal } from './modal.js'
 import { confirmDialog } from './confirm.js'
+import { escapeHtml, jsArg } from './format.js'
 import {
   fetchAllGears,
   saveGear,
@@ -49,14 +50,18 @@ function renderGearsTable() {
       const currentOrder = gear.order || idx + 1
       const isFirst = idx === 0
       const isLast = idx === state.gearsList.length - 1
-      const name = gear.name || gear.title || 'Món đồ nghề'
-      const image = gear.image_url || gear.image || '/assets/avatar.jpg'
-      const category = gear.category || 'Phụ kiện'
-      const price = gear.footer_text || gear.price || 'Liên hệ'
-      const description = gear.description || 'Chưa có mô tả'
+      // Dữ liệu do admin nhập nhưng vẫn escape: một tên có dấu " hay < là đủ vỡ hàng bảng.
+      const rawName = gear.name || gear.title || 'Món đồ nghề'
+      const name = escapeHtml(rawName)
+      const image = escapeHtml(gear.image_url || gear.image || '/assets/avatar.jpg')
+      const category = escapeHtml(gear.category || 'Phụ kiện')
+      const price = escapeHtml(gear.footer_text || gear.price || 'Liên hệ')
+      const description = escapeHtml(gear.description || 'Chưa có mô tả')
+      const idAttr = escapeHtml(gear.id)
+      const idJs = jsArg(gear.id)
 
       return `
-      <tr class="hover:bg-black/5 dark:hover:bg-white/5 transition-colors admin-gear-card-row" data-id="${gear.id}">
+      <tr class="hover:bg-black/5 dark:hover:bg-white/5 transition-colors admin-gear-card-row" data-id="${idAttr}">
         <!-- Vị Trí & Di Chuyển -->
         <td data-label="Vị Trí" class="py-3 px-3 text-center gear-col-order">
           <div class="inline-flex items-center gap-1 sm:gap-1.5 p-1 rounded-xl bg-black/5 dark:bg-white/5 border border-glass-border w-full sm:w-auto justify-between sm:justify-center">
@@ -67,13 +72,13 @@ function renderGearsTable() {
                 min="1"
                 max="${state.gearsList.length}"
                 value="${currentOrder}"
-                id="order-input-gear-${gear.id}"
-                onkeydown="if(event.key==='Enter') window.handleSaveGearPosition('${gear.id}')"
+                id="order-input-gear-${idAttr}"
+                onkeydown="if(event.key==='Enter') window.handleSaveGearPosition('${idJs}')"
                 class="w-9 sm:w-11 text-center py-0.5 sm:py-1 bg-glass-bg border border-glass-border rounded-lg font-mono tabular-nums font-bold text-[11px] sm:text-xs text-text-primary focus:border-accent-primary focus:outline-none shadow-xs"
                 title="Nhập số thứ tự vị trí mong muốn rồi bấm Lưu hoặc nhấn Enter"
               />
               <button
-                onclick="window.handleSaveGearPosition('${gear.id}')"
+                onclick="window.handleSaveGearPosition('${idJs}')"
                 class="px-2 sm:px-2.5 py-0.5 sm:py-1 rounded-lg bg-warm-gradient hover:brightness-105 text-white font-bold text-[11px] sm:text-xs transition-all shadow-xs cursor-pointer active:scale-95"
                 title="Lưu vị trí mới">
                 Lưu
@@ -81,13 +86,13 @@ function renderGearsTable() {
             </div>
             <div class="flex sm:flex-col gap-0.5">
               <button
-                onclick="window.handleMoveGear('${gear.id}', 'up')"
+                onclick="window.handleMoveGear('${idJs}', 'up')"
                 ${isFirst ? 'disabled class="p-1 sm:p-0.5 rounded text-text-muted/30 cursor-not-allowed"' : 'class="p-1 sm:p-0.5 rounded hover:bg-glass-bg text-text-primary hover:text-accent-primary transition-colors cursor-pointer"'}
                 title="Di chuyển lên 1 bậc">
                 <svg class="w-3.5 h-3.5" aria-hidden="true" data-ph="caret-up" viewBox="0 0 256 256" fill="currentColor"><path d="M216.49,168.49a12,12,0,0,1-17,0L128,97,56.49,168.49a12,12,0,0,1-17-17l80-80a12,12,0,0,1,17,0l80,80A12,12,0,0,1,216.49,168.49Z"/></svg>
               </button>
               <button
-                onclick="window.handleMoveGear('${gear.id}', 'down')"
+                onclick="window.handleMoveGear('${idJs}', 'down')"
                 ${isLast ? 'disabled class="p-1 sm:p-0.5 rounded text-text-muted/30 cursor-not-allowed"' : 'class="p-1 sm:p-0.5 rounded hover:bg-glass-bg text-text-primary hover:text-accent-primary transition-colors cursor-pointer"'}
                 title="Di chuyển xuống 1 bậc">
                 <svg class="w-3.5 h-3.5" aria-hidden="true" data-ph="caret-down" viewBox="0 0 256 256" fill="currentColor"><path d="M216.49,104.49l-80,80a12,12,0,0,1-17,0l-80-80a12,12,0,0,1,17-17L128,159l71.51-71.52a12,12,0,0,1,17,17Z"/></svg>
@@ -112,10 +117,10 @@ function renderGearsTable() {
         <td data-label="Giá Hiển Thị" class="py-3.5 px-3 font-semibold text-text-primary text-xs leading-snug gear-col-price">${price}</td>
         <td data-label="Thao Tác" class="py-3.5 px-4 text-right gear-col-actions">
           <div class="flex items-center justify-end gap-1.5 sm:gap-2 w-full">
-            <button onclick="window.editGear('${gear.id}')" class="flex-1 sm:flex-initial py-1.5 px-3 rounded-lg sm:rounded-xl bg-warm-gradient hover:brightness-105 text-white font-bold text-xs transition-all shadow-xs text-center cursor-pointer active:scale-95">
+            <button onclick="window.editGear('${idJs}')" class="flex-1 sm:flex-initial py-1.5 px-3 rounded-lg sm:rounded-xl bg-warm-gradient hover:brightness-105 text-white font-bold text-xs transition-all shadow-xs text-center cursor-pointer active:scale-95">
               Sửa
             </button>
-            <button onclick="window.deleteGear('${gear.id}', '${name.replace(/'/g, "\\'")}')" class="flex-1 sm:flex-initial py-1.5 px-2.5 rounded-lg sm:rounded-xl bg-rose-500/10 hover:bg-rose-500/20 text-rose-700 dark:text-rose-300 font-bold text-xs border border-rose-500/30 transition-colors text-center cursor-pointer active:scale-95">
+            <button onclick="window.deleteGear('${idJs}', '${jsArg(rawName)}')" class="flex-1 sm:flex-initial py-1.5 px-2.5 rounded-lg sm:rounded-xl bg-rose-500/10 hover:bg-rose-500/20 text-rose-700 dark:text-rose-300 font-bold text-xs border border-rose-500/30 transition-colors text-center cursor-pointer active:scale-95">
               Xóa
             </button>
           </div>

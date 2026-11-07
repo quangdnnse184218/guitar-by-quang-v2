@@ -16,6 +16,7 @@ import { normalizeVideoPath, normalizeAudioPath } from './songs-service.js'
 import { iconHeadphones, iconGuitar, iconHeart, iconGraduationCap } from '../icons.js'
 import { extractDiscountPrice, levelDots, levelTier, TIER_LABEL, parseLevel } from './song-format.js'
 import { resolveThumbTheme } from './thumb-theme.js'
+import { escapeHtml, jsArg } from '../admin/format.js'
 
 /**
  * Giá trên thẻ trả phí tách làm 2 chỗ thay vì nhồi 2 pill xếp dọc ở góc ảnh (góc
@@ -30,7 +31,7 @@ export function renderPriceBadge(priceFormatted) {
   // Cùng khuôn (padding, cỡ chữ, font) với badge "FREE" — chỉ khác màu. Trên
   // mobile hàng này chỉ rộng ~120px: badge dùng font mono cũ rộng hơn FREE
   // đúng 2px là đủ đẩy nút tim xuống dòng.
-  return `<span class="px-1.5 sm:px-2 py-0.5 rounded-full text-xs font-extrabold text-stone-900 bg-white uppercase tracking-wide tabular-nums whitespace-nowrap" title="Giá ${priceFormatted}">${priceFormatted}</span>`
+  return `<span class="px-1.5 sm:px-2 py-0.5 rounded-full text-xs font-extrabold text-stone-900 bg-white uppercase tracking-wide tabular-nums whitespace-nowrap" title="Giá ${escapeHtml(priceFormatted)}">${escapeHtml(priceFormatted)}</span>`
 }
 
 export function renderHssvNote(discountNote) {
@@ -38,7 +39,7 @@ export function renderHssvNote(discountNote) {
   const hssvLabel = extractDiscountPrice(discountNote) || discountNote
   // Chip cam = màu "khuyến mãi", tách hẳn khỏi màu đồng của "Độ khó" ngay cạnh
   // (trước cùng màu nên chìm), hồng của giá và xanh của "miễn phí".
-  return `<span class="inline-flex items-center gap-0.5 px-1.5 py-0.5 rounded-full text-xs font-extrabold whitespace-nowrap bg-orange-100 text-orange-700 ring-1 ring-orange-300 dark:bg-orange-500/15 dark:text-orange-300 dark:ring-orange-400/40" title="Giá ưu đãi cho học sinh, sinh viên (xác minh thẻ khi thanh toán)">${iconGraduationCap('w-3 h-3 sm:w-3.5 sm:h-3.5 flex-shrink-0')}HSSV ${hssvLabel}</span>`
+  return `<span class="inline-flex items-center gap-0.5 px-1.5 py-0.5 rounded-full text-xs font-extrabold whitespace-nowrap bg-orange-100 text-orange-700 ring-1 ring-orange-300 dark:bg-orange-500/15 dark:text-orange-300 dark:ring-orange-400/40" title="Giá ưu đãi cho học sinh, sinh viên (xác minh thẻ khi thanh toán)">${iconGraduationCap('w-3 h-3 sm:w-3.5 sm:h-3.5 flex-shrink-0')}HSSV ${escapeHtml(hssvLabel)}</span>`
 }
 
 /** Tam giác play bo góc (mềm hơn tam giác nhọn cũ), lệch phải 1px cho cân thị giác. */
@@ -67,11 +68,6 @@ export function renderPlayDisc({
   return `<${tag} class="${cls}"${a11y}${attrs ? ' ' + attrs : ''}>${icon}</${tag}>`
 }
 
-/** Escape nháy đơn cho chuỗi nhúng vào thuộc tính onclick="...('...')". */
-function escapeJsString(str) {
-  return String(str || '').replace(/'/g, "\\'")
-}
-
 /**
  * Class của khung ảnh trên thẻ — dùng chung cho cả thẻ ở đây lẫn 3 biến thể
  * thẻ riêng trong trang cá nhân (những thẻ đó có hành động và màu khác nên
@@ -95,11 +91,11 @@ export function renderThumbMetaRow(song, fallbackDuration = 'Full Video') {
   const tuning = (song.tuning || '').trim()
   const tuningHtml =
     tuning && !/^standard$/i.test(tuning)
-      ? `<span class="text-white/85 text-xs truncate min-w-0">${tuning}</span>`
+      ? `<span class="text-white/85 text-xs truncate min-w-0">${escapeHtml(tuning)}</span>`
       : ''
   return `
     <div class="flex justify-between items-end gap-1 text-white/95 font-semibold">
-      <span class="font-mono tabular-nums text-xs flex-shrink-0">${song.duration || fallbackDuration}</span>
+      <span class="font-mono tabular-nums text-xs flex-shrink-0">${escapeHtml(song.duration || fallbackDuration)}</span>
       ${tuningHtml}
     </div>
   `
@@ -129,7 +125,7 @@ export function renderLevelDots(levelValue, rawLabel = '') {
     { length: 5 },
     (_, i) => `<span class="level-dot${i < filled ? ' is-on' : ''}"></span>`
   ).join('')
-  const score = rawLabel || `${parseLevel(levelValue)}/10`
+  const score = escapeHtml(rawLabel || `${parseLevel(levelValue)}/10`)
   return `<span class="level-dots level-${tier}" title="Độ khó ${score}"><span class="flex items-center gap-[3px]" aria-hidden="true">${dots}</span><span class="level-dots-text"><strong>${TIER_LABEL[tier]}</strong> <span class="font-mono tabular-nums">${score}</span></span></span>`
 }
 
@@ -157,8 +153,8 @@ function renderFavoriteButton(tab, isFavorite) {
   return `
     <button
       type="button"
-      onclick="event.stopPropagation(); window.handleToggleFavorite(event, '${tab.id}')"
-      data-fav-btn="${tab.id}"
+      onclick="event.stopPropagation(); window.handleToggleFavorite(event, '${jsArg(tab.id)}')"
+      data-fav-btn="${escapeHtml(tab.id)}"
       title="${isFavorite ? 'Bỏ yêu thích' : 'Yêu thích'}"
       class="relative before:absolute before:-inset-2.5 ml-auto flex-shrink-0 w-5 h-5 sm:w-6 sm:h-6 rounded-full flex items-center justify-center transition-all cursor-pointer ${isFavorite ? 'bg-rose-500 text-white' : 'bg-black/40 text-white/80 hover:text-white hover:bg-black/60'}"
     >
@@ -180,7 +176,7 @@ function renderPaidArtworkCenter(tab, { isPurchased, video, audio }) {
 
   if (video) {
     return `
-      <div class="my-auto text-center flex flex-col items-center justify-center py-0.5" onclick="event.stopPropagation(); window.openVideoDemoModal('${escapeJsString(tab.title)}', '${escapeJsString(video)}', false)">
+      <div class="my-auto text-center flex flex-col items-center justify-center py-0.5" onclick="event.stopPropagation(); window.openVideoDemoModal('${jsArg(tab.title)}', '${jsArg(video)}', false)">
         ${renderPlayDisc({ label: 'Xem demo' })}
         <span class="${PLAY_LABEL_CLASS}">Xem demo</span>
       </div>
@@ -189,7 +185,7 @@ function renderPaidArtworkCenter(tab, { isPurchased, video, audio }) {
 
   if (audio) {
     return `
-      <div class="my-auto text-center flex flex-col items-center justify-center py-0.5" onclick="event.stopPropagation(); window.openVideoDemoModal('${escapeJsString(tab.title)}', '${escapeJsString(audio)}', true)">
+      <div class="my-auto text-center flex flex-col items-center justify-center py-0.5" onclick="event.stopPropagation(); window.openVideoDemoModal('${jsArg(tab.title)}', '${jsArg(audio)}', true)">
         ${renderPlayDisc({ label: 'Nghe audio demo', icon: iconHeadphones('w-3.5 h-3.5 sm:w-5 sm:h-5') })}
         <span class="${PLAY_LABEL_CLASS}">Nghe audio demo</span>
       </div>
@@ -255,7 +251,7 @@ export function renderSongCard(tab, options = {}) {
   // ------------------------------------------------------------------ FREE
   if (isFree) {
     return `
-      <div onclick="window.openFreeTabModal('${tab.id}')" class="song-card glass-card card-interactive p-2.5 sm:p-4 rounded-2xl border border-glass-border flex flex-col justify-between space-y-2.5 sm:space-y-3.5 group cursor-pointer ${pinnedClass} ${extraClass}" data-id="${tab.id}">
+      <div onclick="window.openFreeTabModal('${jsArg(tab.id)}')" class="song-card glass-card card-interactive p-2.5 sm:p-4 rounded-2xl border border-glass-border flex flex-col justify-between space-y-2.5 sm:space-y-3.5 group cursor-pointer ${pinnedClass} ${extraClass}" data-id="${escapeHtml(tab.id)}">
         ${swipeOverlay}
         <div class="song-card-body space-y-2 sm:space-y-3">
           <div class="${SONG_THUMB_CLASS} song-card-thumb ${resolveThumbTheme(tab.thumbnail_bg || tab.thumbnailBg, true)}">
@@ -278,9 +274,9 @@ export function renderSongCard(tab, options = {}) {
           <div class="song-card-info space-y-1">
             ${statusChips}
             <h3 class="text-sm sm:text-base font-bold text-text-primary group-hover:text-emerald-600 dark:group-hover:text-emerald-400 transition-colors leading-snug line-clamp-2">
-              ${tab.title}
+              ${escapeHtml(tab.title)}
             </h3>
-            ${tab.singer ? `<p class="song-card-singer text-xs text-text-muted truncate">${tab.singer}</p>` : ''}
+            ${tab.singer ? `<p class="song-card-singer text-xs text-text-muted truncate">${escapeHtml(tab.singer)}</p>` : ''}
             ${levelRow()}
           </div>
         </div>
@@ -314,7 +310,7 @@ export function renderSongCard(tab, options = {}) {
     : renderPriceBadge(priceFormatted)
 
   return `
-    <div onclick="${isPurchased ? 'window.navigateToPurchasesTab()' : `window.openCheckoutModal('${tab.id}')`}" class="song-card glass-card card-interactive p-2.5 sm:p-4 rounded-2xl border ${isPurchased ? 'song-card-owned border-amber-500/70 hover:border-amber-400' : 'border-glass-border'} flex flex-col justify-between space-y-2.5 sm:space-y-3.5 group cursor-pointer card-paid ${pinnedClass} ${extraClass}" data-id="${tab.id}">
+    <div onclick="${isPurchased ? 'window.navigateToPurchasesTab()' : `window.openCheckoutModal('${jsArg(tab.id)}')`}" class="song-card glass-card card-interactive p-2.5 sm:p-4 rounded-2xl border ${isPurchased ? 'song-card-owned border-amber-500/70 hover:border-amber-400' : 'border-glass-border'} flex flex-col justify-between space-y-2.5 sm:space-y-3.5 group cursor-pointer card-paid ${pinnedClass} ${extraClass}" data-id="${escapeHtml(tab.id)}">
       ${swipeOverlay}
       <div class="song-card-body space-y-2 sm:space-y-3">
         <div class="${SONG_THUMB_CLASS} song-card-thumb ${thumbnailBg}">
@@ -334,9 +330,9 @@ export function renderSongCard(tab, options = {}) {
         <div class="song-card-info space-y-1">
           ${statusChips}
           <h3 class="text-sm sm:text-base font-bold text-text-primary group-hover:text-accent-primary transition-colors leading-snug line-clamp-2">
-            ${tab.title}
+            ${escapeHtml(tab.title)}
           </h3>
-          ${tab.singer ? `<p class="song-card-singer text-xs text-text-muted truncate">${tab.singer}</p>` : ''}
+          ${tab.singer ? `<p class="song-card-singer text-xs text-text-muted truncate">${escapeHtml(tab.singer)}</p>` : ''}
           ${levelRow(isPurchased ? '' : renderHssvNote(discountNote))}
         </div>
       </div>
@@ -348,7 +344,7 @@ export function renderSongCard(tab, options = {}) {
           <span class="truncate">Mở tab đã mua</span>
         </button>`
             : `<button type="button" class="w-full py-1.5 sm:py-2.5 px-1.5 rounded-full bg-warm-gradient hover:brightness-105 text-white font-bold text-xs transition-all flex items-center justify-center gap-1 active:scale-95 text-center cursor-pointer">
-          <span class="truncate">Mua tab<span class="hidden sm:inline"> · <span class="uppercase tabular-nums">${priceFormatted}</span></span></span>
+          <span class="truncate">Mua tab<span class="hidden sm:inline"> · <span class="uppercase tabular-nums">${escapeHtml(priceFormatted)}</span></span></span>
         </button>`
         }
       </div>

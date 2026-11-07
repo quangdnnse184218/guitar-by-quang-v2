@@ -13,6 +13,17 @@ export function escapeHtml(str) {
     .replace(/'/g, '&#039;')
 }
 
+/**
+ * Chuỗi nhúng làm tham số JS trong thuộc tính onclick="window.fn('…')".
+ * Escape HTML trước (để `"` và `<` không phá thuộc tính), rồi đổi nháy đơn thành `\'`:
+ * trình duyệt giải mã `&#039;` thành `'` TRƯỚC khi chạy JS, nên phải để lại `\'` cho JS.
+ */
+export function jsArg(str) {
+  return escapeHtml(String(str ?? ''))
+    .replace(/\\/g, '\\\\')
+    .replace(/&#039;/g, "\\'")
+}
+
 export function formatVnd(n) {
   return Number(n || 0).toLocaleString('vi-VN') + 'đ'
 }
