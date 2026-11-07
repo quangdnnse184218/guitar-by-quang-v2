@@ -164,6 +164,10 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   })
 
+  // password = null: email này đã có tài khoản (Supabase trả identities rỗng / báo trùng). Vẫn hiện
+  // đúng màn chờ như tài khoản mới để người ngoài không phân biệt được email nào đã đăng ký; chỉ
+  // là không thử đăng nhập hộ (mật khẩu vừa gõ không phải mật khẩu của tài khoản đó, thử nhiều
+  // lần sẽ thành dò mật khẩu và tự báo lỗi sau vài lượt — lộ ra đúng điều cần giấu).
   function startWaiting(email, password) {
     stopWaiting()
     waitingEmailValue = email
@@ -179,7 +183,10 @@ document.addEventListener('DOMContentLoaded', () => {
     confirmPasswordInput.value = ''
 
     watcher = watchEmailConfirmation({
-      signIn: () => supabase.auth.signInWithPassword({ email, password }),
+      signIn: () =>
+        password === null
+          ? Promise.resolve({ data: { session: null }, error: { code: 'email_not_confirmed', message: 'Email not confirmed' } })
+          : supabase.auth.signInWithPassword({ email, password }),
       onConfirmed: () => {
         stopWaiting()
         setWaitingStatus('Đã xác nhận! Đang đưa bạn vào tài khoản…', { spinning: true })
@@ -342,13 +349,11 @@ document.addEventListener('DOMContentLoaded', () => {
 
       if (error) throw error
 
-      // Nếu email đã tồn tại trong Supabase Auth (khi bật tính năng bảo mật, Supabase trả về user với identities = [])
+      // Email đã có tài khoản (Supabase bật chống dò: trả user với identities = []). KHÔNG báo
+      // "email đã đăng ký" — hiện màn chờ y như tài khoản mới; chủ thật sẽ dùng Đăng nhập/Quên mật khẩu.
       if (data?.user && Array.isArray(data.user.identities) && data.user.identities.length === 0) {
-        setLoading(false)
-        emailInput?.focus()
-        return showAlert(
-          `Email "${email}" đã được đăng ký từ trước. Vui lòng sử dụng email khác hoặc bấm Đăng nhập.`
-        )
+        startWaiting(email, null)
+        return
       }
 
       // Hàng 'profiles' được một trigger phía Supabase tự tạo ngay khi tài
@@ -372,7 +377,7 @@ document.addEventListener('DOMContentLoaded', () => {
     } catch (error) {
       console.error('Lỗi đăng ký Supabase:', error)
       const msgLower = (error?.message || '').toLowerCase()
-      let errorMsg = error?.message || 'Đã có lỗi xảy ra. Vui lòng thử lại sau.'
+      let errorMsg
 
       if (
         msgLower.includes('already registered') ||
@@ -380,7 +385,9 @@ document.addEventListener('DOMContentLoaded', () => {
         msgLower.includes('email already in use') ||
         msgLower.includes('duplicate')
       ) {
-        errorMsg = `Email "${email}" đã được đăng ký. Vui lòng sử dụng email khác hoặc bấm Đăng nhập.`
+        // Supabase tắt chống dò thì báo lỗi trùng email: vẫn xử lý giống tài khoản mới.
+        startWaiting(email, null)
+        return
       } else if (
         msgLower.includes('password') &&
         (msgLower.includes('least') || msgLower.includes('short') || msgLower.includes('weak'))

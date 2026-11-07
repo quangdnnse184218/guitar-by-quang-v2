@@ -218,16 +218,31 @@ describe('register.js — sau khi đăng ký thành công', () => {
     expect(redirectTo).toHaveBeenCalledWith('/user-dashboard.html')
   })
 
-  it('email đã đăng ký từ trước thì KHÔNG vào chế độ chờ', async () => {
+  it('email đã đăng ký từ trước: hiện màn chờ y như tài khoản mới, không lộ email đã tồn tại', async () => {
     mockSupabase.auth.signUp.mockResolvedValue({
       data: { user: { id: 'u1', identities: [] }, session: null },
       error: null,
     })
     await loadRegisterModule()
     await submitForm()
-    expect(isHidden('register-waiting')).toBe(true)
-    expect(isHidden('register-form')).toBe(false)
-    expect($('register-alert-text').textContent).toMatch(/đã được đăng ký/)
+    expect(isHidden('register-waiting')).toBe(false)
+    expect(isHidden('register-form')).toBe(true)
+    expect($('register-alert-text').textContent).not.toMatch(/đã được đăng ký/)
+    // Không thử đăng nhập bằng mật khẩu vừa gõ vào tài khoản của người khác.
+    await vi.advanceTimersByTimeAsync(10 * 60_000)
+    expect(mockSupabase.auth.signInWithPassword).not.toHaveBeenCalled()
+    expect($('waiting-status-text').textContent).toMatch(/Đang chờ/)
+  })
+
+  it('Supabase báo lỗi trùng email: cũng hiện màn chờ, không báo "đã đăng ký"', async () => {
+    mockSupabase.auth.signUp.mockResolvedValue({
+      data: { user: null, session: null },
+      error: { message: 'User already registered' },
+    })
+    await loadRegisterModule()
+    await submitForm()
+    expect(isHidden('register-waiting')).toBe(false)
+    expect($('register-alert-text').textContent).not.toMatch(/đã được đăng ký/)
   })
 })
 
