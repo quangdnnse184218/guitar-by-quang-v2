@@ -26,7 +26,13 @@ export default [
     },
   },
   {
-    files: ['scripts/**/*.js', 'vite.config.js', 'tailwind.config.js', 'postcss.config.js'],
+    files: [
+      'scripts/**/*.js',
+      'api/**/*.js',
+      'vite.config.js',
+      'tailwind.config.js',
+      'postcss.config.js',
+    ],
     languageOptions: {
       ecmaVersion: 2022,
       sourceType: 'module',
