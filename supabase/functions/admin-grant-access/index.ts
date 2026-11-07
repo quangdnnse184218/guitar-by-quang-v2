@@ -14,6 +14,7 @@
 
 import "jsr:@supabase/functions-js/edge-runtime.d.ts";
 import { createClient } from "jsr:@supabase/supabase-js@2";
+import { parseDriveGrantResponse } from "./drive.ts";
 
 const SUPABASE_URL = Deno.env.get("SUPABASE_URL")!;
 const SUPABASE_ANON_KEY = Deno.env.get("SUPABASE_ANON_KEY")!;
@@ -77,7 +78,7 @@ async function grantDriveAccess(songId: string, userId: string): Promise<{ ok: b
     });
     const result = await resp.text();
     console.log("[admin-grant-access] drive grant result:", result);
-    return { ok: true };
+    return parseDriveGrantResponse(resp.status, result);
   } catch (err) {
     console.error("[admin-grant-access] drive grant failed:", err);
     return { ok: false, reason: "drive_grant_request_failed" };
