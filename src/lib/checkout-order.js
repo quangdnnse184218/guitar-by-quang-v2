@@ -20,8 +20,54 @@ export function buildVietQrUrl(amount, orderCode) {
 // thử lại với mã khác thay vì bỏ cuộc và để khách thấy QR dự phòng.
 const MAX_ORDER_CODE_ATTEMPTS = 4
 
+// Đơn chờ còn trong khoảng này thì mở lại hộp thanh toán sẽ DÙNG LẠI đơn đó (cùng mã DH, cùng QR)
+// thay vì sinh thêm đơn mới mỗi lần bấm — trước đây khách mở/đóng vài lần là "Đơn chờ" của admin
+// đầy đơn rác, và khách lỡ chụp QR cũ vẫn trả đúng đơn đang theo dõi. Phải nhỏ hơn hẳn mốc
+// database tự cho đơn hết hạn (3 ngày, xem src/admin/orders.js).
+export const REUSE_PENDING_ORDER_MS = 12 * 60 * 60 * 1000
+
+/**
+ * Tìm đơn chờ "sạch" của chính khách cho đúng bài: chưa dính HSSV (khối HSSV luôn bắt đầu lại từ
+ * đầu khi mở hộp thanh toán) và số tiền vẫn bằng giá hiện tại (admin đổi giá thì tạo đơn mới
+ * theo giá mới). Lỗi khi tìm thì coi như không có — tạo đơn mới như cũ.
+ */
+async function findReusablePendingOrder(userId, songId, amount) {
+  try {
+    const since = new Date(Date.now() - REUSE_PENDING_ORDER_MS).toISOString()
+    const { data, error } = await supabase
+      .from('orders')
+      .select('*')
+      .eq('user_id', userId)
+      .eq('song_id', songId)
+      .eq('status', 'pending')
+      .eq('is_hssv', false)
+      .is('hssv_status', null)
+      .gte('created_at', since)
+      .order('created_at', { ascending: false })
+      .limit(1)
+      .maybeSingle()
+    if (error || !data?.order_code) return null
+    if (Number(data.amount) !== amount) return null
+    if (!/^DH\d{6,}$/.test(data.order_code)) return null
+    return data
+  } catch {
+    return null
+  }
+}
+
 export async function createOrderAndBuildQr(userId, tab) {
   const amount = Number(tab.price) || 0
+
+  const reusable = await findReusablePendingOrder(userId, String(tab.id), amount)
+  if (reusable) {
+    return {
+      orderCode: reusable.order_code,
+      qrUrl: buildVietQrUrl(amount, reusable.order_code),
+      order: reusable,
+      error: null,
+      reused: true,
+    }
+  }
 
   let orderCode = ''
   let data = null
@@ -45,7 +91,7 @@ export async function createOrderAndBuildQr(userId, tab) {
     }
   }
 
-  return { orderCode, qrUrl: buildVietQrUrl(amount, orderCode), order: data, error: null }
+  return { orderCode, qrUrl: buildVietQrUrl(amount, orderCode), order: data, error: null, reused: false }
 }
 
 /**
