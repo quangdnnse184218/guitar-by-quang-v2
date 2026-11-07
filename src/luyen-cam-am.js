@@ -18,6 +18,7 @@
 
 import { initThemeToggle } from './theme-toggle.js'
 import { supabase } from './lib/supabase.js'
+import { startScoreRun, submitScore } from './lib/cam-am-score.js'
 
 initThemeToggle()
 
@@ -643,6 +644,8 @@ let audioReady = false
 let sequence = []
 let playerIndex = 0
 let longest = 0
+// Lượt chơi mở trên máy chủ lúc bắt đầu ván (Promise<mã lượt|null>) — điểm chỉ nộp được cho lượt này.
+let currentRun = Promise.resolve(null)
 let hearts = START_HEARTS
 let streak = 0
 let lastChanceUsed = false
@@ -851,23 +854,22 @@ function ensurePlayerName() {
 /** Chỉ nộp điểm lên bảng xếp hạng đúng lúc vừa phá kỷ lục cá nhân — tránh
  *  ghi đè liên tục mỗi ván, và mỗi người chỉ giữ đúng một dòng tốt nhất mỗi
  *  chế độ nhờ upsert theo (player_id, mode). */
-async function submitScoreIfBest(modeToSubmit, score) {
+async function submitScoreIfBest(modeToSubmit, score, run = Promise.resolve(null)) {
   const name = getPlayerName()
   if (!name || score <= 0) return
-  try {
-    const { error } = await supabase.rpc('cam_am_submit_score', {
-      p_player_id: getPlayerId(),
-      p_secret: getPlayerSecret(),
-      p_mode: modeToSubmit,
-      p_name: name,
-      p_score: score,
-    })
-    if (error) throw error
-    boardCache.clear()
-  } catch {
-    // Không nộp được (mất mạng, bảng chưa tạo…) thì bỏ qua — kỷ lục vẫn còn
-    // nguyên trong localStorage, không ảnh hưởng gì tới việc chơi tiếp.
-  }
+  // Không nộp được (mất mạng, lượt chơi không hợp lệ…) thì bỏ qua — kỷ lục vẫn còn
+  // nguyên trong localStorage, không ảnh hưởng gì tới việc chơi tiếp.
+  // Kỷ lục cũ nộp không kèm lượt chơi (lúc vừa đặt tên) chỉ được nhận khi máy chủ chưa
+  // chạy SQL chống gian lận; sau đó máy chủ từ chối, điểm chỉ lên bảng qua ván chơi thật.
+  const ok = await submitScore(supabase, {
+    playerId: getPlayerId(),
+    secret: getPlayerSecret(),
+    mode: modeToSubmit,
+    name,
+    score,
+    runId: await run,
+  })
+  if (ok) boardCache.clear()
 }
 
 function renderBoardRows(rows) {
@@ -1275,6 +1277,10 @@ function beginPlaying() {
 
   sequence = []
   longest = 0
+  // Chưa đặt tên thì chưa lên bảng xếp hạng được, khỏi mở lượt.
+  currentRun = getPlayerName()
+    ? startScoreRun(supabase, { playerId: getPlayerId(), secret: getPlayerSecret(), mode })
+    : Promise.resolve(null)
   playerIndex = 0
   streak = 0
   lastChanceUsed = false
@@ -1622,7 +1628,7 @@ function endGame() {
   const isNewBest = longest > previousBest
   if (isNewBest) {
     saveBest(mode, longest)
-    submitScoreIfBest(mode, longest)
+    submitScoreIfBest(mode, longest, currentRun)
   }
 
   setTimeout(() => {

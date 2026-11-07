@@ -31,7 +31,8 @@ import { initShareButtons } from './lib/share-song.js'
 import { formatCompactPrice, formatCompactDiscount } from './lib/song-format.js'
 import { renderSongCard, renderPlayDisc, renderLevelDots } from './lib/song-card.js'
 import { getCompleted, toggleCompleted } from './lib/local-storage-service.js'
-import { createOrderAndBuildQr, downloadQrImage, watchOrderPayment } from './lib/checkout-order.js'
+import { downloadQrImage } from './lib/checkout-order.js'
+import { createCheckoutSession } from './lib/checkout-session.js'
 import { initHssvFlow } from './lib/hssv-flow.js'
 
 // If redirected here with a recovery token, immediately move to reset-password.html
@@ -57,14 +58,9 @@ let allSongs = []
 let favoriteSongIds = new Set()
 let purchasedSongIds = new Set()
 
-// Hàm hủy theo dõi đơn hàng đang chờ thanh toán (xem watchOrderPayment) —
-// chỉ có 1 đơn được theo dõi tại 1 thời điểm (modal thanh toán chỉ mở 1 lúc).
-let stopOrderWatch = null
-
-// Đơn hàng của lượt thanh toán đang mở — cần cho nút "Xác minh thẻ HSSV".
-// (đã có currentUser.id sẵn nên không cần thêm activeUserId riêng như các
-// trang khác chưa chắc đã đăng nhập lúc mở modal.)
-let activeOrder = null
+// Vòng đời đơn của hộp thanh toán (tạo/dùng lại đơn, QR, theo dõi tiền về, bỏ kết quả về muộn)
+// — dùng chung 3 trang, xem src/lib/checkout-session.js.
+const checkoutSession = createCheckoutSession()
 
 // State
 let activeTab = 'purchases' // 'purchases' | 'favorites' | 'profile'
@@ -569,10 +565,7 @@ export function toggleModal(modalId, show) {
     const iframe = modal.querySelector('iframe')
     if (iframe) iframe.src = ''
 
-    if (modalId === 'checkout-modal' && stopOrderWatch) {
-      stopOrderWatch()
-      stopOrderWatch = null
-    }
+    if (modalId === 'checkout-modal') checkoutSession.cancel()
 
     modal.classList.add('opacity-0', 'pointer-events-none')
     modal.classList.remove('opacity-100', 'pointer-events-auto')
@@ -695,7 +688,7 @@ window.openCheckoutModal = function openCheckoutModal(tabId) {
 
   // Reset khối HSSV về trạng thái ban đầu mỗi lần mở modal cho 1 bài mới —
   // chỉ hiện nếu bài có giá ưu đãi (discount_note), ẩn hẳn nếu không.
-  activeOrder = null
+  checkoutSession.reset()
   hssvFlow.reset({ available: Boolean(discountNote) })
 
   const cleanSongCode = tab.title
@@ -707,48 +700,25 @@ window.openCheckoutModal = function openCheckoutModal(tabId) {
 
   // Tạo đơn hàng riêng + QR nhúng sẵn số tiền/nội dung — để SePay webhook tự
   // đối chiếu đúng người-đúng bài khi có tiền vào, thay vì phải cấp quyền tay.
-  if (stopOrderWatch) {
-    stopOrderWatch()
-    stopOrderWatch = null
-  }
-
-  if (currentUser?.id) {
-    createOrderAndBuildQr(currentUser.id, tab)
-      .then(({ orderCode, qrUrl, order }) => {
-        if (!orderCode) return
-        activeOrder = order
-        activeCheckoutSyntax = orderCode
-        hssvFlow.orderReady()
-        if (syntaxEl) syntaxEl.textContent = activeCheckoutSyntax
-        if (qrImgEl) qrImgEl.src = qrUrl
-        if (qrTriggerEl) {
-          qrTriggerEl.onclick = () =>
-            window.openImageModal(
-              qrUrl,
-              'Mã QR chuyển khoản TPBank (03970202801)',
-              'Quét mã QR bằng App Ngân hàng bất kỳ — số tiền và nội dung đã được điền sẵn, chỉ cần xác nhận chuyển khoản.'
-            )
-        }
-
-        // Tự động phát hiện khi SePay webhook xác nhận thanh toán — không cần
-        // người dùng tự bấm làm mới hay đoán xem đã cấp quyền chưa.
-        stopOrderWatch = watchOrderPayment(orderCode, {
-          // Admin áp giá HSSV bằng tay (khách nhắn Zalo) hoặc duyệt lượt đang chờ → đổi mã QR ngay
-          onAmountChange: (amount) => hssvFlow.applyPrice(amount, { byAdmin: true }),
-          onPaid: () => {
-            stopOrderWatch = null
-            purchasedSongIds.add(String(tab.id))
-            updateCounters()
-            renderOverviewFeatured()
-            renderPurchases()
-            toggleModal('checkout-modal', false)
-            window.navigateToPurchasesTab(tab.id)
-            showToast(`Chuyển khoản thành công! Đã mở khoá "${tab.title}" 🎉`, 'success')
-          },
-        })
-      })
-      .catch((err) => console.warn('Không tạo được đơn hàng tự động:', err))
-  }
+  checkoutSession.start({
+    userId: currentUser?.id,
+    tab,
+    els: { syntaxEl, qrImgEl, qrTriggerEl },
+    onOrderReady: ({ orderCode }) => {
+      activeCheckoutSyntax = orderCode
+      hssvFlow.orderReady()
+    },
+    onAmountChange: (amount) => hssvFlow.applyPrice(amount, { byAdmin: true }),
+    onPaid: () => {
+      purchasedSongIds.add(String(tab.id))
+      updateCounters()
+      renderOverviewFeatured()
+      renderPurchases()
+      toggleModal('checkout-modal', false)
+      window.navigateToPurchasesTab(tab.id)
+      showToast(`Chuyển khoản thành công! Đã mở khoá "${tab.title}" 🎉`, 'success')
+    },
+  })
 
   const videoDemo =
     tab.video_demo_url ||
@@ -1063,7 +1033,7 @@ document.getElementById('copy-syntax-btn')?.addEventListener('click', async () =
 
 // Khối "Giá học sinh / sinh viên" của hộp thanh toán — dùng chung 3 trang, xem src/lib/hssv-flow.js.
 const hssvFlow = initHssvFlow({
-  getOrder: () => activeOrder,
+  getOrder: () => checkoutSession.getOrder(),
   getUserId: () => currentUser?.id ?? null,
   getOrderCode: () => activeCheckoutSyntax,
 })

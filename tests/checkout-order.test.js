@@ -22,13 +22,32 @@ const mockSupabase = {
 
 vi.mock('../src/lib/supabase.js', () => ({ supabase: mockSupabase }))
 
-/** Giả lập chuỗi .from('orders').insert(...).select().single() */
-function mockInsertOrder(result) {
+/**
+ * Giả lập chuỗi tìm đơn chờ để dùng lại:
+ * .from('orders').select('*').eq()...is().gte().order().limit(1).maybeSingle()
+ * Mọi bước lọc trả lại chính nó; `filters` ghi lại điều kiện đã lọc.
+ */
+function lookupChain(result = { data: null, error: null }) {
+  const filters = []
+  const chain = {}
+  for (const name of ['eq', 'is', 'gte', 'order', 'limit']) {
+    chain[name] = vi.fn((...args) => {
+      filters.push([name, ...args])
+      return chain
+    })
+  }
+  chain.maybeSingle = vi.fn().mockResolvedValue(result)
+  return { chain, filters }
+}
+
+/** Giả lập chuỗi .from('orders').insert(...).select().single() (không có đơn chờ để dùng lại) */
+function mockInsertOrder(result, existing = { data: null, error: null }) {
   const single = vi.fn().mockResolvedValue(result)
   const select = vi.fn(() => ({ single }))
   const insert = vi.fn(() => ({ select }))
-  mockSupabase.from.mockReturnValue({ insert })
-  return { insert, select, single }
+  const lookup = lookupChain(existing)
+  mockSupabase.from.mockReturnValue({ insert, select: vi.fn(() => lookup.chain) })
+  return { insert, select, single, lookup }
 }
 
 /** Giả lập chuỗi .from('orders').select('status').eq(...).maybeSingle() */
@@ -112,6 +131,98 @@ describe('createOrderAndBuildQr', () => {
 
     expect(insert.mock.calls[0][0].amount).toBe(0)
     expect(res.qrUrl).not.toContain('NaN')
+  })
+
+  it('đơn chờ sạch của chính khách cho đúng bài còn mới thì DÙNG LẠI, không tạo đơn mới', async () => {
+    const existing = {
+      id: 'order-old',
+      order_code: 'DH123456',
+      amount: 239000,
+      status: 'pending',
+      is_hssv: false,
+      hssv_status: null,
+    }
+    const { insert, lookup } = mockInsertOrder({ data: { id: 'x' }, error: null }, { data: existing, error: null })
+    const { createOrderAndBuildQr } = await import('../src/lib/checkout-order.js')
+
+    const res = await createOrderAndBuildQr('user-1', { id: 7, price: 239000 })
+
+    expect(insert).not.toHaveBeenCalled()
+    expect(res.reused).toBe(true)
+    expect(res.orderCode).toBe('DH123456')
+    expect(res.order).toBe(existing)
+    expect(res.qrUrl).toContain('amount=239000')
+    expect(res.qrUrl).toContain('addInfo=DH123456')
+    // Chỉ tìm trong đơn của chính khách, đúng bài, còn chờ, chưa dính HSSV, còn mới
+    expect(lookup.filters).toEqual(
+      expect.arrayContaining([
+        ['eq', 'user_id', 'user-1'],
+        ['eq', 'song_id', '7'],
+        ['eq', 'status', 'pending'],
+        ['eq', 'is_hssv', false],
+        ['is', 'hssv_status', null],
+      ])
+    )
+    const gte = lookup.filters.find((f) => f[0] === 'gte')
+    expect(gte[1]).toBe('created_at')
+    const ageMs = Date.now() - new Date(gte[2]).getTime()
+    expect(ageMs).toBeLessThan(3 * 24 * 60 * 60 * 1000)
+  })
+
+  it('đơn chờ cũ có số tiền khác giá hiện tại (admin đã đổi giá) thì tạo đơn mới', async () => {
+    const { insert } = mockInsertOrder(
+      { data: { id: 'order-new' }, error: null },
+      { data: { id: 'old', order_code: 'DH123456', amount: 199000 }, error: null }
+    )
+    const { createOrderAndBuildQr } = await import('../src/lib/checkout-order.js')
+
+    const res = await createOrderAndBuildQr('user-1', { id: 7, price: 239000 })
+
+    expect(insert).toHaveBeenCalledTimes(1)
+    expect(res.reused).toBe(false)
+    expect(res.orderCode).not.toBe('DH123456')
+  })
+
+  it('tìm đơn chờ bị lỗi thì vẫn tạo đơn mới như bình thường', async () => {
+    const { insert } = mockInsertOrder(
+      { data: { id: 'order-new' }, error: null },
+      { data: null, error: { message: 'network' } }
+    )
+    const { createOrderAndBuildQr } = await import('../src/lib/checkout-order.js')
+
+    const res = await createOrderAndBuildQr('user-1', { id: 7, price: 239000 })
+
+    expect(insert).toHaveBeenCalledTimes(1)
+    expect(res.orderCode).toMatch(/^DH\d{6}$/)
+  })
+
+  it('mã đơn trùng (23505) thì thử lại với mã khác rồi thành công', async () => {
+    const single = vi
+      .fn()
+      .mockResolvedValueOnce({ data: null, error: { code: '23505', message: 'duplicate' } })
+      .mockResolvedValueOnce({ data: { id: 'order-2' }, error: null })
+    const insert = vi.fn(() => ({ select: () => ({ single }) }))
+    mockSupabase.from.mockReturnValue({ insert })
+    const { createOrderAndBuildQr } = await import('../src/lib/checkout-order.js')
+
+    const res = await createOrderAndBuildQr('user-1', { id: 'tab-1', price: 239000 })
+
+    expect(insert).toHaveBeenCalledTimes(2)
+    expect(res.error).toBeNull()
+    expect(res.orderCode).toBe(insert.mock.calls[1][0].order_code)
+  })
+
+  it('lỗi khác 23505 (vd RLS) thì KHÔNG thử lại', async () => {
+    const single = vi.fn().mockResolvedValue({ data: null, error: { code: '42501', message: 'RLS' } })
+    const insert = vi.fn(() => ({ select: () => ({ single }) }))
+    mockSupabase.from.mockReturnValue({ insert })
+    vi.spyOn(console, 'error').mockImplementation(() => {})
+    const { createOrderAndBuildQr } = await import('../src/lib/checkout-order.js')
+
+    const res = await createOrderAndBuildQr('user-1', { id: 'tab-1', price: 239000 })
+
+    expect(insert).toHaveBeenCalledTimes(1)
+    expect(res.orderCode).toBeNull()
   })
 
   it('tạo đơn lỗi thì vẫn trả QR dự phòng, không làm vỡ modal thanh toán', async () => {
