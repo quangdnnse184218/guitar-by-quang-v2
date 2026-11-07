@@ -114,6 +114,35 @@ describe('createOrderAndBuildQr', () => {
     expect(res.qrUrl).not.toContain('NaN')
   })
 
+  it('mã đơn trùng (23505) thì thử lại với mã khác rồi thành công', async () => {
+    const single = vi
+      .fn()
+      .mockResolvedValueOnce({ data: null, error: { code: '23505', message: 'duplicate' } })
+      .mockResolvedValueOnce({ data: { id: 'order-2' }, error: null })
+    const insert = vi.fn(() => ({ select: () => ({ single }) }))
+    mockSupabase.from.mockReturnValue({ insert })
+    const { createOrderAndBuildQr } = await import('../src/lib/checkout-order.js')
+
+    const res = await createOrderAndBuildQr('user-1', { id: 'tab-1', price: 239000 })
+
+    expect(insert).toHaveBeenCalledTimes(2)
+    expect(res.error).toBeNull()
+    expect(res.orderCode).toBe(insert.mock.calls[1][0].order_code)
+  })
+
+  it('lỗi khác 23505 (vd RLS) thì KHÔNG thử lại', async () => {
+    const single = vi.fn().mockResolvedValue({ data: null, error: { code: '42501', message: 'RLS' } })
+    const insert = vi.fn(() => ({ select: () => ({ single }) }))
+    mockSupabase.from.mockReturnValue({ insert })
+    vi.spyOn(console, 'error').mockImplementation(() => {})
+    const { createOrderAndBuildQr } = await import('../src/lib/checkout-order.js')
+
+    const res = await createOrderAndBuildQr('user-1', { id: 'tab-1', price: 239000 })
+
+    expect(insert).toHaveBeenCalledTimes(1)
+    expect(res.orderCode).toBeNull()
+  })
+
   it('tạo đơn lỗi thì vẫn trả QR dự phòng, không làm vỡ modal thanh toán', async () => {
     mockInsertOrder({ data: null, error: { message: 'RLS từ chối' } })
     vi.spyOn(console, 'error').mockImplementation(() => {})

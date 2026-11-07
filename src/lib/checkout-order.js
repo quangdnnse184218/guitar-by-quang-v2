@@ -16,15 +16,25 @@ export function buildVietQrUrl(amount, orderCode) {
   )
 }
 
+// Mã đơn chỉ có 6 chữ số nên có thể trùng với đơn cũ (vi phạm ràng buộc duy nhất, mã 23505):
+// thử lại với mã khác thay vì bỏ cuộc và để khách thấy QR dự phòng.
+const MAX_ORDER_CODE_ATTEMPTS = 4
+
 export async function createOrderAndBuildQr(userId, tab) {
-  const orderCode = `DH${Math.floor(100000 + Math.random() * 900000)}`
   const amount = Number(tab.price) || 0
 
-  const { data, error } = await supabase
-    .from('orders')
-    .insert({ order_code: orderCode, user_id: userId, song_id: String(tab.id), amount })
-    .select()
-    .single()
+  let orderCode = ''
+  let data = null
+  let error = null
+  for (let attempt = 0; attempt < MAX_ORDER_CODE_ATTEMPTS; attempt++) {
+    orderCode = `DH${Math.floor(100000 + Math.random() * 900000)}`
+    ;({ data, error } = await supabase
+      .from('orders')
+      .insert({ order_code: orderCode, user_id: userId, song_id: String(tab.id), amount })
+      .select()
+      .single())
+    if (!error || error.code !== '23505') break
+  }
 
   if (error) {
     console.error('Không tạo được đơn hàng:', error)

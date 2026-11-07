@@ -54,6 +54,8 @@ let purchasedSongIds = new Set()
 // Hàm hủy theo dõi đơn hàng đang chờ thanh toán (xem watchOrderPayment) —
 // chỉ có 1 đơn được theo dõi tại 1 thời điểm (modal thanh toán chỉ mở 1 lúc).
 let stopOrderWatch = null
+// Mỗi lần mở/đóng hộp thanh toán tăng 1: đơn tạo xong muộn của lượt cũ sẽ bị bỏ, không ghi đè lượt mới.
+let checkoutSeq = 0
 
 // Đơn hàng + user của lượt thanh toán đang mở — cần cho nút "Xác minh thẻ HSSV".
 let activeOrder = null
@@ -302,6 +304,7 @@ export function toggleModal(modalId, show) {
     const iframe = modal.querySelector('iframe')
     if (iframe) iframe.src = ''
 
+    if (modalId === 'checkout-modal') checkoutSeq++
     if (modalId === 'checkout-modal' && stopOrderWatch) {
       stopOrderWatch()
       stopOrderWatch = null
@@ -500,11 +503,12 @@ window.openCheckoutModal = async function openCheckoutModal(tabId) {
     stopOrderWatch()
     stopOrderWatch = null
   }
+  const mySeq = ++checkoutSeq
 
   if (currentUserId) {
     createOrderAndBuildQr(currentUserId, tab)
       .then(({ orderCode, qrUrl, order }) => {
-        if (!orderCode) return
+        if (!orderCode || mySeq !== checkoutSeq) return
         activeOrder = order
         activeCheckoutSyntax = orderCode
         hssvFlow.orderReady()
