@@ -5,7 +5,7 @@
  * Trước là thẻ dọc cao ~480px (ảnh lồng 2 lớp khung, nút to, đường kẻ), 2 cột hẹp
  * trên điện thoại làm chữ xuống dòng liên tục.
  */
-import { escapeHtml } from '../admin/format.js'
+import { escapeHtml, jsArg } from '../admin/format.js'
 
 /** Số món hiện sẵn trước khi bấm "Xem thêm": máy tính 4, điện thoại 2. */
 export const GEAR_INITIAL_LIMIT = 4
@@ -16,11 +16,6 @@ const ARROW_ICON =
 
 const LINK_CLASS =
   'group/link inline-flex items-center gap-1 min-h-[44px] -my-3 text-xs sm:text-sm font-bold text-accent-primary hover:underline underline-offset-2 w-fit'
-
-/** Chuỗi nhúng vào onclick="...('…')" — escape cả nháy và ký tự HTML. */
-function jsArg(str) {
-  return escapeHtml(String(str || '')).replace(/\\/g, '\\\\').replace(/&#039;/g, "\\'")
-}
 
 /** Loại đồ trong dữ liệu đang lưu IN HOA ("GUITAR CHÍNH") — hiện dạng câu thường: "Guitar chính". */
 function sentenceCase(text) {
