@@ -267,3 +267,43 @@ describe('decideHssv — trường trên thẻ phải khớp email, ảnh phải
     expect(d.message).toMatch(/Tên trường trên thẻ chưa khớp/)
   })
 })
+
+describe('các kiểu email sinh viên hay gặp (email không phải lúc nào cũng có tên)', () => {
+  const an = { studentId: '21127042', fullName: 'Nguyễn Văn An' }
+
+  it('họ tên viết liền, đảo thứ tự hoặc có dấu chấm → khớp theo tên', () => {
+    expect(emailMatchesCard('nguyenvanan@st.ueh.edu.vn', { ...an, studentId: null })).toBe('name')
+    expect(emailMatchesCard('an.nguyen@ou.edu.vn', { ...an, studentId: null })).toBe('name')
+    expect(emailMatchesCard('an.nv195@sis.hust.edu.vn', { ...an, studentId: null })).toBe('name')
+  })
+
+  it('email chỉ là mã SV (kể cả mã có chữ) → khớp theo mã', () => {
+    expect(emailMatchesCard('21127042@student.hcmus.edu.vn', an)).toBe('id')
+    expect(emailMatchesCard('k21cs0042@vnu.edu.vn', { studentId: 'K21CS0042', fullName: 'Lê Thị Hoa' })).toBe('id')
+  })
+
+  it('email không mang tên lẫn mã (trường tự đặt kiểu khác) → none, nhưng chỉ CHỜ admin chứ không từ chối', () => {
+    const match = emailMatchesCard('sv0042x@dlu.edu.vn', an)
+    expect(match).toBe('none')
+    const d = decideHssv({
+      reading: {
+        is_student_card: true,
+        legible: true,
+        full_name: an.fullName,
+        school: 'Trường Đại học Đà Lạt',
+        student_id: an.studentId,
+        expiry_year: 2028,
+        school_matches_email_domain: true,
+        is_physical_card_photo: true,
+        signs_of_editing: false,
+      },
+      currentYear: 2026,
+      accountName: 'An',
+      duplicateOnOtherAccount: false,
+      emailMatch: match,
+    })
+    expect(d.status).toBe('pending')
+    expect(d.flags).toEqual(['email_mismatch'])
+  })
+})
+
