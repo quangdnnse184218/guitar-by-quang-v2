@@ -5,8 +5,11 @@
  * nội dung vào `#modal-hssv-block` của trang.
  *
  * Hai lối:
- *  - SINH VIÊN có email trường (.edu.vn): đồng ý → nhập email → nhận mã 6 số → nhập mã → tải ảnh
- *    thẻ → AI đọc thẻ và so với email. Được duyệt thì đơn + mã QR đổi sang giá ưu đãi ngay.
+ *  - SINH VIÊN có email trường (.edu.vn): đồng ý → nhập email → nhận mã 6 số → nhập mã VÀ chọn
+ *    ảnh thẻ → MỘT nút gửi cả hai (xác nhận mã rồi đọc thẻ). Ô ảnh thẻ hiện ngay từ đầu để khách
+ *    biết phải có đủ cả email lẫn thẻ (trước đây ô ảnh chỉ hiện sau khi xác nhận mã, khách tưởng
+ *    chỉ cần email). AI so tên trường với tên miền email, họ tên / mã SV với phần trước @.
+ *    Được duyệt thì đơn + mã QR đổi sang giá ưu đãi ngay.
  *  - HỌC SINH, hoặc sinh viên không có email trường: nhắn Zalo kèm mã đơn; admin duyệt tay
  *    (RPC admin_apply_hssv_price) và mã QR ở đây tự đổi (trang gọi applyPrice khi
  *    watchOrderPayment báo số tiền của đơn đã đổi).
@@ -21,6 +24,7 @@ import {
 } from './checkout-order.js'
 
 const ZALO_URL = 'https://zalo.me/0326768885'
+const VERIFY_LABEL = 'Gửi email và ảnh thẻ để xác minh'
 const RESEND_WAIT_SEC = 60
 
 const ERROR_TEXT = {
@@ -92,19 +96,18 @@ const TEMPLATE = `
 
       <div id="hssv-code-row" class="hidden space-y-1.5">
         <label for="hssv-code" class="block font-bold text-text-primary">Mã 6 số trong email</label>
-        <div class="flex gap-2">
-          <input type="text" id="hssv-code" inputmode="numeric" autocomplete="one-time-code" maxlength="6" placeholder="••••••" class="${INPUT} flex-1 min-w-0 font-mono tracking-[0.4em]" />
-          <button type="button" id="hssv-check-btn" disabled class="${BTN} flex-shrink-0">Xác nhận</button>
-        </div>
+        <input type="text" id="hssv-code" inputmode="numeric" autocomplete="one-time-code" maxlength="6" placeholder="••••••" class="${INPUT} font-mono tracking-[0.4em]" />
         <p class="text-text-muted">Không thấy thư thì xem mục Spam.</p>
       </div>
 
-      <div id="hssv-card-row" class="hidden space-y-1.5">
+      <div id="hssv-card-row" class="space-y-1.5">
         <label for="modal-hssv-file-input" class="block font-bold text-text-primary">Ảnh thẻ sinh viên còn hạn</label>
         <input type="file" accept="image/*" id="modal-hssv-file-input"
           class="block w-full text-xs text-text-muted file:mr-3 file:min-h-[40px] file:px-3 file:rounded-lg file:border-0 file:bg-accent-primary/15 file:text-accent-primary file:font-bold file:cursor-pointer cursor-pointer" />
-        <button type="button" id="modal-hssv-verify-btn" disabled class="${BTN} w-full">Xác minh thẻ</button>
+        <p class="text-text-muted leading-relaxed">Chụp trực tiếp tấm thẻ thật, rõ chữ (không chụp lại màn hình hay bản in). Hệ thống đối chiếu tên trường, họ tên và mã SV trên thẻ với email trường.</p>
       </div>
+
+      <button type="button" id="modal-hssv-verify-btn" disabled class="${BTN} w-full">${VERIFY_LABEL}</button>
 
       <p id="modal-hssv-status" role="status" class="hidden font-bold leading-relaxed"></p>
     </div>
@@ -155,8 +158,6 @@ export function initHssvFlow({
     send: $('hssv-send-btn'),
     codeRow: $('hssv-code-row'),
     code: $('hssv-code'),
-    check: $('hssv-check-btn'),
-    cardRow: $('hssv-card-row'),
     file: $('modal-hssv-file-input'),
     verify: $('modal-hssv-verify-btn'),
     status: $('modal-hssv-status'),
@@ -201,9 +202,12 @@ export function initHssvFlow({
         : el.codeRow.classList.contains('hidden')
           ? 'Gửi mã'
           : 'Gửi lại mã'
-    el.check.disabled = busy || done || !agreed || el.code.value.replace(/\D/g, '').length !== 6
-    el.verify.disabled = busy || done || !agreed || !verifiedEmail || !el.file.files?.length
+    // Nút gửi cần ĐỦ cả hai: email đã xác nhận (hoặc mã 6 số vừa nhập để xác nhận ngay) + ảnh thẻ.
+    const codeTyped = !el.codeRow.classList.contains('hidden') && el.code.value.length === 6
+    el.verify.disabled =
+      busy || done || !agreed || !ready || !el.file.files?.length || !(verifiedEmail || codeTyped)
     el.email.disabled = done || Boolean(verifiedEmail)
+    el.file.disabled = done
   }
 
   const startCooldown = (sec) => {
@@ -294,7 +298,11 @@ export function initHssvFlow({
     if (res?.ok) {
       el.codeRow.classList.remove('hidden')
       el.code.value = ''
-      say(el.status, 'ok', `Đã gửi mã tới ${emailValue()}. Mã có hiệu lực 10 phút.`)
+      say(
+        el.status,
+        'ok',
+        `Đã gửi mã tới ${emailValue()} (hiệu lực 10 phút). Nhập mã, chọn ảnh thẻ rồi bấm gửi.`
+      )
       startCooldown(RESEND_WAIT_SEC)
       el.code.focus()
     } else {
@@ -304,43 +312,46 @@ export function initHssvFlow({
     }
   })
 
-  el.check.addEventListener('click', async () => {
-    const order = getOrder()
-    if (!order?.id || !el.consent.checked) return
-    busy = true
-    sync()
+  /** Xác nhận mã email (nếu chưa). Trả true khi email đã được xác nhận cho đơn này. */
+  async function confirmEmailCode(order) {
+    if (verifiedEmail) return true
     const email = emailValue()
+    say(el.status, 'muted', 'Đang kiểm tra mã email…')
     const res = await checkHssvEmailCode(order.id, email, el.code.value, { consent: true })
-    busy = false
     if (res?.ok) {
       verifiedEmail = email
       clearInterval(cooldownTimer)
       cooldown = 0
       el.codeRow.classList.add('hidden')
       el.code.value = ''
-      el.cardRow.classList.remove('hidden')
-      say(el.status, 'ok', '✓ Đã xác nhận email trường. Giờ tải ảnh thẻ sinh viên lên.')
-    } else {
-      const left =
-        res?.error === 'wrong_code' && Number.isFinite(res.attemptsLeft)
-          ? ` Còn ${res.attemptsLeft} lần thử.`
-          : ''
-      say(el.status, 'bad', errorText(res?.error) + left)
-      el.code.value = ''
+      return true
     }
-    sync()
-  })
+    const left =
+      res?.error === 'wrong_code' && Number.isFinite(res.attemptsLeft)
+        ? ` Còn ${res.attemptsLeft} lần thử.`
+        : ''
+    say(el.status, 'bad', errorText(res?.error) + left)
+    el.code.value = ''
+    return false
+  }
 
   el.verify.addEventListener('click', async () => {
     const order = getOrder()
     const userId = getUserId()
     const file = el.file.files?.[0]
-    if (!order?.id || !userId || !file || !verifiedEmail || !el.consent.checked) return
+    if (!order?.id || !userId || !file || !el.consent.checked) return
 
     busy = true
     sync()
     el.verify.textContent = 'Đang xác minh…'
-    say(el.status, 'muted', 'Đang đọc thẻ… chờ chút nhé')
+    // Gửi cùng lúc: xác nhận mã email trước, đúng thì đọc thẻ ngay — khách không phải bấm hai lần.
+    if (!(await confirmEmailCode(order))) {
+      busy = false
+      el.verify.textContent = VERIFY_LABEL
+      sync()
+      return
+    }
+    say(el.status, 'muted', 'Email đã xác nhận. Đang đọc thẻ và đối chiếu với email… chờ chút nhé')
 
     let result
     try {
@@ -353,14 +364,13 @@ export function initHssvFlow({
       result = { approved: false, error: 'network' }
     }
     busy = false
-    el.verify.textContent = 'Xác minh thẻ'
+    el.verify.textContent = VERIFY_LABEL
 
     if (result?.approved) {
       done = true
       applyPrice(result.newAmount || order.amount)
       say(el.status, 'ok', '✓ Đã xác minh! Mã QR đã đổi sang giá sinh viên.')
       el.verify.textContent = 'Đã xác minh ✓'
-      el.file.disabled = true
     } else if (result?.status === 'pending') {
       say(
         el.status,
@@ -370,9 +380,8 @@ export function initHssvFlow({
       el.file.value = '' // gửi ảnh khác được; ảnh mới thay lượt cũ
       el.verify.textContent = 'Gửi ảnh khác'
     } else if (result?.error === 'email_not_verified') {
-      // Quá 1 giờ kể từ lúc xác nhận email: làm lại bước email.
+      // Quá 1 giờ kể từ lúc xác nhận email: làm lại bước email (ảnh đã chọn vẫn giữ).
       verifiedEmail = null
-      el.cardRow.classList.add('hidden')
       say(el.status, 'bad', errorText('email_not_verified'))
     } else {
       say(
@@ -420,8 +429,7 @@ export function initHssvFlow({
       el.file.value = ''
       el.file.disabled = false
       el.codeRow.classList.add('hidden')
-      el.cardRow.classList.add('hidden')
-      el.verify.textContent = 'Xác minh thẻ'
+      el.verify.textContent = VERIFY_LABEL
       el.zaloCode.textContent = 'đang tạo…'
       hush(el.status)
       hush(el.zaloStatus)

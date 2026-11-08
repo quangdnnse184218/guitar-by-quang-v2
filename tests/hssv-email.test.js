@@ -150,7 +150,18 @@ describe('chọn mã đang dùng / email đã xác nhận', () => {
 
 describe('decideHssv — nhánh email', () => {
   const year = 2026
-  const good = { is_student_card: true, legible: true, full_name: 'Nguyen Van An', school: 'FPT', student_id: 'SE184218', expiry_year: 2028, reason: 'ok' }
+  const good = {
+    is_student_card: true,
+    legible: true,
+    full_name: 'Nguyen Van An',
+    school: 'FPT',
+    student_id: 'SE184218',
+    expiry_year: 2028,
+    school_matches_email_domain: true,
+    is_physical_card_photo: true,
+    signs_of_editing: false,
+    reason: 'ok',
+  }
   const base = { reading: good, currentYear: year, accountName: 'Nguyen Van An', duplicateOnOtherAccount: false }
 
   it('email khớp (mã hoặc tên) + thẻ tốt → duyệt', () => {
@@ -182,5 +193,77 @@ describe('decideHssv — nhánh email', () => {
 
   it('lượt không có email (admin duyệt tay / dữ liệu cũ) không bị gắn cờ lệch email', () => {
     expect(decideHssv(base)).toMatchObject({ status: 'approved', flags: [] })
+  })
+})
+
+describe('decideHssv — trường trên thẻ phải khớp email, ảnh phải là thẻ thật', () => {
+  const card = (over = {}) => ({
+    is_student_card: true,
+    legible: true,
+    full_name: 'Nguyen Van An',
+    school: 'Trường Đại học FPT',
+    student_id: 'SE184218',
+    expiry_year: 2028,
+    school_matches_email_domain: true,
+    is_physical_card_photo: true,
+    signs_of_editing: false,
+    reason: 'ok',
+    ...over,
+  })
+  const decideWith = (over, rest = {}) =>
+    decideHssv({
+      reading: card(over),
+      currentYear: 2026,
+      accountName: 'Nguyen Van An',
+      duplicateOnOtherAccount: false,
+      emailMatch: 'id',
+      ...rest,
+    })
+
+  it('đủ mọi điều kiện → duyệt', () => {
+    expect(decideWith({})).toMatchObject({ status: 'approved', flags: [] })
+  })
+
+  it('AI chắc trường khác → chờ admin với cờ school_domain_mismatch', () => {
+    const d = decideWith({ school_matches_email_domain: false })
+    expect(d.status).toBe('pending')
+    expect(d.flags).toContain('school_domain_mismatch')
+    expect(d.message).toMatch(/Tên trường trên thẻ chưa khớp/)
+  })
+
+  it('có email mà AI không trả lời / không chắc về trường → chờ admin', () => {
+    expect(decideWith({ school_matches_email_domain: null }).flags).toContain('school_domain_unverified')
+    expect(decideWith({ school_matches_email_domain: undefined }).status).toBe('pending')
+  })
+
+  it('lượt KHÔNG có email (admin duyệt tay / dữ liệu cũ) không đòi câu trả lời về trường', () => {
+    const d = decideWith({ school_matches_email_domain: null }, { emailMatch: undefined })
+    expect(d).toMatchObject({ status: 'approved', flags: [] })
+  })
+
+  it('ảnh không phải thẻ thật hoặc có dấu hiệu sửa → chờ admin, báo chụp lại thẻ thật', () => {
+    const a = decideWith({ is_physical_card_photo: false })
+    expect(a).toMatchObject({ status: 'pending' })
+    expect(a.flags).toContain('not_physical_card')
+    const b = decideWith({ signs_of_editing: true })
+    expect(b.flags).toContain('possible_edit')
+    expect(b.message).toMatch(/chụp trực tiếp tấm thẻ thật/)
+  })
+
+  it('AI không chắc ảnh có phải thẻ thật / có sửa không (null) thì KHÔNG chặn', () => {
+    expect(decideWith({ is_physical_card_photo: null, signs_of_editing: null }).status).toBe('approved')
+  })
+
+  it('các lớp từ chối cũ vẫn đứng trước: không phải thẻ, hết hạn, trùng thẻ, trùng email', () => {
+    expect(decideWith({ is_student_card: false, school_matches_email_domain: false }).status).toBe('rejected')
+    expect(decideWith({ expiry_year: 2024 }).status).toBe('rejected')
+    expect(decideWith({}, { duplicateOnOtherAccount: true }).status).toBe('rejected')
+    expect(decideWith({}, { emailUsedByOtherAccount: true }).status).toBe('rejected')
+  })
+
+  it('email lệch + trường lệch → cả hai cờ, lời nhắn nói về trường', () => {
+    const d = decideWith({ school_matches_email_domain: false }, { emailMatch: 'none' })
+    expect(d.flags).toEqual(expect.arrayContaining(['email_mismatch', 'school_domain_mismatch']))
+    expect(d.message).toMatch(/Tên trường trên thẻ chưa khớp/)
   })
 })

@@ -141,6 +141,9 @@ const goodCard = (over = {}) => ({
   school: 'ĐH Bách Khoa',
   student_id: 'SE184218',
   expiry_year: new Date().getFullYear() + 2,
+  school_matches_email_domain: true,
+  is_physical_card_photo: true,
+  signs_of_editing: false,
   reason: 'Thẻ rõ.',
   ...over,
 })
@@ -670,5 +673,53 @@ describe('verify-hssv-card — thẻ phải đi kèm email trường đã xác n
     geminiReply = () => ({ ok: false, status: 500, json: async () => ({}) })
     const r = await call()
     expect(r.body.status).toBe('pending')
+  })
+})
+
+describe('verify-hssv-card — đối chiếu trường trên thẻ với email, ảnh thẻ thật', () => {
+  const promptSent = () => {
+    const [, init] = globalThis.fetch.mock.calls.find(([u]) => String(u).includes('generativelanguage'))
+    return JSON.parse(init.body).contents[0].parts[0].text
+  }
+
+  it('lời nhắc gửi Gemini có tên miền email và hỏi đủ ba câu mới', async () => {
+    await call()
+    const prompt = promptSent()
+    expect(prompt).toContain('fpt.edu.vn')
+    expect(prompt).not.toContain(EMAIL) // chỉ gửi tên miền, không gửi cả địa chỉ email
+    expect(prompt).toMatch(/school_matches_email_domain/)
+    expect(prompt).toMatch(/is_physical_card_photo/)
+    expect(prompt).toMatch(/signs_of_editing/)
+  })
+
+  it('trường trên thẻ khác trường của email → CHỜ admin, không hạ giá, báo lý do', async () => {
+    geminiReply = () => asGemini(goodCard({ school: 'ĐH Kinh tế', school_matches_email_domain: false }))
+    const r = await call()
+    expect(r.body).toMatchObject({ approved: false, status: 'pending' })
+    expect(r.body.reason).toMatch(/Tên trường trên thẻ chưa khớp/)
+    expect(db.verifications[0].flags).toContain('school_domain_mismatch')
+    expect(db.orders[0].amount).toBe(239000)
+  })
+
+  it('AI không chắc trường có khớp email → CHỜ admin (không tự duyệt)', async () => {
+    geminiReply = () => asGemini(goodCard({ school_matches_email_domain: null }))
+    const r = await call()
+    expect(r.body.status).toBe('pending')
+    expect(db.verifications[0].flags).toContain('school_domain_unverified')
+    expect(db.orders[0].amount).toBe(239000)
+  })
+
+  it('ảnh chụp màn hình / bản in, hoặc có dấu hiệu sửa → CHỜ admin', async () => {
+    geminiReply = () => asGemini(goodCard({ is_physical_card_photo: false }))
+    expect((await call()).body.status).toBe('pending')
+    expect(db.verifications[0].flags).toContain('not_physical_card')
+
+    db = freshDb()
+    geminiReply = () => asGemini(goodCard({ signs_of_editing: true }))
+    const r = await call()
+    expect(r.body.status).toBe('pending')
+    expect(r.body.reason).toMatch(/chụp trực tiếp tấm thẻ thật/)
+    expect(db.verifications[0].flags).toContain('possible_edit')
+    expect(db.orders[0].amount).toBe(239000)
   })
 })

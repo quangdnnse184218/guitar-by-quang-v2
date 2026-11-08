@@ -13,6 +13,13 @@ export interface CardReading {
   student_id?: string | null
   expiry_year?: number | string | null
   reason?: string | null
+  // Ba câu AI trả lời thêm khi khách gửi kèm email trường (2026-11):
+  //   school_matches_email_domain — trường in trên thẻ có đúng là trường của tên miền email không
+  //   is_physical_card_photo      — ảnh chụp trực tiếp tấm thẻ thật (không phải chụp màn hình, bản in)
+  //   signs_of_editing            — có dấu hiệu chỉnh sửa (chữ chèn đè, phông lệch, ảnh dán đè)
+  school_matches_email_domain?: boolean | null
+  is_physical_card_photo?: boolean | null
+  signs_of_editing?: boolean | null
 }
 
 export interface Decision {
@@ -63,6 +70,22 @@ export function namesMismatch(cardName: unknown, accountName: unknown): boolean 
     .filter((w) => w.length > 1)
   if (a.length === 0 || b.length === 0) return false // không đủ dữ liệu để kết luận
   return !a.some((w) => b.includes(w))
+}
+
+const TO_ADMIN = ' Yêu cầu của bạn đã chuyển cho admin xét duyệt.'
+
+/** Lời nhắn cho khách khi chưa tự duyệt được — nói đúng lý do chính, không lộ chi tiết chấm điểm. */
+function pendingMessage(flags: string[]): string {
+  if (flags.includes('school_domain_mismatch')) {
+    return 'Tên trường trên thẻ chưa khớp với email trường bạn nhập nên hệ thống chưa tự duyệt.' + TO_ADMIN
+  }
+  if (flags.includes('not_physical_card') || flags.includes('possible_edit')) {
+    return 'Ảnh cần chụp trực tiếp tấm thẻ thật (không chụp lại màn hình hay bản in) nên hệ thống chưa tự duyệt.' + TO_ADMIN
+  }
+  if (flags.length === 1 && flags[0] === 'email_mismatch') {
+    return 'Email trường chưa khớp với thông tin trên thẻ nên hệ thống chưa tự duyệt.' + TO_ADMIN
+  }
+  return 'Ảnh thẻ chưa đủ để hệ thống tự duyệt.' + TO_ADMIN
 }
 
 function parseYear(raw: unknown): number | null {
@@ -159,6 +182,16 @@ export function decideHssv(input: {
   // Không tự từ chối: nhiều trường đặt email theo quy tắc riêng.
   if (emailMatch === 'none') flags.push('email_mismatch')
 
+  // Có email trường (emailMatch khác undefined) thì tên trường trên thẻ phải được AI xác nhận là
+  // ĐÚNG trường của tên miền email mới tự duyệt; AI không chắc cũng để admin xem. Đây là lớp chặn
+  // "email trường A + thẻ trường B" (mượn thẻ người khác, hoặc tự dựng thẻ giả cho email thật).
+  const withEmail = emailMatch !== undefined
+  if (reading.school_matches_email_domain === false) flags.push('school_domain_mismatch')
+  else if (withEmail && reading.school_matches_email_domain !== true) flags.push('school_domain_unverified')
+  // Ảnh không phải chụp tấm thẻ thật, hoặc có dấu hiệu sửa: không tự duyệt.
+  if (reading.is_physical_card_photo === false) flags.push('not_physical_card')
+  if (reading.signs_of_editing === true) flags.push('possible_edit')
+
   const softFlags: string[] = []
   if (namesMismatch(reading.full_name, accountName)) softFlags.push('name_mismatch')
 
@@ -166,10 +199,7 @@ export function decideHssv(input: {
     return {
       status: 'pending',
       flags: [...flags, ...softFlags],
-      message:
-        flags.length === 1 && flags[0] === 'email_mismatch'
-          ? 'Email trường chưa khớp với thông tin trên thẻ nên hệ thống chưa tự duyệt. Yêu cầu của bạn đã chuyển cho admin xét duyệt.'
-          : 'Ảnh thẻ chưa đủ để hệ thống tự duyệt. Yêu cầu của bạn đã chuyển cho admin xét duyệt.',
+      message: pendingMessage(flags),
       studentId,
       expiryYear,
     }
